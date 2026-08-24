@@ -1,0 +1,16 @@
+# Node
+node_modules/
+
+# Local backend env (NEVER commit your OpenRouter key)
+backend/.env
+
+# Local screenshots / scratch
+*.png
+*.py
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
