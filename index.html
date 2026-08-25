@@ -55,6 +55,7 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
+html,body{height:100dvh}               /* dynamic viewport: no address-bar gap on mobile */
 html,body{overflow:hidden}            /* real scroller is .stage; stops iOS rubber-band */
 body{
   margin:0;
@@ -65,7 +66,9 @@ body{
   text-rendering:optimizeLegibility;
   overflow:hidden; /* stage manages scroll */
 }
-button{font-family:inherit;cursor:pointer;color:inherit}
+button{font-family:inherit;cursor:pointer;color:inherit;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+.tap-highlight-hidden{-webkit-tap-highlight-color:transparent}
 ::selection{background:var(--accent-soft)}
 
 /* ---------- Holy background: nature photo + parchment veil + dawn light ---------- */
@@ -515,6 +518,26 @@ textarea#prompt::placeholder{color:var(--muted)}
 .opt .on{font-family:var(--mono);font-size:11px;color:var(--gold-ink);font-weight:500}
 .opt .od{font-size:12px;color:#5b5340;line-height:1.4}
 .rec-tag{display:inline-block;margin-left:4px;font-family:var(--body);font-size:10px;font-weight:600;color:#8a6d1f;background:rgba(163,130,47,0.12);border:1px solid rgba(163,130,47,0.30);border-radius:99px;padding:0 6px;vertical-align:1px}
+
+/* Mobile: model picker becomes a full-screen bottom sheet (like ChatGPT / Claude) */
+.model-pop-scrim{display:none;position:fixed;inset:0;z-index:95;background:rgba(30,26,20,0.38);backdrop-filter:blur(2px)}
+.model-pop-scrim.show{display:block}
+@media (max-width:480px){
+  .pop{
+    position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;z-index:96;
+    max-height:72dvh;border-radius:20px 20px 0 0;border-bottom:0;
+    padding:8px 10px calc(14px + env(safe-area-inset-bottom));
+    display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  .pop.open{display:flex;transform:translateY(0);animation:none}
+  .pop .psearch{flex:none}
+  .pop .plist{max-height:calc(72dvh - 92px);flex:1}
+  .pop .plist::-webkit-scrollbar{width:6px}
+  .opt{padding:14px 12px}
+  .model .pop{position:fixed}
+  .model-pop-grab{width:40px;height:4px;border-radius:999px;background:var(--border);margin:2px auto 8px;flex:none}
+}
 .pgroup{font-family:var(--body);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
 
 /* reasoning segmented */
@@ -588,7 +611,7 @@ textarea#prompt::placeholder{color:var(--muted)}
   .model{width:100%}
   .model-btn{width:100%;max-width:none;justify-content:space-between}
   .reasoning{width:100%;display:flex;gap:6px}
-  .reasoning .seg{flex:1;height:44px;justify-content:center}
+  .reasoning .seg{flex:1;height:48px;justify-content:center}
   .bubble{max-width:92%}
 }
 /* ---------- Beta consent modal ---------- */
@@ -794,6 +817,7 @@ textarea#prompt::placeholder{color:var(--muted)}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
         </button>
         <div class="pop" id="modelPop" role="listbox" aria-label="Choose a model">
+          <div class="model-pop-grab" aria-hidden="true"></div>
           <div class="psearch">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
             <input id="modelSearch" type="text" placeholder="Search models…" aria-label="Search models" autocomplete="off" />
@@ -803,6 +827,7 @@ textarea#prompt::placeholder{color:var(--muted)}
           </div>
         </div>
       </div>
+      <div class="model-pop-scrim" id="modelPopScrim" aria-hidden="true"></div>
 
       <!-- Reasoning chooser -->
       <div class="reasoning" role="group" aria-label="Reasoning depth">
@@ -881,7 +906,7 @@ textarea#prompt::placeholder{color:var(--muted)}
   const stage=$("#stage"), greet=$("#greet"), thread=$("#thread");
   const prompt=$("#prompt"), send=$("#send"), composer=$("#composer");
   const fileInput=$("#fileInput"), attachBtn=$("#attachBtn"), attachRow=$("#attachRow");
-  const modelBtn=$("#modelBtn"), modelPop=$("#modelPop"), modelVal=$("#modelVal");
+  const modelBtn=$("#modelBtn"), modelPop=$("#modelPop"), modelVal=$("#modelVal"), modelPopScrim=$("#modelPopScrim");
   const modelList=$("#modelList"), modelSearch=$("#modelSearch");
   const disclaimer=$("#disclaimer");
   const toast=$("#toast");
@@ -997,6 +1022,8 @@ textarea#prompt::placeholder{color:var(--muted)}
     history.length=0; (s.history||[]).forEach(m=>history.push(m));
     setActive(id);
     if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
+    // land on the latest message, like ChatGPT/Claude — not the top of a long thread
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ stage.scrollTop=stage.scrollHeight; if(jumpLatest) jumpLatest.classList.add("hidden"); }));
   }
   function recordSession(firstMsg, assistantReply){
     if(!history.length) return;
@@ -1188,14 +1215,17 @@ textarea#prompt::placeholder{color:var(--muted)}
     e.stopPropagation();
     const open=modelPop.classList.toggle("open");
     modelBtn.setAttribute("aria-expanded",open);
+    if(modelPopScrim && window.matchMedia("(max-width:480px)").matches) modelPopScrim.classList.toggle("show",open);
     if(open && modelSearch){ modelSearch.value=""; renderModelOptions(""); setTimeout(()=>modelSearch.focus(),60); }
   });
   if(modelSearch){
     modelSearch.addEventListener("input",()=>renderModelOptions(modelSearch.value));
     modelSearch.addEventListener("click",e=>e.stopPropagation());
   }
+  function modelPopClose(){ modelPop.classList.remove("open"); modelBtn.setAttribute("aria-expanded","false"); if(modelPopScrim) modelPopScrim.classList.remove("show"); }
+  if(modelPopScrim) modelPopScrim.addEventListener("click",()=>{ modelPopClose(); if(modelSearch) modelSearch.blur(); });
   document.addEventListener("click",e=>{
-    if(!modelPop.contains(e.target) && e.target!==modelBtn){ modelPop.classList.remove("open"); modelBtn.setAttribute("aria-expanded","false"); }
+    if(!modelPop.contains(e.target) && e.target!==modelBtn) modelPopClose();
   });
 
   /* ---- reasoning segmented ---- */
@@ -1630,7 +1660,7 @@ textarea#prompt::placeholder{color:var(--muted)}
   /* ---- I: Esc closes popover / sidebar; beta modal focus trap ---- */
   document.addEventListener("keydown",e=>{
     if(e.key!=="Escape") return;
-    if(modelPop && modelPop.classList.contains("open")){ modelPop.classList.remove("open"); modelBtn.setAttribute("aria-expanded","false"); return; }
+    if(modelPop && modelPop.classList.contains("open")){ if(typeof modelPopClose==="function") modelPopClose(); else { modelPop.classList.remove("open"); modelBtn.setAttribute("aria-expanded","false"); } return; }
     if(sb && sb.classList.contains("open")){ sbClose(); return; }
   });
 
