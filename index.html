@@ -451,6 +451,37 @@ textarea#prompt::placeholder{color:var(--muted)}
   .model-btn{max-width:54vw}
 }
 
+/* ---------- Beta consent modal ---------- */
+.modal-scrim{
+  position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
+  padding:max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background:rgba(30,26,20,0.42);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+.modal-scrim.show{opacity:1;pointer-events:auto}
+.beta-modal{
+  width:min(440px,100%);max-height:86vh;overflow-y:auto;overscroll-behavior:contain;
+  padding:26px 24px 22px;border-radius:var(--r-l);text-align:center;
+  background:var(--glass-strong);border:1px solid var(--border);border-top-color:var(--border-light);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter:blur(34px) saturate(180%);-webkit-backdrop-filter:blur(34px) saturate(180%);
+  transform:translateY(10px) scale(.98);transition:transform .28s cubic-bezier(.4,0,.2,1);
+}
+.modal-scrim.show .beta-modal{transform:translateY(0) scale(1)}
+.beta-modal .mk{width:46px;height:46px;margin:0 auto 12px;color:var(--accent)}
+.beta-modal h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0 0 4px;color:var(--ink);letter-spacing:-.01em}
+.beta-modal .tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fbf7ee;background:var(--accent-deep);padding:3px 9px;border-radius:999px;margin-bottom:14px}
+.beta-modal p{font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:0 0 12px;text-align:left}
+.beta-modal p b{color:var(--gold-ink)}
+.beta-modal .agree{
+  margin-top:8px;width:100%;height:48px;border:0;border-radius:999px;cursor:pointer;
+  background:var(--accent-deep);color:#fbf7ee;font-size:15px;font-weight:600;font-family:var(--body);
+  box-shadow:0 8px 22px rgba(138,108,37,0.34);transition:transform .12s ease, background .18s ease;
+}
+.beta-modal .agree:hover{background:var(--accent-press);transform:translateY(-1px)}
+.beta-modal .agree:active{transform:translateY(0)}
+.beta-modal .agree:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft),0 8px 22px rgba(138,108,37,0.34)}
+
 /* ---------- Motion preferences ---------- */
 @media (hover:none){           /* touch devices: kill sticky hover-lift */
   .chip:hover,.sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
@@ -612,6 +643,25 @@ textarea#prompt::placeholder{color:var(--muted)}
 </div>
 
 <div class="toast" id="toast" role="alert"></div>
+
+<!-- BETA CONSENT MODAL (first visit only) -->
+<div class="modal-scrim" id="betaModal" role="dialog" aria-modal="true" aria-labelledby="betaTitle">
+  <div class="beta-modal">
+    <svg class="mk" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+      <path d="M24 9 V39 M13 19 C13 13 19 11 24 11 C29 11 35 13 35 19" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M24 15 L24 39" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>
+    </svg>
+    <span class="tag">Beta</span>
+    <h2 id="betaTitle">Welcome to Saint Augustine AI</h2>
+    <p>Created by <b>Tyler Simons</b>, a student at Seton Hall Prep. This is a <b>beta</b> project still being tested and improved.</p>
+    <p>By using it you understand:</p>
+    <p>• It is experimental — replies may be imperfect, and it is <b>not</b> a priest, confessor, or source of infallible teaching.<br>
+       • For matters of faith, conscience, or sin, speak with a priest or confessor.<br>
+       • Conversations are saved in <b>your browser</b> only; nothing is stored on our servers.</p>
+    <button class="agree" id="betaAgree">I understand — continue</button>
+  </div>
+</div>
 
 <script src="config.js"></script>
 <script>
@@ -990,6 +1040,19 @@ textarea#prompt::placeholder{color:var(--muted)}
   renderSessions();
   if(activeId){ loadSession(activeId); }
   loadModels();
+
+  /* ---- beta consent modal: first visit only ---- */
+  const betaModal=$("#betaModal"), betaAgree=$("#betaAgree");
+  const LS_BETA="sa_beta_ok";
+  let betaSeen=false;
+  try{ betaSeen = localStorage.getItem(LS_BETA)==="1"; }catch(_){}
+  if(!betaSeen && betaModal){
+    // show after a short beat so the greeting paints first
+    requestAnimationFrame(()=>requestAnimationFrame(()=>betaModal.classList.add("show")));
+    const closeBeta=()=>{ betaModal.classList.remove("show"); try{ localStorage.setItem(LS_BETA,"1"); }catch(_){} };
+    betaAgree.addEventListener("click", closeBeta);
+    betaModal.addEventListener("click",e=>{ if(e.target===betaModal) closeBeta(); }); // tap scrim to dismiss
+  }
 })();
 </script>
 </body>
