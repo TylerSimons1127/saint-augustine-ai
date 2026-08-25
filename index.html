@@ -160,6 +160,22 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .sb-new:hover{background:var(--accent-press);transform:translateY(-1px)}
 .sb-new:active{transform:translateY(0)}
 .sb-new:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.sb-select{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px;height:34px;border-radius:999px;
+  border:1px solid var(--border);background:var(--panel);color:var(--ink-soft);font-size:12.5px;font-weight:500;cursor:pointer;font-family:var(--body);
+  transition:background .14s ease,border-color .14s ease}
+.sb-select:hover{background:var(--accent-soft)}
+.sb-select.active{background:var(--accent-deep);color:#fbf7ee;border-color:transparent}
+.sb-bulk{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border-radius:12px;background:rgba(163,130,47,0.10);border:1px solid rgba(163,130,47,0.28)}
+.sb-bulk #sbBulkCount{font-size:11.5px;color:var(--gold-ink);flex:1}
+.sb-bulk-del{border:0;background:var(--danger);color:#fff;border-radius:999px;padding:6px 10px;font-size:11.5px;font-weight:600;cursor:pointer}
+.sb-bulk-cancel{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:999px;padding:6px 10px;font-size:11.5px;cursor:pointer}
+.sb-check{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--border);flex:none;display:inline-block;background:var(--panel)}
+.sb-item.sel .sb-check{background:var(--accent-deep);border-color:var(--accent-deep)}
+.sb-item.selmode{cursor:pointer}
+.sb-item.selmode .dot{display:none}
+.sb-item.selmode .sbx{display:none}
+.sb-item.sel{background:rgba(163,130,47,0.14)}
+@media (max-width:900px){.sidebar:not(.open) .sb-select,.sidebar:not(.open) .sb-bulk{display:none}}
 .sb-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px;margin-top:2px;padding-right:2px}
 .sb-scroll::-webkit-scrollbar{width:8px}
 .sb-scroll::-webkit-scrollbar-thumb{background:rgba(30,26,20,0.14);border-radius:99px;background-clip:content-box;border:2px solid transparent}
@@ -310,32 +326,9 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .chip .t{font-size:14px;color:var(--ink);font-weight:500}
 .chip .d{font-size:12px;color:var(--muted);line-height:1.4}
 
-/* ---------- Daily Prayer card ---------- */
-.readings{
-  margin-top:14px;padding:16px 18px;border-radius:var(--r-m);
-  background:var(--glass);backdrop-filter:blur(16px) saturate(150%);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
-  border:1px solid rgba(163,130,47,0.28);border-top-color:rgba(163,130,47,0.16);
-  box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,0.5);
-}
-.rd-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
-.rd-eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink);font-weight:600}
-.rd-date{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.rd-lead{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:0 0 12px}
-.rd-acts{display:flex;flex-direction:column;gap:8px}
-.rd-open{display:block;text-align:center;padding:10px 14px;border-radius:999px;text-decoration:none;
-  background:rgba(163,130,47,0.10);color:var(--gold-ink);font-size:13px;font-weight:600;border:1px solid rgba(163,130,47,0.3);
-  transition:background .15s ease}
-.rd-open:hover{background:rgba(163,130,47,0.2)}
-.rd-ask{width:100%;padding:11px 14px;border:1px solid rgba(163,130,47,0.4);border-radius:999px;
-  background:var(--gold-ink);color:#fbf7ee;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);
-  transition:background .15s ease,transform .1s ease}
-.rd-ask:hover{background:#6b5824}
-@media (max-width:480px){.rd-acts{gap:6px}}
-
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
-.msg{display:flex;gap:14px;animation:rise .26s ease both}
+.msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
 .msg .av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:14px;
   background:var(--glass-strong);border:1px solid var(--border);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
 .msg.user{flex-direction:row-reverse}
@@ -384,12 +377,28 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .reasoning-box[open] summary::before{transform:rotate(45deg)}
 .reasoning-box .rb{margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(30,26,20,0.05);border:1px solid var(--border);font-size:13.5px;line-height:1.55;color:var(--muted);white-space:pre-wrap}
 
-/* ---------- Message actions (retry / export) ---------- */
-.msg .acts{display:flex;gap:6px;margin-top:8px;opacity:0;transition:opacity .15s}
+/* ---------- Message actions (retry / copy) ---------- */
+.msg .acts{display:flex;gap:8px;margin-top:10px;opacity:0;transition:opacity .15s}
 .msg:hover .acts,.msg:focus-within .acts{opacity:1}
-.acts .act{border:0;background:transparent;color:var(--muted);font-size:11.5px;display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;cursor:pointer}
-.acts .act:hover{background:var(--accent-soft);color:var(--ink)}
+.acts .act{border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
+  font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;cursor:pointer;font-family:var(--body);
+  transition:background .14s ease,border-color .14s ease}
+.acts .act:hover{background:rgba(163,130,47,0.12);border-color:rgba(163,130,47,0.4)}
 .acts .act svg{width:13px;height:13px}
+/* edit pencil on user bubbles */
+.msg-edit{position:absolute;top:6px;right:6px;width:26px;height:26px;border:0;background:transparent;color:var(--muted);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .15s}
+.msg.user:hover .msg-edit{opacity:1}
+.msg-edit:hover{background:var(--accent-soft);color:var(--ink)}
+.msg-edit svg{width:14px;height:14px}
+.edit-box{display:flex;flex-direction:column;gap:8px}
+.edit-ta{width:100%;min-height:60px;resize:vertical;border-radius:12px;border:1px solid var(--border);
+  background:var(--panel);color:var(--ink);font-family:var(--body);font-size:14px;padding:10px 12px;line-height:1.5}
+.edit-btns{display:flex;gap:8px;justify-content:flex-end}
+.edit-save,.edit-cancel{border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:12.5px;cursor:pointer;font-family:var(--body)}
+.edit-save{background:var(--gold-ink);color:#fbf7ee;border-color:transparent}
+.edit-cancel{background:transparent;color:var(--muted)}
+@media (max-width:480px){.msg:hover .msg-edit{opacity:1}.msg .acts{opacity:1}}
 /* F: follow-up suggestion chips */
 .follow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .follow .fchip2{border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
@@ -655,6 +664,7 @@ textarea#prompt::placeholder{color:var(--muted)}
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     New conversation
   </button>
+  <button class="sb-select" id="sbSelect" aria-pressed="false">Select</button>
   <div class="sb-scroll">
     <div class="sb-group" id="sbToday">
       <span class="lbl">Today</span>
@@ -676,6 +686,11 @@ textarea#prompt::placeholder{color:var(--muted)}
     <button class="sb-reset" id="sbReset" title="Delete all conversations" aria-label="Delete all conversations">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/></svg>
     </button>
+  </div>
+  <div class="sb-bulk" id="sbBulk" hidden>
+    <span id="sbBulkCount">0 selected</span>
+    <button class="sb-bulk-del" id="sbBulkDel">Delete selected</button>
+    <button class="sb-bulk-cancel" id="sbBulkCancel">Cancel</button>
   </div>
 </aside>
 
@@ -701,17 +716,6 @@ textarea#prompt::placeholder{color:var(--muted)}
   <!-- EMPTY / GREETING -->
   <section class="greet" id="greet">
     <div class="halo" aria-hidden="true"></div>
-    <div class="readings" id="readings">
-      <div class="rd-head">
-        <span class="rd-eyebrow">Daily Prayer</span>
-        <span class="rd-date" id="rdDate"></span>
-      </div>
-      <p class="rd-lead">Set aside a minute. Read today's readings, then let Augustine help you pray with them.</p>
-      <div class="rd-acts">
-        <a class="rd-open" id="rdOpen" href="https://bible.usccb.org/bible/readings" target="_blank" rel="noopener noreferrer">Open today's readings (USCCB)</a>
-        <button class="rd-ask" id="rdAsk">Reflect with Augustine</button>
-      </div>
-    </div>
     <div class="crest" role="note">
       <svg class="mk" viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
@@ -887,12 +891,14 @@ textarea#prompt::placeholder{color:var(--muted)}
     sbEarlier.style.display = earlier.length ? "flex" : "none";
     $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>{
       el.addEventListener("click",e=>{
+        if(selectMode){ e.stopPropagation(); toggleSelect(el.dataset.id, el); return; }
         if(e.target.closest(".sbx")) return; // delete handled separately
         if(el.classList.contains("renaming")) return;
         loadSession(el.dataset.id);
       });
       const del=el.querySelector(".sbx");
       if(del) del.addEventListener("click",e=>{ e.stopPropagation(); deleteSession(el.dataset.id); });
+      if(selectMode && del) del.style.display="none";
       // double-click the label to rename
       const txt=el.querySelector(".txt");
       if(txt) txt.addEventListener("dblclick",e=>{ e.stopPropagation(); startRename(el, txt); });
@@ -930,7 +936,7 @@ textarea#prompt::placeholder{color:var(--muted)}
   }
   function sessionHtml(s){
     const cur = s.id===activeId ? 'aria-current="true"' : '';
-    return `<button class="sb-item" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}"><span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
+    return `<button class="sb-item${selectMode?' selmode':''}${selectedIds.has(s.id)?' sel':''}" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}">${selectMode?`<span class="sb-check" aria-hidden="true"></span>`:''}<span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
   }
   function setActive(id){
     activeId=id;
@@ -973,7 +979,10 @@ textarea#prompt::placeholder{color:var(--muted)}
         const ms=d.models||[];
         models.length=0; models.push(...ms);
         renderModelOptions();
-        if(ms.length) selectModel(ms.find(m=>m.featured) || ms[0]);
+        const rec = ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")
+                 || ms.find(m=>m.featured)
+                 || ms[0];
+        if(ms.length) selectModel(rec);
         if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter · conversations stay on your device";
         return;
       }catch(e){
@@ -1206,9 +1215,16 @@ textarea#prompt::placeholder{color:var(--muted)}
   function bubble(role,html,bubbleClass){
     const m=document.createElement("div");
     m.className="msg "+role;
-    const who = role==="user" ? "You" : "Augustine";
+    const who = role==="user" ? "" : "Augustine";
     const init = role==="user" ? "You".slice(0,1) : "A";
-    m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}"><span class="who">${who}</span>${html}</div>`;
+    m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}">${who?`<span class="who">${who}</span>`:''}${html}</div>`;
+    if(role==="user"){
+      const ed=document.createElement("button");
+      ed.className="msg-edit"; ed.title="Edit message"; ed.setAttribute("aria-label","Edit message");
+      ed.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+      ed.addEventListener("click",()=>editUserMessage(m));
+      m.appendChild(ed);
+    }
     thread.appendChild(m); return m;
   }
   function userHtml(text){
@@ -1222,6 +1238,50 @@ textarea#prompt::placeholder{color:var(--muted)}
     }
     return h;
   }
+
+  // Edit a previously-sent user message, then regenerate the reply from that turn.
+  function editUserMessage(msgEl){
+    if(msgEl.querySelector(".edit-box")) return;
+    const bubbleEl=msgEl.querySelector(".bubble");
+    const prevHtml=bubbleEl.innerHTML;
+    // find this user message's index in history (count preceding .msg.user elements)
+    const userEls=[...thread.querySelectorAll(".msg.user")];
+    const idx=userEls.indexOf(msgEl);
+    const histUserEls=history.filter(m=>m.role==="user");
+    const hIdx = histUserEls.length ? Math.max(0, Math.min(idx, histUserEls.length-1)) : -1;
+    if(hIdx<0) return;
+    const curText = (typeof history[hIdx].content==="string") ? history[hIdx].content
+      : (history[hIdx].content.find(p=>p.type==="text")?.text || "");
+    bubbleEl.innerHTML='<div class="edit-box"><textarea class="edit-ta">'+esc(curText)+'</textarea>'+
+      '<div class="edit-btns"><button class="edit-save">Save</button><button class="edit-cancel">Cancel</button></div></div>';
+    const ta=bubbleEl.querySelector(".edit-ta");
+    ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+    const cancel=()=>{ bubbleEl.innerHTML=prevHtml; };
+    bubbleEl.querySelector(".edit-cancel").addEventListener("click",cancel);
+    bubbleEl.querySelector(".edit-save").addEventListener("click",()=>{
+      const v=ta.value.trim(); if(!v) return;
+      // update history entry (text-only; images become a text note if present)
+      const imgs=(Array.isArray(history[hIdx].content)&&history[hIdx].content.find(p=>p.type==="image_url"))?true:false;
+      history[hIdx].content = imgs ? [{type:"text",text:v+" [note: image was attached]"}] : v;
+      bubbleEl.innerHTML=esc(v);
+      // drop the assistant reply that followed this user turn, then regenerate
+      const after=thread.children;
+      let removeStart=-1;
+      for(let i=0;i<after.length;i++){ if(after[i]===msgEl){ removeStart=i+1; break; } }
+      if(removeStart>=0){ for(let i=after.length-1;i>=removeStart;i--){ after[i].remove(); } }
+      // also drop trailing assistant history entries after this user turn
+      let dropFrom=history.length;
+      for(let k=history.length-1;k>hIdx;k--){ if(history[k].role==="assistant"){ dropFrom=k; } else break; }
+      if(dropFrom>hIdx+1) history.splice(hIdx+1, dropFrom-(hIdx+1));
+      else if(dropFrom<=hIdx) {/* keep */}
+      // regenerate using messages up to and including this user turn
+      const messages=history.slice(0,hIdx+1);
+      const userMsg=v;
+      // reuse retry path: build a temp loading bubble
+      callChatRetry(messages, userMsg);
+    });
+  }
+
 
   /* ---- real chat: stream from backend ---- */
   async function callChat(){
@@ -1358,13 +1418,18 @@ textarea#prompt::placeholder{color:var(--muted)}
     if(loadingMsg.querySelector(".acts")) return;
     const acts=document.createElement("div");
     acts.className="acts";
-    acts.innerHTML='<button class="act" data-retry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Retry</button>';
+    acts.innerHTML='<button class="act" data-retry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Retry</button>'+
+      '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy</button>';
     loadingMsg.appendChild(acts);
     acts.querySelector("[data-retry]").addEventListener("click",()=>{
-      // drop the last assistant entry (this one), then regenerate
       for(let k=history.length-1;k>=0;k--){ if(history[k].role==="assistant"){ history.splice(k,1); break; } }
       loadingMsg.remove();
       callChatRetry(messages, userMsg);
+    });
+    acts.querySelector("[data-copy]").addEventListener("click",()=>{
+      const b=loadingMsg.querySelector(".bubble");
+      const txt=b? b.innerText.replace(/^Augustine\s*/,"").trim() : "";
+      navigator.clipboard.writeText(txt).then(()=>showToast("Copied")).catch(()=>showToast("Copy failed"));
     });
   }
   // F: follow-up suggestion chips after the first answer of a session
@@ -1544,18 +1609,37 @@ textarea#prompt::placeholder{color:var(--muted)}
     if(sb && sb.classList.contains("open")){ sbClose(); return; }
   });
 
-  /* ---- C: Daily Prayer card (client-side; opens USCCB readings in-browser) ---- */
-  const readingsEl=$("#readings"), rdAsk=$("#rdAsk");
-  (function initReadings(){
-    if(!readingsEl) return;
-    const d=new Date();
-    $("#rdDate").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
-    rdAsk.addEventListener("click",()=>{
-      prompt.value="Offer a short morning reflection on today's Gospel reading, then a brief prayer I can pray today.";
-      prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
-      syncSend(); prompt.focus();
-    });
-  })();
+  /* ---- Select mode: multi-select conversations to delete ---- */
+  const sbSelect=$("#sbSelect"), sbBulk=$("#sbBulk"), sbBulkDel=$("#sbBulkDel"), sbBulkCancel=$("#sbBulkCancel"), sbBulkCount=$("#sbBulkCount");
+  let selectMode=false, selectedIds=new Set();
+  function setSelectMode(on){
+    selectMode=on;
+    if(!sbSelect) return;
+    sbSelect.setAttribute("aria-pressed", on?"true":"false");
+    sbSelect.classList.toggle("active", on);
+    sbBulk.hidden=!on;
+    if(!on){ selectedIds.clear(); }
+    document.body.classList.toggle("selecting", on);
+    renderSessions();
+    updateBulkCount();
+  }
+  function updateBulkCount(){
+    if(sbBulkCount) sbBulkCount.textContent = selectedIds.size+" selected";
+  }
+  function toggleSelect(id, el){
+    if(!selectedIds.has(id)) selectedIds.add(id); else selectedIds.delete(id);
+    el.classList.toggle("sel", selectedIds.has(id));
+    updateBulkCount();
+  }
+  if(sbSelect) sbSelect.addEventListener("click",()=>setSelectMode(!selectMode));
+  if(sbBulkCancel) sbBulkCancel.addEventListener("click",()=>setSelectMode(false));
+  if(sbBulkDel) sbBulkDel.addEventListener("click",()=>{
+    if(!selectedIds.size) return;
+    if(!confirm("Delete "+selectedIds.size+" conversation"+(selectedIds.size>1?"s":"")+"? This cannot be undone.")) return;
+    sessions = sessions.filter(s=>!selectedIds.has(s.id));
+    if(selectedIds.has(activeId)){ activeId=null; clearThreadState(); }
+    saveSessions(); setSelectMode(false); renderSessions();
+  });
 
   /* ---- boot: sessions + load the free model list ---- */
   loadSessions();
