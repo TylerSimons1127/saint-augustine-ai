@@ -310,6 +310,26 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .chip .t{font-size:14px;color:var(--ink);font-weight:500}
 .chip .d{font-size:12px;color:var(--muted);line-height:1.4}
 
+/* ---------- Today's Readings card ---------- */
+.readings{
+  margin-top:14px;padding:16px 18px;border-radius:var(--r-m);
+  background:var(--glass);backdrop-filter:blur(16px) saturate(150%);
+  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  border:1px solid rgba(163,130,47,0.28);border-top-color:rgba(163,130,47,0.16);
+  box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.rd-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.rd-eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink);font-weight:600}
+.rd-date{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.rd-row{display:flex;gap:10px;align-items:baseline;padding:3px 0}
+.rd-tag{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-family:var(--mono);flex:none;width:76px}
+.rd-val{font-size:13px;color:var(--ink-soft);line-height:1.5}
+.rd-ask{margin-top:12px;width:100%;padding:11px 14px;border:1px solid rgba(163,130,47,0.4);border-radius:999px;
+  background:rgba(163,130,47,0.10);color:var(--gold-ink);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);
+  transition:background .15s ease,transform .1s ease}
+.rd-ask:hover{background:rgba(163,130,47,0.2)}
+@media (max-width:480px){.rd-tag{width:64px}.rd-row{flex-direction:column;gap:1px;padding:5px 0}}
+
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
 .msg{display:flex;gap:14px;animation:rise .26s ease both}
@@ -326,6 +346,9 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .msg.user .bubble{background:rgba(163,130,47,0.16);border-color:rgba(163,130,47,0.30)}
 .msg.assistant .av{color:var(--accent)}
 .bubble .who{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#5e5742;display:block;margin-bottom:6px}
+.bubble .ubox{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
+.bubble .ubox img{max-width:180px;max-height:180px;border-radius:10px;border:1px solid var(--border);display:block}
+@media (max-width:480px){.bubble .ubox img{max-width:120px;max-height:120px}}
 /* loading dots */
 .dots{display:inline-flex;gap:5px;padding:6px 2px}
 .dots i{width:7px;height:7px;border-radius:50%;background:var(--accent);opacity:.4;animation:blink 1.1s infinite}
@@ -364,6 +387,12 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .acts .act{border:0;background:transparent;color:var(--muted);font-size:11.5px;display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;cursor:pointer}
 .acts .act:hover{background:var(--accent-soft);color:var(--ink)}
 .acts .act svg{width:13px;height:13px}
+/* F: follow-up suggestion chips */
+.follow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.follow .fchip2{border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
+  font-size:12px;font-weight:500;padding:6px 12px;border-radius:999px;cursor:pointer;font-family:var(--body);
+  transition:background .14s ease,border-color .14s ease}
+.follow .fchip2:hover{background:rgba(163,130,47,0.12);border-color:rgba(163,130,47,0.4)}
 
 /* ---------- Composer stop button ---------- */
 .send.stop{background:var(--danger)}
@@ -409,6 +438,7 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 }
 .fchip .fic{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;
   background:rgb(233,228,219);color:var(--gold-ink);font-family:var(--mono);font-size:10px;font-weight:600}
+.fchip .fthumb{width:40px;height:40px;border-radius:7px;object-fit:cover;flex:none;display:block;border:1px solid var(--border)}
 .fchip.ok .fic{background:rgb(225,230,218);color:#3c542b}
 .fchip .fname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-soft)}
 .fchip .fsize{color:var(--muted);font-family:var(--mono);font-size:10.5px}
@@ -478,6 +508,8 @@ textarea#prompt::placeholder{color:var(--muted)}
 .opt[aria-selected="true"]{background:rgb(233,228,219);border-color:rgba(163,130,47,0.40)}
 .opt .on{font-family:var(--mono);font-size:11px;color:var(--gold-ink);font-weight:500}
 .opt .od{font-size:12px;color:#5b5340;line-height:1.4}
+.rec-tag{display:inline-block;margin-left:4px;font-family:var(--body);font-size:10px;font-weight:600;color:#8a6d1f;background:rgba(163,130,47,0.12);border:1px solid rgba(163,130,47,0.30);border-radius:99px;padding:0 6px;vertical-align:1px}
+.pgroup{font-family:var(--body);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:10px 12px 4px}
 
 /* reasoning segmented */
 .reasoning{padding:3px;gap:0}
@@ -666,6 +698,14 @@ textarea#prompt::placeholder{color:var(--muted)}
   <!-- EMPTY / GREETING -->
   <section class="greet" id="greet">
     <div class="halo" aria-hidden="true"></div>
+    <div class="readings" id="readings" hidden>
+      <div class="rd-head">
+        <span class="rd-eyebrow">Today's Readings</span>
+        <span class="rd-date" id="rdDate"></span>
+      </div>
+      <div class="rd-body" id="rdBody"></div>
+      <button class="rd-ask" id="rdAsk">Ask Augustine to explain today's Gospel</button>
+    </div>
     <div class="crest" role="note">
       <svg class="mk" viewBox="0 0 48 48" fill="none" aria-hidden="true">
         <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
@@ -747,7 +787,7 @@ textarea#prompt::placeholder{color:var(--muted)}
       <span class="hint">⏎ to send · PDF · TXT · MD</span>
     </div>
 
-    <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.text" hidden />
+    <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.text,.jpg,.jpeg,.png,.webp,.gif,image/*" hidden />
   </div>
   <p class="disclaimer" id="disclaimer">Connecting to model…</p>
 </div>
@@ -927,8 +967,8 @@ textarea#prompt::placeholder{color:var(--muted)}
         const ms=d.models||[];
         models.length=0; models.push(...ms);
         renderModelOptions();
-        if(ms.length) selectModel(ms[0]);
-        if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter.";
+        if(ms.length) selectModel(ms.find(m=>m.featured) || ms[0]);
+        if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter · conversations stay on your device";
         return;
       }catch(e){
         if(attempt<delays.length){ await new Promise(r=>setTimeout(r, delays[attempt])); continue; }
@@ -941,13 +981,22 @@ textarea#prompt::placeholder{color:var(--muted)}
   function renderModelOptions(filterName=""){
     const q=(filterName||"").trim().toLowerCase();
     const list=modelList;
-    const shown= q ? models.filter(m=>((m.id||"")+" "+(m.name||"")+" "+(m.desc||"")).toLowerCase().includes(q)) : [...models];
-    list.innerHTML = shown.map(m=>`
-      <div class="opt" role="option" aria-selected="${model&&m.id===model.id}" data-model="${esc(m.name)}" data-id="${esc(m.id)}" data-desc="${esc(m.desc||"")}">
-        <span class="on">${esc(m.id)}</span>
+    let shown = q ? models.filter(m=>((m.id||"")+" "+(m.name||"")+" "+(m.desc||"")).toLowerCase().includes(q)) : [...models];
+    if(!q){ // group: recommended first, then a divider + the rest
+      const feat=shown.filter(m=>m.featured); const rest=shown.filter(m=>!m.featured);
+      shown=feat;
+      if(rest.length) shown.push("__divider__", ...rest);
+    }
+    let html="";
+    for(const m of shown){
+      if(m==="__divider__"){ html+='<div class="pgroup">All free models</div>'; continue; }
+      html+=`
+      <div class="opt${m.featured?' rec':''}" role="option" aria-selected="${model&&m.id===model.id}" data-model="${esc(m.name)}" data-id="${esc(m.id)}" data-desc="${esc(m.desc||"")}">
+        <span class="on">${esc(m.id)}${m.featured?' <span class="rec-tag">★ Recommended</span>':''}</span>
         <span class="od">${esc(m.desc||"")}</span>
-      </div>`).join("")
-      || "<div class='pnone'>No matching models.</div>";
+      </div>`;
+    }
+    list.innerHTML = html || "<div class='pnone'>No matching models.</div>";
     $$("#modelList .opt").forEach(o=>o.addEventListener("click",()=>{
       selectModel({id:o.dataset.id,name:o.dataset.model,desc:o.dataset.desc});
       modelPop.classList.remove("open"); modelBtn.setAttribute("aria-expanded","false");
@@ -963,12 +1012,30 @@ textarea#prompt::placeholder{color:var(--muted)}
   /* ---- markdown renderer (escape-first, XSS-safe) ---- */
   function inlineMd(t){
     // t is already HTML-escaped
-    return t
+    return linkCites(t
       .replace(/`([^`]+)`/g,'<code>$1</code>')
       .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
       .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,'$1<em>$2</em>')
-      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'));
   }
+  // Convert Sacred Scripture + Catechism citations into links (USCCB). Runs on
+    // already-escaped text, so output stays XSS-safe. We match the fairly strict
+    // "Abbrev N:V" and "CCC §N" forms and won't match a plain number alone.
+    function linkCites(h){
+      let out = h;
+      // CCC §1234 or CCC 1234 — link to the Catechism section page
+      out = out.replace(/(CCC\s*)[§#]?\s*(\d{1,4})(?!\d)/g,
+        '$1<a href="https://www.usccb.org/sites/default/files/flipbooks/catechism/$2.html" target="_blank" rel="noopener noreferrer">§$2</a>');
+      // Scripture: "Jn 3:16", "Rom 8:28", "1 Cor 13:4-7", "Mt 5, 3-11" -> USCCB Bible passage
+      const B = "(?:Gen|Exod|Lev|Num|Deut|Josh|Judg|Ruth|1\\s?[Ss]am|2\\s?[Ss]am|1\\s?[Kk]gs|2\\s?[Kk]gs|1\\s?[Cc]hr|2\\s?[Cc]hr|Ezra|Neh|Tob|Jdt|Esth|Job|Ps|Prov|Eccl|[Ss]ong|[Ww]is|Sir|Isa|Jer|Lam|Bar|Ezek|Dan|Hos|Joel|Amos|Obad|Jonah|Mic|Nah|Hab|Zeph|Hag|Zech|Mal|Mt|Mk|Lk|Jn|Acts|Rom|1\\s?[Cc]or|2\\s?[Cc]or|Gal|Eph|Phil|Col|1\\s?[Tt]hess|2\\s?[Tt]hess|1\\s?[Tt]im|2\\s?[Tt]im|Titus|Phlm|Heb|Jas|1\\s?[Pp]et|2\\s?[Pp]et|1\\s?[Jj]n|2\\s?[Jj]n|3\\s?[Jj]n|Jude|Rev)";
+      const pat = new RegExp("\\b((?:[1-3]\\s?)?"+B+")\\s*(\\d{1,3})\\s*[:.\\s]+\\s*(\\d{1,3})(?:[-–—](\\d{1,3}))?", "g");
+      out = out.replace(pat, (m, bk, ch, v, v2)=>{
+        const book=bk.replace(/\s/g,'');
+        const target='https://bible.usccb.org/bible/'+book+ch+':'+v;
+        return '<a href="'+target+'" target="_blank" rel="noopener noreferrer">'+m+'</a>';
+      });
+      return out;
+    }
   function mdToHtml(src){
     const lines = String(src||"").split(/\n/);
     let out=[], i=0, para=[];
@@ -1025,8 +1092,19 @@ textarea#prompt::placeholder{color:var(--muted)}
     const e=ext(f.name);
     try{
       if(e==='pdf') return await readPdfText(f);
+      if(IMGS.includes(e)){
+        return await readImageDataUrl(f);   // base64 data URL for vision models
+      }
       return await readTextFile(f); // txt/md/text
     }catch(err){ return '[Could not read '+f.name+': '+String(err.message||err)+']'; }
+  }
+  function readImageDataUrl(f){
+    return new Promise((resolve,reject)=>{
+      const r=new FileReader();
+      r.onload=()=>resolve(String(r.result));   // data:image/...;base64,....
+      r.onerror=()=>reject(r.error);
+      r.readAsDataURL(f);
+    });
   }
 
   /* ---- textarea auto-grow + enable send ---- */
@@ -1070,7 +1148,8 @@ textarea#prompt::placeholder{color:var(--muted)}
 
   /* ---- file upload (frontend only) ---- */
   const MAX=25*1024*1024;
-  const OK=["pdf","txt","md","text"];
+  const OK=["pdf","txt","md","text","jpg","jpeg","png","webp","gif"];
+  const IMGS=["jpg","jpeg","png","webp","gif"];
   attachBtn.addEventListener("click",()=>fileInput.click());
   fileInput.addEventListener("change",e=>{ addFiles(e.target.files); fileInput.value=""; });
   ["dragenter","dragover"].forEach(ev=>composer.addEventListener(ev,e=>{e.preventDefault();composer.classList.add("drag");}));
@@ -1087,10 +1166,10 @@ textarea#prompt::placeholder{color:var(--muted)}
       if(!OK.includes(e)){ showToast("Unsupported file: ."+e); continue; }
       if(f.size>MAX){ showToast("Too large (max 25 MB): "+f.name); continue; }
       const id="f"+Date.now()+Math.random().toString(36).slice(2,6);
-      const item={id,name:f.name,size:f.size,type:e,content:""};
+      const isImg=IMGS.includes(e);
+      const item={id,name:f.name,size:f.size,type:e,content:"",isImg,dataUrl:""};
       files.push(item);
       renderFiles(); syncSend();
-      // read content in the background; show a subtle reading state
       item.reading=true; renderFiles();
       try{ item.content = await fileContent(f); }
       catch(err){ item.content="[read error: "+String(err.message||err)+"]"; }
@@ -1102,10 +1181,11 @@ textarea#prompt::placeholder{color:var(--muted)}
     attachRow.hidden=false;
     attachRow.innerHTML=files.map(f=>`
       <span class="fchip ok" data-id="${f.id}">
-        <span class="fic">${f.type.toUpperCase().slice(0,4)}</span>
-        <span class="fname">${f.name}${f.reading?' <em style="opacity:.6">· reading…</em>':''}</span>
-        <span class="fsize">${fmt(f.size)}</span>
-        <button class="fx" title="Remove" aria-label="Remove ${f.name}">
+        ${f.isImg && f.content ? `<img class="fthumb" src="${esc(f.content)}" alt="" />`
+          : `<span class="fic">${f.type.toUpperCase().slice(0,4)}</span>`}
+        <span class="fname">${esc(f.name)}${f.reading?' <em style="opacity:.6">· reading…</em>':''}</span>
+        ${f.isImg?'<span class="fsize">image</span>':`<span class="fsize">${fmt(f.size)}</span>`}
+        <button class="fx" title="Remove" aria-label="Remove ${esc(f.name)}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </span>`).join("");
@@ -1128,7 +1208,11 @@ textarea#prompt::placeholder{color:var(--muted)}
   function userHtml(text){
     let h=esc(text);
     if(files.length){
-      h += `<div style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)">+ ${files.length} file${files.length>1?'s':''} attached: ${files.map(f=>esc(f.name)).join(', ')}</div>`;
+      const imgs=files.filter(f=>f.isImg&&f.content);
+      const names=files.filter(f=>!f.isImg).map(f=>esc(f.name));
+      if(imgs.length) h += `<div class="ubox">${imgs.map(f=>`<img alt="${esc(f.name)}" src="${esc(f.content)}" />`).join("")}</div>`;
+      const label=[...names];
+      if(label.length) h += `<div style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)">+ ${label.length} file${label.length>1?'s':''} attached: ${label.join(', ')}</div>`;
     }
     return h;
   }
@@ -1141,22 +1225,28 @@ textarea#prompt::placeholder{color:var(--muted)}
     if(greet) greet.hidden=true;
     thread.hidden=false;
 
-    // user message
+    // user message — text, and images as content parts (vision models)
     const userMsg=text;
+    const imgFiles=files.filter(f=>f.isImg&&f.content);
+    let userContent;   // string for text-only, array of parts when images present
+    const noteParts=files.filter(f=>!f.isImg).map(f=>{
+      const c=(f.content||"").trim();
+      return c ? "--- "+f.name+" ---\n"+(c.length>12000?c.slice(0,12000)+"\n[truncated]":c) : "[Attached: "+f.name+" — could not read contents]";
+    });
+    if(imgFiles.length){
+      const arr=[];
+      const textNote = [text, noteParts.join("\n\n")].filter(Boolean).join("\n\n");
+      arr.push({type:"text", text:textNote||"Please look carefully at the attached image(s)."});
+      for(const f of imgFiles) arr.push({type:"image_url", image_url:{url:f.content}});
+      userContent=arr;
+    } else {
+      userContent = text + (noteParts.length? "\n\n[Attached files]\n"+noteParts.join("\n\n") : "");
+    }
     bubble("user",userHtml(userMsg));
-    history.push({role:"user", content:userMsg});
+    history.push({role:"user", content:userContent});
     // create/select a session from the first message
     if(!activeId) setActive(null);
-
-    // paste real file contents as context (model can read what was attached)
     let attachNote="";
-    if(files.length){
-      const parts=files.map(f=>{
-        const c=(f.content||"").trim();
-        return c ? "--- "+f.name+" ---\n"+ (c.length>12000 ? c.slice(0,12000)+"\n[truncated]" : c) : "[Attached: "+f.name+" — could not read contents]";
-      });
-      attachNote="[Attached files]\n"+parts.join("\n\n")+"\n\n";
-    }
 
     prompt.value=""; prompt.style.height="auto";
     const sent=files.splice(0); renderFiles(); syncSend();
@@ -1253,7 +1343,7 @@ textarea#prompt::placeholder{color:var(--muted)}
       send.classList.remove("stop"); send.disabled = (prompt.value.trim()==="" && files.length===0);
       send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
       send.onclick=null;
-      if(acc && !aborted) addRetry(loading, messages, userMsg);
+      if(acc && !aborted){ addRetry(loading, messages, userMsg); addFollowups(loading); }
       syncSend();
       stage.scrollTop=stage.scrollHeight;
     }
@@ -1270,6 +1360,24 @@ textarea#prompt::placeholder{color:var(--muted)}
       loadingMsg.remove();
       callChatRetry(messages, userMsg);
     });
+  }
+  // F: follow-up suggestion chips after the first answer of a session
+  function addFollowups(loadingMsg){
+    if(loadingMsg.querySelector(".follow") || history.filter(m=>m.role==="assistant").length>1) return;
+    const SUGS=[
+      ["Deepen this", "Go one level deeper into what you just said."],
+      ["Pray with me", "Pray a brief prayer that flows from this."],
+      ["Is this sin?", "Help me understand this in light of sin and grace."],
+    ];
+    const row=document.createElement("div");
+    row.className="follow";
+    row.innerHTML=SUGS.map(s=>`<button class="fchip2" data-t="${esc(s[1])}">${esc(s[0])}</button>`).join("");
+    loadingMsg.appendChild(row);
+    row.querySelectorAll(".fchip2").forEach(b=>b.addEventListener("click",()=>{
+      const q=b.dataset.t;
+      prompt.value=q; prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
+      syncSend(); prompt.focus();
+    }));
   }
   async function callChatRetry(messages, userMsg){
     if(!model){ showToast("Pick a model first."); return; }
@@ -1430,11 +1538,44 @@ textarea#prompt::placeholder{color:var(--muted)}
     if(sb && sb.classList.contains("open")){ sbClose(); return; }
   });
 
+  /* ---- C: today's daily readings (graceful if backend/case fetch fails) ---- */
+  const readingsEl=$("#readings"), rdBody=$("#rdBody"), rdAsk=$("#rdAsk");
+  async function loadReadings(){
+    if(!readingsEl) return;
+    try{
+      const r=await fetch(API+"/api/readings",{signal:AbortSignal.timeout(9000)});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const d=await r.json();
+      if(!d || !d.gospel){ readingsEl.hidden=true; return; }
+      const date=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+      $("#rdDate").textContent=date;
+      let html="";
+      const row=(tag,label,val)=> val ? `<div class="rd-row"><span class="rd-tag">${label}</span><span class="rd-val">${val}${tag}</span></div>` : "";
+      html += row("","Gospel",firstRef(d.gospel));
+      if(d.first)  html += row("","First Reading",firstRef(d.first));
+      if(d.psalm)  html += row("","Psalm",firstRef(d.psalm));
+      rdBody.innerHTML=html;
+      readingsEl.hidden=false;
+      rdAsk.addEventListener("click",()=>{
+        const g=firstRef(d.gospel)||"today's Gospel";
+        prompt.value="Please explain today's Gospel reading ("+g+") — what does it mean, and how should it shape my day?";
+        prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
+        syncSend(); prompt.focus();
+      });
+    }catch(_){ if(readingsEl) readingsEl.hidden=true; /* gracefully hide if unavailable */ }
+  }
+  function firstRef(s){
+    if(!s) return "";
+    const m=String(s).match(/\b[A-Za-z]{2,7}[\s:]?\d[\d]*(?:[.:][\d-]+)*/);
+    return m ? m[0] : String(s).slice(0,40);
+  }
+
   /* ---- boot: sessions + load the free model list ---- */
   loadSessions();
   renderSessions();
   if(activeId){ loadSession(activeId); }
   loadModels();
+  loadReadings();
 
   /* ---- beta consent modal: first visit only ---- */
   const betaModal=$("#betaModal"), betaAgree=$("#betaAgree");

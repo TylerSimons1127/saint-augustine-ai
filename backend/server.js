@@ -63,6 +63,19 @@ function cors(res) {
 
 // ---- free-models cache ----
 let modelsCache = { at: 0, data: null };
+
+// Curated "recommended" free models — chosen for reasoned prose, strong instruction
+// following, and (as far as free tiers allow) faithful Catholic tone. Sorted first in
+// the picker so the best default isn't buried among dozens of free options.
+const CURATED = new Set([
+  "anthropic/claude-3.5-haiku:free",
+  "google/gemini-2.0-flash-exp:free",
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "microsoft/phi-4:free",
+  "gryphe/mythomax-l2-13b:free",
+  "mistralai/mistral-small:free",
+]);
+
 async function getFreeModels() {
   if (modelsCache.data && Date.now() - modelsCache.at < MODELS_CACHE_MS) return modelsCache.data;
   const res = await fetch(`${OPENROUTER}/models`, { headers: { Authorization: `Bearer ${KEY}` } });
@@ -75,8 +88,10 @@ async function getFreeModels() {
       name: prettyName(m.id),
       desc: (m.description || "").replace(/\s+/g, " ").trim().slice(0, 120),
       context: m.context_length || null,
+      featured: CURATED.has(m.id) ? true : undefined,
     }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => (Number(Boolean(b.featured)) - Number(Boolean(a.featured))) ||
+      a.name.localeCompare(b.name));
   modelsCache = { at: Date.now(), data: list };
   return list;
 }
@@ -219,12 +234,46 @@ async function handleChat(req, res, body) {
 
 function sanitize(m) {
   const role = m.role === "assistant" ? "assistant" : m.role === "system" ? "user" : "user";
-  let content = typeof m.content === "string" ? m.content : "";
-  // paste file text into the message content so models can see attachments
+  // Array content: text parts (paste file text) and image_url parts (vision models)
   if (Array.isArray(m.content)) {
-    content = m.content.map((p) => (typeof p === "string" ? p : p.text || "")).join("\n");
+    const parts = m.content.map((p) => {
+      if (typeof p === "string") return p;
+      if (p && typeof p === "object" && p.type === "image_url" && p.image_url && p.image_url.url) {
+        return { type: "image_url", image_url: { url: String(p.image_url.url).slice(0, 6_000_000) } };
+      }
+      return (p && p.text) || "";
+    });
+    return { role, content: parts };
   }
+  let content = typeof m.content === "string" ? m.content : "";
   return { role, content: content.slice(0, 40000) };
+}
+
+// ---- daily readings (best-effort USCCB proxy) ----
+async function getReadings() {
+  const res = await fetch("https://bible.usccb.org/bible/readings", {
+    headers: { "User-Agent": "Mozilla/5.0" },
+  });
+  if (!res.ok) throw new Error("readings " + res.status);
+  const html = await res.text();
+  // The current reading page lists episode headings like "Reading I", "Responsorial Psalm", "Alleluia", "Gospel"
+  const heads = { "1": "First Reading", "2": "Responsorial Psalm", "3": "Second Reading", "4": "Reading II", "g": "Gospel" };
+  const grab = (label) => {
+    const i = html.indexOf(label);
+    if (i < 0) return "";
+    let j = html.indexOf("<p", i);
+    if (j < 0) j = html.indexOf("<div", i);
+    if (j < 0) return "";
+    const body = html.slice(j, j + 2600);
+    const txt = body.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+    return txt.slice(0, 900);
+  };
+  return {
+    first: grab("Reading I") || grab("First Reading"),
+    psalm: grab("Responsorial Psalm"),
+    gospel: grab("Gospel"),
+    disclaimer: "Best-effort from USCCB daily readings.",
+  };
 }
 
 const server = http.createServer(async (req, res) => {
@@ -237,6 +286,10 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && url === "/api/models") {
       try { return sendJson(res, 200, { models: await getFreeModels() }); }
       catch (e) { return sendJson(res, 502, { error: "Could not fetch models." }); }
+    }
+    if (req.method === "GET" && url === "/api/readings") {
+      try { return sendJson(res, 200, await getReadings()); }
+      catch (e) { return sendJson(res, 502, { error: "Could not fetch today's readings." }); }
     }
     if (req.method === "POST" && url === "/api/chat") {
       const body = await readBody(req);
