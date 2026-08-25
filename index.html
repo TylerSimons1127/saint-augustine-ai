@@ -310,7 +310,7 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .chip .t{font-size:14px;color:var(--ink);font-weight:500}
 .chip .d{font-size:12px;color:var(--muted);line-height:1.4}
 
-/* ---------- Today's Readings card ---------- */
+/* ---------- Daily Prayer card ---------- */
 .readings{
   margin-top:14px;padding:16px 18px;border-radius:var(--r-m);
   background:var(--glass);backdrop-filter:blur(16px) saturate(150%);
@@ -318,17 +318,20 @@ button{font-family:inherit;cursor:pointer;color:inherit}
   border:1px solid rgba(163,130,47,0.28);border-top-color:rgba(163,130,47,0.16);
   box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,0.5);
 }
-.rd-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.rd-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:8px}
 .rd-eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink);font-weight:600}
 .rd-date{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.rd-row{display:flex;gap:10px;align-items:baseline;padding:3px 0}
-.rd-tag{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-family:var(--mono);flex:none;width:76px}
-.rd-val{font-size:13px;color:var(--ink-soft);line-height:1.5}
-.rd-ask{margin-top:12px;width:100%;padding:11px 14px;border:1px solid rgba(163,130,47,0.4);border-radius:999px;
-  background:rgba(163,130,47,0.10);color:var(--gold-ink);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);
+.rd-lead{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:0 0 12px}
+.rd-acts{display:flex;flex-direction:column;gap:8px}
+.rd-open{display:block;text-align:center;padding:10px 14px;border-radius:999px;text-decoration:none;
+  background:rgba(163,130,47,0.10);color:var(--gold-ink);font-size:13px;font-weight:600;border:1px solid rgba(163,130,47,0.3);
+  transition:background .15s ease}
+.rd-open:hover{background:rgba(163,130,47,0.2)}
+.rd-ask{width:100%;padding:11px 14px;border:1px solid rgba(163,130,47,0.4);border-radius:999px;
+  background:var(--gold-ink);color:#fbf7ee;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);
   transition:background .15s ease,transform .1s ease}
-.rd-ask:hover{background:rgba(163,130,47,0.2)}
-@media (max-width:480px){.rd-tag{width:64px}.rd-row{flex-direction:column;gap:1px;padding:5px 0}}
+.rd-ask:hover{background:#6b5824}
+@media (max-width:480px){.rd-acts{gap:6px}}
 
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
@@ -698,13 +701,16 @@ textarea#prompt::placeholder{color:var(--muted)}
   <!-- EMPTY / GREETING -->
   <section class="greet" id="greet">
     <div class="halo" aria-hidden="true"></div>
-    <div class="readings" id="readings" hidden>
+    <div class="readings" id="readings">
       <div class="rd-head">
-        <span class="rd-eyebrow">Today's Readings</span>
+        <span class="rd-eyebrow">Daily Prayer</span>
         <span class="rd-date" id="rdDate"></span>
       </div>
-      <div class="rd-body" id="rdBody"></div>
-      <button class="rd-ask" id="rdAsk">Ask Augustine to explain today's Gospel</button>
+      <p class="rd-lead">Set aside a minute. Read today's readings, then let Augustine help you pray with them.</p>
+      <div class="rd-acts">
+        <a class="rd-open" id="rdOpen" href="https://bible.usccb.org/bible/readings" target="_blank" rel="noopener noreferrer">Open today's readings (USCCB)</a>
+        <button class="rd-ask" id="rdAsk">Reflect with Augustine</button>
+      </div>
     </div>
     <div class="crest" role="note">
       <svg class="mk" viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -1538,44 +1544,24 @@ textarea#prompt::placeholder{color:var(--muted)}
     if(sb && sb.classList.contains("open")){ sbClose(); return; }
   });
 
-  /* ---- C: today's daily readings (graceful if backend/case fetch fails) ---- */
-  const readingsEl=$("#readings"), rdBody=$("#rdBody"), rdAsk=$("#rdAsk");
-  async function loadReadings(){
+  /* ---- C: Daily Prayer card (client-side; opens USCCB readings in-browser) ---- */
+  const readingsEl=$("#readings"), rdAsk=$("#rdAsk");
+  (function initReadings(){
     if(!readingsEl) return;
-    try{
-      const r=await fetch(API+"/api/readings",{signal:AbortSignal.timeout(9000)});
-      if(!r.ok) throw new Error("HTTP "+r.status);
-      const d=await r.json();
-      if(!d || !d.gospel){ readingsEl.hidden=true; return; }
-      const date=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
-      $("#rdDate").textContent=date;
-      let html="";
-      const row=(tag,label,val)=> val ? `<div class="rd-row"><span class="rd-tag">${label}</span><span class="rd-val">${val}${tag}</span></div>` : "";
-      html += row("","Gospel",firstRef(d.gospel));
-      if(d.first)  html += row("","First Reading",firstRef(d.first));
-      if(d.psalm)  html += row("","Psalm",firstRef(d.psalm));
-      rdBody.innerHTML=html;
-      readingsEl.hidden=false;
-      rdAsk.addEventListener("click",()=>{
-        const g=firstRef(d.gospel)||"today's Gospel";
-        prompt.value="Please explain today's Gospel reading ("+g+") — what does it mean, and how should it shape my day?";
-        prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
-        syncSend(); prompt.focus();
-      });
-    }catch(_){ if(readingsEl) readingsEl.hidden=true; /* gracefully hide if unavailable */ }
-  }
-  function firstRef(s){
-    if(!s) return "";
-    const m=String(s).match(/\b[A-Za-z]{2,7}[\s:]?\d[\d]*(?:[.:][\d-]+)*/);
-    return m ? m[0] : String(s).slice(0,40);
-  }
+    const d=new Date();
+    $("#rdDate").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+    rdAsk.addEventListener("click",()=>{
+      prompt.value="Offer a short morning reflection on today's Gospel reading, then a brief prayer I can pray today.";
+      prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
+      syncSend(); prompt.focus();
+    });
+  })();
 
   /* ---- boot: sessions + load the free model list ---- */
   loadSessions();
   renderSessions();
   if(activeId){ loadSession(activeId); }
   loadModels();
-  loadReadings();
 
   /* ---- beta consent modal: first visit only ---- */
   const betaModal=$("#betaModal"), betaAgree=$("#betaAgree");

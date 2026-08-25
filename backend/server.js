@@ -68,12 +68,12 @@ let modelsCache = { at: 0, data: null };
 // following, and (as far as free tiers allow) faithful Catholic tone. Sorted first in
 // the picker so the best default isn't buried among dozens of free options.
 const CURATED = new Set([
-  "anthropic/claude-3.5-haiku:free",
-  "google/gemini-2.0-flash-exp:free",
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "microsoft/phi-4:free",
-  "gryphe/mythomax-l2-13b:free",
-  "mistralai/mistral-small:free",
+  "nvidia/nemotron-3-ultra-550b-a55b:free",
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "z-ai/glm-5.2:free",
+  "google/gemma-4-31b-it:free",
+  "minimax/minimax-m3:free",
+  "google/gemma-4-26b-a4b-it:free",
 ]);
 
 async function getFreeModels() {
