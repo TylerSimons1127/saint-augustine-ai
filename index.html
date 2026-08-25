@@ -378,8 +378,7 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .reasoning-box .rb{margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(30,26,20,0.05);border:1px solid var(--border);font-size:13.5px;line-height:1.55;color:var(--muted);white-space:pre-wrap}
 
 /* ---------- Message actions (retry / copy) ---------- */
-.msg .acts{display:flex;gap:8px;margin-top:10px;opacity:0;transition:opacity .15s}
-.msg:hover .acts,.msg:focus-within .acts{opacity:1}
+.msg .acts{display:flex;gap:8px;margin-top:10px}
 .acts .act{border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
   font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;cursor:pointer;font-family:var(--body);
   transition:background .14s ease,border-color .14s ease}
@@ -398,13 +397,7 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .edit-save,.edit-cancel{border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:12.5px;cursor:pointer;font-family:var(--body)}
 .edit-save{background:var(--gold-ink);color:#fbf7ee;border-color:transparent}
 .edit-cancel{background:transparent;color:var(--muted)}
-@media (max-width:480px){.msg:hover .msg-edit{opacity:1}.msg .acts{opacity:1}}
-/* F: follow-up suggestion chips */
-.follow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.follow .fchip2{border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
-  font-size:12px;font-weight:500;padding:6px 12px;border-radius:999px;cursor:pointer;font-family:var(--body);
-  transition:background .14s ease,border-color .14s ease}
-.follow .fchip2:hover{background:rgba(163,130,47,0.12);border-color:rgba(163,130,47,0.4)}
+@media (max-width:480px){.msg:hover .msg-edit{opacity:1}}
 
 /* ---------- Composer stop button ---------- */
 .send.stop{background:var(--danger)}
@@ -1409,7 +1402,7 @@ textarea#prompt::placeholder{color:var(--muted)}
       send.classList.remove("stop"); send.disabled = (prompt.value.trim()==="" && files.length===0);
       send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
       send.onclick=null;
-      if(acc && !aborted){ addRetry(loading, messages, userMsg); addFollowups(loading); }
+      if(acc && !aborted){ addRetry(loading, messages, userMsg); }
       syncSend();
       stage.scrollTop=stage.scrollHeight;
     }
@@ -1431,24 +1424,6 @@ textarea#prompt::placeholder{color:var(--muted)}
       const txt=b? b.innerText.replace(/^Augustine\s*/,"").trim() : "";
       navigator.clipboard.writeText(txt).then(()=>showToast("Copied")).catch(()=>showToast("Copy failed"));
     });
-  }
-  // F: follow-up suggestion chips after the first answer of a session
-  function addFollowups(loadingMsg){
-    if(loadingMsg.querySelector(".follow") || history.filter(m=>m.role==="assistant").length>1) return;
-    const SUGS=[
-      ["Deepen this", "Go one level deeper into what you just said."],
-      ["Pray with me", "Pray a brief prayer that flows from this."],
-      ["Is this sin?", "Help me understand this in light of sin and grace."],
-    ];
-    const row=document.createElement("div");
-    row.className="follow";
-    row.innerHTML=SUGS.map(s=>`<button class="fchip2" data-t="${esc(s[1])}">${esc(s[0])}</button>`).join("");
-    loadingMsg.appendChild(row);
-    row.querySelectorAll(".fchip2").forEach(b=>b.addEventListener("click",()=>{
-      const q=b.dataset.t;
-      prompt.value=q; prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
-      syncSend(); prompt.focus();
-    }));
   }
   async function callChatRetry(messages, userMsg){
     if(!model){ showToast("Pick a model first."); return; }
