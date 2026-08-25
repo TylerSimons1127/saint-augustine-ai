@@ -622,6 +622,30 @@ textarea#prompt::placeholder{color:var(--muted)}
 .beta-modal .agree:active{transform:translateY(0)}
 .beta-modal .agree:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft),0 8px 22px rgba(138,108,37,0.34)}
 
+/* ---------- Tutorial overlay ---------- */
+.tut-scrim{z-index:90}
+.tut-modal{width:min(460px,100%)}
+.tut-body{font-size:14px;line-height:1.65;color:var(--ink-soft);text-align:left;margin:4px 0 4px;min-height:150px}
+.tut-body b{color:var(--gold-ink);font-weight:600}
+.tut-body .tut-kbd{display:inline-block;font-family:var(--mono);font-size:11px;background:rgba(30,26,20,0.06);
+  border:1px solid var(--border);border-radius:5px;padding:1px 6px;margin:0 1px}
+.tut-body ul{margin:6px 0 0;padding-left:18px}
+.tut-body li{margin:4px 0}
+.tut-ctrl{margin-top:6px}
+.tut-dots{display:flex;justify-content:center;gap:6px;margin-bottom:14px}
+.tut-dots .dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:background .15s ease,transform .15s ease}
+.tut-dots .dot.on{background:var(--accent-deep);transform:scale(1.25)}
+.tut-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.tut-btns button{border-radius:999px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);border:1px solid var(--border);transition:background .14s ease}
+.tut-next{background:var(--accent-deep);color:#fbf7ee;border-color:transparent;flex:1;box-shadow:0 6px 16px rgba(138,108,37,0.28)}
+.tut-next:hover{background:var(--accent-press)}
+.tut-back{background:transparent;color:var(--muted)}
+.tut-back:hover{background:var(--accent-soft);color:var(--ink)}
+.tut-back:disabled{opacity:.35;cursor:default}
+.tut-skip{background:transparent;color:var(--muted)}
+.tut-skip:hover{background:rgba(190,30,30,0.08);color:var(--danger)}
+@media (max-width:480px){.tut-btns button{flex:1}.tut-skip{order:3;flex-basis:100%}}
+
 /* ---------- Motion preferences ---------- */
 @media (hover:none){           /* touch devices: kill sticky hover-lift */
   .chip:hover,.sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
@@ -814,6 +838,31 @@ textarea#prompt::placeholder{color:var(--muted)}
        • For matters of faith, conscience, or sin, speak with a priest or confessor.<br>
        • Conversations are saved in <b>your browser</b> only; nothing is stored on our servers.</p>
     <button class="agree" id="betaAgree">I understand — continue</button>
+  </div>
+</div>
+
+<!-- TUTORIAL OVERLAY (first use / on update) -->
+<div class="modal-scrim tut-scrim" id="tutModal" role="dialog" aria-modal="true" aria-labelledby="tutTitle">
+  <div class="beta-modal tut-modal">
+    <svg class="mk" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+      <circle cx="24" cy="24" r="21" stroke="currentColor" stroke-width="1.4" opacity=".55"/>
+      <path d="M24 9 V39 M13 18 C13 13 19 10 24 10 C29 10 35 13 35 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M18 22 l6 6 9-12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M24 30 v6 M21 36 h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <span class="tag">Tour</span>
+    <h2 id="tutTitle">How Saint Augustine AI works</h2>
+    <div class="tut-step" id="tutStep">
+      <p class="tut-body"></p>
+    </div>
+    <div class="tut-ctrl">
+      <div class="tut-dots" id="tutDots"></div>
+      <div class="tut-btns">
+        <button class="tut-back" id="tutBack">Back</button>
+        <button class="tut-next" id="tutNext">Next</button>
+        <button class="tut-skip" id="tutSkip">Skip tour</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1644,6 +1693,55 @@ textarea#prompt::placeholder{color:var(--muted)}
       else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
     setTimeout(()=>betaAgree.focus(), 120);
+  }
+
+  /* ---- Tutorial: first use, or each time a new update ships ---- */
+  const tutModal=$("#tutModal"), tutBody=$("#tutStep .tut-body"), tutDots=$("#tutDots"),
+        tutBack=$("#tutBack"), tutNext=$("#tutNext"), tutSkip=$("#tutSkip");
+  const LS_TUT="sa_tut_v1";          // bump to v2/v3 when you ship new features worth teaching
+  const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
+  const TUTORIAL=[
+    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. The <b>★ Recommended</b> group — starting with <b>Nemotron 3 Ultra 550B</b> — is tuned for thoughtful, faithful answers. Search any of the free models, or keep the default. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
+    {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
+    {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
+    {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
+    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images, which vision-capable models can actually look at. Files are read <b>on your device</b> and never stored on any server."},
+    {t:"Edit, copy, retry", h:"After Augustine replies: <b>Retry</b> regenerates the answer, <b>Copy</b> copies it to your clipboard. And you can always <b>edit a question you already sent</b> with the little pencil — fix a typo and get an updated reply."},
+  ];
+  function startTut(){
+    if(!tutModal || tutSeen) return;
+    let i=0;
+    const TOTAL=TUTORIAL.length;
+    function render(){
+      tutBody.innerHTML="<b>"+esc(TUTORIAL[i].t)+".</b> "+TUTORIAL[i].h;
+      tutDots.innerHTML=TUTORIAL.map((_,k)=>'<span class="dot'+(k===i?' on':'')+'"></span>').join("");
+      tutBack.disabled = i===0;
+      tutNext.textContent = i===TOTAL-1 ? "Got it — let's begin" : "Next";
+      tutBody.scrollTop=0;
+    }
+    const close=()=>{ tutModal.classList.remove("show"); try{ localStorage.setItem(LS_TUT,"1"); }catch(_){} };
+    tutNext.addEventListener("click",()=>{ if(i<TOTAL-1){ i++; render(); } else close(); });
+    tutBack.addEventListener("click",()=>{ if(i>0){ i--; render(); } });
+    tutSkip.addEventListener("click",close);
+    tutModal.addEventListener("click",e=>{ if(e.target===tutModal) close(); });
+    // focus trap + Esc
+    const focs=()=>tutModal.querySelectorAll("button, [href], input, [tabindex]:not([tabindex='-1'])");
+    tutModal.addEventListener("keydown",e=>{
+      if(e.key==="Escape"){ e.preventDefault(); close(); return; }
+      if(e.key!=="Tab") return;
+      const fs=[...focs()]; if(!fs.length) return;
+      const first=fs[0], last=fs[fs.length-1];
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    });
+    render();
+    tutModal.classList.add("show");
+    setTimeout(()=>tutNext.focus(),120);
+  }
+  // First visit: show tutorial right after the beta consent closes; otherwise show immediately.
+  if(!tutSeen){
+    if(betaModal && !betaSeen){ betaAgree.addEventListener("click",()=>setTimeout(startTut,220)); }
+    else { requestAnimationFrame(()=>requestAnimationFrame(startTut)); }
   }
 })();
 </script>
