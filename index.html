@@ -322,6 +322,61 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 @keyframes blink{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-2px)}}
 @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
+/* ---------- Markdown content (assistant replies) ---------- */
+.bubble.md{backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%)}
+.bubble.md p{margin:0 0 10px}
+.bubble.md p:last-child{margin-bottom:0}
+.bubble.md h1,.bubble.md h2,.bubble.md h3{font-family:var(--display);font-weight:600;line-height:1.25;margin:14px 0 8px;color:var(--ink)}
+.bubble.md h1{font-size:19px}.bubble.md h2{font-size:17px}.bubble.md h3{font-size:15.5px}
+.bubble.md strong{font-weight:700;color:var(--ink)}
+.bubble.md em{font-style:italic}
+.bubble.md a{color:var(--accent-deep);text-underline-offset:2px;text-decoration:underline}
+.bubble.md ul,.bubble.md ol{margin:6px 0 10px;padding-left:20px}
+.bubble.md li{margin:3px 0}
+.bubble.md blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent);background:rgba(163,130,47,0.08);border-radius:0 8px 8px 0;color:var(--ink-soft)}
+.bubble.md code{font-family:var(--mono);font-size:13px;background:rgba(30,26,20,0.06);padding:1px 5px;border-radius:5px}
+.bubble.md pre{background:rgba(30,26,20,0.07);border:1px solid var(--border);border-radius:10px;padding:10px 12px;overflow:auto;margin:8px 0}
+.bubble.md pre code{background:none;padding:0}
+.bubble.md hr{border:0;border-top:1px solid var(--border);margin:12px 0}
+
+/* ---------- Reasoning expander ---------- */
+.reasoning-box{margin:-2px 0 8px}
+.reasoning-box summary{cursor:pointer;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
+.reasoning-box summary::-webkit-details-marker{display:none}
+.reasoning-box summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+.reasoning-box[open] summary::before{transform:rotate(45deg)}
+.reasoning-box .rb{margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(30,26,20,0.05);border:1px solid var(--border);font-size:13.5px;line-height:1.55;color:var(--muted);white-space:pre-wrap}
+
+/* ---------- Message actions (retry / export) ---------- */
+.msg .acts{display:flex;gap:6px;margin-top:8px;opacity:0;transition:opacity .15s}
+.msg:hover .acts,.msg:focus-within .acts{opacity:1}
+.acts .act{border:0;background:transparent;color:var(--muted);font-size:11.5px;display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border-radius:999px;cursor:pointer}
+.acts .act:hover{background:var(--accent-soft);color:var(--ink)}
+.acts .act svg{width:13px;height:13px}
+
+/* ---------- Composer stop button ---------- */
+.send.stop{background:var(--danger)}
+.send.stop:hover{background:#c0453a}
+.send.stop .sq{width:14px;height:14px;border-radius:3px;background:#fbf7ee}
+
+/* ---------- Session: delete + rename ---------- */
+.sb-item{position:relative;padding-right:30px}
+.sb-item .sbx{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:0;border-radius:50%;background:transparent;color:var(--muted);display:grid;place-items:center;opacity:0;transition:opacity .12s;cursor:pointer}
+.sb-item:hover .sbx,.sb-item:focus-within .sbx{opacity:1}
+.sb-item .sbx:hover{color:var(--danger);background:rgba(154,59,46,.10)}
+.sb-item .txt[contenteditable=\"true\"]{outline:none;cursor:text;background:rgba(255,255,255,.4);border-radius:5px;padding:0 3px}
+.sb-item.renaming .txt{white-space:normal}
+
+/* ---------- Export button (sidebar foot) ---------- */
+.sb-foot{justify-content:space-between}
+.sb-export{border:0;background:transparent;color:var(--muted);display:inline-flex;align-items:center;gap:5px;cursor:pointer;font-size:11.5px;padding:4px 6px;border-radius:999px}
+.sb-export:hover{color:var(--accent-deep);background:var(--accent-soft)}
+.sb-export svg{width:14px;height:14px}
+
+/* ---------- Search empty state ---------- */
+.sb-empty.search{display:flex}
+
+
 /* ---------- Composer dock ---------- */
 .dock{position:fixed;left:264px;right:0;bottom:env(safe-area-inset-bottom,0);z-index:30;
   transition:bottom .15s ease;
@@ -485,6 +540,7 @@ textarea#prompt::placeholder{color:var(--muted)}
 /* ---------- Motion preferences ---------- */
 @media (hover:none){           /* touch devices: kill sticky hover-lift */
   .chip:hover,.sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
+  .msg .acts{opacity:1}          /* no hover on touch — keep retry/controls visible */
 }
 @media (prefers-reduced-motion:reduce){
   .bg .rays{animation:none}
@@ -531,7 +587,11 @@ textarea#prompt::placeholder{color:var(--muted)}
       <p>No conversations yet. Send a message to begin.</p>
     </div>
   </div>
-  <div class="sb-foot"><span class="av">A</span> Saint Augustine AI · Beta · by Tyler Simons</div>
+  <div class="sb-foot"><span class="av">A</span> <span class="ft">Saint Augustine AI · Beta · by Tyler Simons</span>
+    <button class="sb-export" id="sbExport" title="Copy this conversation as Markdown" aria-label="Export conversation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg>
+    </button>
+  </div>
 </aside>
 
 <button class="sb-toggle" id="sbToggle" aria-label="Toggle sidebar">
@@ -545,7 +605,7 @@ textarea#prompt::placeholder{color:var(--muted)}
   <div class="rail-actions">
     <label class="search icon-only" id="searchWrap">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="search" type="search" placeholder="Search the Confessions, City of God, letters…" aria-label="Search Augustine's works" />
+      <input id="search" type="search" placeholder="Search conversations…" aria-label="Search conversations" />
     </label>
   </div>
 </header>
@@ -634,10 +694,10 @@ textarea#prompt::placeholder{color:var(--muted)}
       </div>
 
       <span class="divider"></span>
-      <span class="hint">⏎ to send · ⌘/Ctrl for line · PDF · DOCX · TXT</span>
+      <span class="hint">⏎ to send · PDF · TXT · MD</span>
     </div>
 
-    <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt,.md,.text" hidden />
+    <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.text" hidden />
   </div>
   <p class="disclaimer" id="disclaimer">Connecting to model…</p>
 </div>
@@ -724,14 +784,52 @@ textarea#prompt::placeholder{color:var(--muted)}
     sbEmpty.style.display = sessions.length ? "none" : "flex";
     sbToday.style.display = today.length ? "flex" : "none";
     sbEarlier.style.display = earlier.length ? "flex" : "none";
-    $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>loadSession(el.dataset.id)));
+    $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>{
+      el.addEventListener("click",e=>{
+        if(e.target.closest(".sbx")) return; // delete handled separately
+        if(el.classList.contains("renaming")) return;
+        loadSession(el.dataset.id);
+      });
+      const del=el.querySelector(".sbx");
+      if(del) del.addEventListener("click",e=>{ e.stopPropagation(); deleteSession(el.dataset.id); });
+      // double-click the label to rename
+      const txt=el.querySelector(".txt");
+      if(txt) txt.addEventListener("dblclick",e=>{ e.stopPropagation(); startRename(el, txt); });
+    });
     if(window.matchMedia("(max-width:900px)").matches){
-      $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>sbClose()));
+      $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(!el.classList.contains("renaming")) sbClose(); }));
     }
+    applySearch();
+  }
+  function deleteSession(id){
+    const i=sessions.findIndex(s=>s.id===id); if(i<0) return;
+    sessions.splice(i,1);
+    if(activeId===id){ activeId=null; clearThreadState(); }
+    saveSessions(); renderSessions();
+  }
+  function startRename(el, txt){
+    el.classList.add("renaming");
+    txt.setAttribute("contenteditable","true"); txt.focus();
+    // select all text
+    const r=document.createRange(); r.selectNodeContents(txt);
+    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    const finish=()=>{
+      txt.removeAttribute("contenteditable");
+      el.classList.remove("renaming");
+      const v=txt.textContent.trim()||"Untitled";
+      const s=sessions.find(x=>x.id===el.dataset.id); if(s){ s.title=v; saveSessions(); }
+      txt.textContent=v;
+      txt.removeEventListener("blur",finish); txt.removeEventListener("keydown",onKey);
+    };
+    const onKey=(e)=>{
+      if(e.key==="Enter"){ e.preventDefault(); txt.blur(); }
+      else if(e.key==="Escape"){ e.preventDefault(); const s=sessions.find(x=>x.id===el.dataset.id); txt.textContent=s?s.title:""; txt.blur(); }
+    };
+    txt.addEventListener("blur",finish); txt.addEventListener("keydown",onKey);
   }
   function sessionHtml(s){
     const cur = s.id===activeId ? 'aria-current="true"' : '';
-    return `<button class="sb-item" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}"><span class="dot"></span><span class="txt">${esc(s.title)}</span></button>`;
+    return `<button class="sb-item" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}"><span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
   }
   function setActive(id){
     activeId=id;
@@ -762,20 +860,27 @@ textarea#prompt::placeholder{color:var(--muted)}
     saveSessions();
   }
 
-  /* ---- load free models from the backend ---- */
+  /* ---- load free models from the backend (with cold-start retry) ---- */
   async function loadModels(){
-    try{
-      const r=await fetch(API+"/api/models");
-      if(!r.ok) throw new Error("HTTP "+r.status);
-      const d=await r.json();
-      const ms=d.models||[];
-      models.length=0; models.push(...ms);
-      renderModelOptions();
-      if(ms.length) selectModel(ms[0]);
-      if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter.";
-    }catch(e){
-      if(disclaimer) disclaimer.textContent="Offline — could not reach the model service.";
-      showToast("Couldn't load models. Is the backend running?");
+    const delays=[1500, 4000, 9000]; // backoff for Render free-tier cold start
+    for(let attempt=0; attempt<=delays.length; attempt++){
+      try{
+        if(attempt>0 && disclaimer) disclaimer.textContent="Waking up the model service… (try "+attempt+")";
+        const r=await fetch(API+"/api/models");
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        const d=await r.json();
+        const ms=d.models||[];
+        models.length=0; models.push(...ms);
+        renderModelOptions();
+        if(ms.length) selectModel(ms[0]);
+        if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter.";
+        return;
+      }catch(e){
+        if(attempt<delays.length){ await new Promise(r=>setTimeout(r, delays[attempt])); continue; }
+        if(disclaimer) disclaimer.textContent="Offline — tap to retry.";
+        showToast("Couldn't load models. Backend may be asleep.");
+        if(disclaimer) disclaimer.style.cursor="pointer";
+      }
     }
   }
   function renderModelOptions(filterName=""){
@@ -799,6 +904,75 @@ textarea#prompt::placeholder{color:var(--muted)}
   }
   // allow override of backend URL via a small query/config
   function esc(s){ const d=document.createElement("div"); d.textContent=(s==null?"":String(s)); return d.innerHTML; }
+
+  /* ---- markdown renderer (escape-first, XSS-safe) ---- */
+  function inlineMd(t){
+    // t is already HTML-escaped
+    return t
+      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+      .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g,'$1<em>$2</em>')
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  }
+  function mdToHtml(src){
+    const lines = String(src||"").split(/\n/);
+    let out=[], i=0, para=[];
+    const flush=()=>{ if(para.length){ out.push('<p>'+inlineMd(esc(para.join(' ')))+'</p>'); para=[]; } };
+    while(i<lines.length){
+      let ln=lines[i];
+      if(/^\s*$/.test(ln)){ flush(); i++; continue; }
+      const h=ln.match(/^(#{1,3})\s+(.*)$/);
+      if(h){ flush(); const lvl=h[1].length; out.push('<h'+lvl+'>'+inlineMd(esc(h[2]))+'</h'+lvl+'>'); i++; continue; }
+      if(/^\s*[-*]\s+/.test(ln)){
+        flush(); const items=[];
+        while(i<lines.length && /^\s*[-*]\s+/.test(lines[i])){ items.push('<li>'+inlineMd(esc(lines[i].replace(/^\s*[-*]\s+/,'')))+'</li>'); i++; }
+        out.push('<ul>'+items.join('')+'</ul>'); continue;
+      }
+      if(/^\s*\d+\.\s+/.test(ln)){
+        flush(); const items=[];
+        while(i<lines.length && /^\s*\d+\.\s+/.test(lines[i])){ items.push('<li>'+inlineMd(esc(lines[i].replace(/^\s*\d+\.\s+/,'')))+'</li>'); i++; }
+        out.push('<ol>'+items.join('')+'</ol>'); continue;
+      }
+      if(/^>\s?/.test(ln)){
+        flush(); const q=[];
+        while(i<lines.length && /^>\s?/.test(lines[i])){ q.push(esc(lines[i].replace(/^>\s?/,''))); i++; }
+        out.push('<blockquote>'+inlineMd(q.join(' '))+'</blockquote>'); continue;
+      }
+      if(/^---+$/.test(ln)){ flush(); out.push('<hr>'); i++; continue; }
+      para.push(ln); i++;
+    }
+    flush();
+    return out.join('');
+  }
+
+  /* ---- read attached file contents (client-side) ---- */
+  let _pdfjs=null;
+  function readTextFile(f){
+    return new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=()=>res(String(r.result||""));
+      r.onerror=()=>rej(r.error||new Error("read failed"));
+      r.readAsText(f);
+    });
+  }
+  async function readPdfText(f){
+    if(!_pdfjs){
+      _pdfjs = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.3.104/+esm');
+      _pdfjs.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.3.104/pdf.worker.min.mjs';
+    }
+    const buf=await f.arrayBuffer();
+    const pdf=await _pdfjs.getDocument({data:buf}).promise;
+    let txt='';
+    for(let p=1;p<=pdf.numPages;p++){ const c=await pdf.getPage(p); const c2=await c.getTextContent(); txt+=(c2.items.map(it=>it.str).join(' '))+'\n\n'; }
+    return txt.trim();
+  }
+  async function fileContent(f){
+    const e=ext(f.name);
+    try{
+      if(e==='pdf') return await readPdfText(f);
+      return await readTextFile(f); // txt/md/text
+    }catch(err){ return '[Could not read '+f.name+': '+String(err.message||err)+']'; }
+  }
 
   /* ---- textarea auto-grow + enable send ---- */
   function syncSend(){ send.disabled = prompt.value.trim()==="" && files.length===0; }
@@ -841,7 +1015,7 @@ textarea#prompt::placeholder{color:var(--muted)}
 
   /* ---- file upload (frontend only) ---- */
   const MAX=25*1024*1024;
-  const OK=["pdf","doc","docx","txt","md","text"];
+  const OK=["pdf","txt","md","text"];
   attachBtn.addEventListener("click",()=>fileInput.click());
   fileInput.addEventListener("change",e=>{ addFiles(e.target.files); fileInput.value=""; });
   ["dragenter","dragover"].forEach(ev=>composer.addEventListener(ev,e=>{e.preventDefault();composer.classList.add("drag");}));
@@ -852,15 +1026,21 @@ textarea#prompt::placeholder{color:var(--muted)}
   function fmt(b){ return b<1024?b+" B":b<1048576?(b/1024).toFixed(0)+" KB":(b/1048576).toFixed(1)+" MB"; }
   function showToast(m){ toast.textContent=m; toast.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"),2600); }
 
-  function addFiles(list){
-    [...list].forEach(f=>{
+  async function addFiles(list){
+    for(const f of [...list]){
       const e=ext(f.name);
-      if(!OK.includes(e)){ showToast("Unsupported file: ."+e); return; }
-      if(f.size>MAX){ showToast("Too large (max 25 MB): "+f.name); return; }
+      if(!OK.includes(e)){ showToast("Unsupported file: ."+e); continue; }
+      if(f.size>MAX){ showToast("Too large (max 25 MB): "+f.name); continue; }
       const id="f"+Date.now()+Math.random().toString(36).slice(2,6);
-      files.push({id,name:f.name,size:f.size,type:e});
-    });
-    renderFiles(); syncSend();
+      const item={id,name:f.name,size:f.size,type:e,content:""};
+      files.push(item);
+      renderFiles(); syncSend();
+      // read content in the background; show a subtle reading state
+      item.reading=true; renderFiles();
+      try{ item.content = await fileContent(f); }
+      catch(err){ item.content="[read error: "+String(err.message||err)+"]"; }
+      item.reading=false; renderFiles(); syncSend();
+    }
   }
   function renderFiles(){
     if(files.length===0){ attachRow.hidden=true; attachRow.innerHTML=""; return; }
@@ -868,7 +1048,7 @@ textarea#prompt::placeholder{color:var(--muted)}
     attachRow.innerHTML=files.map(f=>`
       <span class="fchip ok" data-id="${f.id}">
         <span class="fic">${f.type.toUpperCase().slice(0,4)}</span>
-        <span class="fname">${f.name}</span>
+        <span class="fname">${f.name}${f.reading?' <em style="opacity:.6">· reading…</em>':''}</span>
         <span class="fsize">${fmt(f.size)}</span>
         <button class="fx" title="Remove" aria-label="Remove ${f.name}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -882,17 +1062,19 @@ textarea#prompt::placeholder{color:var(--muted)}
   }
 
   /* ---- rendering ---- */
-  function bubble(role,html){
+  function bubble(role,html,bubbleClass){
     const m=document.createElement("div");
     m.className="msg "+role;
     const who = role==="user" ? "You" : "Augustine";
     const init = role==="user" ? "You".slice(0,1) : "A";
-    m.innerHTML=`<div class="av">${init}</div><div class="bubble"><span class="who">${who}</span>${html}</div>`;
+    m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}"><span class="who">${who}</span>${html}</div>`;
     thread.appendChild(m); return m;
   }
   function userHtml(text){
     let h=esc(text);
-    if(files.length){ h += `<div style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)">+ ${files.length} file${files.length>1?"s":""} attached</div>`; }
+    if(files.length){
+      h += `<div style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)">+ ${files.length} file${files.length>1?'s':''} attached: ${files.map(f=>esc(f.name)).join(', ')}</div>`;
+    }
     return h;
   }
 
@@ -911,19 +1093,31 @@ textarea#prompt::placeholder{color:var(--muted)}
     // create/select a session from the first message
     if(!activeId) setActive(null);
 
-    // files note (sent as text prefix so the model sees what was attached)
+    // paste real file contents as context (model can read what was attached)
     let attachNote="";
     if(files.length){
-      attachNote="[Attached: "+files.map(f=>f.name+" ("+f.size+" bytes)").join(", ")+". A future version will parse file contents.]\n";
+      const parts=files.map(f=>{
+        const c=(f.content||"").trim();
+        return c ? "--- "+f.name+" ---\n"+ (c.length>12000 ? c.slice(0,12000)+"\n[truncated]" : c) : "[Attached: "+f.name+" — could not read contents]";
+      });
+      attachNote="[Attached files]\n"+parts.join("\n\n")+"\n\n";
     }
 
     prompt.value=""; prompt.style.height="auto";
     const sent=files.splice(0); renderFiles(); syncSend();
 
-    send.disabled=true; send.innerHTML='<span class="spin"></span>';
+    // send -> stop toggle
+    let aborted=false;
+    const controller=new AbortController();
+    send.classList.add("stop"); send.disabled=false;
+    send.innerHTML='<span class="sq"></span>';
+    send.onclick=()=>{ aborted=true; controller.abort(); };
+
     const loading=bubble("assistant",'<span class="dots"><i></i><i></i><i></i></span>');
+    const buf=loading.querySelector(".bubble");
 
     const messages=[...history];
+    let acc="", reasoningAcc="", bufStr="", hasReasoning=false;
     // prepend attachment note to the newest user message
     if(attachNote && messages.length) messages[messages.length-1]={role:"user", content:attachNote+messages[messages.length-1].content};
 
@@ -932,7 +1126,7 @@ textarea#prompt::placeholder{color:var(--muted)}
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({model:model.id, reasoning:reasoning, stream:true, messages}),
-        signal:AbortSignal.timeout(180000)
+        signal:controller.signal
       });
       if(!res.ok){
         let msg="Request failed ("+res.status+")";
@@ -944,9 +1138,16 @@ textarea#prompt::placeholder{color:var(--muted)}
       // SSE reader on the response body
       const reader=res.body.getReader();
       const dec=new TextDecoder();
-      const buf=loading.querySelector(".bubble");
-      let acc="";
-      let bufStr="";
+      const render=(streaming)=>{
+        let inner='';
+        if(hasReasoning){
+          inner += '<details class="reasoning-box" open><summary>Thinking…</summary><div class="rb">'+esc(reasoningAcc)+'</div></details>';
+        }
+        inner += streaming ? esc(acc) : mdToHtml(acc);
+        buf.className = "bubble md";
+        buf.innerHTML = '<span class="who">Augustine</span>'+inner;
+        stage.scrollTop = stage.scrollHeight;
+      };
       while(true){
         const {value,done}=await reader.read();
         if(done) break;
@@ -959,26 +1160,76 @@ textarea#prompt::placeholder{color:var(--muted)}
           if(data==="{}" || data==="[DONE]") continue;
           try{
             const j=JSON.parse(data);
-            if(j.reasoning!=null) continue;        // hide reasoning tokens
-            if(j.text){ acc+=j.text; buf.innerHTML='<span class="who">Augustine</span>'+esc(acc); stage.scrollTop=stage.scrollHeight; }
+            if(j.reasoning!=null){ reasoningAcc+=j.reasoning; hasReasoning=true; render(true); continue; }
+            if(j.text){ acc+=j.text; render(true); }
           }catch(_){}
         }
       }
+      render(false);
       if(!acc) acc="(no response)";
-      buf.innerHTML='<span class="who">Augustine</span>'+esc(acc);
       history.push({role:"assistant", content:acc});
       recordSession(userMsg, acc);
     }catch(e){
       const msg = (e&&e.message)||"Something went wrong.";
-      loading.querySelector(".bubble").innerHTML='<span class="who">Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>";
-      showToast(msg);
-      // even on error, keep the conversation so it appears in the sidebar
-      history.push({role:"assistant", content:"[error] "+msg});
-      recordSession(userMsg, msg);
+      const isAbort = aborted || (e&&e.name==="AbortError");
+      if(isAbort){
+        buf.innerHTML='<span class="who">Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>');
+        if(acc) history.push({role:"assistant", content:acc});
+        recordSession(userMsg, acc||"(stopped)");
+      }else{
+        buf.innerHTML='<span class="who">Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>";
+        showToast(msg);
+        history.push({role:"assistant", content:"[error] "+msg});
+        recordSession(userMsg, msg);
+      }
+      addRetry(loading, messages, userMsg);
     }finally{
+      send.classList.remove("stop"); send.disabled = (prompt.value.trim()==="" && files.length===0);
       send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+      send.onclick=null;
+      if(acc && !aborted) addRetry(loading, messages, userMsg);
       syncSend();
       stage.scrollTop=stage.scrollHeight;
+    }
+  }
+  function addRetry(loadingMsg, messages, userMsg){
+    if(loadingMsg.querySelector(".acts")) return;
+    const acts=document.createElement("div");
+    acts.className="acts";
+    acts.innerHTML='<button class="act" data-retry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Retry</button>';
+    loadingMsg.appendChild(acts);
+    acts.querySelector("[data-retry]").addEventListener("click",()=>{
+      // drop the last assistant entry (this one), then regenerate
+      for(let k=history.length-1;k>=0;k--){ if(history[k].role==="assistant"){ history.splice(k,1); break; } }
+      loadingMsg.remove();
+      callChatRetry(messages, userMsg);
+    });
+  }
+  async function callChatRetry(messages, userMsg){
+    if(!model){ showToast("Pick a model first."); return; }
+    if(greet) greet.hidden=true; thread.hidden=false;
+    send.classList.add("stop"); send.disabled=false; send.innerHTML='<span class="sq"></span>';
+    const controller=new AbortController(); let aborted=false;
+    send.onclick=()=>{ aborted=true; controller.abort(); };
+    const loading=bubble("assistant",'<span class="dots"><i></i><i></i><i></i></span>');
+    const buf=loading.querySelector(".bubble");
+    let acc="", reason="", bufStr="", hasR=false;
+    try{
+      const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages}),signal:controller.signal});
+      if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
+      if(!res.body) throw new Error("No response stream.");
+      const reader=res.body.getReader(); const dec=new TextDecoder();
+      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box" open><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc):mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">Augustine</span>'+inner; stage.scrollTop=stage.scrollHeight; };
+      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning!=null){reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
+      render(false); if(!acc) acc="(no response)";
+      history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
+    }catch(e){
+      const msg=(e&&e.message)||"Something went wrong.";
+      buf.innerHTML='<span class="who">Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
+      history.push({role:"assistant",content:"[error] "+msg}); recordSession(userMsg, msg); addRetry(loading, messages, userMsg);
+    }finally{
+      send.classList.remove("stop"); send.disabled=(prompt.value.trim()===""&&files.length===0);
+      send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'; send.onclick=null; syncSend(); stage.scrollTop=stage.scrollHeight;
     }
   }
   function doSend(){ callChat(); }
@@ -991,8 +1242,44 @@ textarea#prompt::placeholder{color:var(--muted)}
     clearThreadState();
   });
 
-  /* ---- search (frontend: just prevents reload) ---- */
-  $("#search").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); /* TODO: wire to knowledge search */ } });
+  /* ---- export active conversation as Markdown ---- */
+  const sbExport=$("#sbExport");
+  if(sbExport) sbExport.addEventListener("click",async()=>{
+    const s = activeId ? sessions.find(x=>x.id===activeId) : null;
+    const msgs = s ? (s.history||[]) : history;
+    if(!msgs.length){ showToast("Nothing to export yet."); return; }
+    let md = "# Saint Augustine AI — conversation\n\n_Exported "+new Date().toLocaleString()+"_\n\n";
+    for(const m of msgs){
+      const who = m.role==="user" ? "You" : "Augustine";
+      md += "**"+who+":**\n\n"+(m.content||"")+"\n\n---\n\n";
+    }
+    try{
+      await navigator.clipboard.writeText(md);
+      showToast("Conversation copied as Markdown ✓");
+    }catch(_){
+      // fallback: download
+      const blob=new Blob([md],{type:"text/markdown"});
+      const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="augustine-chat.md"; a.click();
+      showToast("Downloaded conversation ✓");
+    }
+  });
+
+  /* ---- search: filter sessions by title/content ---- */
+  const searchEl=$("#search");
+  let searchQ="";
+  function applySearch(){
+    const q=searchQ.trim().toLowerCase();
+    $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>{
+      const s=sessions.find(x=>x.id===el.dataset.id);
+      if(!s) return;
+      const hay=(s.title+" "+((s.history||[]).map(m=>m.content).join(" "))).toLowerCase();
+      el.style.display = (!q || hay.includes(q)) ? "" : "none";
+    });
+    const anyVis=[...document.querySelectorAll("#sbTodayList .sb-item, #sbEarlierList .sb-item")].some(el=>el.style.display!=="none");
+    sbEmpty.style.display = (sessions.length && !anyVis) ? "none" : (sessions.length?"none":"flex");
+    sbEmpty.querySelector("p").textContent = (q && !anyVis) ? "No conversations match “"+searchQ.trim()+"”." : "No conversations yet. Send a message to begin.";
+  }
+  if(searchEl) searchEl.addEventListener("input",()=>{ searchQ=searchEl.value; applySearch(); });
 
   syncSend();
 
