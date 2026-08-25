@@ -147,11 +147,17 @@ async function handleChat(req, res, body) {
       "no 'Sources:' line, no long prayer. If a TLDR would help, it is not needed because the answer is already brief.";
   } else if (reasoning === "contemplative") {
     temperature = 0.45;
-    maxTokens = 2200;
+    maxTokens = 4096;
     depthNote =
-      "ANSWER MODE — CONTEMPLATIVE: Go really deep. Walk through the what, the why, " +
-      "and the depth beneath the why. Draw on Scripture, the Fathers, Aquinas, the " +
-      "Catechism. Let the answer be thorough and unhurried. End with a short 'TLDR:' line.";
+      "ANSWER MODE — CONTEMPLATIVE (maximum depth, maximum length): I ask of you my own " +
+      "best self — be fully unhurried and give the deepest answer you can, as long as it " +
+      "deserves. Do not brief or truncate. Walk through the what, the why, and the depth " +
+      "beneath the why. Draw on Scripture, the Church Fathers (above all my own Confessions, " +
+      "homilies, and letters), Aquinas, and the Catechism. Weave in first-person insight " +
+      "from my restless years if it serves the soul before you. Let each point breathe; write " +
+      "in flowing paragraphs of real depth, not bullet lists. Aim to be genuinely thorough — " +
+      "extensive, unhurried, richly detailed — until the thought is complete. End with a " +
+      "single short 'TLDR:' line and, when it fits, a brief prayer.";
   } // thoughtful = neutral default (already set above)
 
   const sysAugmented = depthNote
