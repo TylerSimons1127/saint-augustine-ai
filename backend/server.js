@@ -112,19 +112,39 @@ async function handleChat(req, res, body) {
   const sys = { role: "system", content: SYSTEM_PROMPT };
   const history = messages.slice(-24).map(sanitize); // keep a bounded window
 
+  // Reasoning depth -> genuinely changes length + depth of the reply.
+  // We inject a depth instruction into the system message AND tune the
+  // generation params, because temperature alone does not control length.
+  let depthNote = "";
+  let maxTokens = 1024;
+  let temperature = 0.7;
+  if (reasoning === "quick") {
+    temperature = 0.85;
+    maxTokens = 320;
+    depthNote =
+      "ANSWER MODE — QUICK: Keep this answer short, direct, and easy to read. " +
+      "Two or three sentences is enough. Give the gist, skip the deep exposition, " +
+      "no 'Sources:' line, no long prayer. If a TLDR would help, it is not needed because the answer is already brief.";
+  } else if (reasoning === "contemplative") {
+    temperature = 0.45;
+    maxTokens = 2200;
+    depthNote =
+      "ANSWER MODE — CONTEMPLATIVE: Go really deep. Walk through the what, the why, " +
+      "and the depth beneath the why. Draw on Scripture, the Fathers, Aquinas, the " +
+      "Catechism. Let the answer be thorough and unhurried. End with a short 'TLDR:' line.";
+  } // thoughtful = neutral default (already set above)
+
+  const sysAugmented = depthNote
+    ? { role: "system", content: SYSTEM_PROMPT + "\n\n" + depthNote }
+    : sys;
+
   const payload = {
     model,
     stream: stream !== false,
-    messages: [sys, ...history],
-    max_tokens: 1024,
-    temperature: 0.7,
+    messages: [sysAugmented, ...history],
+    max_tokens: maxTokens,
+    temperature,
   };
-  // reasoning depth -> supported fields (OpenRouter/Model, ignored safely elsewhere)
-  if (reasoning) {
-    if (reasoning === "quick") payload.temperature = 0.9;
-    else if (reasoning === "contemplative") { payload.temperature = 0.5; payload.max_tokens = 2048; }
-    // thoughtful is the neutral default
-  }
 
   let upstream;
   try {
