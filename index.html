@@ -172,9 +172,10 @@ button{font-family:inherit;cursor:pointer;color:inherit}
 .sb-foot{display:flex;align-items:center;gap:9px;padding:10px 6px 2px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
 .sb-foot .av{width:26px;height:26px;border-radius:50%;background:var(--glass-strong);border:1px solid var(--border);display:grid;place-items:center;color:var(--accent);font-family:var(--display);font-size:12px}
 .sb-toggle{display:none}
-/* tap scrim behind the off-canvas sidebar (phones) */
+/* tap scrim behind the off-canvas sidebar (phones) — sits BELOW the sidebar so it
+   dims the page but never blurs/blocks the menu itself */
 .sb-scrim{
-  display:none;position:fixed;inset:0;z-index:46;
+  display:none;position:fixed;inset:0;z-index:44;
   background:rgba(30,26,20,0.34);backdrop-filter:blur(2px);
   -webkit-backdrop-filter:blur(2px);opacity:0;transition:opacity .26s ease;
 }
@@ -1240,6 +1241,10 @@ textarea#prompt::placeholder{color:var(--muted)}
     // set no active session; next send starts a fresh one
     activeId=null; saveSessions(); renderSessions();
     clearThreadState();
+    // on phones, also dismiss the drawer + any inline rename so it feels responsive
+    if(window.matchMedia("(max-width:900px)").matches){ sbClose(); }
+    const renaming=document.querySelector(".sb-item.renaming");
+    if(renaming){ renaming.classList.remove("renaming"); const t=renaming.querySelector(".txt"); if(t) t.removeAttribute("contenteditable"); }
   });
 
   /* ---- export active conversation as Markdown ---- */
