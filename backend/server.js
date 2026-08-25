@@ -67,14 +67,15 @@ let modelsCache = { at: 0, data: null };
 // Curated "recommended" free models — chosen for reasoned prose, strong instruction
 // following, and (as far as free tiers allow) faithful Catholic tone. Sorted first in
 // the picker so the best default isn't buried among dozens of free options.
-const CURATED = new Set([
+const CURATED = [
   "nvidia/nemotron-3-ultra-550b-a55b:free",
   "nvidia/nemotron-3-super-120b-a12b:free",
   "z-ai/glm-5.2:free",
   "google/gemma-4-31b-it:free",
   "minimax/minimax-m3:free",
   "google/gemma-4-26b-a4b-it:free",
-]);
+];
+const CURATED_ORDER = new Map(CURATED.map((id, i) => [id, i]));
 
 async function getFreeModels() {
   if (modelsCache.data && Date.now() - modelsCache.at < MODELS_CACHE_MS) return modelsCache.data;
@@ -88,10 +89,14 @@ async function getFreeModels() {
       name: prettyName(m.id),
       desc: (m.description || "").replace(/\s+/g, " ").trim().slice(0, 120),
       context: m.context_length || null,
-      featured: CURATED.has(m.id) ? true : undefined,
+      featured: CURATED.includes(m.id) ? true : undefined,
     }))
-    .sort((a, b) => (Number(Boolean(b.featured)) - Number(Boolean(a.featured))) ||
-      a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      const af = CURATED_ORDER.has(a.id), bf = CURATED_ORDER.has(b.id);
+      if (af && bf) return CURATED_ORDER.get(a.id) - CURATED_ORDER.get(b.id);
+      if (af !== bf) return af ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
   modelsCache = { at: Date.now(), data: list };
   return list;
 }
