@@ -821,9 +821,10 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     if(p.theme) h.setAttribute("data-theme", p.theme);
     if(p.textScale) h.setAttribute("data-text-scale", p.textScale);
     if(p.motion) h.setAttribute("data-motion", p.motion);
-    var bgId = p.background && p.background.id ? p.background.id : "mountains";
+    var bgId = p.background && p.background.id ? p.background.id : "original";
     h.setAttribute("data-bg","1");
-    h.style.setProperty("--bg-img", 'url("assets/bg/bg_'+bgId+'.jpg")');
+    var bgUrl = bgId==="original" ? "assets/bg.jpg" : "assets/bg/bg_"+bgId+".jpg";
+    h.style.setProperty("--bg-img", 'url("'+bgUrl+'")');
     h.style.setProperty("--bg-dim", ((p.background && p.background.dim!=null)?p.background.dim:0.12));
   }catch(e){}
 })();
@@ -2156,12 +2157,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     {id:"ember",     name:"Emberlight",c:["#f4efe6","#b07a4e","#fbf7ee"]},
   ];
   const BGS=[
-    {id:"mountains", label:"Mountains"}, {id:"dawn", label:"Dawn"},
+    {id:"original", label:"Original"}, {id:"mountains", label:"Mountains"}, {id:"dawn", label:"Dawn"},
     {id:"olive", label:"Olive grove"}, {id:"sea", label:"Sea at dusk"},
     {id:"cathedral", label:"Cathedral"}, {id:"still", label:"Still water"},
   ];
   const DEF_PREFS={ theme:"parchment", darkness:"dark", textScale:"m", motion:"auto",
-    background:{id:"mountains", dim:12},
+    background:{id:"original", dim:12},
     convo:{ defaultReasoning:"thoughtful", defaultModel:"", autoCite:true, sendWith:"enter" } };
 
   function loadPrefs(){
@@ -2178,8 +2179,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     h.setAttribute("data-motion", prefs.motion);
     applyMotion();
     h.setAttribute("data-bg","1");
-    const bgId = (prefs.background&&prefs.background.id)||"mountains";
-    h.style.setProperty("--bg-img", 'url("assets/bg/bg_'+bgId+'.jpg")');
+    const bgId = (prefs.background&&prefs.background.id)||"original";
+    const bgUrl = bgId==="original" ? "assets/bg.jpg" : "assets/bg/bg_"+bgId+".jpg";
+    h.style.setProperty("--bg-img", 'url("'+bgUrl+'")');
     h.style.setProperty("--bg-dim", (((prefs.background&&prefs.background.dim!=null)?prefs.background.dim:12)/100).toFixed(2));
   }
   function applyMotion(){
@@ -2235,6 +2237,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     const b=document.createElement("button"); b.className="bg-thumb"; b.dataset.bg=g.id; b.setAttribute("aria-pressed","false");
     b.setAttribute("aria-label",g.label);
     if(g.id==="still"){ b.style.background="#1c2230"; }
+    else if(g.id==="original"){ b.style.backgroundImage='url("assets/bg.jpg")'; }
     else { b.style.backgroundImage='url("assets/bg/bg_'+g.id+'.jpg")'; }
     b.addEventListener("click",()=>{ prefs.background=prefs.background||{}; prefs.background.id=g.id; savePrefs(); applyPrefs(); syncSettingsUI(); });
     bgGrid.appendChild(b);
@@ -2324,7 +2327,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   /* ----- sync UI from prefs ----- */
   function syncSettingsUI(){
     themeGrid.querySelectorAll(".swatch").forEach(b=>b.setAttribute("aria-pressed", b.dataset.theme===prefs.theme));
-    bgGrid.querySelectorAll(".bg-thumb").forEach(b=>b.setAttribute("aria-pressed", b.dataset.bg===((prefs.background&&prefs.background.id)||"mountains")));
+    bgGrid.querySelectorAll(".bg-thumb").forEach(b=>b.setAttribute("aria-pressed", b.dataset.bg===((prefs.background&&prefs.background.id)||"original")));
     $$('.seg-ctl[data-seg]').forEach(g=>g.querySelectorAll("button").forEach(b=>{
       const k=g.dataset.seg; let v=prefs[k];
       if(k==="darkness") v=prefs.darkness; else if(k==="textScale") v=prefs.textScale;
