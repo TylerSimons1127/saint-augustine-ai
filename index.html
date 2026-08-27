@@ -311,30 +311,6 @@ a{color:inherit}
 }
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--muted);font-size:15px;line-height:1.5}
 
-.suggestions{
-  margin-top:26px;display:grid;gap:10px;
-  grid-template-columns:repeat(2,1fr);
-}
-.chip{
-  text-align:left;padding:13px 16px;border-radius:var(--r-m);
-  background:var(--glass);
-  backdrop-filter:blur(16px) saturate(150%);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
-  border:1px solid var(--border);border-top-color:var(--border-light);
-  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(30,26,20,0.03);
-  transition:transform .14s ease, border-color .18s ease;
-  display:flex;flex-direction:column;gap:3px;
-  animation:rise .34s cubic-bezier(.2,.7,.3,1) both;
-}
-.chip:nth-child(1){animation-delay:.04s}
-.chip:nth-child(2){animation-delay:.10s}
-.chip:nth-child(3){animation-delay:.16s}
-.chip:nth-child(4){animation-delay:.22s}
-.chip:hover{transform:translateY(-2px);border-color:var(--accent)}
-.chip:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-.chip .t{font-size:14px;color:var(--ink);font-weight:500}
-.chip .d{font-size:12px;color:var(--muted);line-height:1.4}
-
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
 .msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
@@ -588,7 +564,6 @@ textarea#prompt::placeholder{color:var(--muted)}
   .search{width:38px;padding:0;justify-content:center}
   .search input{display:none}
   .search.icon-only{width:44px}
-  .suggestions{grid-template-columns:1fr}
   .stage{padding-bottom:236px}
   .controls{gap:8px;flex-wrap:wrap}
   .hint{display:none}
@@ -609,8 +584,6 @@ textarea#prompt::placeholder{color:var(--muted)}
   .greet .sub{display:none}
   .greet .crest{margin-bottom:12px;padding:6px 12px}
   .greet .crest span{font-size:12.5px}
-  .suggestions{gap:10px;margin-top:18px}
-  .chip{padding:13px 14px}
 }
 /* C: de-crowd controls on narrow phones */
 @media (max-width:420px){
@@ -713,16 +686,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 .greet .halo{animation:haloBreath 7s ease-in-out infinite}
 @keyframes haloBreath{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.05);filter:brightness(1.06)}}
 
-/* suggestion chips: lift + gold sheen sweep + trailing arrow on hover */
-.chip{position:relative;overflow:hidden;isolation:isolate}
-.chip::before{content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(110deg,transparent 30%,rgba(255,251,240,0.6) 50%,transparent 70%);
-  transform:translateX(-120%);transition:transform .6s cubic-bezier(.22,.7,.3,1)}
-.chip:hover::before{transform:translateX(120%)}
-.chip .t{display:flex;align-items:center;gap:6px}
-.chip .t::after{content:"";width:0;height:0;border-left:5px solid var(--accent);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent;opacity:0;transform:translateX(-4px);transition:opacity .18s ease,transform .18s ease}
-.chip:hover .t::after{opacity:1;transform:translateX(0)}
-
 /* active session gold rail (quiet, precise) */
 .sb-item[aria-current="true"]{position:relative}
 .sb-item[aria-current="true"]::before{content:"";position:absolute;left:-10px;top:50%;transform:translateY(-50%);
@@ -743,7 +706,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 
 /* ---------- Motion preferences ---------- */
 @media (hover:none){           /* touch devices: kill sticky hover-lift */
-  .chip:hover,.sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
+  .sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
   .msg .acts{opacity:1}          /* no hover on touch — keep retry/controls visible */
 }
 @media (prefers-reduced-motion:reduce){
@@ -1053,24 +1016,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <p class="eyebrow">A companion in the tradition</p>
     <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
     <p class="sub">Ask Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
-    <div class="suggestions" id="suggestions">
-      <button class="chip" data-prompt="Help me understand what Augustine means by 'our hearts are restless.'">
-        <span class="t">On restlessness</span>
-        <span class="d">What does Augustine mean by “our heart is restless”?</span>
-      </button>
-      <button class="chip" data-prompt="Explain the difference between the City of God and the earthly city.">
-        <span class="t">The Two Cities</span>
-        <span class="d">The City of God vs. the earthly city — explained simply.</span>
-      </button>
-      <button class="chip" data-prompt="I feel far from God. Write to me as Augustine would console a friend.">
-        <span class="t">Consolation</span>
-        <span class="d">A word of comfort, in Augustine's voice.</span>
-      </button>
-      <button class="chip" data-prompt="Summarize Augustine's argument for the existence of God in Confessions Book VII.">
-        <span class="t">Confessions VII</span>
-        <span class="d">His argument for God, from the Confessions.</span>
-      </button>
-    </div>
   </section>
 
   <!-- THREAD (hidden until first send) -->
@@ -1692,13 +1637,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       if(e.key==="Enter" && e.shiftKey){ e.preventDefault(); doSend(); }
     }
   });
-
-  /* ---- suggestion chips ---- */
-  $$("#suggestions .chip").forEach(c=>c.addEventListener("click",()=>{
-    prompt.value=c.dataset.prompt; prompt.focus();
-    prompt.style.height="auto"; prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
-    syncSend();
-  }));
 
   /* ---- model chooser ---- */
   modelBtn.addEventListener("click",e=>{
