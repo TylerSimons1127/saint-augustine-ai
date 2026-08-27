@@ -102,6 +102,21 @@ function rateLimited(ip) {
   return false;
 }
 
+// ---- in-memory metrics (no disk; resets on deploy) ----
+const metrics = {
+  chatRequests: 0,
+  byModel: Object.create(null),
+  errors: Object.create(null),
+  rateLimited: 0,
+  startedAt: Date.now(),
+};
+function recordChat(model, outcome) {
+  metrics.chatRequests++;
+  const b = metrics.byModel[model] || (metrics.byModel[model] = { ok: 0, err: 0, fallback: 0 });
+  b[outcome]++;
+}
+function recordError(status) { metrics.errors[status] = (metrics.errors[status] || 0) + 1; }
+
 // ---- free-models cache ----
 let modelsCache = { at: 0, data: null };
 
@@ -169,8 +184,11 @@ async function handleChat(req, res, body) {
   if (!model) return sendJson(res, 400, { error: "Missing 'model'." });
   // Lock the requested model to the curated free-tier allowlist. The API is
   // public, so without this anyone could proxy paid models through our key.
-  if (!CURATED.includes(model))
+  if (!CURATED.includes(model)) {
+    recordChat(model, "err");
+    recordError(400);
     return sendJson(res, 400, { error: "That model is not on the available list. Choose one of the offered models." });
+  }
   if (!Array.isArray(messages) || messages.length === 0)
     return sendJson(res, 400, { error: "Missing 'messages'." });
 
@@ -238,9 +256,11 @@ async function handleChat(req, res, body) {
     } catch (e) {
       if (e.name === "AbortError") {
         lastErr = { status: 504, error: "The model took too long to respond (free tier may be saturated). Try again, choose a different model, or use 'Quick' mode.", detail: "" };
-        continue; // try the next model
+        if (cand !== model) metrics.byModel[model] = metrics.byModel[model] || { ok: 0, err: 0, fallback: 0 }, metrics.byModel[model].fallback++;
+        continue;
       }
       lastErr = { status: 502, error: "Could not reach OpenRouter.", detail: "" };
+      if (cand !== model) metrics.byModel[model] = metrics.byModel[model] || { ok: 0, err: 0, fallback: 0 }, metrics.byModel[model].fallback++;
       continue;
     }
 
@@ -248,6 +268,7 @@ async function handleChat(req, res, body) {
       let detail = "";
       try { detail = (await upstream.json()).error?.message || ""; } catch (_) {}
       lastErr = { status: upstream.status, error: friendlyError(upstream.status), detail };
+      if (cand !== model) metrics.byModel[model] = metrics.byModel[model] || { ok: 0, err: 0, fallback: 0 }, metrics.byModel[model].fallback++;
       continue;
     }
 
@@ -258,6 +279,7 @@ async function handleChat(req, res, body) {
         content: json.choices?.[0]?.message?.content || "",
         model: json.model,
       });
+      // (non-stream success path — count handled below via stream branch)
     }
 
     res.writeHead(200, {
@@ -268,10 +290,13 @@ async function handleChat(req, res, body) {
       "X-Accel-Buffering": "no",
     });
     await proxyStream(upstream, res);
+    recordChat(cand, "ok");
     return;
   }
 
   // Every candidate failed.
+  recordChat(model, "err");
+  recordError(lastErr.status);
   return sendJson(res, lastErr.status, { error: lastErr.error, detail: lastErr.detail });
 }
 
@@ -402,7 +427,16 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && url === "/api/healthz") {
       const keyPresent = !!KEY;
       const modelCount = modelsCache.data ? modelsCache.data.length : 0;
-      return sendJson(res, 200, { ok: keyPresent, keyPresent, modelCount, ts: Date.now() });
+      return sendJson(res, 200, {
+        ok: keyPresent, keyPresent, modelCount, ts: Date.now(),
+        uptimeSec: Math.round((Date.now() - metrics.startedAt) / 1000),
+        metrics: {
+          chatRequests: metrics.chatRequests,
+          rateLimited: metrics.rateLimited,
+          errors: metrics.errors,
+          byModel: metrics.byModel,
+        },
+      });
     }
     if (req.method === "GET" && url === "/api/models") {
       try { return sendJson(res, 200, { models: await getFreeModels() }); }
@@ -414,6 +448,7 @@ const server = http.createServer(async (req, res) => {
     }
     if (req.method === "POST" && url === "/api/chat") {
       if (rateLimited(getClientIp(req))) {
+        metrics.rateLimited++;
         return sendJson(res, 429, {
           error: "Too many messages in a short time. Please wait a minute before sending another.",
         });
