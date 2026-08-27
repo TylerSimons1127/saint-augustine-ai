@@ -76,10 +76,12 @@ async function fetchWithTimeout(url, options = {}, ms = 30000) {
 }
 
 // ---- per-IP rate limiter (protects the free OpenRouter key) ----
-// Generous window so normal use never feels it, but a flood (or a scraped
-// endpoint) can't burn the free-tier quota. Keyed on the real client IP
-// (Render forwards it via x-forwarded-for); falls back to socket address.
-const RATE_LIMIT = { windowMs: 60_000, max: 30 }; // 30 chat requests / minute / IP
+// Token-bucket limiter: capacity 8, refills 8 per 60s. A burst of up to 8 is
+// allowed; after that requests are spaced to ~7.5s apart. This still bounds
+// free-tier key burn from a flood/scraped endpoint, but a legitimate user who
+// sends a few messages then pauses is never locked out for a full minute.
+const RATE_CAP = 8;            // max tokens (burst size)
+const RATE_REFILL_MS = 60_000 / 8; // one token every 7.5s
 const rateBuckets = new Map();
 function getClientIp(req) {
   const xff = req.headers["x-forwarded-for"];
@@ -89,15 +91,20 @@ function getClientIp(req) {
 function rateLimited(ip) {
   const now = Date.now();
   let b = rateBuckets.get(ip);
-  if (!b || now > b.resetAt) {
-    b = { count: 0, resetAt: now + RATE_LIMIT.windowMs };
+  if (!b) {
+    b = { tokens: RATE_CAP - 1, ts: now };
     rateBuckets.set(ip, b);
+    return false;
   }
-  b.count++;
-  if (b.count > RATE_LIMIT.max) return true;
+  // refill
+  const elapsed = now - b.ts;
+  b.tokens = Math.min(RATE_CAP, b.tokens + elapsed / RATE_REFILL_MS);
+  b.ts = now;
+  if (b.tokens < 1) return true; // not enough tokens -> limited
+  b.tokens -= 1;
   // periodic sweep so the Map doesn't grow unbounded
   if (rateBuckets.size > 5000) {
-    for (const [k, v] of rateBuckets) if (now > v.resetAt) rateBuckets.delete(k);
+    for (const [k, v] of rateBuckets) if (now - v.ts > 120_000) rateBuckets.delete(k);
   }
   return false;
 }
