@@ -311,28 +311,6 @@ a{color:inherit}
 }
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--muted);font-size:15px;line-height:1.5}
 
-/* ---------- Today's Readings (greeter, editorial parchment card) ---------- */
-.readings{
-  margin:26px auto 0;width:min(560px,100%);text-align:left;
-  background:var(--glass);
-  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
-  border:1px solid var(--border);border-top-color:var(--border-light);
-  border-radius:var(--r-m);
-  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(30,26,20,0.03);
-  padding:14px 18px 16px;
-  animation:rise .4s cubic-bezier(.2,.7,.3,1) both;animation-delay:.12s;
-}
-.readings-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
-.readings-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink)}
-.readings-source{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted);text-align:right}
-.readings-body{display:flex;flex-direction:column;gap:9px}
-.reading-row{display:flex;flex-direction:column;gap:2px;padding-left:12px;position:relative}
-.reading-row::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:2px;background:linear-gradient(to bottom,var(--accent),transparent 80%);opacity:.6}
-.reading-row .lab{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);font-weight:600}
-.reading-row .txt{font-size:13px;line-height:1.5;color:var(--ink-soft)}
-.readings.empty .readings-body{font-size:13px;color:var(--muted);line-height:1.5}
-.readings .retry{margin-top:8px;font-size:12px;color:var(--accent-deep);background:none;border:0;cursor:pointer;font-family:var(--body);padding:0;text-decoration:underline}
-@media (max-width:480px){ .readings{margin-top:20px;padding:12px 15px 14px} }
 
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
@@ -1043,13 +1021,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <p class="eyebrow">A companion in the tradition</p>
     <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
     <p class="sub">Ask Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
-    <section class="readings" id="readings" aria-label="Today's liturgical readings" hidden>
-      <div class="readings-head">
-        <span class="readings-eyebrow">Today's Readings</span>
-        <span class="readings-source" id="readingsSource"></span>
-      </div>
-      <div class="readings-body" id="readingsBody"></div>
-    </section>
   </section>
 
   <!-- THREAD (hidden until first send) -->
@@ -2177,36 +2148,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     saveSessions(); setSelectMode(false); renderSessions();
   });
 
-  /* ---- Today's Readings (greeter) — best-effort USCCB fetch ---- */
-  async function loadReadings(){
-    const wrap=$("#readings"), body=$("#readingsBody"), src=$("#readingsSource");
-    if(!wrap||!body) return;
-    try{
-      const r=await fetch(API+"/api/readings", {cache:"no-store"});
-      if(!r.ok) throw new Error("HTTP "+r.status);
-      const d=await r.json();
-      const rows=[];
-      if(d.first)       rows.push(["First Reading", d.first]);
-      if(d.psalm)       rows.push(["Responsorial Psalm", d.psalm]);
-      if(d.gospel)      rows.push(["Gospel", d.gospel]);
-      if(!rows.length) throw new Error("empty");
-      body.innerHTML = rows.map(([lab,txt])=>
-        '<div class="reading-row"><span class="lab">'+esc(lab)+'</span><span class="txt">'+esc(txt)+'</span></div>'
-      ).join("");
-      if(src) src.textContent = d.disclaimer || "";
-      wrap.hidden=false;
-    }catch(e){
-      // silently skip — readings are an enhancement, never block the greeting
-      if(wrap) wrap.hidden=true;
-    }
-  }
 
   /* ---- boot: sessions + load the free model list ---- */
   loadSessions();
   renderSessions();
   if(activeId){ loadSession(activeId); }
   loadModels();
-  loadReadings();
 
   /* ---- beta consent modal: first visit only ---- */
   const betaModal=$("#betaModal"), betaAgree=$("#betaAgree");
@@ -2226,7 +2173,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       if(e.key!=="Tab" || !focusables.length) return;
       const first=focusables[0], last=focusables[focusables.length-1];
       if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
-      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
     setTimeout(()=>betaAgree.focus(), 120);
   }

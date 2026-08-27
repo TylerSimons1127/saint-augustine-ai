@@ -83,7 +83,6 @@ npx http-server -p 8080 -c-1 .
 - Streaming responses (SSE) so replies appear as they're generated.
 - Conversation history kept in the browser; copy or export a conversation as Markdown.
 - File attachments accepted (metadata passed to the model).
-- **Today's liturgical readings** on the greeting screen (best-effort USCCB fetch via `/api/readings`).
 - **Structured citations** — Scripture, Catechism (CCC §), and major Magisterial documents are rendered with a quiet citation style and linked to authoritative sources (Bible Gateway NRSVCE, Vatican.va).
 - **Backend keep-alive** — a scheduled GitHub Action pings `/api/health` every 14 minutes so the free-tier Render instance stays warm (no cold-start hang on the first message).
 
