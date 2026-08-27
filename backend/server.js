@@ -18,7 +18,7 @@ const path = require("path");
 
 const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENROUTER_API_KEY || "";
-const OPENROUTER = "https://openrouter.ai/api/v1";
+const OPENROUTER = process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
 const MODELS_CACHE_MS = Number(process.env.SYSPROMPT_CACHE_MS) || 120000;
 
 // ---- loads the Catholic/Augustine persona once at boot ----
