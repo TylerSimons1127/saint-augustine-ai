@@ -30,7 +30,7 @@
   --ink-soft:#423b2e;
   --muted:#6f674f;
   --hi:#ece5d7;
-  --glass:rgba(255,252,245,0.30);
+  --glass:rgba(255,252,245,0.26);
   --glass-strong:rgba(255,252,245,0.45);
   --panel:rgba(250,246,237,0.94);  /* near-opaque warm panel for menus/choosers so text stays crisp */
   --border:rgba(30,26,20,0.10);
@@ -147,8 +147,8 @@ a{color:inherit}
   position:fixed;top:0;left:0;bottom:0;z-index:45;width:264px;
   display:flex;flex-direction:column;gap:14px;padding:16px 14px;
   background:var(--glass);
-  backdrop-filter:blur(18px) saturate(155%);
-  -webkit-backdrop-filter:blur(18px) saturate(155%);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
   border-right:1px solid var(--border);
   box-shadow:inset 1px 0 0 rgba(255,255,255,0.5), var(--shadow-sm);
 }
@@ -231,13 +231,13 @@ a{color:inherit}
 /* search bar (top rail) */
 .search{
   display:flex;align-items:center;gap:9px;
-  height:42px;padding:0 14px;width:min(340px,42vw);
+  height:42px;padding:0 14px;width:min(360px,44vw);
   background:var(--glass);
-  backdrop-filter:blur(16px) saturate(150%);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
   border:1px solid var(--border);
   border-radius:999px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(30,26,20,0.03);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(30,26,20,0.03);
   transition:border-color .18s ease, box-shadow .18s ease, width .25s ease;
 }
 .search:focus-within{border-color:var(--accent);box-shadow:inset 0 1px 0 rgba(255,255,255,0.65), 0 0 0 3px var(--accent-soft)}
@@ -252,17 +252,31 @@ a{color:inherit}
   height:44px;min-width:44px;padding:0 12px;
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
   background:var(--glass);
-  backdrop-filter:blur(16px) saturate(150%);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
   border:1px solid var(--border);
   border-radius:999px;
   font-size:13px;color:var(--ink-soft);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(30,26,20,0.03);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(30,26,20,0.03);
   transition:transform .12s ease, border-color .18s ease, background .18s ease;
 }
 .icon-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
 .icon-btn:active{transform:translateY(0)}
 .icon-btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.chip-btn{
+  height:42px;padding:0 15px;display:inline-flex;align-items:center;gap:8px;
+  background:var(--glass);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border:1px solid var(--border);border-radius:14px;
+  font-size:13px;font-weight:500;color:var(--ink-soft);cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(30,26,20,0.03);
+  transition:transform .12s ease, border-color .18s ease, color .18s ease;
+}
+.chip-btn:hover{border-color:var(--accent);color:var(--ink);transform:translateY(-1px)}
+.chip-btn:active{transform:translateY(0)}
+.chip-btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.chip-btn svg{flex:none}
 .icon-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
 
 /* ---------- Stage / scroll area ---------- */
@@ -489,6 +503,10 @@ textarea#prompt::placeholder{color:var(--muted)}
   padding:6px;display:none;
 }
 .pop.open{display:block;animation:rise .16s ease both}
+.sc-pop,.th-pop{position:fixed;bottom:auto;top:84px;left:50%;width:min(440px,92vw);max-height:64vh;overflow:auto;z-index:90;transform:translateX(-50%) translateY(8px) scale(.98);padding:0}
+.sc-pop.open,.th-pop.open{display:block;animation:rise .16s ease both;transform:translateX(-50%)}
+.sc-pop-scrim,.th-pop-scrim{display:none;position:fixed;inset:0;z-index:40;background:rgba(30,26,20,.30)}
+.sc-pop-scrim.show,.th-pop-scrim.show{display:block}
 .pop .psearch{
   display:flex;align-items:center;gap:8px;
   height:34px;padding:0 10px;margin-bottom:6px;
@@ -508,6 +526,24 @@ textarea#prompt::placeholder{color:var(--muted)}
 .opt .on{font-family:var(--mono);font-size:11px;color:var(--gold-ink);font-weight:500}
 .opt .od{font-size:12px;color:#5b5340;line-height:1.4}
 .rec-tag{display:inline-block;margin-left:4px;font-family:var(--body);font-size:10px;font-weight:600;color:#8a6d1f;background:rgba(163,130,47,0.12);border:1px solid rgba(163,130,47,0.30);border-radius:99px;padding:0 6px;vertical-align:1px}
+
+/* ---------- Scenery / Themes pickers (ported from mockup) ---------- */
+.sc-grid,.th-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px}
+.sc-thumb{cursor:pointer;border-radius:15px;overflow:hidden;border:1px solid var(--border);position:relative;aspect-ratio:4/3;background-size:cover;background-position:center;transition:transform .2s ease,border-color .2s ease;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.sc-thumb:hover{transform:translateY(-2px);border-color:rgba(163,130,47,.45)}
+.sc-thumb.on{border-color:var(--accent);box-shadow:0 0 0 2px rgba(163,130,47,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.sc-thumb .sc-tt{position:absolute;left:0;right:0;bottom:0;padding:7px 10px;font-size:11.5px;font-weight:600;color:#fff7e8;background:linear-gradient(transparent,rgba(30,22,10,.62));text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.sc-thumb .sc-check{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--accent-deep);color:#fff7e8;display:grid;place-items:center;opacity:0;transition:opacity .2s}
+.sc-thumb.on .sc-check{opacity:1}
+.sc-thumb .sc-check svg{width:13px;height:13px}
+.th-thumb{cursor:pointer;border-radius:15px;padding:12px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);background:var(--panel);transition:transform .2s ease}
+.th-thumb:hover{transform:translateY(-2px)}
+.th-thumb.on{border-color:var(--accent);box-shadow:0 0 0 1px rgba(163,130,47,.35)}
+.th-thumb .sw2{height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.5)}
+.th-thumb .tn{font-size:12px;font-weight:600;color:var(--ink)}
+.pop-head{padding:14px 16px 6px}
+.pop-title{font-family:var(--display);font-size:16px;font-weight:600;color:var(--ink)}
+.pop-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
 /* Mobile: model picker becomes a full-screen bottom sheet (like ChatGPT / Claude) */
 .model-pop-scrim{display:none;position:fixed;inset:0;z-index:95;background:rgba(30,26,20,0.38);backdrop-filter:blur(2px)}
@@ -977,11 +1013,13 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
 <!-- HEADER RAIL -->
 <header class="rail">
+  <label class="search" id="searchWrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" type="search" placeholder="Search conversations…" aria-label="Search conversations" />
+  </label>
   <div class="rail-actions">
-    <label class="search icon-only" id="searchWrap">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="search" type="search" placeholder="Search conversations…" aria-label="Search conversations" />
-    </label>
+    <button class="chip-btn" id="sceneryBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 15-5-4-7 6"/></svg>Scenery</button>
+    <button class="chip-btn" id="themeBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 4"/></svg>Themes</button>
     <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -1255,6 +1293,20 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <p style="opacity:.7">Soli Deo Gloria</p>
   </section>
 </aside>
+
+<!-- SCENERY PICKER -->
+<div class="modal-scrim sc-pop-scrim" id="sceneryScrim" aria-hidden="true"></div>
+<div class="pop sc-pop" id="sceneryPop" role="dialog" aria-modal="true" aria-label="Background scenery" hidden>
+  <div class="pop-head"><div class="pop-title">Background scenery</div><div class="pop-sub">The living photograph behind the glass</div></div>
+  <div class="sc-grid" id="glassSceneryGrid"></div>
+</div>
+
+<!-- THEMES PICKER -->
+<div class="modal-scrim th-pop-scrim" id="themeScrim" aria-hidden="true"></div>
+<div class="pop th-pop" id="themePop" role="dialog" aria-modal="true" aria-label="Theme & atmosphere" hidden>
+  <div class="pop-head"><div class="pop-title">Theme &amp; atmosphere</div><div class="pop-sub">Light glass moods for the day</div></div>
+  <div class="th-grid" id="glassThemeGrid"></div>
+</div>
 
 <script src="config.js"></script>
 <script>
@@ -2289,6 +2341,57 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   if(settingsClose) settingsClose.addEventListener("click", closeSettings);
   if(scrim) scrim.addEventListener("click", closeSettings);
   document.addEventListener("keydown",e=>{ if(e.key==="Escape" && sheet.classList.contains("show")) closeSettings(); });
+
+  /* ---------- Scenery & Themes pickers (ported from mockup) ---------- */
+  const SCENES=[
+    {id:'bg.jpg',label:'Sanctuary'},
+    {id:'bg/bg_cathedral.jpg',label:'Cathedral'},
+    {id:'bg/bg_dawn.jpg',label:'Dawn'},
+    {id:'bg/bg_mountains.jpg',label:'Mountains'},
+    {id:'bg/bg_olive.jpg',label:'Olive Grove'},
+    {id:'bg/bg_sea.jpg',label:'Sea'},
+  ];
+  const GLASS_THEMES={
+    daylight:{bg:'bg.jpg',tint:'rgba(255,252,245,.26)',tint2:'rgba(255,252,245,.45)',tint3:'rgba(250,246,237,.94)'},
+    ember:{bg:'bg/bg_dawn.jpg',tint:'rgba(255,250,240,.30)',tint2:'rgba(255,250,240,.48)',tint3:'rgba(252,245,235,.94)'},
+    serene:{bg:'bg/bg_sea.jpg',tint:'rgba(250,253,255,.28)',tint2:'rgba(250,253,255,.46)',tint3:'rgba(247,251,252,.94)'},
+    dawn:{bg:'bg/bg_dawn.jpg',tint:'rgba(255,247,242,.30)',tint2:'rgba(255,247,242,.48)',tint3:'rgba(253,247,242,.94)'},
+    olive:{bg:'bg/bg_olive.jpg',tint:'rgba(248,252,240,.28)',tint2:'rgba(248,252,240,.46)',tint3:'rgba(249,252,245,.94)'},
+    sea:{bg:'bg.jpg',tint:'rgba(245,251,255,.28)',tint2:'rgba(245,251,255,.46)',tint3:'rgba(246,251,254,.94)'},
+  };
+  const photo=$('.bg .photo');
+  let activeScene='bg.jpg', activeTheme='daylight';
+  function setScenery(file){activeScene=file; if(photo) photo.style.backgroundImage=`url("assets/${file}")`; $$('.sc-thumb').forEach(x=>x.classList.toggle('on',x.dataset.f===file));}
+  const sceneryPop=$('#sceneryPop'), sceneryScrim=$('#sceneryScrim'), sceneryGrid=$('#glassSceneryGrid');
+  SCENES.forEach(s=>{const t=document.createElement('div');t.className='sc-thumb'+(s.id===activeScene?' on':'');t.dataset.f=s.id;t.style.backgroundImage=`url("assets/${s.id}")`;
+    t.innerHTML=`<span class="sc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="sc-tt">${s.label}</span>`;
+    t.onclick=()=>{setScenery(s.id);closeScenery();};sceneryGrid.appendChild(t);});
+  function openScenery(){sceneryPop.hidden=false;requestAnimationFrame(()=>sceneryPop.classList.add('open'));sceneryScrim.classList.add('show');}
+  function closeScenery(){sceneryPop.classList.remove('open');sceneryScrim.classList.remove('show');setTimeout(()=>sceneryPop.hidden=true,180);}
+  $('#sceneryBtn').addEventListener('click',openScenery);
+  sceneryScrim.addEventListener('click',closeScenery);
+  const THEME_LIST=[
+    {t:'daylight',n:'Daylight',sw:'linear-gradient(135deg,#fbf9f4,#e3d9c7)'},
+    {t:'ember',n:'Ember',sw:'linear-gradient(135deg,#f6e3c4,#d99a5a)'},
+    {t:'serene',n:'Serene',sw:'linear-gradient(135deg,#eef4f5,#9cc0c6)'},
+    {t:'dawn',n:'Dawn',sw:'linear-gradient(135deg,#f3e6df,#e7b89a)'},
+    {t:'olive',n:'Olive Grove',sw:'linear-gradient(135deg,#e9ecd9,#aab074)'},
+    {t:'sea',n:'Sea',sw:'linear-gradient(135deg,#dde9ef,#7fa9bf)'},
+  ];
+  const themePop=$('#themePop'), themeScrim=$('#themeScrim'), glassThemeGrid=$('#glassThemeGrid');
+  function applyTheme(t){const th=GLASS_THEMES[t]||GLASS_THEMES.daylight;activeTheme=t;
+    document.documentElement.style.setProperty('--glass',th.tint);
+    document.documentElement.style.setProperty('--glass-strong',th.tint2);
+    document.documentElement.style.setProperty('--panel',th.tint3);
+    setScenery(th.bg); $$('.th-thumb').forEach(x=>x.classList.toggle('on',x.dataset.t===t));}
+  THEME_LIST.forEach(th=>{const d=document.createElement('div');d.className='th-thumb'+(th.t===activeTheme?' on':'');d.dataset.t=th.t;
+    d.innerHTML=`<div class="sw2" style="background:${th.sw}"></div><div class="tn">${th.n}</div>`;
+    d.onclick=()=>{applyTheme(th.t);closeTheme();};glassThemeGrid.appendChild(d);});
+  function openTheme(){themePop.hidden=false;requestAnimationFrame(()=>themePop.classList.add('open'));themeScrim.classList.add('show');}
+  function closeTheme(){themePop.classList.remove('open');themeScrim.classList.remove('show');setTimeout(()=>themePop.hidden=true,180);}
+  $('#themeBtn').addEventListener('click',openTheme);
+  themeScrim.addEventListener('click',closeTheme);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(sceneryPop.classList.contains('open')) closeScenery(); if(themePop.classList.contains('open')) closeTheme(); } });
   // simple focus trap
   if(sheet) sheet.addEventListener("keydown",e=>{
     if(e.key!=="Tab") return;
