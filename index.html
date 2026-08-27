@@ -311,6 +311,29 @@ a{color:inherit}
 }
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--muted);font-size:15px;line-height:1.5}
 
+/* ---------- Today's Readings (greeter, editorial parchment card) ---------- */
+.readings{
+  margin:26px auto 0;width:min(560px,100%);text-align:left;
+  background:var(--glass);
+  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
+  border:1px solid var(--border);border-top-color:var(--border-light);
+  border-radius:var(--r-m);
+  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(30,26,20,0.03);
+  padding:14px 18px 16px;
+  animation:rise .4s cubic-bezier(.2,.7,.3,1) both;animation-delay:.12s;
+}
+.readings-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px}
+.readings-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink)}
+.readings-source{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted);text-align:right}
+.readings-body{display:flex;flex-direction:column;gap:9px}
+.reading-row{display:flex;flex-direction:column;gap:2px;padding-left:12px;position:relative}
+.reading-row::before{content:"";position:absolute;left:0;top:6px;bottom:6px;width:2px;border-radius:2px;background:linear-gradient(to bottom,var(--accent),transparent 80%);opacity:.6}
+.reading-row .lab{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-deep);font-weight:600}
+.reading-row .txt{font-size:13px;line-height:1.5;color:var(--ink-soft)}
+.readings.empty .readings-body{font-size:13px;color:var(--muted);line-height:1.5}
+.readings .retry{margin-top:8px;font-size:12px;color:var(--accent-deep);background:none;border:0;cursor:pointer;font-family:var(--body);padding:0;text-decoration:underline}
+@media (max-width:480px){ .readings{margin-top:20px;padding:12px 15px 14px} }
+
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
 .msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
@@ -348,6 +371,10 @@ a{color:inherit}
 .bubble.md em{font-style:italic}
 .bubble.md a{color:var(--accent-deep);text-underline-offset:2px;text-decoration:underline;transition:color .16s ease,text-decoration-color .16s ease}
 .bubble.md a:hover{color:#5c4712;text-decoration-thickness:2px}
+.bubble.md .cit{color:var(--gold-ink);font-weight:600;letter-spacing:.01em;
+  border-bottom:1px solid rgba(87,72,26,.35);text-decoration:none;cursor:help;
+  transition:border-color .16s ease,color .16s ease}
+.bubble.md .cit:hover{color:var(--accent-deep);border-bottom-color:var(--accent-deep)}
 .bubble.md ul,.bubble.md ol{margin:6px 0 10px;padding-left:20px}
 .bubble.md li{margin:3px 0}
 .bubble.md blockquote{margin:8px 0;padding:6px 12px;border-left:3px solid var(--accent);background:rgba(163,130,47,0.08);border-radius:0 8px 8px 0;color:var(--ink-soft)}
@@ -1016,6 +1043,13 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <p class="eyebrow">A companion in the tradition</p>
     <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
     <p class="sub">Ask Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
+    <section class="readings" id="readings" aria-label="Today's liturgical readings" hidden>
+      <div class="readings-head">
+        <span class="readings-eyebrow">Today's Readings</span>
+        <span class="readings-source" id="readingsSource"></span>
+      </div>
+      <div class="readings-body" id="readingsBody"></div>
+    </section>
   </section>
 
   <!-- THREAD (hidden until first send) -->
@@ -1066,7 +1100,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       </div>
 
       <span class="divider"></span>
-      <span class="hint">↵ Enter to send · exports as PDF · TXT · MD</span>
+      <span class="hint">↵ Enter to send · copy or export as Markdown</span>
     </div>
 
     <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.text,.jpg,.jpeg,.png,.webp,.gif,image/*" hidden />
@@ -1506,7 +1540,24 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     // CCC §1234 or CCC 1234 — link to the official Catechism (USCCB is bot-blocked;
     // Vatican's archive is the stable public source).
     out = out.replace(/(CCC\s*)[§#]?\s*(\d{1,4})(?!\d)/g,
-      '$1<a href="https://www.vatican.va/content/catechism/en.html" target="_blank" rel="noopener noreferrer">§$2</a>');
+      '$1<a class="cit" href="https://www.vatican.va/content/catechism/en.html" target="_blank" rel="noopener noreferrer">§$2</a>');
+    // Magisterial documents (encyclicals / conciliar constitutions) — link to a
+    // Vatican site search so the reader lands on the authoritative source.
+    const DOCS = [
+      ["lumen gentium","Lumen Gentium"], ["lumengentium","Lumen Gentium"],
+      ["gaudium et spes","Gaudium et Spes"], ["gaudiumetspes","Gaudium et Spes"],
+      ["fides et ratio","Fides et Ratio"], ["fidesetratio","Fides et Ratio"],
+      ["evangelium vitae","Evangelium Vitae"], ["evangeliumvitae","Evangelium Vitae"],
+      ["veritatis splendor","Veritatis Splendor"], ["veritatissplendor","Veritatis Splendor"],
+      ["humanae vitae","Humanae Vitae"], ["humanaevitae","Humanae Vitae"],
+      ["redemptoris mater","Redemptoris Mater"], ["redemptorismater","Redemptoris Mater"],
+      ["catechism of the catholic church","the Catechism of the Catholic Church"],
+      ["dogmatic constitution on the church","the Dogmatic Constitution on the Church"],
+    ];
+    for(const [needle, label] of DOCS){
+      const re = new RegExp("\\b("+needle.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")\\b","gi");
+      out = out.replace(re, '<span class="cit">$1</span>');
+    }
     // Scripture: "Jn 3:16", "Rom 8:28", "1 Cor 13:4-7", "Ps 23", "Mt 5, 3-11"
     // -> Bible Gateway NRSVCE (the Catholic edition; stable, no 404/403).
     const BM = {
@@ -2126,11 +2177,36 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     saveSessions(); setSelectMode(false); renderSessions();
   });
 
+  /* ---- Today's Readings (greeter) — best-effort USCCB fetch ---- */
+  async function loadReadings(){
+    const wrap=$("#readings"), body=$("#readingsBody"), src=$("#readingsSource");
+    if(!wrap||!body) return;
+    try{
+      const r=await fetch(API+"/api/readings", {cache:"no-store"});
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const d=await r.json();
+      const rows=[];
+      if(d.first)       rows.push(["First Reading", d.first]);
+      if(d.psalm)       rows.push(["Responsorial Psalm", d.psalm]);
+      if(d.gospel)      rows.push(["Gospel", d.gospel]);
+      if(!rows.length) throw new Error("empty");
+      body.innerHTML = rows.map(([lab,txt])=>
+        '<div class="reading-row"><span class="lab">'+esc(lab)+'</span><span class="txt">'+esc(txt)+'</span></div>'
+      ).join("");
+      if(src) src.textContent = d.disclaimer || "";
+      wrap.hidden=false;
+    }catch(e){
+      // silently skip — readings are an enhancement, never block the greeting
+      if(wrap) wrap.hidden=true;
+    }
+  }
+
   /* ---- boot: sessions + load the free model list ---- */
   loadSessions();
   renderSessions();
   if(activeId){ loadSession(activeId); }
   loadModels();
+  loadReadings();
 
   /* ---- beta consent modal: first visit only ---- */
   const betaModal=$("#betaModal"), betaAgree=$("#betaAgree");

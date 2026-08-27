@@ -415,29 +415,52 @@ function sanitize(m) {
 
 // ---- daily readings (best-effort USCCB proxy) ----
 async function getReadings() {
-  const res = await fetchWithTimeout("https://bible.usccb.org/bible/readings", {
-    headers: { "User-Agent": "Mozilla/5.0" },
-  }, 8000);
-  if (!res.ok) throw new Error("readings " + res.status);
-  const html = await res.text();
-  // The current reading page lists episode headings like "Reading I", "Responsorial Psalm", "Alleluia", "Gospel"
-  const heads = { "1": "First Reading", "2": "Responsorial Psalm", "3": "Second Reading", "4": "Reading II", "g": "Gospel" };
-  const grab = (label) => {
-    const i = html.indexOf(label);
-    if (i < 0) return "";
-    let j = html.indexOf("<p", i);
-    if (j < 0) j = html.indexOf("<div", i);
-    if (j < 0) return "";
-    const body = html.slice(j, j + 2600);
-    const txt = body.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
-    return txt.slice(0, 900);
-  };
-  return {
-    first: grab("Reading I") || grab("First Reading"),
-    psalm: grab("Responsorial Psalm"),
-    gospel: grab("Gospel"),
-    disclaimer: "Best-effort from USCCB daily readings.",
-  };
+  try {
+    const res = await fetchWithTimeout("https://bible.usccb.org/bible/readings", {
+      headers: { "User-Agent": "Mozilla/5.0" },
+    }, 8000);
+    if (!res.ok) throw new Error("readings " + res.status);
+    const html = await res.text();
+    const grab = (label) => {
+      const i = html.indexOf(label);
+      if (i < 0) return "";
+      let j = html.indexOf("<p", i);
+      if (j < 0) j = html.indexOf("<div", i);
+      if (j < 0) return "";
+      const body = html.slice(j, j + 2600);
+      const txt = body.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+      return txt.slice(0, 900);
+    };
+    const first = grab("Reading I") || grab("First Reading");
+    const psalm = grab("Responsorial Psalm");
+    const gospel = grab("Gospel");
+    if(first || psalm || gospel){
+      return { first, psalm, gospel, disclaimer: "From the USCCB" };
+    }
+    throw new Error("empty scrape");
+  } catch (e) {
+    // USCCB is frequently bot-blocked. Fall back to a rotating selection from
+    // the tradition so the greeting card is never empty. Clearly labeled.
+    return curatedReadings();
+  }
+}
+
+// A small, evergreen rotation of passages + a saint/feast, keyed by day-of-year.
+// Not the literal daily lectionary, but always Scriptural and on-theme — a
+// quiet daily anchor for the companion, not a substitute for the Missal.
+const LECTIONARY = [
+  { first: "Is 55:6-9 — Seek the Lord while he may be found; call upon him while he is near.", psalm: "Ps 63:1-8 — O God, you are my God, for you I long.", gospel: "Mt 11:28-30 — Come to me, all who labor and are burdened, and I will give you rest." },
+  { first: "Jer 29:11-14 — For I know the plans I have for you, says the Lord, plans for peace.", psalm: "Ps 1:1-6 — Blessed is the one who delights in the law of the Lord.", gospel: "Lk 12:22-34 — Do not be anxious about your life; seek first his kingdom." },
+  { first: "Rom 8:18-27 — The sufferings of this present time are not worth comparing to the glory.", psalm: "Ps 19:1-6 — The heavens declare the glory of God.", gospel: "Jn 14:1-6 — Do not let your hearts be troubled. In my Father's house are many rooms." },
+  { first: "1 Jn 4:7-16 — Beloved, let us love one another, for love is from God.", psalm: "Ps 103:1-12 — Bless the Lord, O my soul, and forget not all his benefits.", gospel: "Mt 5:1-12 — Blessed are the poor in spirit, for theirs is the kingdom of heaven." },
+  { first: "Phil 4:4-9 — Rejoice in the Lord always; the Lord is near.", psalm: "Ps 34:1-10 — Taste and see that the Lord is good.", gospel: "Lk 10:38-42 — Mary sat at the Lord's feet and listened to his word." },
+  { first: "Eph 2:1-10 — By grace you have been saved, through faith — not of yourselves.", psalm: "Ps 51:1-15 — Have mercy on me, O God, according to your steadfast love.", gospel: "Mk 1:14-20 — The kingdom of God is at hand; repent and believe the gospel." },
+  { first: "2 Cor 12:7-10 — My grace is sufficient for you, for my power is made perfect in weakness.", psalm: "Ps 91:1-8 — He who dwells in the shelter of the Most High abides under his shadow.", gospel: "Jn 15:1-11 — I am the vine; you are the branches. Abide in my love." },
+];
+function curatedReadings() {
+  const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const r = LECTIONARY[doy % LECTIONARY.length];
+  return { ...r, disclaimer: "From the tradition" };
 }
 
 const server = http.createServer(async (req, res) => {
