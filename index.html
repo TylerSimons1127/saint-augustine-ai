@@ -801,6 +801,27 @@ html[data-theme="ember"]{
 .about a:hover{ text-decoration:underline; }
 @media (prefers-reduced-motion:reduce){ .settings-sheet,.settings-scrim{ transition:none; } .settings-btn svg{ transition:none; } }
 html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+
+/* ---------- conversation scroll reveal (AnimatedList port, vanilla) ---------- */
+#sbTodayList.reveal .sb-item, #sbEarlierList.reveal .sb-item{ transition:transform .22s ease, opacity .22s ease; }
+#sbTodayList.reveal .sb-item.a-hid, #sbEarlierList.reveal .sb-item.a-hid{ opacity:0; transform:scale(.7); }
+#sbTodayList.reveal .sb-item.a-in, #sbEarlierList.reveal .sb-item.a-in{ opacity:1; transform:scale(1); }
+
+/* no left-right scrolling in sidebar */
+.sidebar, .sb-scroll, .sb-list, .sb-item{ overflow-x:hidden; max-width:100%; }
+
+/* edge-gradient hints on the conversation list (fade in with scroll) */
+.sb-scroll{ position:relative; }
+.sb-scroll::before{
+  content:""; position:sticky; top:0; z-index:2; display:block; height:18px; margin:-18px -2px 0;
+  background:linear-gradient(to bottom, var(--bg-2), transparent); opacity:var(--sb-top-grad,0);
+  transition:opacity .3s ease; pointer-events:none;
+}
+.sb-scroll::after{
+  content:""; position:sticky; bottom:0; z-index:2; display:block; height:26px; margin:0 -2px -26px;
+  background:linear-gradient(to top, var(--bg-2), transparent); opacity:var(--sb-bot-grad,1);
+  transition:opacity .3s ease; pointer-events:none;
+}
 @media (max-width:480px){
   .settings-sheet{ width:auto; left:0; right:0; top:auto; bottom:0; max-height:82dvh;
     border-left:0; border-top:1px solid var(--border); border-radius:20px 20px 0 0;
@@ -1257,14 +1278,21 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     return { id:"s"+Date.now()+Math.random().toString(36).slice(2,6), title:t, model:m?m.name:"Aug", created:Date.now(), updated:Date.now(), threadHtml:"", history:[] };
   }
   function sessionTitle(firstMsg){
-    const s = String(firstMsg||"").trim();
-    if(!s) return "New conversation";
-    // take first sentence-ish, trim, cap ~54
-    let t = s.replace(/\s+/g," ").split(/[.!?]/)[0].trim();
-    if(t.length>54) t=t.slice(0,51).trimEnd()+"…";
-    if(!t) t="New conversation";
-    return t;
-  }
+      const s = String(firstMsg||"").trim();
+      if(!s) return "New conversation";
+      // take first sentence-ish, then cap to a word budget that fits one sidebar line
+      let t = s.replace(/\s+/g," ").split(/[.!?]/)[0].trim();
+      if(!t) t="New conversation";
+      t = shortenTitle(t);
+      return t;
+    }
+    // conversation titles fit one sidebar line (~5 words) — no horizontal scrolling
+    function shortenTitle(t, maxWords){
+      maxWords = maxWords||5;
+      const words = String(t||"").trim().split(/\s+/);
+      if(words.length>maxWords) return words.slice(0,maxWords).join(" ")+"…";
+      return String(t||"").trim();
+    }
   function saveSessions(){
     try{ localStorage.setItem(LS_SESSIONS, JSON.stringify(sessions)); if(activeId) localStorage.setItem(LS_ACTIVE, activeId); else localStorage.removeItem(LS_ACTIVE); }catch(_){}
   }
@@ -1301,7 +1329,29 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(!el.classList.contains("renaming")) sbClose(); }));
     }
     applySearch();
-  }
+        setupReveal();
+        updateSbGradients();
+      }
+      /* ---- scroll-reveal (AnimatedList port) + edge gradients on the sidebar list ---- */
+      let _revealIO=null;
+      function setupReveal(){
+        const lists=[$("#sbTodayList"), $("#sbEarlierList")].filter(Boolean);
+        if(_revealIO) _revealIO.disconnect();
+        _revealIO=new IntersectionObserver(es=>{
+          es.forEach(en=>{ en.target.classList.toggle("a-in", en.isIntersecting); en.target.classList.toggle("a-hid", !en.isIntersecting); });
+        },{ root:null, threshold:0.01 });
+        lists.forEach(l=>{ l.classList.add("reveal"); $$(".sb-item",l).forEach(el=>{ el.classList.add("a-hid"); _revealIO.observe(el); }); });
+      }
+      const sbScrollEl=$(".sb-scroll");
+      function updateSbGradients(){
+        if(!sbScrollEl) return;
+        const st=sbScrollEl.scrollTop, sh=sbScrollEl.scrollHeight, ch=sbScrollEl.clientHeight;
+        const top=Math.min(st/50, 1);
+        const bot = sh<=ch ? 0 : Math.min((sh-(st+ch))/50, 1);
+        sbScrollEl.style.setProperty("--sb-top-grad", top);
+        sbScrollEl.style.setProperty("--sb-bot-grad", bot);
+      }
+      if(sbScrollEl) sbScrollEl.addEventListener("scroll", updateSbGradients);
   function deleteSession(id){
     const i=sessions.findIndex(s=>s.id===id); if(i<0) return;
     sessions.splice(i,1);
@@ -1317,9 +1367,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     const finish=()=>{
       txt.removeAttribute("contenteditable");
       el.classList.remove("renaming");
-      const v=txt.textContent.trim()||"Untitled";
-      const s=sessions.find(x=>x.id===el.dataset.id); if(s){ s.title=v; saveSessions(); }
-      txt.textContent=v;
+      const v=shortenTitle(txt.textContent.trim()||"Untitled");
+            const s=sessions.find(x=>x.id===el.dataset.id); if(s){ s.title=v; saveSessions(); }
+            txt.textContent=v;
       txt.removeEventListener("blur",finish); txt.removeEventListener("keydown",onKey);
     };
     const onKey=(e)=>{
