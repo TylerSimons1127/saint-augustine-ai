@@ -161,7 +161,7 @@ async function handleChat(req, res, body) {
       "no 'Sources:' line, no long prayer. If a TLDR would help, it is not needed because the answer is already brief.";
   } else if (reasoning === "contemplative") {
     temperature = 0.4;
-    maxTokens = 4096;
+    maxTokens = 2048; // bounded so slow free models finish under the 110s fetch ceiling
     depthNote =
       "ANSWER MODE — CONTEMPLATIVE (maximum depth, maximum length): I ask of you my own " +
   "best self — be fully unhurried and give the deepest answer you can, as long as it " +
@@ -368,6 +368,11 @@ const server = http.createServer(async (req, res) => {
   const url = (req.url || "").split("?")[0];
   try {
     if (req.method === "GET" && url === "/api/health") return sendJson(res, 200, { ok: true });
+    if (req.method === "GET" && url === "/api/healthz") {
+      const keyPresent = !!KEY;
+      const modelCount = modelsCache.data ? modelsCache.data.length : 0;
+      return sendJson(res, 200, { ok: keyPresent, keyPresent, modelCount, ts: Date.now() });
+    }
     if (req.method === "GET" && url === "/api/models") {
       try { return sendJson(res, 200, { models: await getFreeModels() }); }
       catch (e) { return sendJson(res, 502, { error: "Could not fetch models." }); }
