@@ -214,36 +214,79 @@ async function handleChat(req, res, body) {
     "Access-Control-Allow-Origin": "*",
     "X-Accel-Buffering": "no",
   });
+  await proxyStream(upstream, res);
+}
+
+/* ---- SSE proxy: OpenRouter upstream -> browser ----
+ * Contract: each upstream SSE `data:` JSON carries a `choices[0].delta`.
+ * - delta.content -> forwarded live as {text}  (visible reply)
+ * - delta.reasoning / delta.thinking -> forwarded live as {reasoning} (Thinking box)
+ * Some free "reasoning" models emit their ENTIRE answer under `reasoning` and
+ * nothing under `content` (e.g. nvidia/nemotron-3-ultra). For those we must
+ * surface the reasoning stream as the visible answer in real time, or the user
+ * stares at an empty bubble until a 40s late dump. So:
+ *   - Always forward reasoning as {reasoning} (client hides it in a box).
+ *   - If NO content has arrived by the time the stream ends, re-emit the
+ *     accumulated reasoning as live {text} tokens (visible). But to avoid a
+ *     jarring end-dump, we ALSO begin mirroring reasoning->text live once it's
+ *     clear this is a reasoning-only model (threshold reached with no content).
+ */
+async function proxyStream(upstream, res) {
   let sawContent = false;
+  let sawReasoning = false;
   let reasonAcc = "";
+  let mirrored = false;                       // reasoning-only model: mirroring to text
+  const MIRROR_THRESHOLD = 600;              // chars of reasoning w/ no content yet
+  const REASON_TRACE_MAX = 2400;             // cap what we reveal in the Thinking box
+  const REASON_TEXT_MAX = 14000;             // safety cap on mirrored visible text
   const decoder = new TextDecoder();
+  let lineBuf = "";
+
+  const flush = (obj) => res.write(`data: ${JSON.stringify(obj)}\n\n`);
+
   for await (const chunk of upstream.body) {
-    const text = decoder.decode(chunk, { stream: true }).replace(/\r\n/g, "\n");
-    for (const line of text.split("\n")) {
+    const text = decoder.decode(chunk, { stream: true })
+      .split(String.fromCharCode(13)).join(String.fromCharCode(10));
+    lineBuf += text;
+
+    // process complete lines; keep any trailing partial line in the buffer
+    let nl;
+    while ((nl = lineBuf.indexOf("\n")) >= 0) {
+      const line = lineBuf.slice(0, nl);
+      lineBuf = lineBuf.slice(nl + 1);
       if (!line.startsWith("data:")) continue;
       const data = line.slice(5).trim();
-      if (data === "[DONE]") { res.write("event: done\ndata: {}\n\n"); continue; }
+      if (data === "[DONE]") { flush({}); continue; }
       let j;
       try { j = JSON.parse(data); } catch (_) { continue; }
       const delta = j.choices?.[0]?.delta;
-      // thinking tokens — sent under a distinct `reasoning` field so the client
-      // can hide them without any SSE `event:` state tracking.
-      let th = delta?.reasoning ?? delta?.thinking ?? null;
-      if (th) {
-        reasonAcc += th;
-        res.write(`data: ${JSON.stringify({ reasoning: th })}\n\n`);
+      if (!delta) continue;
+      const th = delta.reasoning ?? delta.thinking ?? null;
+      const tok = delta.content ?? "";
+      if (tok) {
+        sawContent = true;
+        flush({ text: tok });
       }
-      const tok = delta?.content ?? "";
-      if (tok) { sawContent = true; res.write(`data: ${JSON.stringify({ text: tok })}\n\n`); }
+      if (th) {
+        sawReasoning = true;
+        reasonAcc += th;
+        if (reasonAcc.length <= REASON_TRACE_MAX) flush({ reasoning: th });
+        if (!sawContent && !mirrored && reasonAcc.length >= MIRROR_THRESHOLD) {
+          mirrored = true;
+          flush({ reasoning: null });
+        }
+        if (mirrored && reasonAcc.length <= REASON_TEXT_MAX) flush({ text: th });
+      }
     }
   }
-  // Some free reasoning models stream their answer ONLY under `reasoning`.
-  // If no content arrived, surface the accumulated reasoning so the user never
-  // sees an empty reply — better a visible answer than a blank bubble.
-  if (!sawContent && reasonAcc.trim()) {
-    res.write(`data: ${JSON.stringify({ text: reasonAcc.trim() })}\n\n`);
+  // flush any trailing partial line (defensive; unlikely to contain a full event)
+  lineBuf = "";
+  // Fallback: reasoning-only model that never hit the threshold (very short reply).
+  if (!sawContent && sawReasoning && reasonAcc.trim()) {
+    flush({ reasoning: null });
+    flush({ text: reasonAcc.trim() });
   }
-  res.write("event: done\ndata: {}\n\n");
+  flush({});                                   // event: done
   res.end();
 }
 
