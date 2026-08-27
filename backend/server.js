@@ -117,6 +117,22 @@ const metrics = {
   rateLimited: 0,
   startedAt: Date.now(),
 };
+
+// ---- user feedback (in-memory ring buffer; no disk) ----
+// Lets users flag a reply (unfaithful / off-topic / other). Capped so a flood
+// can't grow memory; we keep the most recent 200 entries. Exposed read-only via
+// /api/healthz for ops. Resets on deploy (acceptable for a free-tier MVP).
+const FEEDBACK_CAP = 200;
+const feedback = [];
+function addFeedback(entry) {
+  feedback.push({
+    ts: Date.now(),
+    reason: ["unfaithful", "off-topic", "other"].includes(entry.reason) ? entry.reason : "other",
+    detail: String(entry.detail || "").slice(0, 500),
+    model: String(entry.model || "").slice(0, 120),
+  });
+  if (feedback.length > FEEDBACK_CAP) feedback.splice(0, feedback.length - FEEDBACK_CAP);
+}
 function recordChat(model, outcome) {
   metrics.chatRequests++;
   const b = metrics.byModel[model] || (metrics.byModel[model] = { ok: 0, err: 0, fallback: 0 });
@@ -443,6 +459,7 @@ const server = http.createServer(async (req, res) => {
           errors: metrics.errors,
           byModel: metrics.byModel,
         },
+        feedbackCount: feedback.length,
       });
     }
     if (req.method === "GET" && url === "/api/models") {
@@ -462,6 +479,23 @@ const server = http.createServer(async (req, res) => {
       }
       const body = await readBody(req);
       return await handleChat(req, res, body);
+    }
+    if (url === "/api/feedback") {
+      if (req.method === "POST") {
+        let body;
+        try { body = await readBody(req); }
+        catch (_) { return sendJson(res, 400, { error: "Invalid JSON body." }); }
+        if (!body || typeof body !== "object") return sendJson(res, 400, { error: "Invalid body." });
+        addFeedback({ reason: body.reason, detail: body.detail, model: body.model });
+        return sendJson(res, 200, { ok: true });
+      }
+      if (req.method === "GET") {
+        return sendJson(res, 200, {
+          count: feedback.length,
+          recent: feedback.slice(-20).reverse(),
+        });
+      }
+      return sendJson(res, 405, { error: "Method not allowed." });
     }
     return sendJson(res, 404, { error: "Not found" });
   } catch (e) {

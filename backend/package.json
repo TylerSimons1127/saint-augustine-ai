@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "test": "node _timeout_test.js && node _proxy_mirror_test.js && node _fallback_test.js && node _ratelimit_test.js && node _allowlist_test.js && node _metrics_test.js"
+    "test": "node _timeout_test.js && node _proxy_mirror_test.js && node _fallback_test.js && node _ratelimit_test.js && node _allowlist_test.js && node _metrics_test.js && node _feedback_test.js"
   },
   "engines": {
     "node": ">=18"
