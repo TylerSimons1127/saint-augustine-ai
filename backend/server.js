@@ -61,6 +61,20 @@ function cors(res) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
+// Hard timeout on outbound calls so a hung upstream (common on free model tiers)
+// can't wedge the request forever. Without this, a slow OpenRouter chat can hang
+// the connection until the provider itself closes — the "contemplative times out"
+// symptom. AbortController gives us a clean, user-facing failure instead.
+async function fetchWithTimeout(url, options = {}, ms = 30000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: ctrl.signal });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 // ---- free-models cache ----
 let modelsCache = { at: 0, data: null };
 
@@ -79,7 +93,7 @@ const CURATED_ORDER = new Map(CURATED.map((id, i) => [id, i]));
 
 async function getFreeModels() {
   if (modelsCache.data && Date.now() - modelsCache.at < MODELS_CACHE_MS) return modelsCache.data;
-  const res = await fetch(`${OPENROUTER}/models`, { headers: { Authorization: `Bearer ${KEY}` } });
+  const res = await fetchWithTimeout(`${OPENROUTER}/models`, { headers: { Authorization: `Bearer ${KEY}` } }, 15000);
   if (!res.ok) throw new Error(`OpenRouter models ${res.status}`);
   const json = await res.json();
   const list = (json.data || [])
@@ -178,12 +192,15 @@ async function handleChat(req, res, body) {
 
   let upstream;
   try {
-    upstream = await fetch(`${OPENROUTER}/chat/completions`, {
+    upstream = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
       body: JSON.stringify(payload),
-    });
+    }, 110000);
   } catch (e) {
+    if (e.name === "AbortError") {
+      return sendJson(res, 504, { error: "The model took too long to respond (free tier may be saturated). Try again, choose a different model, or use 'Quick' mode." });
+    }
     return sendJson(res, 502, { error: "Could not reach OpenRouter." });
   }
 
@@ -309,9 +326,9 @@ function sanitize(m) {
 
 // ---- daily readings (best-effort USCCB proxy) ----
 async function getReadings() {
-  const res = await fetch("https://bible.usccb.org/bible/readings", {
+  const res = await fetchWithTimeout("https://bible.usccb.org/bible/readings", {
     headers: { "User-Agent": "Mozilla/5.0" },
-  });
+  }, 8000);
   if (!res.ok) throw new Error("readings " + res.status);
   const html = await res.text();
   // The current reading page lists episode headings like "Reading I", "Responsorial Psalm", "Alleluia", "Gospel"
@@ -360,3 +377,8 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
+
+// Export internals for unit tests only (no effect on normal runtime).
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings };
+}
