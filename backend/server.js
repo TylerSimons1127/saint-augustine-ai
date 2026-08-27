@@ -75,6 +75,33 @@ async function fetchWithTimeout(url, options = {}, ms = 30000) {
   }
 }
 
+// ---- per-IP rate limiter (protects the free OpenRouter key) ----
+// Generous window so normal use never feels it, but a flood (or a scraped
+// endpoint) can't burn the free-tier quota. Keyed on the real client IP
+// (Render forwards it via x-forwarded-for); falls back to socket address.
+const RATE_LIMIT = { windowMs: 60_000, max: 30 }; // 30 chat requests / minute / IP
+const rateBuckets = new Map();
+function getClientIp(req) {
+  const xff = req.headers["x-forwarded-for"];
+  if (xff) return String(xff).split(",")[0].trim();
+  return req.socket.remoteAddress || "unknown";
+}
+function rateLimited(ip) {
+  const now = Date.now();
+  let b = rateBuckets.get(ip);
+  if (!b || now > b.resetAt) {
+    b = { count: 0, resetAt: now + RATE_LIMIT.windowMs };
+    rateBuckets.set(ip, b);
+  }
+  b.count++;
+  if (b.count > RATE_LIMIT.max) return true;
+  // periodic sweep so the Map doesn't grow unbounded
+  if (rateBuckets.size > 5000) {
+    for (const [k, v] of rateBuckets) if (now > v.resetAt) rateBuckets.delete(k);
+  }
+  return false;
+}
+
 // ---- free-models cache ----
 let modelsCache = { at: 0, data: null };
 
@@ -382,6 +409,11 @@ const server = http.createServer(async (req, res) => {
       catch (e) { return sendJson(res, 502, { error: "Could not fetch today's readings." }); }
     }
     if (req.method === "POST" && url === "/api/chat") {
+      if (rateLimited(getClientIp(req))) {
+        return sendJson(res, 429, {
+          error: "Too many messages in a short time. Please wait a minute before sending another.",
+        });
+      }
       const body = await readBody(req);
       return await handleChat(req, res, body);
     }
