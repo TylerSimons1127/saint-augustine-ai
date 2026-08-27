@@ -6,9 +6,9 @@ const http = require("http");
 const REASON = "My child, grace is the very life of God poured into the soul.";
 const chunks = REASON.match(/[\s\S]{1,10}/g);
 
-// Stub upstream OpenRouter: 404 for ?x=dead, stream reasoning-only otherwise.
+// Stub upstream OpenRouter: 404 for the first curated model, stream reasoning-only otherwise.
 const stub = http.createServer((req, res) => {
-  if (req.url.includes("deadmodel")) { res.writeHead(404); res.end("nope"); return; }
+  if (req.url.includes("nemotron-3-ultra")) { res.writeHead(404); res.end("nope"); return; }
   res.writeHead(200, { "content-type": "text/event-stream", "cache-control": "no-cache" });
   let i = 0;
   const t = setInterval(() => {
@@ -35,7 +35,7 @@ stub.listen(0, async () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "vendor/deadmodel:free",
+        model: "nvidia/nemotron-3-ultra-550b-a55b:free", // curated, but stub 404s it -> backend falls back
         reasoning: "quick",
         stream: true,
         messages: [{ role: "user", content: "hi" }],

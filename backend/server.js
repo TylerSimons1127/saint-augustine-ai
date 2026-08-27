@@ -167,6 +167,10 @@ function friendlyError(status) {
 async function handleChat(req, res, body) {
   const { model, messages, reasoning, stream } = body;
   if (!model) return sendJson(res, 400, { error: "Missing 'model'." });
+  // Lock the requested model to the curated free-tier allowlist. The API is
+  // public, so without this anyone could proxy paid models through our key.
+  if (!CURATED.includes(model))
+    return sendJson(res, 400, { error: "That model is not on the available list. Choose one of the offered models." });
   if (!Array.isArray(messages) || messages.length === 0)
     return sendJson(res, 400, { error: "Missing 'messages'." });
 

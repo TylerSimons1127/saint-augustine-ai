@@ -24,7 +24,7 @@ stub.listen(0, async () => {
     fetch(base, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-forwarded-for": ip },
-      body: JSON.stringify({ model: "x", reasoning: "quick", stream: true, messages: [{ role: "user", content: "hi" }] }),
+      body: JSON.stringify({ model: "nvidia/nemotron-3-ultra-550b-a55b:free", reasoning: "quick", stream: true, messages: [{ role: "user", content: "hi" }] }),
     });
 
   // 30 requests from ONE ip -> all 200
