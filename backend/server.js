@@ -182,56 +182,66 @@ async function handleChat(req, res, body) {
     ? { role: "system", content: SYSTEM_PROMPT + "\n\n" + depthNote }
     : sys;
 
-  const payload = {
-    model,
+  const payloadBase = {
     stream: stream !== false,
     messages: [sysAugmented, ...history],
     max_tokens: maxTokens,
     temperature,
   };
 
-  let upstream;
-  try {
-    upstream = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
-      body: JSON.stringify(payload),
-    }, 110000);
-  } catch (e) {
-    if (e.name === "AbortError") {
-      return sendJson(res, 504, { error: "The model took too long to respond (free tier may be saturated). Try again, choose a different model, or use 'Quick' mode." });
-    }
-    return sendJson(res, 502, { error: "Could not reach OpenRouter." });
-  }
+  // Retry order: the user's chosen model first, then the rest of the curated
+  // list. Free models vanish or get rate-limited without warning; failing over
+  // to another curated model keeps the chat alive instead of 404-ing the user.
+  const ordered = [model];
+  for (const c of CURATED) if (c !== model) ordered.push(c);
 
-  // Non-stream responses (if a client sends stream:false) — simple JSON
-  if (!payload.stream) {
+  let lastErr = { status: 502, error: "Could not reach OpenRouter.", detail: "" };
+  for (const cand of ordered) {
+    let upstream;
+    try {
+      upstream = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
+        body: JSON.stringify({ ...payloadBase, model: cand }),
+      }, 110000);
+    } catch (e) {
+      if (e.name === "AbortError") {
+        lastErr = { status: 504, error: "The model took too long to respond (free tier may be saturated). Try again, choose a different model, or use 'Quick' mode.", detail: "" };
+        continue; // try the next model
+      }
+      lastErr = { status: 502, error: "Could not reach OpenRouter.", detail: "" };
+      continue;
+    }
+
     if (!upstream.ok) {
       let detail = "";
       try { detail = (await upstream.json()).error?.message || ""; } catch (_) {}
-      return sendJson(res, upstream.status, { error: friendlyError(upstream.status), detail });
+      lastErr = { status: upstream.status, error: friendlyError(upstream.status), detail };
+      continue;
     }
-    const json = await upstream.json();
-    return sendJson(res, 200, {
-      content: json.choices?.[0]?.message?.content || "",
-      model: json.model,
+
+    // Success on this candidate.
+    if (!payloadBase.stream) {
+      const json = await upstream.json();
+      return sendJson(res, 200, {
+        content: json.choices?.[0]?.message?.content || "",
+        model: json.model,
+      });
+    }
+
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "Access-Control-Allow-Origin": "*",
+      "X-Accel-Buffering": "no",
     });
+    await proxyStream(upstream, res);
+    return;
   }
 
-  // ---- SSE stream to the browser ----
-  if (!upstream.ok || !upstream.body) {
-    let detail = "";
-    try { detail = (await upstream.json()).error?.message || ""; } catch (_) {}
-    return sendJson(res, upstream.status, { error: friendlyError(upstream.status), detail });
-  }
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream; charset=utf-8",
-    "Cache-Control": "no-cache, no-transform",
-    Connection: "keep-alive",
-    "Access-Control-Allow-Origin": "*",
-    "X-Accel-Buffering": "no",
-  });
-  await proxyStream(upstream, res);
+  // Every candidate failed.
+  return sendJson(res, lastErr.status, { error: lastErr.error, detail: lastErr.detail });
 }
 
 /* ---- SSE proxy: OpenRouter upstream -> browser ----
