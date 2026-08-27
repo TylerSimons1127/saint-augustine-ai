@@ -678,6 +678,69 @@ textarea#prompt::placeholder{color:var(--muted)}
 .tut-skip:hover{background:rgba(190,30,30,0.08);color:var(--danger)}
 @media (max-width:480px){.tut-btns button{flex:1}.tut-skip{order:3;flex-basis:100%}}
 
+/* ---------- Premium polish: living motion + craft (no neon, no glow-slop) ---------- */
+/* live streaming caret — a soft gold block that breathes with the reply (Linear/Codex feel) */
+.caret{display:inline-block;width:.58em;height:1.02em;margin-left:1px;vertical-align:text-bottom;
+  border-radius:2px;background:var(--accent);opacity:.85;
+  animation:caretPulse 1.05s ease-in-out infinite;}
+@keyframes caretPulse{0%,100%{opacity:.22;transform:translateY(.12em) scaleY(.55)}50%{opacity:.9;transform:translateY(0) scaleY(1)}}
+
+/* message mount: soft rise + settle (replaces plain rise) — staggered with --i */
+.msg{animation:msgIn .5s cubic-bezier(.22,.7,.3,1) both;animation-delay:calc(var(--i,0)*70ms)}
+@keyframes msgIn{0%{opacity:0;transform:translateY(16px) scale(.985);filter:blur(4px)}60%{opacity:1;transform:translateY(-2px) scale(1)}100%{opacity:1;transform:none;filter:blur(0)}}
+.bubble{border-radius:var(--r-m)}
+.msg.assistant .bubble{position:relative;overflow:hidden}
+/* soft left reflect on assistant bubbles (quiet elevation, not a colored glow) */
+.msg.assistant .bubble::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom, var(--accent), transparent 70%);opacity:.5;border-radius:2px}
+
+/* textarea auto-grow is JS; here its focus ring only */
+textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
+
+/* composer focus: lift + clearer gold aura (subdued, tinted to ink not neon) */
+.composer{transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease}
+.composer:focus-within{transform:translateY(-2px);
+  box-shadow:0 18px 52px rgba(120,96,33,0.18), 0 2px 0 rgba(255,255,255,.6) inset, 0 0 0 3px var(--accent-soft)}
+
+/* send button: gradient gold, springy press */
+.send{background:linear-gradient(145deg,var(--accent-deep),var(--accent-press) 68%);will-change:transform}
+.send:not(:disabled):active{transform:scale(.92)}
+.send svg{transition:transform .16s cubic-bezier(.22,.7,.3,1)}
+.send:not(:disabled):hover svg{transform:translateY(-1px) rotate(-8deg)}
+.send:disabled svg{opacity:.6}
+
+/* greeting halo: gentle, involuntary breath */
+.greet .halo{animation:haloBreath 7s ease-in-out infinite}
+@keyframes haloBreath{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.05);filter:brightness(1.06)}}
+
+/* suggestion chips: lift + gold sheen sweep + trailing arrow on hover */
+.chip{position:relative;overflow:hidden;isolation:isolate}
+.chip::before{content:"";position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(110deg,transparent 30%,rgba(255,251,240,0.6) 50%,transparent 70%);
+  transform:translateX(-120%);transition:transform .6s cubic-bezier(.22,.7,.3,1)}
+.chip:hover::before{transform:translateX(120%)}
+.chip .t{display:flex;align-items:center;gap:6px}
+.chip .t::after{content:"";width:0;height:0;border-left:5px solid var(--accent);border-top:3.5px solid transparent;border-bottom:3.5px solid transparent;opacity:0;transform:translateX(-4px);transition:opacity .18s ease,transform .18s ease}
+.chip:hover .t::after{opacity:1;transform:translateX(0)}
+
+/* active session gold rail (quiet, precise) */
+.sb-item[aria-current="true"]{position:relative}
+.sb-item[aria-current="true"]::before{content:"";position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+  width:3px;height:16px;border-radius:99px;background:var(--accent)}
+
+/* refined scrollbar for the stage + popping composition on the reveal list */
+.stage::-webkit-scrollbar, .sb-scroll::-webkit-scrollbar{width:10px;height:10px}
+.stage::-webkit-scrollbar-track, .sb-scroll::-webkit-scrollbar-track{background:transparent}
+.stage::-webkit-scrollbar-thumb, .sb-scroll::-webkit-scrollbar-thumb{
+  background:rgba(30,26,20,0.12);border-radius:99px;border:3px solid transparent;background-clip:content-box}
+.stage::-webkit-scrollbar-thumb:hover, .sb-scroll::-webkit-scrollbar-thumb:hover{background:rgba(30,26,20,0.24);background-clip:content-box}
+
+/* brand wordmark gets a quiet hover accent; settings gear already rotates */
+.brand .wordmark{transition:letter-spacing .25s ease}
+.sidebar .brand:hover .wordmark{letter-spacing:.4px}
+
+/* keep step-through crisp on touch; already guarded by (hover:none) below */
+
 /* ---------- Motion preferences ---------- */
 @media (hover:none){           /* touch devices: kill sticky hover-lift */
   .chip:hover,.sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
@@ -1713,9 +1776,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
   /* ---- rendering ---- */
   function bubble(role,html,bubbleClass){
-    const m=document.createElement("div");
-    m.className="msg "+role;
-    const who = role==="user" ? "" : "Augustine";
+      const m=document.createElement("div");
+          m.className="msg "+role;
+          // bounded stagger: last few appended messages get tiny delay offsets, never grows with thread length
+          m.style.setProperty("--i", (window.__msgSeq=(window.__msgSeq||0)+1) % 4);
+          const who = role==="user" ? "" : "Augustine";
     const init = role==="user" ? "You".slice(0,1) : "A";
     m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}">${who?`<span class="who">${who}</span>`:''}${html}</div>`;
     if(role==="user"){
@@ -1865,12 +1930,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         if(hasReasoning){
           inner += '<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reasoningAcc)+'</div></details>';
         }
-        inner += streaming ? esc(acc) : mdToHtml(acc);
-        buf.className = "bubble md";
-        buf.innerHTML = '<span class="who">Augustine</span>'+inner;
-        maybeScroll();
-      };
-      while(true){
+        inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
+                buf.className = "bubble md";
+                buf.innerHTML = '<span class="who">Augustine</span>'+inner;
+                maybeScroll();
+              };
+              while(true){
         const {value,done}=await reader.read();
         if(done) break;
         bufStr += dec.decode(value,{stream:true});
@@ -1946,7 +2011,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc):mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">Augustine</span>'+inner; maybeScroll(); };
+      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">Augustine</span>'+inner; maybeScroll(); };
       while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning!=null){reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
       render(false); if(!acc) acc="(no response)";
       history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
