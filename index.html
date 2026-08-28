@@ -446,6 +446,24 @@ a{color:inherit}
   border:1px solid var(--border);border-top-color:var(--border-light);border-radius:var(--r-l,26px);
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(30,26,20,0.03), 0 18px 44px -22px rgba(70,52,20,0.40);
   transition:border-color .18s ease, box-shadow .18s ease}
+
+/* ---------- creator credit (persistent bottom-left) ---------- */
+.credit-chip{
+  position:fixed; left:max(14px, env(safe-area-inset-left)); bottom:max(12px, env(safe-area-inset-bottom)); z-index:25;
+  display:flex; align-items:center; gap:9px; padding:7px 13px 7px 9px;
+  background:var(--glass-strong); backdrop-filter:blur(20px) saturate(165%); -webkit-backdrop-filter:blur(20px) saturate(165%);
+  border:1px solid var(--border); border-radius:999px; box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55);
+  max-width:min(78vw,420px);
+}
+.credit-chip .av{
+  width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font-family:var(--display);font-weight:600;font-size:13px;color:#fff7e8;
+  background:radial-gradient(120% 120% at 42% 30%, #9c2735, #741824 55%, #4a0d16);
+  box-shadow:inset 0 0 0 1px rgba(202,162,74,.6);
+}
+.credit-chip .ct{ font-size:12.5px; line-height:1.2; color:var(--ink); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.credit-chip .ct b{ font-weight:700; color:var(--ink); }
+.credit-chip .ct .beta{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:#fbf7ee; background:var(--accent-deep); padding:1px 7px; border-radius:999px; margin-left:4px; font-weight:700; }
 .composer:focus-within{border-color:rgba(163,130,47,.55);box-shadow:0 10px 34px rgba(120,96,33,0.14), inset 0 1px 0 rgba(255,255,255,0.7), 0 0 0 3px var(--accent-soft)}
 .attach-row{display:flex;flex-wrap:wrap;gap:8px}
 .fchip{
@@ -509,8 +527,8 @@ textarea#prompt::placeholder{color:var(--muted)}
   padding:6px;display:none;
 }
 .pop.open{display:block;animation:rise .16s ease both}
-.sc-pop,.th-pop{position:fixed;bottom:auto;top:84px;left:50%;width:min(440px,92vw);max-height:64vh;overflow:auto;z-index:90;transform:translateX(-50%) translateY(8px) scale(.98);padding:0}
-.sc-pop.open,.th-pop.open{display:block;animation:rise .16s ease both;transform:translateX(-50%)}
+.sc-pop,.th-pop{position:fixed;left:50%;top:50%;bottom:auto;right:auto;width:min(460px,92vw);max-height:86dvh;overflow:auto;z-index:90;transform:translate(-50%,-46%) scale(.98);opacity:0;pointer-events:none;transition:transform .26s cubic-bezier(.4,0,.2,1),opacity .2s ease;padding:0}
+.sc-pop.open,.th-pop.open{display:block;animation:none;transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
 .sc-pop-scrim,.th-pop-scrim{display:none;position:fixed;inset:0;z-index:40;background:rgba(30,26,20,.30)}
 .sc-pop-scrim.show,.th-pop-scrim.show{display:block}
 .pop .psearch{
@@ -611,6 +629,10 @@ textarea#prompt::placeholder{color:var(--muted)}
   .rail,.stage,.dock{left:0 !important}
 }
 @media (max-width:768px){
+  /* credit chip sits just above the full-width dock on phones */
+  .credit-chip{ bottom:calc(214px + env(safe-area-inset-bottom)); max-width:84vw; }
+}
+@media (max-width:768px){
   /* rail offset so it clears the fixed sidebar toggle (44px at left:12px) */
   .rail{
     gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-top));
@@ -665,25 +687,22 @@ textarea#prompt::placeholder{color:var(--muted)}
   .reasoning{display:flex;gap:6px}
   .reasoning .seg{flex:1;height:34px;justify-content:center;font-size:12.5px;padding:0 6px;white-space:nowrap}
 }
-/* E: scenery + theme pickers become bottom sheets on phones (like .pop) */
+/* E: scenery + theme pickers — centered modal on phones too (per spec) */
 @media (max-width:480px){
   .sc-pop,.th-pop{
-    position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;z-index:96;
-    max-height:74dvh;border-radius:20px 20px 0 0;border-bottom:0;
+    position:fixed;left:50%;top:50%;bottom:auto;right:auto;width:min(460px,94vw);
+    max-height:88dvh;border-radius:20px;border-bottom:1px solid var(--border);
     padding:8px 10px calc(14px + env(safe-area-inset-bottom));
-    display:flex;flex-direction:column;
-    transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+    transform:translate(-50%,-46%) scale(.98);opacity:0;pointer-events:none;
+    transition:transform .26s cubic-bezier(.4,0,.2,1),opacity .2s ease;
   }
-  .sc-pop.open,.th-pop.open{transform:translateY(0)}
+  .sc-pop.open,.th-pop.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
   .sc-pop .pop-head,.th-pop .pop-head{flex:none}
   .glassSceneryGrid,.glassThemeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;overflow:auto;max-height:calc(74dvh - 80px)}
   .sc-pop-scrim,.th-pop-scrim{z-index:40}
   .settings-sheet{
-    top:auto;right:0;left:0;bottom:0;width:auto;max-width:none;height:auto;max-height:82dvh;
-    border-left:0;border-top:1px solid var(--border);border-radius:20px 20px 0 0;
-    transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+    width:min(440px,94vw); max-height:88dvh; border-radius:20px;
   }
-  .settings-sheet.show{transform:none}
 }
 /* F: short landscape phones — protect the dock from the rail */
 @media (max-height:480px) and (max-width:900px){
@@ -830,12 +849,21 @@ html[data-bg] .bg .photo{ background-image:var(--bg-img); }
   transition:opacity .3s ease; pointer-events:none;
 }
 
-/* ---------- THEME OVERRIDES (curated, no neon) ---------- */
+/* ---------- THEME OVERRIDES (curated, no neon, AA contrast) ---------- */
+/* Light-first schemes set a warm parchment glass; dark schemes tint the photo. */
+html[data-theme="parchment"]{
+  --bg:#f4efe6; --bg-2:#ece6d9; --ink:#211e18; --ink-soft:#403c33;
+  --muted:#6c685c; --panel:rgba(250,247,240,0.95); --glass:rgba(255,252,245,0.30);
+  --glass-strong:rgba(255,252,245,0.42); --accent:#9a7e34; --accent-press:#876c2c;
+  --accent-deep:#6f5520; --accent-soft:rgba(163,130,47,0.14); --gold-ink:#57481a;
+  --shadow:0 12px 44px rgba(46,38,24,0.16); --shadow-sm:0 4px 18px rgba(46,38,24,0.11);
+}
 html[data-theme="vellum"]{
   --bg:#f2f1ec; --bg-2:#e7e6df; --ink:#211e18; --ink-soft:#403c33;
   --muted:#6c685c; --panel:rgba(248,247,243,0.95); --glass:rgba(255,255,255,0.32);
-  --glass-strong:rgba(255,255,255,0.5); --accent:#9a8a3e; --accent-deep:#6e6327;
-  --accent-soft:rgba(154,138,62,0.13); --gold-ink:#5a5126; --shadow:0 12px 44px rgba(40,38,30,0.16);
+  --glass-strong:rgba(255,255,255,0.50); --accent:#9a8a3e; --accent-press:#84752f;
+  --accent-deep:#6e6327; --accent-soft:rgba(154,138,62,0.13); --gold-ink:#5a5126;
+  --shadow:0 12px 44px rgba(40,38,30,0.16);
 }
 html[data-theme="vespers"]{
   --bg:#15130f; --bg-2:#1d1a15; --ink:#f1ebdd; --ink-soft:#cabfa9;
@@ -845,43 +873,88 @@ html[data-theme="vespers"]{
   --border:rgba(255,245,225,0.13); --border-light:rgba(255,245,225,0.10);
   --shadow:0 14px 48px rgba(0,0,0,0.55); --shadow-sm:0 4px 20px rgba(0,0,0,0.45);
 }
-html[data-theme="vespers"] .bg .photo{ filter:brightness(.5) saturate(.82); }
-html[data-theme="vespers"] .bg .veil{
-  background:linear-gradient(to bottom, rgba(18,16,12,0.72) 0%, rgba(18,16,12,0.52) 40%, rgba(13,11,8,0.80) 100%);
-}
 html[data-theme="moss"]{
-  --accent:#5b7351; --accent-press:#4a6044; --accent-deep:#3f5340;
-  --accent-soft:rgba(91,115,81,0.15); --gold-ink:#3d5038;
-  --panel:rgba(247,247,240,0.95);
+  --bg:#f1f2ea; --bg-2:#e6e8db; --ink:#22271d; --ink-soft:#3f4636;
+  --muted:#69715c; --panel:rgba(247,248,240,0.95); --glass:rgba(252,254,247,0.30);
+  --glass-strong:rgba(252,254,247,0.44); --accent:#5b7351; --accent-press:#4c6144;
+  --accent-deep:#3f5340; --accent-soft:rgba(91,115,81,0.15); --gold-ink:#3d5038;
+  --shadow:0 12px 44px rgba(40,48,30,0.16);
 }
 html[data-theme="ember"]{
-  --accent:#b07a4e; --accent-press:#9a6740; --accent-deep:#8a5a34;
-  --accent-soft:rgba(176,122,78,0.15); --gold-ink:#7a4a2e;
-  --panel:rgba(251,246,239,0.95);
+  --bg:#f6efe6; --bg-2:#efe3d4; --ink:#2a2118; --ink-soft:#4d3f30;
+  --muted:#7c6850; --panel:rgba(251,246,239,0.95); --glass:rgba(255,250,243,0.32);
+  --glass-strong:rgba(255,250,243,0.46); --accent:#b07a4e; --accent-press:#9a6740;
+  --accent-deep:#8a5a34; --accent-soft:rgba(176,122,78,0.15); --gold-ink:#7a4a2e;
+  --shadow:0 12px 44px rgba(60,42,24,0.16);
+}
+/* ---- new premium schemes ---- */
+html[data-theme="lumen"]{ /* bright gold sanctuary */
+  --bg:#fbf6ea; --bg-2:#f3ead4; --ink:#2a2415; --ink-soft:#534a30;
+  --muted:#867850; --panel:rgba(253,249,240,0.96); --glass:rgba(255,253,247,0.38);
+  --glass-strong:rgba(255,253,247,0.56); --accent:#c79a2e; --accent-press:#b1861f;
+  --accent-deep:#9a7716; --accent-soft:rgba(199,154,46,0.16); --gold-ink:#7a5e12;
+  --shadow:0 14px 48px rgba(70,52,16,0.18);
+}
+html[data-theme="tenebrae"]{ /* deep charcoal-blue, dark */
+  --bg:#10131a; --bg-2:#171b25; --ink:#e7ecf5; --ink-soft:#b6c0d2;
+  --muted:#8593a8; --panel:rgba(26,31,42,0.94); --glass:rgba(40,48,64,0.34);
+  --glass-strong:rgba(40,48,64,0.54); --accent:#d8b15e; --accent-press:#c79e49;
+  --accent-deep:#d8b15e; --accent-soft:rgba(216,177,94,0.16); --gold-ink:#ecd197;
+  --border:rgba(220,232,250,0.13); --border-light:rgba(220,232,250,0.09);
+  --shadow:0 14px 50px rgba(0,0,0,0.58);
+}
+html[data-theme="rosae"]{ /* rose-gold */
+  --bg:#f9f0ee; --bg-2:#f2e2e1; --ink:#2c2123; --ink-soft:#544249;
+  --muted:#856f73; --panel:rgba(252,245,244,0.95); --glass:rgba(255,250,250,0.32);
+  --glass-strong:rgba(255,250,250,0.48); --accent:#b5797f; --accent-press:#9f646b;
+  --accent-deep:#9a5f66; --accent-soft:rgba(181,121,127,0.15); --gold-ink:#7e4a51;
+  --shadow:0 14px 48px rgba(70,40,44,0.16);
+}
+html[data-theme="verdant"]{ /* forest emerald */
+  --bg:#eef3ee; --bg-2:#e0e9e1; --ink:#1d2a20; --ink-soft:#3a4d3d;
+  --muted:#5f7565; --panel:rgba(245,250,246,0.95); --glass:rgba(250,254,250,0.32);
+  --glass-strong:rgba(250,254,250,0.48); --accent:#3f7d5c; --accent-press:#346a4e;
+  --accent-deep:#2f5c44; --accent-soft:rgba(63,125,92,0.15); --gold-ink:#2f5c44;
+  --shadow:0 14px 48px rgba(30,56,38,0.16);
+}
+html[data-theme="nocturne"]{ /* midnight indigo, dark */
+  --bg:#0f1120; --bg-2:#171a30; --ink:#e9ebf7; --ink-soft:#b9bee0;
+  --muted:#8389b4; --panel:rgba(24,28,50,0.94); --glass:rgba(42,48,86,0.34);
+  --glass-strong:rgba(42,48,86,0.54); --accent:#9fb0e8; --accent-press:#8a9ce0;
+  --accent-deep:#9fb0e8; --accent-soft:rgba(159,176,232,0.16); --gold-ink:#cdd6f7;
+  --border:rgba(200,210,250,0.13); --border-light:rgba(200,210,250,0.09);
+  --shadow:0 14px 50px rgba(0,0,0,0.58);
+}
+/* dark themes dim the living photo a touch for legibility */
+html[data-theme="vespers"] .bg .photo,
+html[data-theme="tenebrae"] .bg .photo,
+html[data-theme="nocturne"] .bg .photo{ filter:brightness(.52) saturate(.86); }
+html[data-theme="vespers"] .bg .veil,
+html[data-theme="tenebrae"] .bg .veil,
+html[data-theme="nocturne"] .bg .veil{
+  background:linear-gradient(to bottom, rgba(14,12,9,0.66) 0%, rgba(14,12,9,0.48) 42%, rgba(10,9,7,0.78) 100%);
 }
 
-/* ---------- settings gear ---------- */
-.settings-btn svg{ transition:transform .25s ease; }
-.settings-btn:hover svg{ transform:rotate(35deg); }
-
-/* ---------- settings sheet ---------- */
+/* ---------- settings: centered, scrollable modal box ---------- */
 .settings-scrim{
-  position:fixed; inset:0; z-index:90; background:rgba(30,26,20,0.30);
+  position:fixed; inset:0; z-index:90; background:rgba(30,26,20,0.34);
   backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);
   opacity:0; pointer-events:none; transition:opacity .25s ease;
 }
 .settings-scrim.show{ opacity:1; pointer-events:auto; }
 .settings-sheet{
-  position:fixed; top:0; right:0; bottom:0; z-index:91; width:340px; max-width:90vw;
-  background:var(--panel); backdrop-filter:blur(22px) saturate(160%);
-  -webkit-backdrop-filter:blur(22px) saturate(160%);
-  border-left:1px solid var(--border); box-shadow:var(--shadow);
-  transform:translateX(100%); transition:transform .28s cubic-bezier(.4,0,.2,1);
-  overflow-y:auto; overscroll-behavior:contain;
-  padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+  position:fixed; z-index:91; left:50%; top:50%;
+  width:min(440px,92vw); max-height:86dvh; overflow-y:auto; overscroll-behavior:contain;
+  transform:translate(-50%,-46%) scale(.98); opacity:0; pointer-events:none;
+  transition:transform .26s cubic-bezier(.4,0,.2,1), opacity .2s ease;
+  background:var(--panel); backdrop-filter:blur(24px) saturate(165%);
+  -webkit-backdrop-filter:blur(24px) saturate(165%);
+  border:1px solid var(--border); border-radius:var(--r-l,24px);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,0.5);
+  padding:20px 20px calc(20px + env(safe-area-inset-bottom));
   display:flex; flex-direction:column; gap:2px;
 }
-.settings-sheet.show{ transform:none; }
+.settings-sheet.show{ transform:translate(-50%,-50%) scale(1); opacity:1; pointer-events:auto; }
 .settings-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
 .settings-head h2{ font-family:var(--display); font-weight:400; font-size:20px; margin:0; color:var(--ink); }
 .settings-close{
@@ -947,10 +1020,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   transition:opacity .3s ease; pointer-events:none;
 }
 @media (max-width:480px){
-  .settings-sheet{ width:auto; left:0; right:0; top:auto; bottom:0; max-height:82dvh;
-    border-left:0; border-top:1px solid var(--border); border-radius:20px 20px 0 0;
-    transform:translateY(100%); padding-bottom:calc(14px + env(safe-area-inset-bottom)); }
-  .settings-sheet.show{ transform:none; }
+  .settings-sheet{ width:min(440px,94vw); max-height:88dvh; }
   .settings-sheet::before{ content:""; display:block; width:36px; height:4px; border-radius:999px;
     background:var(--border); margin:0 auto 10px; }
 }
@@ -1066,6 +1136,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
 </button>
 
+<!-- CREATOR CREDIT (persistent, bottom-left) -->
+<div class="credit-chip" id="creditChip" role="contentinfo" aria-label="About this app">
+  <span class="av">A</span>
+  <span class="ct"><b>Saint Augustine AI</b> · Beta · by <b>Tyler Simons</b></span>
+</div>
+
 <div class="sb-scrim" id="sbScrim" aria-hidden="true"></div>
 
 <!-- HEADER RAIL -->
@@ -1076,7 +1152,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   </label>
   <div class="rail-actions">
     <button class="chip-btn" id="sceneryBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 15-5-4-7 6"/></svg>Scenery</button>
-    <button class="chip-btn" id="themeBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 4"/></svg>Themes</button>
     <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -1356,13 +1431,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 <div class="pop sc-pop" id="sceneryPop" role="dialog" aria-modal="true" aria-label="Background scenery" hidden>
   <div class="pop-head"><div class="pop-title">Background scenery</div><div class="pop-sub">The living photograph behind the glass</div></div>
   <div class="sc-grid" id="glassSceneryGrid"></div>
-</div>
-
-<!-- THEMES PICKER -->
-<div class="modal-scrim th-pop-scrim" id="themeScrim" aria-hidden="true"></div>
-<div class="pop th-pop" id="themePop" role="dialog" aria-modal="true" aria-label="Theme & atmosphere" hidden>
-  <div class="pop-head"><div class="pop-title">Theme &amp; atmosphere</div><div class="pop-sub">Light glass moods for the day</div></div>
-  <div class="th-grid" id="glassThemeGrid"></div>
 </div>
 
 <script src="config.js"></script>
@@ -2345,16 +2413,22 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
      ===================================================================== */
   const LS_PREFS="sa_prefs_v1";
   const THEMES=[
-    {id:"parchment", name:"Parchment", c:["#f4efe6","#a3822f","#fbf7ee"]},
+    {id:"parchment", name:"Parchment", c:["#f4efe6","#9a7e34","#fbf7ee"]},
     {id:"vellum",    name:"Vellum",    c:["#f2f1ec","#9a8a3e","#fbf7ee"]},
+    {id:"lumen",     name:"Lumen",     c:["#fbf6ea","#c79a2e","#fffaf0"]},
+    {id:"ember",     name:"Emberlight",c:["#f6efe6","#b07a4e","#fbf7ee"]},
+    {id:"moss",      name:"Moss",      c:["#f1f2ea","#5b7351","#fbf7ee"]},
+    {id:"verdant",   name:"Verdant",   c:["#eef3ee","#3f7d5c","#fbf7ee"]},
+    {id:"rosae",     name:"Rosae",     c:["#f9f0ee","#b5797f","#fbf7ee"]},
     {id:"vespers",   name:"Vespers",   c:["#15130f","#c9a24a","#1f1b14"], dark:true},
-    {id:"moss",      name:"Moss",      c:["#f4efe6","#5b7351","#fbf7ee"]},
-    {id:"ember",     name:"Emberlight",c:["#f4efe6","#b07a4e","#fbf7ee"]},
+    {id:"tenebrae",  name:"Tenebrae",  c:["#10131a","#d8b15e","#1b1f2b"], dark:true},
+    {id:"nocturne",  name:"Nocturne",  c:["#0f1120","#9fb0e8","#191c30"], dark:true},
   ];
   const BGS=[
-    {id:"original", label:"Original"}, {id:"mountains", label:"Mountains"}, {id:"dawn", label:"Dawn"},
-    {id:"olive", label:"Olive grove"}, {id:"sea", label:"Sea at dusk"},
-    {id:"cathedral", label:"Cathedral"}, {id:"still", label:"Still water"},
+    {id:"original", label:"Sanctuary"}, {id:"cathedral", label:"Cathedral"}, {id:"mountains", label:"Mountains"},
+    {id:"dawn", label:"Dawn"}, {id:"olive", label:"Olive grove"}, {id:"sea", label:"Sea at dusk"},
+    {id:"forest", label:"Misty forest"}, {id:"lavender", label:"Lavender field"}, {id:"dune", label:"Desert dunes"},
+    {id:"snow", label:"Snow peaks"}, {id:"alpine", label:"Alpine lake"}, {id:"lake", label:"Still lake"},
   ];
   const DEF_PREFS={ theme:"parchment", darkness:"dark", textScale:"m", motion:"auto",
     background:{id:"original", dim:12},
@@ -2414,21 +2488,19 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   const SCENES=[
     {id:'bg.jpg',label:'Sanctuary'},
     {id:'bg/bg_cathedral.jpg',label:'Cathedral'},
-    {id:'bg/bg_dawn.jpg',label:'Dawn'},
     {id:'bg/bg_mountains.jpg',label:'Mountains'},
+    {id:'bg/bg_dawn.jpg',label:'Dawn'},
     {id:'bg/bg_olive.jpg',label:'Olive Grove'},
     {id:'bg/bg_sea.jpg',label:'Sea'},
+    {id:'bg/bg_forest.jpg',label:'Misty Forest'},
+    {id:'bg/bg_lavender.jpg',label:'Lavender Field'},
+    {id:'bg/bg_dune.jpg',label:'Desert Dunes'},
+    {id:'bg/bg_snow.jpg',label:'Alpine Snow'},
+    {id:'bg/bg_alpine.jpg',label:'Mountain Lake'},
+    {id:'bg/bg_lake.jpg',label:'Still Lake'},
   ];
-  const GLASS_THEMES={
-    daylight:{bg:'bg.jpg',tint:'rgba(255,252,245,.26)',tint2:'rgba(255,252,245,.45)',tint3:'rgba(250,246,237,.94)'},
-    ember:{bg:'bg/bg_dawn.jpg',tint:'rgba(255,250,240,.30)',tint2:'rgba(255,250,240,.48)',tint3:'rgba(252,245,235,.94)'},
-    serene:{bg:'bg/bg_sea.jpg',tint:'rgba(250,253,255,.28)',tint2:'rgba(250,253,255,.46)',tint3:'rgba(247,251,252,.94)'},
-    dawn:{bg:'bg/bg_dawn.jpg',tint:'rgba(255,247,242,.30)',tint2:'rgba(255,247,242,.48)',tint3:'rgba(253,247,242,.94)'},
-    olive:{bg:'bg/bg_olive.jpg',tint:'rgba(248,252,240,.28)',tint2:'rgba(248,252,240,.46)',tint3:'rgba(249,252,245,.94)'},
-    sea:{bg:'bg.jpg',tint:'rgba(245,251,255,.28)',tint2:'rgba(245,251,255,.46)',tint3:'rgba(246,251,254,.94)'},
-  };
   const photo=$('.bg .photo');
-  let activeScene='bg.jpg', activeTheme='daylight';
+  let activeScene='bg.jpg';
   function setScenery(file){activeScene=file; if(photo) photo.style.backgroundImage=`url("assets/${file}")`; $$('.sc-thumb').forEach(x=>x.classList.toggle('on',x.dataset.f===file));}
   const sceneryPop=$('#sceneryPop'), sceneryScrim=$('#sceneryScrim'), sceneryGrid=$('#glassSceneryGrid');
   SCENES.forEach(s=>{const t=document.createElement('div');t.className='sc-thumb'+(s.id===activeScene?' on':'');t.dataset.f=s.id;t.style.backgroundImage=`url("assets/${s.id}")`;
@@ -2438,28 +2510,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   function closeScenery(){sceneryPop.classList.remove('open');sceneryScrim.classList.remove('show');setTimeout(()=>sceneryPop.hidden=true,180);}
   $('#sceneryBtn').addEventListener('click',openScenery);
   sceneryScrim.addEventListener('click',closeScenery);
-  const THEME_LIST=[
-    {t:'daylight',n:'Daylight',sw:'linear-gradient(135deg,#fbf9f4,#e3d9c7)'},
-    {t:'ember',n:'Ember',sw:'linear-gradient(135deg,#f6e3c4,#d99a5a)'},
-    {t:'serene',n:'Serene',sw:'linear-gradient(135deg,#eef4f5,#9cc0c6)'},
-    {t:'dawn',n:'Dawn',sw:'linear-gradient(135deg,#f3e6df,#e7b89a)'},
-    {t:'olive',n:'Olive Grove',sw:'linear-gradient(135deg,#e9ecd9,#aab074)'},
-    {t:'sea',n:'Sea',sw:'linear-gradient(135deg,#dde9ef,#7fa9bf)'},
-  ];
-  const themePop=$('#themePop'), themeScrim=$('#themeScrim'), glassThemeGrid=$('#glassThemeGrid');
-  function applyTheme(t){const th=GLASS_THEMES[t]||GLASS_THEMES.daylight;activeTheme=t;
-    document.documentElement.style.setProperty('--glass',th.tint);
-    document.documentElement.style.setProperty('--glass-strong',th.tint2);
-    document.documentElement.style.setProperty('--panel',th.tint3);
-    setScenery(th.bg); $$('.th-thumb').forEach(x=>x.classList.toggle('on',x.dataset.t===t));}
-  THEME_LIST.forEach(th=>{const d=document.createElement('div');d.className='th-thumb'+(th.t===activeTheme?' on':'');d.dataset.t=th.t;
-    d.innerHTML=`<div class="sw2" style="background:${th.sw}"></div><div class="tn">${th.n}</div>`;
-    d.onclick=()=>{applyTheme(th.t);closeTheme();};glassThemeGrid.appendChild(d);});
-  function openTheme(){themePop.hidden=false;requestAnimationFrame(()=>themePop.classList.add('open'));themeScrim.classList.add('show');}
-  function closeTheme(){themePop.classList.remove('open');themeScrim.classList.remove('show');setTimeout(()=>themePop.hidden=true,180);}
-  $('#themeBtn').addEventListener('click',openTheme);
-  themeScrim.addEventListener('click',closeTheme);
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(sceneryPop.classList.contains('open')) closeScenery(); if(themePop.classList.contains('open')) closeTheme(); } });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(sceneryPop.classList.contains('open')) closeScenery(); } });
   // simple focus trap
   if(sheet) sheet.addEventListener("keydown",e=>{
     if(e.key!=="Tab") return;
