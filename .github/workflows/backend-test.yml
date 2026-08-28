@@ -1,0 +1,32 @@
+name: Backend test suite
+
+# Runs the zero-dependency backend test suite on every push/PR that touches the
+# backend. The suite is fully self-contained (each test starts its own server +
+# stub on isolated ports) so it needs no network, no OpenRouter key, and no
+# running service. Failing tests block the merge via the required-check below.
+
+on:
+  push:
+    branches: [main]
+    paths: ["backend/**"]
+  pull_request:
+    branches: [main]
+    paths: ["backend/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run backend test suite
+        run: npm test
