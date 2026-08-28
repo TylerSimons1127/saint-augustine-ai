@@ -188,13 +188,6 @@ img{display:block; max-width:100%}
 .quote-block .t-cap{display:block; margin-top:12px; font-style:normal; color:var(--muted)}
 
 /* ============ MORE ============ */
-.work-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:36px}
-.tile{background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:26px; box-shadow:var(--shadow-soft); transition:transform 150ms}
-.tile:hover{transform:translateY(-3px)}
-.tile h4{font-family:var(--font-display); font-weight:400; font-size:22px; color:var(--ink); margin:0 0 8px}
-.tile .t-cap{color:var(--muted); display:block; margin-bottom:8px}
-.tile p{font-size:14px; color:var(--warm); margin:0}
-.work-note{margin-top:26px; font-size:14px; color:var(--muted); text-align:center}
 
 /* ============ ABOUT ============ */
 .about-grid{display:grid; grid-template-columns:1.3fr .7fr; gap:48px; align-items:start}
@@ -222,12 +215,12 @@ img{display:block; max-width:100%}
 .footer-links a:hover{color:var(--earth)}
 
 /* ============ RESPONSIVE ============ */
-@media (max-width:900px){ .voice-grid{grid-template-columns:1fr; gap:28px} .about-grid{grid-template-columns:1fr; gap:28px} .work-grid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:900px){ .voice-grid{grid-template-columns:1fr; gap:28px} .about-grid{grid-template-columns:1fr; gap:28px} }
 @media (max-width:768px){
   .nav-links{display:none} .nav-cta .btn-ghost{display:none} .hamburger{display:inline-flex}
   .hero-grid{grid-template-columns:1fr; gap:28px} .hero-copy,.hero-visual{grid-column:1/-1}
   .flow{flex-direction:column} .connector{flex-basis:40px; transform:rotate(90deg)}
-  .work-grid{grid-template-columns:1fr} .guard{grid-template-columns:1fr; gap:8px} .trust-row{grid-template-columns:1fr; gap:8px}
+  .guard{grid-template-columns:1fr; gap:8px} .trust-row{grid-template-columns:1fr; gap:8px}
   .depth.d2 .big,.depth.d2 .txt,.depth.d3 .big,.depth.d3 .txt{margin-left:0}
   .band-photo{background-attachment:scroll}
 }
@@ -243,7 +236,6 @@ img{display:block; max-width:100%}
       <a href="#voice">The Voice</a>
       <a href="#how">How it works</a>
       <a href="#trust">Trust</a>
-      <a href="#more">More</a>
     </div>
     <div class="nav-cta">
       <a href="https://tylersimons1127.github.io/saint-augustine-ai/" class="btn btn-ghost">Open app</a>
@@ -260,7 +252,6 @@ img{display:block; max-width:100%}
   <a href="#voice">The Voice</a>
   <a href="#how">How it works</a>
   <a href="#trust">Trust</a>
-  <a href="#more">More</a>
   <a href="https://tylersimons1127.github.io/saint-augustine-ai/" class="btn btn-fill">Talk with Augustine</a>
 </div>
 
@@ -406,21 +397,6 @@ img{display:block; max-width:100%}
   </div>
 </section>
 
-<!-- MORE BY TYLER -->
-<section class="section" id="more">
-  <div class="wrap">
-    <div class="anim"><p class="eyebrow">More by the builder</p><h2 class="t-h2" style="max-width:20ch">Other things built with the same care.</h2></div>
-    <div class="work-grid anim" style="margin-top:36px">
-      <div class="tile"><h4>ScalerHub</h4><span class="t-cap">Tauri and Rust desktop UI</span><p>A GPU-tool interface with a calm, dense panel layout.</p></div>
-      <div class="tile"><h4>Cremosa</h4><span class="t-cap">Brand site, vanilla HTML/CSS</span><p>A gelato maker&rsquo;s storefront, built to feel like the product.</p></div>
-      <div class="tile"><h4>HALDEN</h4><span class="t-cap">Luxury watch landing</span><p>An editorial hero with restrained motion and a single accent.</p></div>
-      <div class="tile"><h4>JARVIS</h4><span class="t-cap">Local voice pipeline</span><p>Wake-word to reply, running on-device without the cloud.</p></div>
-      <div class="tile"><h4>E.V.</h4><span class="t-cap">Voice-assistant design</span><p>Latency-tuned UX patterns for spoken AI interactions.</p></div>
-    </div>
-    <p class="work-note">Every project ships verified — built, rendered, and tested before it is called done.</p>
-  </div>
-</section>
-<hr class="hairline">
 
 <!-- ABOUT -->
 <section class="section band" id="about">
