@@ -930,6 +930,41 @@ html[data-theme="nocturne"]{ /* soft indigo dawn, light */
   --accent-deep:#4c5698; --accent-soft:rgba(107,118,196,0.15); --gold-ink:#454e84;
   --shadow:0 14px 50px rgba(44,52,100,0.18);
 }
+html[data-theme="sereno"]{ /* soft sky blue, light */
+  --bg:#eaf2f8; --bg-2:#dce9f2; --ink:#1e2e3a; --ink-soft:#3a4a58;
+  --muted:#5f7286; --panel:rgba(248,251,254,0.96); --glass:rgba(255,255,255,0.42);
+  --glass-strong:rgba(255,255,255,0.58); --accent:#4a7ba6; --accent-press:#3d6a92;
+  --accent-deep:#345d82; --accent-soft:rgba(74,123,166,0.15); --gold-ink:#345d82;
+  --shadow:0 14px 50px rgba(30,58,80,0.18);
+}
+html[data-theme="sakura"]{ /* cherry blossom pink, light */
+  --bg:#fbeef2; --bg-2:#f6dde4; --ink:#2e2126; --ink-soft:#543e45;
+  --muted:#8a6e75; --panel:rgba(253,247,250,0.96); --glass:rgba(255,250,252,0.36);
+  --glass-strong:rgba(255,250,252,0.52); --accent:#cf8aa0; --accent-press:#bd768e;
+  --accent-deep:#a85e76; --accent-soft:rgba(207,138,160,0.16); --gold-ink:#a85e76;
+  --shadow:0 14px 48px rgba(80,40,56,0.16);
+}
+html[data-theme="citrine"]{ /* warm citrine gold, light */
+  --bg:#fbf4e2; --bg-2:#f4e9cf; --ink:#2a2414; --ink-soft:#534830;
+  --muted:#8a7a4e; --panel:rgba(253,250,240,0.96); --glass:rgba(255,253,247,0.40);
+  --glass-strong:rgba(255,253,247,0.56); --accent:#c9a227; --accent-press:#b18b1c;
+  --accent-deep:#947014; --accent-soft:rgba(201,162,39,0.16); --gold-ink:#947014;
+  --shadow:0 14px 48px rgba(70,52,16,0.18);
+}
+html[data-theme="sage"]{ /* sage green-grey, light */
+  --bg:#eef1ea; --bg-2:#e2e7db; --ink:#222a1d; --ink-soft:#3f4a36;
+  --muted:#69755c; --panel:rgba(247,250,244,0.96); --glass:rgba(252,254,250,0.34);
+  --glass-strong:rgba(252,254,250,0.50); --accent:#7d8c6a; --accent-press:#6a7860;
+  --accent-deep:#566048; --accent-soft:rgba(125,140,106,0.15); --gold-ink:#566048;
+  --shadow:0 14px 48px rgba(40,48,30,0.16);
+}
+html[data-theme="aqua"]{ /* teal aqua, light */
+  --bg:#e7f4f2; --bg-2:#d5ebe8; --ink:#162a28; --ink-soft:#2f4a47;
+  --muted:#557a76; --panel:rgba(245,252,250,0.96); --glass:rgba(250,254,253,0.36);
+  --glass-strong:rgba(250,254,253,0.52); --accent:#3f9aa0; --accent-press:#34858a;
+  --accent-deep:#2b6f73; --accent-soft:rgba(63,154,160,0.15); --gold-ink:#2b6f73;
+  --shadow:0 14px 48px rgba(20,60,58,0.16);
+}
 
 /* ---------- settings: centered, scrollable modal box ---------- */
 .settings-scrim{
@@ -2413,22 +2448,30 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
      ===================================================================== */
   const LS_PREFS="sa_prefs_v1";
   const THEMES=[
-    {id:"parchment", name:"Parchment", c:["#f4efe6","#9a7e34","#fbf7ee"]},
-    {id:"vellum",    name:"Vellum",    c:["#f2f1ec","#9a8a3e","#fbf7ee"]},
-    {id:"lumen",     name:"Lumen",     c:["#fbf6ea","#c79a2e","#fffaf0"]},
-    {id:"ember",     name:"Emberlight",c:["#f6efe6","#b07a4e","#fbf7ee"]},
-    {id:"moss",      name:"Moss",      c:["#f1f2ea","#5b7351","#fbf7ee"]},
-    {id:"verdant",   name:"Verdant",   c:["#eef3ee","#3f7d5c","#fbf7ee"]},
-    {id:"rosae",     name:"Rosae",     c:["#f9f0ee","#b5797f","#fbf7ee"]},
-    {id:"vespers",   name:"Vespers",   c:["#15130f","#c9a24a","#1f1b14"], dark:true},
-    {id:"tenebrae",  name:"Tenebrae",  c:["#10131a","#d8b15e","#1b1f2b"], dark:true},
-    {id:"nocturne",  name:"Nocturne",  c:["#0f1120","#9fb0e8","#191c30"], dark:true},
+    {id:"parchment", name:"Parchment",  c:["#f4efe6","#9a7e34","#fbf7ee"]},
+    {id:"vellum",    name:"Vellum",     c:["#f2f1ec","#9a8a3e","#fbf7ee"]},
+    {id:"lumen",     name:"Lumen",      c:["#fbf6ea","#c79a2e","#fffaf0"]},
+    {id:"ember",     name:"Emberlight", c:["#f6efe6","#b07a4e","#fbf7ee"]},
+    {id:"moss",      name:"Moss",       c:["#f1f2ea","#5b7351","#fbf7ee"]},
+    {id:"verdant",   name:"Verdant",    c:["#eef3ee","#3f7d5c","#fbf7ee"]},
+    {id:"rosae",     name:"Rosae",      c:["#f9f0ee","#b5797f","#fbf7ee"]},
+    {id:"vespers",   name:"Vespers",    c:["#efe9ef","#8a6fae","#fbf7fb"]},
+    {id:"tenebrae",  name:"Tenebrae",   c:["#eef1f6","#5b78b0","#fbfdff"]},
+    {id:"nocturne",  name:"Nocturne",   c:["#eef0fa","#6b76c4","#fbfcff"]},
+    {id:"sereno",    name:"Sereno",     c:["#eaf2f8","#4a7ba6","#fbfdff"]},
+    {id:"sakura",    name:"Sakura",     c:["#fbeef2","#cf8aa0","#fffafc"]},
+    {id:"citrine",   name:"Citrine",    c:["#fbf4e2","#c9a227","#fffdf5"]},
+    {id:"sage",      name:"Sage",       c:["#eef1ea","#7d8c6a","#fafcf7"]},
+    {id:"aqua",      name:"Aqua",       c:["#e7f4f2","#3f9aa0","#fafdfc"]},
   ];
   const BGS=[
     {id:"original", label:"Sanctuary"}, {id:"cathedral", label:"Cathedral"}, {id:"mountains", label:"Mountains"},
     {id:"dawn", label:"Dawn"}, {id:"olive", label:"Olive grove"}, {id:"sea", label:"Sea at dusk"},
     {id:"forest", label:"Misty forest"}, {id:"lavender", label:"Lavender field"}, {id:"dune", label:"Desert dunes"},
     {id:"snow", label:"Snow peaks"}, {id:"alpine", label:"Alpine lake"}, {id:"lake", label:"Still lake"},
+    {id:"tulip", label:"Tulip field"}, {id:"blossom", label:"Cherry blossom"}, {id:"autumn", label:"Autumn woods"},
+    {id:"meadow", label:"Wildflower meadow"}, {id:"glacier", label:"Glacier"}, {id:"coast", label:"Sea cliffs"},
+    {id:"vineyard", label:"Vineyard"},
   ];
   const DEF_PREFS={ theme:"parchment", darkness:"dark", textScale:"m", motion:"auto",
     background:{id:"original", dim:12},
@@ -2498,6 +2541,13 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     {id:'bg/bg_snow.jpg',label:'Alpine Snow'},
     {id:'bg/bg_alpine.jpg',label:'Mountain Lake'},
     {id:'bg/bg_lake.jpg',label:'Still Lake'},
+    {id:'bg/bg_tulip.jpg',label:'Tulip Field'},
+    {id:'bg/bg_blossom.jpg',label:'Cherry Blossom'},
+    {id:'bg/bg_autumn.jpg',label:'Autumn Woods'},
+    {id:'bg/bg_meadow.jpg',label:'Wildflower Meadow'},
+    {id:'bg/bg_glacier.jpg',label:'Glacier'},
+    {id:'bg/bg_coast.jpg',label:'Sea Cliffs'},
+    {id:'bg/bg_vineyard.jpg',label:'Vineyard'},
   ];
   const photo=$('.bg .photo');
   let activeScene='bg.jpg';
