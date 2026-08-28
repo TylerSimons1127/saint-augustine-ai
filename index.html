@@ -2166,11 +2166,14 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(window.matchMedia("(max-width:900px)").matches) sbClose(); }));
 
   /* ---- keep composer above the iOS keyboard (visualViewport) ---- */
+  /* Only needed on touch/mobile. On desktop we must NOT write an inline bottom,
+     or the dock loses its CSS env() bottom and snaps to top:0. */
   const dock=$(".dock");
-  if(window.visualViewport && dock){
+  if(window.visualViewport && dock && window.matchMedia("(hover:none) and (pointer:coarse)").matches){
     const onVV=()=>{
       const kb = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
-      dock.style.bottom = (kb>0 ? kb : "env(safe-area-inset-bottom,0px)") + "px";
+      if(kb>0){ dock.style.bottom = kb + "px"; }       // keyboard open: valid numeric px
+      else { dock.style.bottom = ""; }                  // closed: let CSS env() rule win
     };
     window.visualViewport.addEventListener("resize", onVV);
     window.visualViewport.addEventListener("scroll", onVV);
