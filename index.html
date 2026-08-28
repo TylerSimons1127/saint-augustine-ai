@@ -1118,7 +1118,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       <p>No conversations yet. Send a message to begin.</p>
     </div>
   </div>
-  <div class="sb-foot"><span class="av">A</span> <span class="ft">Saint Augustine AI · Beta · by Tyler Simons</span>
+  <div class="sb-foot"><span class="ft">Saint Augustine AI · Beta · by Tyler Simons</span>
     <button class="sb-export" id="sbExport" title="Copy this conversation as Markdown" aria-label="Export conversation">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg>
       <span>Export</span>
@@ -1141,7 +1141,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
 <!-- CREATOR CREDIT (persistent, bottom-left) -->
 <div class="credit-chip" id="creditChip" role="contentinfo" aria-label="About this app">
-  <span class="av">A</span>
   <span class="ct"><b>Saint Augustine AI</b> · Beta · by <b>Tyler Simons</b></span>
 </div>
 
@@ -1154,7 +1153,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <input id="search" type="search" placeholder="Search conversations…" aria-label="Search conversations" />
   </label>
   <div class="rail-actions">
-    <button class="chip-btn" id="sceneryBtn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="m21 15-5-4-7 6"/></svg>Scenery</button>
     <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -1244,7 +1242,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       </div>
 
       <span class="divider"></span>
-      <span class="hint">↵ Enter to send · copy or export as Markdown</span>
     </div>
 
     <input type="file" id="fileInput" multiple accept=".pdf,.txt,.md,.text,.jpg,.jpeg,.png,.webp,.gif,image/*" hidden />
@@ -2511,7 +2508,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     t.onclick=()=>{setScenery(s.id);closeScenery();};sceneryGrid.appendChild(t);});
   function openScenery(){sceneryPop.hidden=false;requestAnimationFrame(()=>sceneryPop.classList.add('open'));sceneryScrim.classList.add('show');}
   function closeScenery(){sceneryPop.classList.remove('open');sceneryScrim.classList.remove('show');setTimeout(()=>sceneryPop.hidden=true,180);}
-  $('#sceneryBtn').addEventListener('click',openScenery);
   sceneryScrim.addEventListener('click',closeScenery);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(sceneryPop.classList.contains('open')) closeScenery(); } });
   // simple focus trap
