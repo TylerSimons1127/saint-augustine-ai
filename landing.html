@@ -8,262 +8,237 @@
 <meta property="og:title" content="Saint Augustine AI — A Catholic companion">
 <meta property="og:description" content="A voice for the restless heart. Ask Scripture, the saints, and your doubts — free, streaming, citation-linked.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://tylersimons1127.github.io/saint-augustine-ai/assets/bg.jpg">
+<meta property="og:image" content="https://tylersimons1127.github.io/saint-augustine-ai/assets/bg/bg_cathedral.jpg">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-/* ============ TOKENS ============ */
+/* ============ TOKENS (copied from the app's "Ethereal Academic" style) ============ */
 :root{
-  --eggshell:#fdfcfc;
-  --taupe:#f5f3f1;
-  --stone:#ebe8e4;
-  --ink:#000000;
-  --graphite:#44403b;
-  --smoke:#777169;
-  --bronze:#a3822f;
-  --bronze-soft:#c9b489;
+  --paper:#fbf8f2;        /* warm off-white canvas — never pure #fff */
+  --paper-2:#f3eee4;      /* deeper warm band */
+  --glass:rgba(255,255,255,.55);
+  --glass-strong:rgba(255,255,255,.72);
+  --glass-border:rgba(255,255,255,.65);
+  --ink:#2c241b;          /* warm near-black text */
+  --earth:#5d4037;        /* deep brown — primary buttons */
+  --earth-d:#4a322b;
+  --warm:#4a3f33;         /* body text */
+  --gold:#b8893f;         /* muted gold — accents/rings only, never body text */
+  --muted:#8a7c6b;        /* captions */
   --font-display:'Fraunces', Georgia, 'Times New Roman';
   --font-body:'Hanken Grotesk', system-ui;
   --font-mono:'JetBrains Mono', ui-monospace, monospace;
-  --r-input:4px; --r-card:20px; --r-card-lg:24px; --r-pill:9999px;
-  /* anti-gate whisper: offset-y != 0 so it is NOT read as a glow halo */
-  --shadow-whisper: 0 1px 3px rgba(0,0,0,.05);
-  --maxw:1280px;
-  --gutter:clamp(24px, 5vw, 64px);
+  --r-pill:9999px; --r-card:20px; --r-card-lg:24px;
+  --shadow-glass:0 8px 30px rgba(62,50,38,.14);
+  --shadow-soft:0 2px 8px rgba(62,50,38,.08);
+  --maxw:1200px;
+  --gutter:clamp(22px,5vw,60px);
   --ease-out:cubic-bezier(0,0,.2,1);
   --ease-reveal:cubic-bezier(.76,.31,.04,1.01);
-  --dur-micro:.15s;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  margin:0; background:var(--eggshell); color:var(--graphite);
-  font-family:var(--font-body); font-weight:400; font-size:16px; line-height:1.5;
-  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-}
+body{margin:0; background:var(--paper); color:var(--warm);
+  font-family:var(--font-body); font-weight:400; font-size:16px; line-height:1.55;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility}
 a{color:inherit; text-decoration:none}
-img,svg{display:block}
+img{display:block; max-width:100%}
 .wrap{max-width:var(--maxw); margin:0 auto; padding-inline:var(--gutter)}
 
 /* ============ TYPE ============ */
-.t-display{font-family:var(--font-display); font-weight:300; font-size:clamp(34px,6vw,48px); line-height:1.08; letter-spacing:-.02em; color:var(--ink)}
-.t-h2{font-family:var(--font-display); font-weight:300; font-size:clamp(28px,4.4vw,36px); line-height:1.17; letter-spacing:-.02em; color:var(--ink); margin:0}
-.t-h3{font-family:var(--font-display); font-weight:400; font-size:28px; line-height:1.13; letter-spacing:-.01em; color:var(--ink); margin:0}
-.t-lead{font-size:20px; line-height:1.35; color:var(--graphite); font-weight:400; margin:0}
-.t-sub{font-size:18px; line-height:1.6; color:var(--smoke); margin:0}
-.t-body{font-size:16px; line-height:1.5; color:var(--smoke); margin:0}
-.t-sm{font-size:14px; font-weight:500; line-height:1.5; letter-spacing:.01em}
-.t-cap{font-family:var(--font-mono); font-size:13px; line-height:1.69; color:var(--graphite)}
-.eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--smoke); margin:0 0 18px}
-.section{padding-block:clamp(64px,9vw,120px)}
-.band-taupe{background:var(--taupe)}
-.hairline{height:1px; background:var(--stone); border:0; margin:0}
+.t-display{font-family:var(--font-display); font-weight:300; font-size:clamp(36px,6vw,60px); line-height:1.06; letter-spacing:-.02em; color:var(--ink)}
+.t-h2{font-family:var(--font-display); font-weight:300; font-size:clamp(28px,4.4vw,40px); line-height:1.15; letter-spacing:-.02em; color:var(--ink); margin:0}
+.t-h3{font-family:var(--font-display); font-weight:400; font-size:26px; line-height:1.15; color:var(--ink); margin:0}
+.t-lead{font-size:20px; line-height:1.4; color:var(--warm); margin:0}
+.t-body{font-size:16px; line-height:1.6; color:var(--warm); margin:0}
+.t-sm{font-size:14px; font-weight:500; line-height:1.5}
+.t-cap{font-family:var(--font-mono); font-size:12px; line-height:1.6; color:var(--muted); letter-spacing:.04em}
+.eyebrow{font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--gold); margin:0 0 16px}
+.section{padding-block:clamp(64px,9vw,118px)}
+.band{background:var(--paper-2)}
+.hairline{height:1px; background:rgba(93,64,55,.14); border:0; margin:0}
+
+/* ============ GLASS ============ */
+.glass{background:var(--glass); backdrop-filter:blur(14px) saturate(1.08); -webkit-backdrop-filter:blur(14px) saturate(1.08);
+  border:1px solid var(--glass-border); box-shadow:var(--shadow-glass)}
+.glass-strong{background:var(--glass-strong); backdrop-filter:blur(16px) saturate(1.1); -webkit-backdrop-filter:blur(16px); border:1px solid var(--glass-border); box-shadow:var(--shadow-glass)}
 
 /* ============ BUTTONS ============ */
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px;
   font-family:var(--font-body); font-weight:500; font-size:15px; letter-spacing:.01em;
-  padding:13px 24px; border-radius:var(--r-pill); border:1px solid transparent;
-  cursor:pointer; transition:background var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
-  white-space:nowrap}
-.btn-fill{background:var(--ink); color:#fff; border-color:var(--ink)}
-.btn-fill:hover{background:#1a1a1a}
-.btn-outline{background:var(--eggshell); color:var(--ink); border-color:var(--stone)}
-.btn-outline:hover{background:var(--stone)}
-.btn-ghost{background:transparent; color:var(--ink); border-color:var(--stone)}
-.btn-ghost:hover{background:var(--stone)}
+  padding:13px 24px; border-radius:var(--r-pill); border:1px solid transparent; cursor:pointer;
+  transition:background var(--dur-micro,150ms) var(--ease-out), color 150ms, border-color 150ms, transform 150ms}
+.btn-fill{background:var(--earth); color:#fff; border-color:var(--earth)}
+.btn-fill:hover{background:var(--earth-d); transform:translateY(-1px)}
+.btn-outline{background:var(--glass); color:var(--ink); border-color:var(--glass-border); backdrop-filter:blur(10px)}
+.btn-outline:hover{background:var(--glass-strong)}
+.btn-ghost{background:transparent; color:var(--ink); border-color:rgba(93,64,55,.3)}
+.btn-ghost:hover{background:rgba(93,64,55,.06)}
 .btn-lg{font-size:16px; padding:16px 30px; min-height:52px}
-:focus-visible{outline:2px solid var(--ink); outline-offset:2px; border-radius:inherit}
+:focus-visible{outline:2px solid var(--earth); outline-offset:2px; border-radius:inherit}
 
 /* ============ NAV ============ */
-.nav{position:fixed; inset:0 0 auto 0; z-index:50; height:64px; display:flex; align-items:center;
-  background:transparent; transition:background .3s var(--ease-out), border-color .3s, backdrop-filter .3s;
-  border-bottom:1px solid transparent}
-.scroll-progress{position:fixed; top:0; left:0; height:2px; width:0; background:var(--ink); z-index:70; transition:width .08s linear}
-.nav.scrolled{background:rgba(253,252,252,.82); backdrop-filter:blur(12px); border-bottom-color:var(--stone)}
+.nav{position:fixed; inset:0 0 auto 0; z-index:50; height:66px; display:flex; align-items:center;
+  background:transparent; transition:background .3s, border-color .3s, backdrop-filter .3s; border-bottom:1px solid transparent}
+.nav.scrolled{background:rgba(251,248,242,.82); backdrop-filter:blur(12px); border-bottom-color:rgba(93,64,55,.14)}
 .nav .wrap{display:flex; align-items:center; justify-content:space-between; width:100%}
-.wordmark{font-weight:600; font-size:15px; color:var(--ink); letter-spacing:-.01em}
+.wordmark{font-weight:600; font-size:15px; color:var(--ink); letter-spacing:-.01em; display:flex; align-items:center; gap:9px}
+.wordmark .mark{width:22px; height:22px; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; color:var(--gold); font-family:var(--font-display); font-size:13px; font-weight:500}
 .nav-links{display:flex; gap:28px; align-items:center}
-.nav-links a{font-size:14px; font-weight:500; color:var(--smoke); transition:color var(--dur-micro)}
-.nav-links a:hover{color:var(--ink)}
+.nav-links a{font-size:14px; font-weight:500; color:var(--warm); transition:color 150ms}
+.nav-links a:hover{color:var(--earth)}
 .nav-cta{display:flex; gap:10px; align-items:center}
 .hamburger{display:none; background:none; border:0; cursor:pointer; padding:8px; color:var(--ink)}
-.overlay{position:fixed; inset:0; z-index:60; background:var(--eggshell); display:flex; flex-direction:column;
-  padding:32px var(--gutter); gap:8px; transform:translateY(-8px); opacity:0; pointer-events:none; transition:opacity .3s, transform .3s}
+.overlay{position:fixed; inset:0; z-index:60; background:var(--paper); display:flex; flex-direction:column; padding:32px var(--gutter); gap:8px;
+  transform:translateY(-8px); opacity:0; pointer-events:none; transition:opacity .3s, transform .3s}
 .overlay.open{opacity:1; pointer-events:auto; transform:none}
-.overlay a{font-family:var(--font-display); font-weight:300; font-size:32px; color:var(--ink); padding:14px 0; border-bottom:1px solid var(--stone)}
+.overlay a{font-family:var(--font-display); font-weight:300; font-size:32px; color:var(--ink); padding:14px 0; border-bottom:1px solid rgba(93,64,55,.14)}
 .overlay .close{position:absolute; top:24px; right:var(--gutter); background:none; border:0; font-size:28px; color:var(--ink); cursor:pointer}
 .overlay .btn{margin-top:20px; align-self:flex-start}
+.scroll-progress{position:fixed; top:0; left:0; height:2px; width:0; background:var(--gold); z-index:70; transition:width .08s linear}
+
+/* ============ PHOTO BANDS ============ */
+.band-photo{position:relative; background-size:cover; background-position:center; background-attachment:fixed; isolation:isolate}
+.band-photo::before{content:""; position:absolute; inset:0; background:rgba(28,22,16,.52); z-index:-1}
+.band-photo.light::before{background:rgba(28,22,16,.34)}
 
 /* ============ HERO ============ */
-.hero{padding-top:148px; padding-bottom:56px}
-.hero-grid{display:grid; grid-template-columns:repeat(12,1fr); gap:32px; align-items:end}
-.hero-h1{grid-column:1 / span 8}
-.hero-side{grid-column:9 / span 4; display:flex; flex-direction:column; gap:22px; align-items:flex-start}
+.hero{position:relative; min-height:92vh; display:flex; align-items:center;
+  background:#1c1610 url('assets/bg/bg_cathedral.jpg') center/cover no-repeat; isolation:isolate}
+.hero::before{content:""; position:absolute; inset:0; background:rgba(24,18,13,.50); z-index:-1}
+.hero .wrap{width:100%; padding-top:120px; padding-bottom:80px}
+.hero-grid{display:grid; grid-template-columns:repeat(12,1fr); gap:36px; align-items:center}
+.hero-copy{grid-column:1 / span 7}
+.hero-visual{grid-column:9 / span 4}
+.hero .eyebrow{color:var(--gold)}
+.hero h1{color:#fff; margin:0}
 .hero h1 .w{display:inline-block}
-.epigraph{font-style:italic; font-size:16px; line-height:1.5; color:var(--smoke); max-width:46ch; margin:0}
-.hero-visual{display:flex; justify-content:center; margin-top:48px}
-.sphere{width:clamp(240px,34vw,340px); aspect-ratio:1; border-radius:50%; position:relative;
-  background:radial-gradient(circle at 50% 44%, rgba(201,180,137,.42) 0%, rgba(163,130,47,.16) 42%, rgba(253,252,252,0) 72%);
-  animation:spherePulse .8s var(--ease-out) both}
-.sphere::before{content:""; position:absolute; inset:6%; border-radius:50%; border:1px solid rgba(163,130,47,.20)}
-.sphere::after{content:""; position:absolute; inset:18%; border-radius:50%; border:1px solid rgba(163,130,47,.26)}
-.sphere svg{position:absolute; inset:0; margin:auto; width:46%; opacity:.62}
-@keyframes spherePulse{from{transform:scale(.96); opacity:0} to{transform:scale(1); opacity:1}}
+.hero .lead{color:rgba(255,255,255,.86); margin-top:22px; max-width:34ch; font-size:19px}
+.hero .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:30px}
+.hero .epigraph{margin-top:30px; font-style:italic; font-size:15px; line-height:1.5; color:rgba(255,255,255,.72); max-width:46ch}
+.hero-shot{border-radius:var(--r-card-lg); overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18)}
+.hero-shot img{width:100%; display:block}
 
 /* ============ WORD REVEAL ============ */
-@keyframes wordReveal{
-  0%{opacity:0; transform:scaleY(.95) scaleX(.92); filter:blur(12px)}
-  40%{transform:scaleY(1) scaleX(1)}
-  60%{filter:blur(0)}
-  100%{opacity:1; transform:none; filter:blur(0)}
-}
+@keyframes wordReveal{0%{opacity:0; transform:scaleY(.95) scaleX(.92); filter:blur(12px)} 40%{transform:scaleY(1) scaleX(1)} 60%{filter:blur(0)} 100%{opacity:1; transform:none; filter:blur(0)}}
 .w{opacity:0}
 .w.on{animation:wordReveal .8s var(--ease-reveal) both}
-
-/* ============ SCROLL REVEAL ============ */
 .anim{opacity:0; transform:translateY(40px)}
 .anim.in{animation:fy .7s cubic-bezier(0,0,.2,1) forwards}
 @keyframes fy{from{opacity:0; transform:translateY(40px)} to{opacity:1; transform:translateY(0)}}
 
-/* ============ FEATURE PILLS ============ */
-.pillrow{display:flex; gap:10px; flex-wrap:wrap; padding-block:8px; overflow-x:auto; scrollbar-width:none}
+/* ============ PILL ROW ============ */
+.pillrow{display:flex; gap:10px; flex-wrap:wrap; overflow-x:auto; scrollbar-width:none; padding-block:6px}
 .pillrow::-webkit-scrollbar{display:none}
-.pill{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--stone); background:var(--eggshell);
-  border-radius:var(--r-pill); padding:9px 16px; font-size:14px; font-weight:500; color:var(--graphite); white-space:nowrap}
-.pill svg{width:14px; height:14px; stroke:var(--graphite); fill:none; stroke-width:1.5}
+.pill{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--glass-border); background:var(--glass);
+  backdrop-filter:blur(10px); border-radius:var(--r-pill); padding:9px 16px; font-size:14px; font-weight:500; color:var(--ink); white-space:nowrap}
+.pill svg{width:14px; height:14px; stroke:var(--earth); fill:none; stroke-width:1.5}
 
-/* ============ THE VOICE PANEL ============ */
-.panel{background:var(--taupe); border-radius:var(--r-card-lg); padding:clamp(24px,4vw,40px)}
-.voice-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center}
+/* ============ THE VOICE ============ */
+.panel{background:var(--glass); backdrop-filter:blur(14px) saturate(1.08); -webkit-backdrop-filter:blur(14px); border:1px solid var(--glass-border);
+  border-radius:var(--r-card-lg); padding:clamp(24px,4vw,40px); box-shadow:var(--shadow-glass)}
+.voice-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center}
 .voice-copy p{margin:0 0 16px}
-.voice-copy p:last-child{margin-bottom:0}
-.chat{background:#fff; border-radius:var(--r-card); padding:18px; box-shadow:var(--shadow-whisper); display:flex; flex-direction:column; gap:10px}
-.msg{max-width:88%; padding:11px 15px; font-size:14px; line-height:1.5}
-.msg.user{align-self:flex-end; background:var(--ink); color:#fff; border-radius:18px 18px 4px 18px}
-.msg.ai{align-self:flex-start; background:var(--eggshell); border:1px solid var(--stone); color:var(--graphite); border-radius:18px 18px 18px 4px}
-.sources{font-family:var(--font-mono); font-size:12px; color:var(--smoke); align-self:flex-start; padding-left:4px}
-.typing{display:inline-flex; gap:4px; align-items:center; padding:6px 2px}
-.typing span{width:6px; height:6px; border-radius:50%; background:var(--smoke); display:inline-block; animation:dots 1.24s cubic-bezier(.4,0,.2,1) infinite}
-.typing span:nth-child(2){animation-delay:.16s}
-.typing span:nth-child(3){animation-delay:.32s}
-@keyframes dots{0%,60%,100%{transform:translateY(0); opacity:.5} 28%{transform:translateY(-3px); opacity:1}}
-.caps-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; padding-top:18px; border-top:1px solid var(--stone)}
-.cap-pill{font-family:var(--font-mono); font-size:12px; color:var(--graphite); border:1px solid var(--stone); border-radius:var(--r-pill); padding:5px 12px}
+.shot-frame{border-radius:var(--r-card); overflow:hidden; box-shadow:0 14px 40px rgba(62,50,38,.18); border:1px solid rgba(255,255,255,.5)}
+.shot-frame img{width:100%; display:block}
+.caps-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; padding-top:18px; border-top:1px solid rgba(93,64,55,.14)}
+.cap-pill{font-family:var(--font-mono); font-size:12px; color:var(--earth); border:1px solid rgba(93,64,55,.22); border-radius:var(--r-pill); padding:5px 12px}
 
-/* ============ THREE MODES TABS ============ */
-.tablist{display:inline-flex; gap:6px; background:var(--stone); padding:5px; border-radius:var(--r-pill); margin-bottom:28px}
-.tab{border:0; background:transparent; font-family:var(--font-body); font-weight:500; font-size:14px; color:var(--graphite);
-  padding:9px 20px; border-radius:var(--r-pill); cursor:pointer; transition:background var(--dur-micro), color var(--dur-micro)}
-.tab[aria-selected="true"]{background:var(--ink); color:#fff}
-.tabpanes{position:relative}
+/* ============ TABS ============ */
+.tablist{display:inline-flex; gap:6px; background:rgba(93,64,55,.10); padding:5px; border-radius:var(--r-pill); margin-bottom:28px}
+.tab{border:0; background:transparent; font-family:var(--font-body); font-weight:500; font-size:14px; color:var(--warm);
+  padding:9px 20px; border-radius:var(--r-pill); cursor:pointer; transition:background 150ms, color 150ms}
+.tab[aria-selected="true"]{background:var(--earth); color:#fff}
 .pane{display:none}
 .pane.active{display:block; animation:fade .25s var(--ease-out)}
 @keyframes fade{from{opacity:0} to{opacity:1}}
-.pane .panel{margin:0}
-.pane-quote{font-family:var(--font-display); font-weight:300; font-style:normal; font-size:22px; line-height:1.3; color:var(--ink); margin:18px 0 0; letter-spacing:-.01em}
+.pane-quote{font-family:var(--font-display); font-weight:300; font-size:22px; line-height:1.3; color:var(--ink); margin:18px 0 0; letter-spacing:-.01em}
 
 /* ============ ARCHITECTURE ============ */
 .flow{display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin:36px 0 8px}
-.node{flex:1; min-width:200px; background:#fff; border-radius:var(--r-card); padding:24px; box-shadow:var(--shadow-whisper)}
-.node .t-cap{color:var(--smoke); display:block; margin-bottom:8px}
+.node{flex:1; min-width:200px; background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:24px; box-shadow:var(--shadow-soft)}
+.node .t-cap{color:var(--muted); display:block; margin-bottom:8px}
 .node h4{font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--ink); margin:0 0 6px}
-.node p{font-size:14px; color:var(--smoke); margin:0}
-.connector{flex:0 0 56px; display:flex; align-items:center; justify-content:center; color:var(--bronze)}
-.connector svg{width:32px; height:32px; stroke:var(--bronze); fill:none; stroke-width:1.5}
-.guardlist{margin-top:48px}
-.guard{display:grid; grid-template-columns:200px 1fr; gap:24px; padding:20px 0; border-top:1px solid var(--stone)}
-.guard:last-child{border-bottom:1px solid var(--stone)}
-.guard .t-cap{color:var(--graphite)}
-.guard p{margin:0; font-size:15px; color:var(--smoke)}
+.node p{font-size:14px; color:var(--warm); margin:0}
+.connector{flex:0 0 56px; display:flex; align-items:center; justify-content:center}
+.connector svg{width:30px; height:30px; stroke:var(--gold); fill:none; stroke-width:1.5}
+.guardlist{margin-top:44px}
+.guard{display:grid; grid-template-columns:200px 1fr; gap:24px; padding:20px 0; border-top:1px solid rgba(93,64,55,.14)}
+.guard:last-child{border-bottom:1px solid rgba(93,64,55,.14)}
+.guard .t-cap{color:var(--earth)}
+.guard p{margin:0; font-size:15px; color:var(--warm)}
 
 /* ============ PERSONA DEPTH ============ */
-.depth-stack{display:flex; flex-direction:column; gap:0; margin-top:40px}
-.depth{padding:36px 0; border-top:1px solid var(--stone)}
+.depth-stack{display:flex; flex-direction:column; margin-top:40px}
+.depth{padding:36px 0; border-top:1px solid rgba(93,64,55,.14)}
 .depth:first-child{border-top:0}
-.depth .big{font-family:var(--font-display); font-weight:300; font-size:48px; line-height:1; color:var(--graphite); letter-spacing:-.02em; margin:0 0 14px}
+.depth .big{font-family:var(--font-display); font-weight:300; font-size:clamp(40px,6vw,56px); line-height:1; color:var(--earth); letter-spacing:-.02em; margin:0 0 14px}
 .depth .txt{max-width:60ch; margin-left:0}
-.depth.d2 .big{margin-left:48px}
-.depth.d2 .txt{margin-left:48px}
-.depth.d3 .big{margin-left:96px}
-.depth.d3 .txt{margin-left:96px}
+.depth.d2 .big{margin-left:48px}.depth.d2 .txt{margin-left:48px}
+.depth.d3 .big{margin-left:96px}.depth.d3 .txt{margin-left:96px}
 
 /* ============ TRUST ============ */
-.trust-row{display:grid; grid-template-columns:240px 1fr; gap:24px; padding:22px 0; border-top:1px solid var(--stone)}
-.trust-row:last-of-type{border-bottom:1px solid var(--stone)}
+.trust-row{display:grid; grid-template-columns:240px 1fr; gap:24px; padding:22px 0; border-top:1px solid rgba(93,64,55,.14)}
+.trust-row:last-of-type{border-bottom:1px solid rgba(93,64,55,.14)}
 .trust-row h4{font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--ink); margin:0}
-.trust-row p{margin:0; font-size:15px; color:var(--smoke)}
-.quote-block{margin-top:40px; padding:24px 28px; border-left:2px solid var(--stone); font-style:italic; font-size:18px; line-height:1.5; color:var(--graphite)}
-.quote-block .t-cap{display:block; margin-top:12px; font-style:normal; color:var(--smoke)}
+.trust-row p{margin:0; font-size:15px; color:var(--warm)}
+.quote-block{margin-top:40px; padding:24px 28px; border-left:2px solid var(--gold); font-style:italic; font-size:18px; line-height:1.5; color:var(--ink); background:var(--glass); border-radius:0 var(--r-card) var(--r-card) 0; backdrop-filter:blur(10px)}
+.quote-block .t-cap{display:block; margin-top:12px; font-style:normal; color:var(--muted)}
 
-/* ============ MORE BY TYLER ============ */
+/* ============ MORE ============ */
 .work-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:36px}
-.tile{background:#fff; border-radius:var(--r-card); padding:26px; box-shadow:var(--shadow-whisper); transition:transform var(--dur-micro) var(--ease-out)}
+.tile{background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:26px; box-shadow:var(--shadow-soft); transition:transform 150ms}
 .tile:hover{transform:translateY(-3px)}
 .tile h4{font-family:var(--font-display); font-weight:400; font-size:22px; color:var(--ink); margin:0 0 8px}
-.tile .t-cap{color:var(--smoke); display:block; margin-bottom:8px}
-.tile p{font-size:14px; color:var(--smoke); margin:0}
-.work-note{margin-top:28px; font-size:14px; color:var(--smoke); text-align:center}
+.tile .t-cap{color:var(--muted); display:block; margin-bottom:8px}
+.tile p{font-size:14px; color:var(--warm); margin:0}
+.work-note{margin-top:26px; font-size:14px; color:var(--muted); text-align:center}
 
 /* ============ ABOUT ============ */
 .about-grid{display:grid; grid-template-columns:1.3fr .7fr; gap:48px; align-items:start}
-.about-copy p{margin:0 0 16px; font-size:16px; color:var(--smoke)}
-.profile{background:var(--taupe); border-radius:var(--r-card); padding:28px}
+.about-copy p{margin:0 0 16px; font-size:16px; color:var(--warm)}
+.profile{background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:28px; box-shadow:var(--shadow-soft)}
 .profile dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:12px 16px}
-.profile dt{font-family:var(--font-mono); font-size:12px; color:var(--smoke); text-transform:uppercase; letter-spacing:.06em}
-.profile dd{margin:0; font-size:14px; color:var(--graphite)}
+.profile dt{font-family:var(--font-mono); font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+.profile dd{margin:0; font-size:14px; color:var(--warm)}
 
 /* ============ FINAL CTA ============ */
-.cta{text-align:center; padding-block:clamp(72px,10vw,130px)}
-.cta h2{margin:0 auto 14px; max-width:14ch}
-.cta .t-sub{margin:0 auto 30px; max-width:40ch}
+.cta{position:relative; text-align:center; padding-block:clamp(72px,10vw,130px);
+  background:#1c1610 url('assets/bg/bg_dawn.jpg') center/cover no-repeat; isolation:isolate}
+.cta::before{content:""; position:absolute; inset:0; background:rgba(24,18,13,.46); z-index:-1}
+.cta .wrap{position:relative}
+.cta h2{margin:0 auto 14px; max-width:14ch; color:#fff}
+.cta .t-sub{margin:0 auto 30px; max-width:40ch; color:rgba(255,255,255,.82); font-size:17px}
 .cta-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
-.cta-sphere{margin:48px auto 0; width:180px}
 
 /* ============ FOOTER ============ */
-.footer{padding:28px 0; border-top:1px solid var(--stone)}
+.footer{padding:28px 0; border-top:1px solid rgba(93,64,55,.14); background:var(--paper)}
 .footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap}
-.footer .t-cap{color:var(--smoke)}
+.footer .t-cap{color:var(--muted)}
 .footer-links{display:flex; gap:18px}
-.footer-links a{font-family:var(--font-mono); font-size:13px; color:var(--smoke); transition:color var(--dur-micro)}
-.footer-links a:hover{color:var(--ink)}
+.footer-links a{font-family:var(--font-mono); font-size:13px; color:var(--warm); transition:color 150ms}
+.footer-links a:hover{color:var(--earth)}
 
 /* ============ RESPONSIVE ============ */
-@media (max-width:900px){
-  .voice-grid{grid-template-columns:1fr; gap:28px}
-  .about-grid{grid-template-columns:1fr; gap:28px}
-  .work-grid{grid-template-columns:repeat(2,1fr)}
-}
+@media (max-width:900px){ .voice-grid{grid-template-columns:1fr; gap:28px} .about-grid{grid-template-columns:1fr; gap:28px} .work-grid{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:768px){
-  .nav-links{display:none}
-  .nav-cta .btn-ghost{display:none}
-  .hamburger{display:inline-flex}
-  .hero-grid{grid-template-columns:1fr; gap:28px}
-  .hero-h1,.hero-side{grid-column:1 / -1}
-  .flow{flex-direction:column}
-  .connector{flex-basis:40px; transform:rotate(90deg)}
-  .work-grid{grid-template-columns:1fr}
-  .guard{grid-template-columns:1fr; gap:8px}
-  .trust-row{grid-template-columns:1fr; gap:8px}
+  .nav-links{display:none} .nav-cta .btn-ghost{display:none} .hamburger{display:inline-flex}
+  .hero-grid{grid-template-columns:1fr; gap:28px} .hero-copy,.hero-visual{grid-column:1/-1}
+  .flow{flex-direction:column} .connector{flex-basis:40px; transform:rotate(90deg)}
+  .work-grid{grid-template-columns:1fr} .guard{grid-template-columns:1fr; gap:8px} .trust-row{grid-template-columns:1fr; gap:8px}
   .depth.d2 .big,.depth.d2 .txt,.depth.d3 .big,.depth.d3 .txt{margin-left:0}
+  .band-photo{background-attachment:scroll}
 }
-
-/* ============ REDUCED MOTION ============ */
-@media (prefers-reduced-motion:reduce){
-  *{animation:none !important; transition:none !important}
-  .anim{opacity:1; transform:none}
-  .w{opacity:1}
-  html{scroll-behavior:auto}
-}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} .anim{opacity:1; transform:none} .w{opacity:1} html{scroll-behavior:auto} }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="nav" id="nav" aria-label="Primary">
   <div class="wrap">
-    <a href="#top" class="wordmark">Saint Augustine AI</a>
+    <a href="#top" class="wordmark"><span class="mark">A</span>Saint Augustine AI</a>
     <div class="nav-links">
       <a href="#voice">The Voice</a>
       <a href="#how">How it works</a>
@@ -291,30 +266,24 @@ img,svg{display:block}
 
 <main id="top">
 
-<!-- HERO -->
+<!-- HERO (real cathedral photo) -->
 <header class="hero">
   <div class="wrap">
     <div class="hero-grid">
-      <div class="hero-h1">
+      <div class="hero-copy">
         <p class="eyebrow">A Catholic companion</p>
         <h1 class="t-display" id="heroTitle">A voice for the restless heart.</h1>
-      </div>
-      <div class="hero-side">
-        <p class="t-lead">Ask the things that weigh on you — Scripture, the saints, the doubts — and Augustine answers in his own words. Free, streaming, citation-linked.</p>
-        <div style="display:flex; gap:12px; flex-wrap:wrap">
+        <p class="lead">Ask the things that weigh on you — Scripture, the saints, the doubts — and Augustine answers in his own words.</p>
+        <div class="actions">
           <a href="https://tylersimons1127.github.io/saint-augustine-ai/" class="btn btn-fill">Talk with Augustine</a>
           <a href="#how" class="btn btn-outline">See how it works</a>
         </div>
         <p class="epigraph">&ldquo;You have made us for yourself, O Lord, and our heart is restless until it rests in you.&rdquo; &mdash; Confessions, Book I</p>
       </div>
-    </div>
-    <div class="hero-visual">
-      <div class="sphere" aria-hidden="true">
-        <svg viewBox="0 0 100 100" fill="none" stroke="#a3822f" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M50 30c-9-5-22-5-30 0v34c8-5 21-5 30 0 9-5 22-5 30 0V30c-8-5-21-5-30 0z"/>
-          <path d="M50 30v34"/>
-          <path d="M50 64c-3-7-1-13 0-18 1 5 3 11 0 18z"/>
-        </svg>
+      <div class="hero-visual">
+        <div class="hero-shot anim">
+          <img src="live_pc_chat_greet.png" alt="Saint Augustine AI greeting screen" loading="lazy">
+        </div>
       </div>
     </div>
   </div>
@@ -336,13 +305,10 @@ img,svg{display:block}
 </section>
 <hr class="hairline">
 
-<!-- THE VOICE -->
-<section class="section band-taupe" id="voice">
+<!-- THE VOICE (real app screenshot) -->
+<section class="section band" id="voice">
   <div class="wrap">
-    <div class="anim">
-      <p class="eyebrow">The Voice</p>
-      <h2 class="t-h2" style="max-width:18ch">Not a chatbot. A bishop who knows restlessness.</h2>
-    </div>
+    <div class="anim"><p class="eyebrow">The Voice</p><h2 class="t-h2" style="max-width:18ch">Not a chatbot. A bishop who knows restlessness.</h2></div>
     <div class="voice-grid anim" style="margin-top:40px">
       <div class="voice-copy">
         <p class="t-body">Saint Augustine AI answers in the first person &mdash; as Augustine of Hippo would, drawing on Sacred Scripture, the Catechism, and the Doctors of the Church.</p>
@@ -355,12 +321,8 @@ img,svg{display:block}
           <span class="cap-pill">Charity always</span>
         </div>
       </div>
-      <div class="chat" aria-label="Example conversation">
-        <div class="msg user">How do I forgive someone who isn&rsquo;t sorry?</div>
-        <div class="msg ai">Begin where Augustine did: with prayer <em>for</em> them, not merely about them. To will their good is already a kind of forgiveness &mdash; even before the feeling follows.</div>
-        <div class="msg ai">You need not feel warm toward them to will their good. The will can lead the heart, by grace.</div>
-        <div class="sources">Sources: Confessions, Book Nine &middot; Catechism, paragraph on forgiveness</div>
-        <div class="typing" aria-label="Augustine is writing"><span></span><span></span><span></span></div>
+      <div class="shot-frame">
+        <img src="live_pc_chat_chat.png" alt="Saint Augustine AI answering a question about forgiveness" loading="lazy">
       </div>
     </div>
   </div>
@@ -369,10 +331,7 @@ img,svg{display:block}
 <!-- THREE MODES -->
 <section class="section" id="modes">
   <div class="wrap">
-    <div class="anim">
-      <p class="eyebrow">Three ways to ask</p>
-      <h2 class="t-h2" style="max-width:16ch">Choose the depth of the reply.</h2>
-    </div>
+    <div class="anim"><p class="eyebrow">Three ways to ask</p><h2 class="t-h2" style="max-width:16ch">Choose the depth of the reply.</h2></div>
     <div class="anim" style="margin-top:28px">
       <div class="tablist" role="tablist" aria-label="Reply modes">
         <button class="tab" role="tab" id="tab-quick" aria-controls="pane-quick" aria-selected="true" tabindex="0">Quick</button>
@@ -382,17 +341,17 @@ img,svg{display:block}
       <div class="tabpanes">
         <div class="pane active panel" id="pane-quick" role="tabpanel" aria-labelledby="tab-quick">
           <h3 class="t-h3">Quick</h3>
-          <p class="t-sub" style="margin-top:10px; max-width:60ch">Fast, plain answers at a lower temperature with no extended reasoning. For the quick question between classes.</p>
+          <p class="t-body" style="margin-top:10px; max-width:60ch">Fast, plain answers at a lower temperature with no extended reasoning. For the quick question between classes.</p>
           <p class="pane-quote">&ldquo;Do not despair; one of the thieves was saved. Do not presume; one was lost.&rdquo;</p>
         </div>
         <div class="pane panel" id="pane-thoughtful" role="tabpanel" aria-labelledby="tab-thoughtful" hidden>
           <h3 class="t-h3">Thoughtful</h3>
-          <p class="t-sub" style="margin-top:10px; max-width:60ch">Balanced replies with the reasoning stream shown. The default for real questions of faith and life.</p>
+          <p class="t-body" style="margin-top:10px; max-width:60ch">Balanced replies with the reasoning stream shown. The default for real questions of faith and life.</p>
           <p class="pane-quote">&ldquo;Thou hast made us for thyself, and our heart is restless until it rests in thee.&rdquo;</p>
         </div>
         <div class="pane panel" id="pane-contemplative" role="tabpanel" aria-labelledby="tab-contemplative" hidden>
           <h3 class="t-h3">Contemplative</h3>
-          <p class="t-sub" style="margin-top:10px; max-width:60ch">Long, layered answers &mdash; the what, the why, and the depth beneath &mdash; at a higher temperature with a fuller reasoning stream.</p>
+          <p class="t-body" style="margin-top:10px; max-width:60ch">Long, layered answers &mdash; the what, the why, and the depth beneath &mdash; at a higher temperature with a fuller reasoning stream.</p>
           <p class="pane-quote">&ldquo;Late have I loved thee, O Beauty ever ancient, ever new.&rdquo;</p>
         </div>
       </div>
@@ -402,48 +361,21 @@ img,svg{display:block}
 <hr class="hairline">
 
 <!-- HOW IT WORKS -->
-<section class="section band-taupe" id="how">
+<section class="section band" id="how">
   <div class="wrap">
-    <div class="anim">
-      <p class="eyebrow">Architecture</p>
-      <h2 class="t-h2" style="max-width:16ch">Built like a product, not a prompt.</h2>
-    </div>
+    <div class="anim"><p class="eyebrow">Architecture</p><h2 class="t-h2" style="max-width:16ch">Built like a product, not a prompt.</h2></div>
     <div class="flow anim" style="margin-top:36px">
-      <div class="node">
-        <span class="t-cap">First layer &middot; Client</span>
-        <h4>Browser</h4>
-        <p>Static site on GitHub Pages. No build step, no tracking &mdash; your words leave only when you send them.</p>
-      </div>
+      <div class="node"><span class="t-cap">First layer · Client</span><h4>Browser</h4><p>Static site on GitHub Pages. No build step, no tracking — your words leave only when you send them.</p></div>
       <div class="connector" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="node">
-        <span class="t-cap">Second layer &middot; Server</span>
-        <h4>Node backend</h4>
-        <p>A zero-dependency Node service on Render. Holds the key, guards the models, streams the reply.</p>
-      </div>
+      <div class="node"><span class="t-cap">Second layer · Server</span><h4>Node backend</h4><p>A zero-dependency Node service on Render. Holds the key, guards the models, streams the reply.</p></div>
       <div class="connector" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6"/></svg></div>
-      <div class="node">
-        <span class="t-cap">Third layer &middot; Models</span>
-        <h4>OpenRouter</h4>
-        <p>Curated free models only. Nothing paid is ever proxied through this app.</p>
-      </div>
+      <div class="node"><span class="t-cap">Third layer · Models</span><h4>OpenRouter</h4><p>Curated free models only. Nothing paid is ever proxied through this app.</p></div>
     </div>
     <div class="guardlist anim">
-      <div class="guard">
-        <span class="t-cap">Allowlist guard</span>
-        <p>Paid models are rejected before any upstream call is made &mdash; the request never leaves.</p>
-      </div>
-      <div class="guard">
-        <span class="t-cap">Per-IP rate limit</span>
-        <p>A short burst of requests, refilling one token every few seconds, keeps the free tier fair for everyone.</p>
-      </div>
-      <div class="guard">
-        <span class="t-cap">Model fallback</span>
-        <p>If a model is missing, rate-limited, or times out, the backend shifts to a healthy alternative.</p>
-      </div>
-      <div class="guard">
-        <span class="t-cap">Hard timeouts</span>
-        <p>An AbortController caps every request; on expiry it returns a clean error instead of hanging.</p>
-      </div>
+      <div class="guard"><span class="t-cap">Allowlist guard</span><p>Paid models are rejected before any upstream call is made — the request never leaves.</p></div>
+      <div class="guard"><span class="t-cap">Per-IP rate limit</span><p>A short burst of requests, refilling one token every few seconds, keeps the free tier fair for everyone.</p></div>
+      <div class="guard"><span class="t-cap">Model fallback</span><p>If a model is missing, rate-limited, or times out, the backend shifts to a healthy alternative.</p></div>
+      <div class="guard"><span class="t-cap">Hard timeouts</span><p>An AbortController caps every request; on expiry it returns a clean error instead of hanging.</p></div>
     </div>
   </div>
 </section>
@@ -451,52 +383,25 @@ img,svg{display:block}
 <!-- PERSONA DEPTH -->
 <section class="section" id="depth">
   <div class="wrap">
-    <div class="anim">
-      <p class="eyebrow">The method</p>
-      <h2 class="t-h2" style="max-width:18ch">The what, the why, the depth beneath.</h2>
-    </div>
+    <div class="anim"><p class="eyebrow">The method</p><h2 class="t-h2" style="max-width:18ch">The what, the why, the depth beneath.</h2></div>
     <div class="depth-stack anim" style="margin-top:36px">
-      <div class="depth">
-        <p class="big">What.</p>
-        <p class="txt t-body">First, a direct answer to the question you actually asked &mdash; plainly, without prelude.</p>
-      </div>
-      <div class="depth d2">
-        <p class="big">Why.</p>
-        <p class="txt t-body">Then the reasoning: the Scripture, the doctrine, or the lived wisdom beneath the answer.</p>
-      </div>
-      <div class="depth d3">
-        <p class="big">Depth.</p>
-        <p class="txt t-body">And finally the quiet beneath it &mdash; the thing Augustine would leave you praying with, not merely agreeing to.</p>
-      </div>
+      <div class="depth"><p class="big">What.</p><p class="txt t-body">First, a direct answer to the question you actually asked — plainly, without prelude.</p></div>
+      <div class="depth d2"><p class="big">Why.</p><p class="txt t-body">Then the reasoning: the Scripture, the doctrine, or the lived wisdom beneath the answer.</p></div>
+      <div class="depth d3"><p class="big">Depth.</p><p class="txt t-body">And finally the quiet beneath it — the thing Augustine would leave you praying with, not merely agreeing to.</p></div>
     </div>
   </div>
 </section>
 <hr class="hairline">
 
 <!-- TRUST -->
-<section class="section band-taupe" id="trust">
+<section class="section band" id="trust">
   <div class="wrap">
-    <div class="anim">
-      <p class="eyebrow">Honesty</p>
-      <h2 class="t-h2" style="max-width:16ch">Honest about what it is.</h2>
-    </div>
+    <div class="anim"><p class="eyebrow">Honesty</p><h2 class="t-h2" style="max-width:16ch">Honest about what it is.</h2></div>
     <div class="anim" style="margin-top:36px">
-      <div class="trust-row">
-        <h4>Not a priest</h4>
-        <p>It points you to confession and a confessor for grave matters. It will not pretend to absolve.</p>
-      </div>
-      <div class="trust-row">
-        <h4>No invented citations</h4>
-        <p>A true general statement is preferred over a precise false reference. Every citation links out so you can verify it.</p>
-      </div>
-      <div class="trust-row">
-        <h4>Charity, always</h4>
-        <p>It speaks the truth in love &mdash; firm on doctrine, gentle with the person asking.</p>
-      </div>
-      <div class="quote-block">
-        &ldquo;I am a voice shaped by Augustine&rsquo;s words, carried through this instrument by a student at Seton Hall Prep. I am not a priest, and I will tell you so.&rdquo;
-        <span class="t-cap">&mdash; from the persona prompt</span>
-      </div>
+      <div class="trust-row"><h4>Not a priest</h4><p>It points you to confession and a confessor for grave matters. It will not pretend to absolve.</p></div>
+      <div class="trust-row"><h4>No invented citations</h4><p>A true general statement is preferred over a precise false reference. Every citation links out so you can verify it.</p></div>
+      <div class="trust-row"><h4>Charity, always</h4><p>It speaks the truth in love — firm on doctrine, gentle with the person asking.</p></div>
+      <div class="quote-block">&ldquo;I am a voice shaped by Augustine&rsquo;s words, carried through this instrument by a student at Seton Hall Prep. I am not a priest, and I will tell you so.&rdquo;<span class="t-cap">— from the persona prompt</span></div>
     </div>
   </div>
 </section>
@@ -504,51 +409,28 @@ img,svg{display:block}
 <!-- MORE BY TYLER -->
 <section class="section" id="more">
   <div class="wrap">
-    <div class="anim">
-      <p class="eyebrow">More by the builder</p>
-      <h2 class="t-h2" style="max-width:20ch">Other things built with the same care.</h2>
-    </div>
+    <div class="anim"><p class="eyebrow">More by the builder</p><h2 class="t-h2" style="max-width:20ch">Other things built with the same care.</h2></div>
     <div class="work-grid anim" style="margin-top:36px">
-      <div class="tile">
-        <h4>ScalerHub</h4>
-        <span class="t-cap">Tauri and Rust desktop UI</span>
-        <p>A GPU-tool interface with a calm, dense panel layout.</p>
-      </div>
-      <div class="tile">
-        <h4>Cremosa</h4>
-        <span class="t-cap">Brand site, vanilla HTML/CSS</span>
-        <p>A gelato maker&rsquo;s storefront, built to feel like the product.</p>
-      </div>
-      <div class="tile">
-        <h4>HALDEN</h4>
-        <span class="t-cap">Luxury watch landing</span>
-        <p>An editorial hero with restrained motion and a single accent.</p>
-      </div>
-      <div class="tile">
-        <h4>JARVIS</h4>
-        <span class="t-cap">Local voice pipeline</span>
-        <p>Wake-word to reply, running on-device without the cloud.</p>
-      </div>
-      <div class="tile">
-        <h4>E.V.</h4>
-        <span class="t-cap">Voice-assistant design</span>
-        <p>Latency-tuned UX patterns for spoken AI interactions.</p>
-      </div>
+      <div class="tile"><h4>ScalerHub</h4><span class="t-cap">Tauri and Rust desktop UI</span><p>A GPU-tool interface with a calm, dense panel layout.</p></div>
+      <div class="tile"><h4>Cremosa</h4><span class="t-cap">Brand site, vanilla HTML/CSS</span><p>A gelato maker&rsquo;s storefront, built to feel like the product.</p></div>
+      <div class="tile"><h4>HALDEN</h4><span class="t-cap">Luxury watch landing</span><p>An editorial hero with restrained motion and a single accent.</p></div>
+      <div class="tile"><h4>JARVIS</h4><span class="t-cap">Local voice pipeline</span><p>Wake-word to reply, running on-device without the cloud.</p></div>
+      <div class="tile"><h4>E.V.</h4><span class="t-cap">Voice-assistant design</span><p>Latency-tuned UX patterns for spoken AI interactions.</p></div>
     </div>
-    <p class="work-note">Every project ships verified &mdash; built, rendered, and tested before it is called done.</p>
+    <p class="work-note">Every project ships verified — built, rendered, and tested before it is called done.</p>
   </div>
 </section>
 <hr class="hairline">
 
 <!-- ABOUT -->
-<section class="section band-taupe" id="about">
+<section class="section band" id="about">
   <div class="wrap">
     <div class="about-grid anim">
       <div class="about-copy">
         <p class="eyebrow">The builder</p>
         <h2 class="t-h2" style="max-width:14ch">Built by a student, not a startup.</h2>
-        <p style="margin-top:20px">Tyler Simons is a student at Seton Hall Prep. He works across the full stack &mdash; from static sites to React and TypeScript, into Tauri and Rust, Node services, and the CI that ships them.</p>
-        <p>He writes with permission, and he verifies. Both layers of this app &mdash; the page you are reading and the backend that answers &mdash; were rendered and tested before being called finished.</p>
+        <p style="margin-top:20px">Tyler Simons is a student at Seton Hall Prep. He works across the full stack — from static sites to React and TypeScript, into Tauri and Rust, Node services, and the CI that ships them.</p>
+        <p>He writes with permission, and he verifies. Both layers of this app — the page you are reading and the backend that answers — were rendered and tested before being called finished.</p>
       </div>
       <div class="profile">
         <dl>
@@ -563,20 +445,14 @@ img,svg{display:block}
   </div>
 </section>
 
-<!-- FINAL CTA -->
+<!-- FINAL CTA (real dawn photo) -->
 <section class="cta">
   <div class="wrap">
     <h2 class="t-display">Ask what weighs on you.</h2>
     <p class="t-sub">Free. No signup. Streaming.</p>
     <div class="cta-actions">
       <a href="https://tylersimons1127.github.io/saint-augustine-ai/" class="btn btn-fill btn-lg">Talk with Augustine</a>
-      <a href="https://github.com/tylersimons1127" class="btn btn-ghost btn-lg">Read the README</a>
-    </div>
-    <div class="sphere cta-sphere" aria-hidden="true">
-      <svg viewBox="0 0 100 100" fill="none" stroke="#a3822f" stroke-width="1.5">
-        <path d="M30 38c0-8 14-14 20-14s20 6 20 14c0 4-4 7-9 8M30 38c0 10 12 18 20 18s20-8 20-18"/>
-        <path d="M50 60c4-6 4-12 0-18-4 6-4 12 0 18z"/>
-      </svg>
+      <a href="https://github.com/tylersimons1127" class="btn btn-outline btn-lg">Read the README</a>
     </div>
   </div>
 </section>
@@ -584,7 +460,7 @@ img,svg{display:block}
 <!-- FOOTER -->
 <footer class="footer">
   <div class="wrap">
-    <span class="t-cap">Saint Augustine AI &mdash; MIT &copy; 2026</span>
+    <span class="t-cap">Saint Augustine AI — MIT © 2026</span>
     <span class="t-cap">Built by Tyler Simons, a Seton Hall Prep student</span>
     <div class="footer-links">
       <a href="https://tylersimons1127.github.io/saint-augustine-ai/">App</a>
@@ -601,95 +477,44 @@ img,svg{display:block}
   "use strict";
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // 1. Word reveal on hero H1
+  // 1. Word reveal
   var hero = document.getElementById('heroTitle');
   if(hero){
     var words = hero.textContent.trim().split(/\s+/);
     hero.innerHTML = words.map(function(w){ return '<span class="w">'+w+'</span>'; }).join(' ');
     if(reduce){ [].forEach.call(hero.querySelectorAll('.w'), function(s){ s.classList.add('on'); }); }
     else if(document.fonts && document.fonts.ready){
-      document.fonts.ready.then(function(){
-        [].forEach.call(hero.querySelectorAll('.w'), function(s,i){ setTimeout(function(){ s.classList.add('on'); }, i*90); });
-      });
+      document.fonts.ready.then(function(){ [].forEach.call(hero.querySelectorAll('.w'), function(s,i){ setTimeout(function(){ s.classList.add('on'); }, i*90); }); });
     }
   }
 
   // 2. Scroll reveal
   if('IntersectionObserver' in window && !reduce){
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-      });
-    }, {threshold:.15});
+    var io = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.15});
     [].forEach.call(document.querySelectorAll('.anim'), function(el){ io.observe(el); });
-  } else {
-    [].forEach.call(document.querySelectorAll('.anim'), function(el){ el.classList.add('in'); });
-  }
+  } else { [].forEach.call(document.querySelectorAll('.anim'), function(el){ el.classList.add('in'); }); }
 
-  // 3. Tabs (click + arrow keys, roving tabindex)
+  // 3. Tabs
   var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
-  function selectTab(tab){
-    tabs.forEach(function(t){
-      var sel = (t === tab);
-      t.setAttribute('aria-selected', sel ? 'true' : 'false');
-      t.tabIndex = sel ? 0 : -1;
-      var pane = document.getElementById(t.getAttribute('aria-controls'));
-      if(pane){ pane.classList.toggle('active', sel); pane.hidden = !sel; }
-    });
-  }
+  function selectTab(tab){ tabs.forEach(function(t){ var sel=(t===tab); t.setAttribute('aria-selected', sel?'true':'false'); t.tabIndex=sel?0:-1; var pane=document.getElementById(t.getAttribute('aria-controls')); if(pane){ pane.classList.toggle('active', sel); pane.hidden=!sel; } }); }
   tabs.forEach(function(tab, i){
     tab.addEventListener('click', function(){ selectTab(tab); });
-    tab.addEventListener('keydown', function(e){
-      var idx = i;
-      if(e.key === 'ArrowRight' || e.key === 'ArrowDown') idx = (i+1)%tabs.length;
-      else if(e.key === 'ArrowLeft' || e.key === 'ArrowUp') idx = (i-1+tabs.length)%tabs.length;
-      else return;
-      e.preventDefault(); selectTab(tabs[idx]); tabs[idx].focus();
-    });
+    tab.addEventListener('keydown', function(e){ var idx=i; if(e.key==='ArrowRight'||e.key==='ArrowDown') idx=(i+1)%tabs.length; else if(e.key==='ArrowLeft'||e.key==='ArrowUp') idx=(i-1+tabs.length)%tabs.length; else return; e.preventDefault(); selectTab(tabs[idx]); tabs[idx].focus(); });
   });
 
   // 4. Nav shrink + scroll progress
-  var nav = document.getElementById('nav');
-  var prog = document.getElementById('progress');
-  function onScroll(){
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-    var h = document.documentElement;
-    var max = h.scrollHeight - h.clientHeight;
-    var p = max > 0 ? (window.scrollY / max) * 100 : 0;
-    if(prog) prog.style.width = p + '%';
-  }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
+  var nav=document.getElementById('nav'), prog=document.getElementById('progress');
+  function onScroll(){ nav.classList.toggle('scrolled', window.scrollY>40); var h=document.documentElement; var max=h.scrollHeight-h.clientHeight; var p=max>0?(window.scrollY/max)*100:0; if(prog) prog.style.width=p+'%'; }
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
 
   // 5. Mobile overlay + focus trap
-  var burger = document.getElementById('hamburger');
-  var overlay = document.getElementById('overlay');
-  var closeBtn = document.getElementById('overlayClose');
-  var lastFocus = null;
-  function openMenu(){
-    lastFocus = document.activeElement;
-    overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
-    burger.setAttribute('aria-expanded','true');
-    var first = overlay.querySelector('a'); if(first) first.focus();
-  }
-  function closeMenu(){
-    overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
-    burger.setAttribute('aria-expanded','false');
-    if(lastFocus) lastFocus.focus();
-  }
-  if(burger){ burger.addEventListener('click', openMenu); }
-  if(closeBtn){ closeBtn.addEventListener('click', closeMenu); }
-  overlay.addEventListener('click', function(e){ if(e.target.tagName === 'A') closeMenu(); });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && overlay.classList.contains('open')) closeMenu();
-    if(e.key === 'Tab' && overlay.classList.contains('open')){
-      var f = [].slice.call(overlay.querySelectorAll('a,button'));
-      if(!f.length) return;
-      var first = f[0], last = f[f.length-1];
-      if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
-      else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
-    }
-  });
+  var burger=document.getElementById('hamburger'), overlay=document.getElementById('overlay'), closeBtn=document.getElementById('overlayClose'), lastFocus=null;
+  function openMenu(){ lastFocus=document.activeElement; overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); burger.setAttribute('aria-expanded','true'); var f=overlay.querySelector('a'); if(f) f.focus(); }
+  function closeMenu(){ overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); burger.setAttribute('aria-expanded','false'); if(lastFocus) lastFocus.focus(); }
+  if(burger) burger.addEventListener('click', openMenu);
+  if(closeBtn) closeMenu&&closeBtn.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', function(e){ if(e.target.tagName==='A') closeMenu(); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&overlay.classList.contains('open')) closeMenu(); if(e.key==='Tab'&&overlay.classList.contains('open')){ var f=[].slice.call(overlay.querySelectorAll('a,button')); if(!f.length) return; var first=f[0], last=f[f.length-1]; if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); } else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); } } });
 })();
 </script>
 </body>
