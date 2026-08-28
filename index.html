@@ -611,9 +611,10 @@ textarea#prompt::placeholder{color:var(--muted)}
   .rail,.stage,.dock{left:0 !important}
 }
 @media (max-width:768px){
-  /* clean single-row rail: [toggle] [wordmark] … [search][scenery][themes][settings] */
+  /* rail offset so it clears the fixed sidebar toggle (44px at left:12px) */
   .rail{
-    gap:10px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-top));
+    gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-top));
+    padding-left:calc(64px + env(safe-area-inset-left));
     background:linear-gradient(to bottom, rgba(255,252,245,0.45), rgba(255,252,245,0));
     backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
   }
@@ -622,11 +623,10 @@ textarea#prompt::placeholder{color:var(--muted)}
   .search{width:38px;padding:0;justify-content:center;flex:none}
   .search input{display:none}
   .search.icon-only{width:44px}
-  .icon-btn{padding:0;min-width:40px;width:40px;height:40px}
-  .chip-btn{padding:0;width:40px;height:40px;justify-content:center}
-  .chip-btn span{display:none}            /* icon-only on phones; labels implied by icon */
-  .stage{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:calc(280px + env(safe-area-inset-bottom))}
-  .controls{gap:8px}
+  .icon-btn{padding:0 10px;min-width:40px;height:40px}
+  .chip-btn{padding:0 12px;height:40px;justify-content:center;gap:6px}
+  .stage{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+  .controls{gap:8px;flex-wrap:wrap}
   .hint{display:none}
   .bubble{max-width:90%}
   .model-btn{max-width:46vw;min-width:0}
@@ -646,7 +646,7 @@ textarea#prompt::placeholder{color:var(--muted)}
   .greet .crest{margin-bottom:12px;padding:6px 12px}
   .greet .crest span{font-size:12.5px}
 }
-/* D: dedicated phone dock — full-width composer, stacked controls */
+/* D: dedicated phone dock — full-width composer, controls stacked tight */
 @media (max-width:768px){
   .dock{
     left:0 !important;right:0;
@@ -654,13 +654,16 @@ textarea#prompt::placeholder{color:var(--muted)}
     gap:8px;
     background:linear-gradient(to top, rgba(255,250,242,0.55) 0%, rgba(255,250,242,0.0) 100%);
   }
-  .composer{width:100%;border-radius:22px}
-  .controls{flex-direction:column;align-items:stretch;gap:8px;width:100%}
-  .model{width:100%}
+  .composer{width:100%;border-radius:22px;gap:7px;padding:10px 12px 9px}
+  .input-row .icon-btn{height:40px;width:40px}
+  .send{height:40px;width:40px}
+  textarea#prompt{padding:8px 4px;font-size:16px}
+  .controls{flex-direction:column;align-items:stretch;gap:6px;width:100%}
+  .model,.reasoning{width:100%}
   .model-btn{width:100%;max-width:none;justify-content:space-between}
   .divider{display:none}
-  .reasoning{width:100%;display:flex;gap:6px}
-  .reasoning .seg{flex:1;height:46px;justify-content:center;font-size:13px}
+  .reasoning{display:flex;gap:6px}
+  .reasoning .seg{flex:1;height:34px;justify-content:center;font-size:12.5px;padding:0 6px;white-space:nowrap}
 }
 /* E: scenery + theme pickers become bottom sheets on phones (like .pop) */
 @media (max-width:480px){
