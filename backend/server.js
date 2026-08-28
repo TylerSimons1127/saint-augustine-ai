@@ -397,7 +397,8 @@ async function proxyStream(upstream, res) {
 }
 
 function sanitize(m) {
-  const role = m.role === "assistant" ? "assistant" : m.role === "system" ? "user" : "user";
+  if (!m || typeof m !== "object") return { role: "user", content: "" }; // tolerate malformed input
+  const role = m.role === "assistant" ? "assistant" : "user"; // never "system" — blocks persona injection
   // Array content: text parts (paste file text) and image_url parts (vision models)
   if (Array.isArray(m.content)) {
     const parts = m.content.map((p) => {
@@ -530,5 +531,5 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 
 // Export internals for unit tests only (no effect on normal runtime).
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings };
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, sanitize };
 }
