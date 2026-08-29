@@ -25,8 +25,8 @@
   --earth:#5d4037;        /* deep brown — primary buttons */
   --earth-d:#4a322b;
   --warm:#4a3f33;         /* body text */
-  --gold:#b8893f;         /* muted gold — accents/rings only, never body text */
-  --muted:#8a7c6b;        /* captions */
+  --gold:#8a6a23;         /* muted gold — accents/rings; darkened to pass AA on paper */
+  --muted:#6f6253;        /* captions — darkened for body-safe contrast */
   --font-display:'Fraunces', Georgia, 'Times New Roman';
   --font-body:'Hanken Grotesk', system-ui;
   --font-mono:'JetBrains Mono', ui-monospace, monospace;
@@ -37,6 +37,7 @@
   --gutter:clamp(22px,5vw,60px);
   --ease-out:cubic-bezier(0,0,.2,1);
   --ease-reveal:cubic-bezier(.76,.31,.04,1.01);
+  --dur-micro:150ms;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -69,28 +70,38 @@ img{display:block; max-width:100%}
 .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px;
   font-family:var(--font-body); font-weight:500; font-size:15px; letter-spacing:.01em;
   padding:13px 24px; border-radius:var(--r-pill); border:1px solid transparent; cursor:pointer;
-  transition:background var(--dur-micro,150ms) var(--ease-out), color 150ms, border-color 150ms, transform 150ms}
+  transition:background var(--dur-micro) var(--ease-out), color var(--dur-micro), border-color var(--dur-micro), transform var(--dur-micro), box-shadow var(--dur-micro)}
 .btn-fill{background:var(--earth); color:#fff; border-color:var(--earth)}
-.btn-fill:hover{background:var(--earth-d); transform:translateY(-1px)}
+.btn-fill:hover{background:var(--earth-d); transform:translateY(-1px); box-shadow:0 8px 20px rgba(74,50,43,.28)}
 .btn-outline{background:var(--glass); color:var(--ink); border-color:var(--glass-border); backdrop-filter:blur(10px)}
-.btn-outline:hover{background:var(--glass-strong)}
+.btn-outline:hover{background:var(--glass-strong); transform:translateY(-1px)}
 .btn-ghost{background:transparent; color:var(--ink); border-color:rgba(93,64,55,.3)}
-.btn-ghost:hover{background:rgba(93,64,55,.06)}
+.btn-ghost:hover{background:rgba(93,64,55,.06); transform:translateY(-1px)}
 .btn-lg{font-size:16px; padding:16px 30px; min-height:52px}
 :focus-visible{outline:2px solid var(--earth); outline-offset:2px; border-radius:inherit}
 
 /* ============ NAV ============ */
 .nav{position:fixed; inset:0 0 auto 0; z-index:50; height:66px; display:flex; align-items:center;
   background:transparent; transition:background .3s, border-color .3s, backdrop-filter .3s; border-bottom:1px solid transparent}
-.nav.scrolled{background:rgba(251,248,242,.82); backdrop-filter:blur(12px); border-bottom-color:rgba(93,64,55,.14)}
+.nav::after{content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(15,11,7,.55) 0%,rgba(15,11,7,0) 100%); opacity:1; transition:opacity .3s}
+.nav.scrolled::after{opacity:0}
+.overlay::after{display:none}
 .nav .wrap{display:flex; align-items:center; justify-content:space-between; width:100%}
-.wordmark{font-weight:600; font-size:15px; color:var(--ink); letter-spacing:-.01em; display:flex; align-items:center; gap:9px}
-.wordmark .mark{width:22px; height:22px; border-radius:50%; border:1.5px solid var(--gold); display:grid; place-items:center; color:var(--gold); font-family:var(--font-display); font-size:13px; font-weight:500}
+.wordmark{font-weight:600; font-size:15px; color:var(--ink); letter-spacing:-.01em; display:flex; align-items:center; gap:10px}
+.wordmark .mark{width:24px; height:24px; flex:0 0 auto; display:grid; place-items:center; border-radius:50%; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.4)}
+.wordmark .mark img{width:16px; height:16px}
+/* nav legibility over dark hero: light text + scrim pill; swaps to ink on scroll */
+.nav .nav-links a, .nav .nav-cta .btn-ghost{color:rgba(255,255,255,.92); text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.nav .nav-cta .btn-ghost{border-color:rgba(255,255,255,.45)}
+.nav.scrolled .nav-links a, .nav.scrolled .nav-cta .btn-ghost{color:var(--warm); text-shadow:none}
+.nav.scrolled .nav-cta .btn-ghost{border-color:rgba(93,64,55,.3)}
 .nav-links{display:flex; gap:28px; align-items:center}
-.nav-links a{font-size:14px; font-weight:500; color:var(--warm); transition:color 150ms}
-.nav-links a:hover{color:var(--earth)}
+.nav-links a{font-size:14px; font-weight:500; transition:color 150ms}
+.nav-links a:hover{color:var(--gold)}
+.nav.scrolled .nav-links a:hover{color:var(--earth)}
 .nav-cta{display:flex; gap:10px; align-items:center}
-.hamburger{display:none; background:none; border:0; cursor:pointer; padding:8px; color:var(--ink)}
+.hamburger{display:none; background:none; border:0; cursor:pointer; padding:8px; color:#fff; filter:drop-shadow(0 1px 4px rgba(0,0,0,.5))}
+.nav.scrolled .hamburger{color:var(--ink); filter:none}
 .overlay{position:fixed; inset:0; z-index:60; background:var(--paper); display:flex; flex-direction:column; padding:32px var(--gutter); gap:8px;
   transform:translateY(-8px); opacity:0; pointer-events:none; transition:opacity .3s, transform .3s}
 .overlay.open{opacity:1; pointer-events:auto; transform:none}
@@ -102,23 +113,26 @@ img{display:block; max-width:100%}
 /* ============ PHOTO BANDS ============ */
 .band-photo{position:relative; background-size:cover; background-position:center; background-attachment:fixed; isolation:isolate}
 .band-photo::before{content:""; position:absolute; inset:0; background:rgba(28,22,16,.52); z-index:-1}
-.band-photo.light::before{background:rgba(28,22,16,.34)}
+.band-photo.light::before{background:var(--scrim, rgba(28,22,16,.34))}
 
 /* ============ HERO ============ */
 .hero{position:relative; min-height:92vh; display:flex; align-items:center;
   background:#1c1610 url('assets/bg/bg_cathedral.jpg') center/cover no-repeat; isolation:isolate}
-.hero::before{content:""; position:absolute; inset:0; background:rgba(24,18,13,.50); z-index:-1}
+.hero::before{content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(20,15,10,.62) 0%,rgba(20,15,10,.40) 38%,rgba(20,15,10,.58) 100%); z-index:-1}
 .hero .wrap{width:100%; padding-top:120px; padding-bottom:80px}
 .hero-grid{display:grid; grid-template-columns:repeat(12,1fr); gap:36px; align-items:center}
 .hero-copy{grid-column:1 / span 7}
-.hero-visual{grid-column:9 / span 4}
-.hero .eyebrow{color:var(--gold)}
+.hero-visual{grid-column:8 / span 5}     /* fills the right edge, kills the empty void */
+.hero .eyebrow{color:var(--gold); text-shadow:0 1px 6px rgba(0,0,0,.55)}
 .hero h1{color:#fff; margin:0}
 .hero h1 .w{display:inline-block}
-.hero .lead{color:rgba(255,255,255,.86); margin-top:22px; max-width:34ch; font-size:19px}
+.hero .lead{color:rgba(255,255,255,.92); margin-top:22px; max-width:38ch; font-size:19px; text-shadow:0 1px 8px rgba(0,0,0,.4)}
 .hero .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:30px}
-.hero .epigraph{margin-top:30px; font-style:italic; font-size:15px; line-height:1.5; color:rgba(255,255,255,.72); max-width:46ch}
-.hero-shot{border-radius:var(--r-card-lg); overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18)}
+.hero .actions .btn-outline{color:#fff; border-color:rgba(255,255,255,.55); background:rgba(255,255,255,.12)}
+.hero .actions .btn-outline:hover{background:rgba(255,255,255,.22); color:#fff}
+.hero .epigraph{margin-top:30px; font-style:italic; font-size:15px; line-height:1.5; color:rgba(255,255,255,.9); max-width:48ch; text-shadow:0 1px 6px rgba(0,0,0,.45)}
+.hero-shot{border-radius:var(--r-card-lg); overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.18); aspect-ratio:1280/820; transition:transform .4s var(--ease-out), box-shadow .4s var(--ease-out)}
+.hero-shot:hover{transform:translateY(-4px); box-shadow:0 28px 70px rgba(0,0,0,.5)}
 .hero-shot img{width:100%; display:block}
 
 /* ============ WORD REVEAL ============ */
@@ -133,7 +147,9 @@ img{display:block; max-width:100%}
 .pillrow{display:flex; gap:10px; flex-wrap:wrap; overflow-x:auto; scrollbar-width:none; padding-block:6px}
 .pillrow::-webkit-scrollbar{display:none}
 .pill{display:inline-flex; align-items:center; gap:8px; border:1px solid var(--glass-border); background:var(--glass);
-  backdrop-filter:blur(10px); border-radius:var(--r-pill); padding:9px 16px; font-size:14px; font-weight:500; color:var(--ink); white-space:nowrap}
+  backdrop-filter:blur(10px); border-radius:var(--r-pill); padding:9px 16px; font-size:14px; font-weight:500; color:var(--ink); white-space:nowrap;
+  transition:border-color var(--dur-micro), background var(--dur-micro), transform var(--dur-micro), box-shadow var(--dur-micro)}
+.pill:hover{border-color:rgba(138,106,35,.5); background:var(--glass-strong); transform:translateY(-2px); box-shadow:var(--shadow-soft)}
 .pill svg{width:14px; height:14px; stroke:var(--earth); fill:none; stroke-width:1.5}
 
 /* ============ THE VOICE ============ */
@@ -141,10 +157,13 @@ img{display:block; max-width:100%}
   border-radius:var(--r-card-lg); padding:clamp(24px,4vw,40px); box-shadow:var(--shadow-glass)}
 .voice-grid{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center}
 .voice-copy p{margin:0 0 16px}
-.shot-frame{border-radius:var(--r-card); overflow:hidden; box-shadow:0 14px 40px rgba(62,50,38,.18); border:1px solid rgba(255,255,255,.5)}
+.shot-frame{border-radius:var(--r-card); overflow:hidden; box-shadow:0 14px 40px rgba(62,50,38,.18); border:1px solid rgba(255,255,255,.5); aspect-ratio:1280/820; transition:transform .4s var(--ease-out), box-shadow .4s var(--ease-out)}
+.shot-frame:hover{transform:translateY(-4px); box-shadow:0 22px 52px rgba(62,50,38,.26)}
 .shot-frame img{width:100%; display:block}
 .caps-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:22px; padding-top:18px; border-top:1px solid rgba(93,64,55,.14)}
-.cap-pill{font-family:var(--font-mono); font-size:12px; color:var(--earth); border:1px solid rgba(93,64,55,.22); border-radius:var(--r-pill); padding:5px 12px}
+.cap-pill{font-family:var(--font-mono); font-size:12px; color:var(--earth); border:1px solid rgba(93,64,55,.22); border-radius:var(--r-pill); padding:5px 12px;
+  transition:background var(--dur-micro), border-color var(--dur-micro)}
+.cap-pill:hover{background:rgba(93,64,55,.07); border-color:rgba(93,64,55,.4)}
 
 /* ============ TABS ============ */
 .tablist{display:inline-flex; gap:6px; background:rgba(93,64,55,.10); padding:5px; border-radius:var(--r-pill); margin-bottom:28px}
@@ -158,7 +177,9 @@ img{display:block; max-width:100%}
 
 /* ============ ARCHITECTURE ============ */
 .flow{display:flex; align-items:stretch; gap:0; flex-wrap:wrap; margin:36px 0 8px}
-.node{flex:1; min-width:200px; background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:24px; box-shadow:var(--shadow-soft)}
+.node{flex:1; min-width:200px; background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:24px; box-shadow:var(--shadow-soft);
+  transition:transform var(--dur-micro), box-shadow var(--dur-micro), border-color var(--dur-micro)}
+.node:hover{transform:translateY(-4px); box-shadow:var(--shadow-glass); border-color:rgba(138,106,35,.4)}
 .node .t-cap{color:var(--muted); display:block; margin-bottom:8px}
 .node h4{font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--ink); margin:0 0 6px}
 .node p{font-size:14px; color:var(--warm); margin:0}
@@ -170,12 +191,12 @@ img{display:block; max-width:100%}
 .guard .t-cap{color:var(--earth)}
 .guard p{margin:0; font-size:15px; color:var(--warm)}
 
-/* ============ PERSONA DEPTH ============ */
+/* ============ PERSONA DEPTH (photo band) ============ */
 .depth-stack{display:flex; flex-direction:column; margin-top:40px}
-.depth{padding:36px 0; border-top:1px solid rgba(93,64,55,.14)}
+.depth{padding:36px 0; border-top:1px solid rgba(255,255,255,.18)}
 .depth:first-child{border-top:0}
-.depth .big{font-family:var(--font-display); font-weight:300; font-size:clamp(40px,6vw,56px); line-height:1; color:var(--earth); letter-spacing:-.02em; margin:0 0 14px}
-.depth .txt{max-width:60ch; margin-left:0}
+.depth .big{font-family:var(--font-display); font-weight:300; font-size:clamp(40px,6vw,56px); line-height:1; color:#fff; letter-spacing:-.02em; margin:0 0 14px; text-shadow:0 2px 16px rgba(0,0,0,.4)}
+.depth .txt{max-width:60ch; margin-left:0; color:rgba(255,255,255,.9); font-size:17px; text-shadow:0 1px 8px rgba(0,0,0,.45)}
 .depth.d2 .big{margin-left:48px}.depth.d2 .txt{margin-left:48px}
 .depth.d3 .big{margin-left:96px}.depth.d3 .txt{margin-left:96px}
 
@@ -185,17 +206,18 @@ img{display:block; max-width:100%}
 .trust-row h4{font-family:var(--font-display); font-weight:400; font-size:20px; color:var(--ink); margin:0}
 .trust-row p{margin:0; font-size:15px; color:var(--warm)}
 .quote-block{margin-top:40px; padding:24px 28px; border-left:2px solid var(--gold); font-style:italic; font-size:18px; line-height:1.5; color:var(--ink); background:var(--glass); border-radius:0 var(--r-card) var(--r-card) 0; backdrop-filter:blur(10px)}
-.quote-block .t-cap{display:block; margin-top:12px; font-style:normal; color:var(--muted)}
-
-/* ============ MORE ============ */
 
 /* ============ ABOUT ============ */
 .about-grid{display:grid; grid-template-columns:1.3fr .7fr; gap:48px; align-items:start}
 .about-copy p{margin:0 0 16px; font-size:16px; color:var(--warm)}
+.about-copy a{color:var(--earth); border-bottom:1px solid rgba(93,64,55,.3); transition:border-color 150ms}
+.about-copy a:hover{border-color:var(--earth)}
 .profile{background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--glass-border); border-radius:var(--r-card); padding:28px; box-shadow:var(--shadow-soft)}
 .profile dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:12px 16px}
 .profile dt{font-family:var(--font-mono); font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
 .profile dd{margin:0; font-size:14px; color:var(--warm)}
+.profile dd a{color:var(--earth); border-bottom:1px solid rgba(93,64,55,.3); transition:border-color 150ms}
+.profile dd a:hover{border-color:var(--earth)}
 
 /* ============ FINAL CTA ============ */
 .cta{position:relative; text-align:center; padding-block:clamp(72px,10vw,130px);
@@ -203,7 +225,7 @@ img{display:block; max-width:100%}
 .cta::before{content:""; position:absolute; inset:0; background:rgba(24,18,13,.46); z-index:-1}
 .cta .wrap{position:relative}
 .cta h2{margin:0 auto 14px; max-width:14ch; color:#fff}
-.cta .t-sub{margin:0 auto 30px; max-width:40ch; color:rgba(255,255,255,.82); font-size:17px}
+.cta .t-sub{margin:0 auto 30px; max-width:40ch; color:rgba(255,255,255,.86); font-size:17px}
 .cta-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap}
 
 /* ============ FOOTER ============ */
@@ -219,6 +241,7 @@ img{display:block; max-width:100%}
 @media (max-width:768px){
   .nav-links{display:none} .nav-cta .btn-ghost{display:none} .hamburger{display:inline-flex}
   .hero-grid{grid-template-columns:1fr; gap:28px} .hero-copy,.hero-visual{grid-column:1/-1}
+  .hero{min-height:auto; padding-top:96px}
   .flow{flex-direction:column} .connector{flex-basis:40px; transform:rotate(90deg)}
   .guard{grid-template-columns:1fr; gap:8px} .trust-row{grid-template-columns:1fr; gap:8px}
   .depth.d2 .big,.depth.d2 .txt,.depth.d3 .big,.depth.d3 .txt{margin-left:0}
@@ -231,7 +254,7 @@ img{display:block; max-width:100%}
 
 <nav class="nav" id="nav" aria-label="Primary">
   <div class="wrap">
-    <a href="#top" class="wordmark"><span class="mark">A</span>Saint Augustine AI</a>
+    <a href="#top" class="wordmark"><span class="mark"><img src="assets/heart.svg" alt="" aria-hidden="true"></span>Saint Augustine AI</a>
     <div class="nav-links">
       <a href="#voice">The Voice</a>
       <a href="#how">How it works</a>
@@ -273,7 +296,7 @@ img{display:block; max-width:100%}
       </div>
       <div class="hero-visual">
         <div class="hero-shot anim">
-          <img src="live_pc_chat_greet.png" alt="Saint Augustine AI greeting screen" loading="lazy">
+          <img src="live_pc_chat_chat.png" alt="Saint Augustine AI answering a question about John 3:16 and the Catechism on love" width="1280" height="820" loading="eager" fetchpriority="high">
         </div>
       </div>
     </div>
@@ -313,7 +336,7 @@ img{display:block; max-width:100%}
         </div>
       </div>
       <div class="shot-frame">
-        <img src="live_pc_chat_chat.png" alt="Saint Augustine AI answering a question about forgiveness" loading="lazy">
+        <img src="live_pc_chat_greet.png" alt="Saint Augustine AI greeting screen" width="1280" height="820" loading="lazy">
       </div>
     </div>
   </div>
@@ -371,14 +394,14 @@ img{display:block; max-width:100%}
   </div>
 </section>
 
-<!-- PERSONA DEPTH -->
-<section class="section" id="depth">
+<!-- PERSONA DEPTH (photo band) -->
+<section class="section band-photo light" id="depth" style="background-image:url('assets/bg.jpg'); --scrim:rgba(20,16,12,.58)">
   <div class="wrap">
-    <div class="anim"><p class="eyebrow">The method</p><h2 class="t-h2" style="max-width:18ch">The what, the why, the depth beneath.</h2></div>
+    <div class="anim"><p class="eyebrow" style="color:#f0c674">The method</p><h2 class="t-h2" style="max-width:18ch; color:#fff; text-shadow:0 2px 16px rgba(0,0,0,.45)">The what, the why, the depth beneath.</h2></div>
     <div class="depth-stack anim" style="margin-top:36px">
-      <div class="depth"><p class="big">What.</p><p class="txt t-body">First, a direct answer to the question you actually asked — plainly, without prelude.</p></div>
-      <div class="depth d2"><p class="big">Why.</p><p class="txt t-body">Then the reasoning: the Scripture, the doctrine, or the lived wisdom beneath the answer.</p></div>
-      <div class="depth d3"><p class="big">Depth.</p><p class="txt t-body">And finally the quiet beneath it — the thing Augustine would leave you praying with, not merely agreeing to.</p></div>
+      <div class="depth"><p class="big">What.</p><p class="txt">First, a direct answer to the question you actually asked — plainly, without prelude.</p></div>
+      <div class="depth d2"><p class="big">Why.</p><p class="txt">Then the reasoning: the Scripture, the doctrine, or the lived wisdom beneath the answer.</p></div>
+      <div class="depth d3"><p class="big">Depth.</p><p class="txt">And finally the quiet beneath it — the thing Augustine would leave you praying with, not merely agreeing to.</p></div>
     </div>
   </div>
 </section>
@@ -413,8 +436,8 @@ img{display:block; max-width:100%}
           <dt>Name</dt><dd>Tyler Simons</dd>
           <dt>School</dt><dd>Seton Hall Prep</dd>
           <dt>License</dt><dd>MIT</dd>
-          <dt>Email</dt><dd>tyler.simons · gmail</dd>
-          <dt>Code</dt><dd>github.com/tylersimons</dd>
+          <dt>Email</dt><dd><a href="mailto:tyler.simons1127@gmail.com">tyler.simons1127@gmail.com</a></dd>
+          <dt>Code</dt><dd><a href="https://github.com/tylersimons1127" target="_blank" rel="noopener">github.com/tylersimons1127</a></dd>
         </dl>
       </div>
     </div>
