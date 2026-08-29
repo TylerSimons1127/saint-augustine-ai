@@ -172,12 +172,6 @@ a{color:inherit}
 .sb-bulk{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border-radius:12px;background:rgba(163,130,47,0.10);border:1px solid rgba(163,130,47,0.28)}
 .sb-bulk #sbBulkCount{font-size:11.5px;color:var(--gold-ink);flex:1}
 .sb-bulk-del{border:0;background:var(--danger);color:#fff;border-radius:999px;padding:6px 10px;font-size:11.5px;font-weight:600;cursor:pointer}
-.sb-readings{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px;height:40px;border-radius:999px;
-  border:1px solid var(--border);background:var(--panel);color:var(--ink-soft);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--body);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);transition:border-color .16s ease,color .16s ease,background .16s ease}
-.sb-readings:hover{background:var(--accent-soft);border-color:rgba(163,130,47,0.4);color:var(--ink)}
-.sb-readings:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-.sb-readings svg{color:var(--accent)}
 .sb-bulk-cancel{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:999px;padding:6px 10px;font-size:11.5px;cursor:pointer}
 .sb-check{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--border);flex:none;display:inline-block;background:var(--panel)}
 .sb-item.sel .sb-check{background:var(--accent-deep);border-color:var(--accent-deep)}
@@ -198,7 +192,7 @@ a{color:inherit}
   transition:background .14s ease, border-color .14s ease, color .14s ease;
 }
 .sb-item .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--accent);opacity:.7}
-.sb-item .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-item .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:26px}
 .sb-item:hover{background:var(--accent-soft);border-color:var(--border)}
 .sb-item[aria-current="true"]{background:var(--glass-strong);border-color:rgba(163,130,47,0.35);color:var(--ink);font-weight:500}
 .sb-item:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
@@ -404,20 +398,36 @@ a{color:inherit}
 .acts .act.fb[data-fb="down"].on{background:rgba(163,60,52,0.14);border-color:rgba(163,60,52,0.5);color:#9c3b32}
 .acts .act.fb[data-fb="report"].on{background:rgba(163,130,47,0.18);border-color:rgba(163,130,47,0.55);color:var(--accent-deep)}
 /* report popover */
-.report-pop{position:fixed;z-index:120;width:min(320px,92vw);padding:16px;border-radius:16px;
+/* Report modal (centered, blurs everything behind) */
+.report-scrim{position:fixed;inset:0;z-index:130;display:flex;align-items:center;justify-content:center;
+  padding:max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+  background:rgba(30,26,20,0.5);backdrop-filter:blur(7px) saturate(120%);-webkit-backdrop-filter:blur(7px) saturate(120%);
+  opacity:0;pointer-events:none;transition:opacity .22s ease}
+.report-scrim.show{opacity:1;pointer-events:auto}
+.report-modal{width:min(560px,100%);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;
+  padding:22px 22px 18px;border-radius:var(--r-l);text-align:left;
   background:var(--panel);border:1px solid var(--border);border-top-color:var(--border-light);
-  box-shadow:var(--shadow),0 12px 40px rgba(30,26,20,0.18);
-  backdrop-filter:blur(28px) saturate(170%);-webkit-backdrop-filter:blur(28px) saturate(170%);
-  opacity:0;transform:translateY(8px) scale(.98);transition:opacity .18s ease,transform .18s cubic-bezier(.4,0,.2,1)}
-.report-pop.show{opacity:1;transform:translateY(0) scale(1)}
+  box-shadow:var(--shadow),0 24px 70px rgba(30,26,20,0.30);
+  backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);
+  transform:translateY(10px) scale(.98);transition:transform .26s cubic-bezier(.4,0,.2,1)}
+.report-scrim.show .report-modal{transform:translateY(0) scale(1)}
+.rp-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rp-head .mk{width:30px;height:34px;color:var(--accent);flex:none}
+.rp-head h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0;color:var(--ink);letter-spacing:-.01em}
+.rp-sub{font-size:12.5px;color:var(--muted);margin:-6px 0 12px}
+.rp-response{position:relative;max-height:34vh;overflow-y:auto;overscroll-behavior:contain;
+  padding:14px 16px;border-radius:12px;background:rgba(30,26,20,0.04);border:1px solid var(--border);
+  font-size:13.5px;line-height:1.6;color:var(--ink-soft);white-space:pre-wrap;margin-bottom:16px}
+.rp-response .who{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);font-weight:600;margin-bottom:6px}
+.rp-response:empty{display:none}
 .rp-title{font-family:var(--display);font-weight:400;font-size:15px;color:var(--ink);margin-bottom:10px}
-.rp-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.rp-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .rp-chip{border:1px solid var(--border);background:var(--glass);color:var(--ink-soft);font-size:12px;font-weight:500;
   padding:6px 11px;border-radius:999px;cursor:pointer;font-family:var(--body);transition:all .14s ease}
 .rp-chip:hover{background:var(--accent-soft)}
 .rp-chip.on{background:var(--accent-deep);color:#fbf7ee;border-color:transparent}
 .rp-detail{width:100%;min-height:54px;resize:vertical;border-radius:10px;border:1px solid var(--border);
-  background:var(--glass);font-family:var(--body);font-size:13px;color:var(--ink);padding:8px 10px;margin-bottom:12px}
+  background:var(--glass);font-family:var(--body);font-size:13px;color:var(--ink);padding:8px 10px;margin-bottom:14px}
 .rp-detail:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .rp-actions{display:flex;gap:8px;justify-content:flex-end}
 .rp-cancel{border:1px solid var(--border);background:transparent;color:var(--muted);border-radius:999px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:var(--body)}
@@ -781,22 +791,6 @@ textarea#prompt::placeholder{color:var(--muted)}
   box-shadow:0 8px 22px rgba(138,108,37,0.34);transition:transform .12s ease, background .18s ease;
 }
 /* Daily Readings modal */
-.readings-modal{max-width:min(520px,100%);text-align:left}
-.readings-modal .mk{margin-left:0}
-.readings-modal .tag{align-self:flex-start;margin-bottom:10px}
-.readings-modal h2{text-align:left;font-size:21px;margin-bottom:14px}
-.readings-body{display:flex;flex-direction:column;gap:16px;max-height:54vh;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
-.reading-block .rl{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);font-weight:600;margin-bottom:5px}
-.reading-block .rt{font-size:14px;line-height:1.62;color:var(--ink-soft);margin:0;white-space:pre-wrap}
-.reading-block .rt b{color:var(--ink)}
-.readings-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;padding:18px 0}
-.readings-error{color:var(--danger);font-size:13.5px;line-height:1.6}
-.readings-fallback{font-size:12px;color:var(--muted);font-style:italic;margin-top:-8px}
-.readings-link{display:inline-block;margin-top:16px;font-size:13px;font-weight:600;color:var(--accent-deep);text-decoration:none;border-top:1px solid var(--border);padding-top:14px;width:100%}
-.readings-link:hover{text-decoration:underline}
-.spinner{width:16px;height:16px;border-radius:50%;border:2px solid var(--accent-soft);border-top-color:var(--accent-deep);animation:spin .7s linear infinite;flex:none}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
 .beta-modal .agree:hover{background:var(--accent-press);transform:translateY(-1px)}
 .beta-modal .agree:active{transform:translateY(0)}
 .beta-modal .agree:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft),0 8px 22px rgba(138,108,37,0.34)}
@@ -1154,10 +1148,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg>
     Select conversations
   </button>
-  <button class="sb-readings" id="sbReadings" title="Today's Mass readings">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.5C10.5 5 8 4.6 5.5 5 5.2 3.3 4.3 2.4 3 2.2v14.3c1.5.2 3.3.1 4.8-.6 1.7-.8 3.2-2 4.2-3.4"/><path d="M12 6.5C13.5 5 16 4.6 18.5 5c.3-1.7 1.2-2.6 2.5-2.8v14.3c-1.5.2-3.3.1-4.8-.6-1.7-.8-3.2-2-4.2-3.4"/><path d="M12 6.5v13"/></svg>
-    Daily Readings
-  </button>
   <div class="sb-scroll">
     <div class="sb-group" id="sbToday">
       <span class="lbl">Today</span>
@@ -1324,18 +1314,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   </div>
 </div>
 
-<!-- DAILY READINGS MODAL -->
-<div class="modal-scrim readings-scrim" id="readingsModal" role="dialog" aria-modal="true" aria-labelledby="readingsTitle">
-  <div class="beta-modal readings-modal">
-    <img class="mk" src="assets/heart.svg" alt="Sacred Heart" width="46" height="52" />
-    <span class="tag" id="readingsDate">Daily Readings</span>
-    <h2 id="readingsTitle">Today's Liturgy</h2>
-    <div class="readings-body" id="readingsBody">
-      <div class="readings-loading"><span class="spinner" aria-hidden="true"></span> Opening today's readings…</div>
-    </div>
-    <a class="readings-link" id="readingsLink" href="https://bible.usccb.org/daily-bible-readings" target="_blank" rel="noopener noreferrer">Read on USCCB.org ↗</a>
-  </div>
-</div>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
   Latest
 </button>
@@ -2193,46 +2171,46 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     });
   }
   function openReportPop(replyText, replyModel, sendFeedback){
-    const existing=document.querySelector(".report-pop"); if(existing) existing.remove();
-    const pop=document.createElement("div");
-    pop.className="report-pop";
-    pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Report a problem");
-    pop.innerHTML='<div class="rp-title">What’s the issue?</div>'+
-      '<div class="rp-reasons">'+
-        ['Incorrect teaching','Unclear or off-topic','Inappropriate','Broken formatting','Other'].map(r=>'<button class="rp-chip" data-r="'+esc(r)+'">'+esc(r)+'</button>').join("")+
-      '</div>'+
-      '<textarea class="rp-detail" placeholder="Optional — add a detail…"></textarea>'+
-      '<div class="rp-actions"><button class="rp-cancel">Cancel</button><button class="rp-send" disabled>Send report</button></div>';
-    document.body.appendChild(pop);
-    // position near the clicked button (report), clamped to viewport
-    const anchor = document.querySelector('[data-fb="report"]') || document.querySelector(".acts");
-    const r = anchor ? anchor.getBoundingClientRect() : {left:window.innerWidth/2, bottom:window.innerHeight-20, width:0};
-    const pw = 320, ph = pop.offsetHeight || 220, gap = 8;
-    let left = Math.min(r.left, window.innerWidth - pw - 12);
-    left = Math.max(12, left);
-    let top = r.bottom + gap;
-    if(top + ph > window.innerHeight - 12) top = Math.max(12, r.top - gap - ph);
-    pop.style.left = left+"px";
-    pop.style.top = top+"px";
-    requestAnimationFrame(()=>pop.classList.add("show"));
+    const existing=document.querySelector(".report-scrim"); if(existing) existing.remove();
+    const scrim=document.createElement("div");
+    scrim.className="report-scrim";
+    scrim.setAttribute("role","dialog"); scrim.setAttribute("aria-modal","true"); scrim.setAttribute("aria-label","Report a problem");
+    const safeReply = esc(replyText||"").slice(0,4000);
+    scrim.innerHTML=
+      '<div class="report-modal">'+
+        '<div class="rp-head"><img class="mk" src="assets/heart.svg" alt="" width="30" height="34" /><h2>Report a reply</h2></div>'+
+        '<p class="rp-sub">The response you are reporting:</p>'+
+        (safeReply ? '<div class="rp-response"><span class="who">Augustine</span>'+safeReply+'</div>' : '')+
+        '<div class="rp-title">What’s the issue?</div>'+
+        '<div class="rp-reasons">'+
+          ['Incorrect teaching','Unclear or off-topic','Inappropriate','Broken formatting','Other'].map(r=>'<button class="rp-chip" data-r="'+esc(r)+'">'+esc(r)+'</button>').join("")+
+        '</div>'+
+        '<textarea class="rp-detail" placeholder="Optional — add a detail…"></textarea>'+
+        '<div class="rp-actions"><button class="rp-cancel">Cancel</button><button class="rp-send" disabled>Send report</button></div>'+
+      '</div>';
+    document.body.appendChild(scrim);
+    document.body.style.overflow="hidden";
+    requestAnimationFrame(()=>scrim.classList.add("show"));
     let chosen=null;
-    pop.querySelectorAll(".rp-chip").forEach(c=>c.addEventListener("click",()=>{
-      pop.querySelectorAll(".rp-chip").forEach(x=>x.classList.remove("on"));
+    const card=scrim.querySelector(".report-modal");
+    scrim.querySelectorAll(".rp-chip").forEach(c=>c.addEventListener("click",()=>{
+      scrim.querySelectorAll(".rp-chip").forEach(x=>x.classList.remove("on"));
       c.classList.add("on"); chosen=c.dataset.r;
-      pop.querySelector(".rp-send").disabled=false;
+      scrim.querySelector(".rp-send").disabled=false;
     }));
-    pop.querySelector(".rp-cancel").addEventListener("click",()=>closePop());
-    pop.querySelector(".rp-send").addEventListener("click",async ()=>{
-      const detail=pop.querySelector(".rp-detail").value.trim();
+    scrim.querySelector(".rp-cancel").addEventListener("click",()=>closePop());
+    scrim.querySelector(".rp-send").addEventListener("click",async ()=>{
+      const detail=scrim.querySelector(".rp-detail").value.trim();
       const ok=await sendFeedback("report", (chosen||"")+(detail?(": "+detail):""));
       closePop();
       showToast(ok?"Report sent — thank you ✓":"Thanks for the report");
     });
-    function closePop(){ pop.classList.remove("show"); setTimeout(()=>pop.remove(),200); }
-    setTimeout(()=>{
-      const onDoc=(e)=>{ if(!pop.contains(e.target)){ closePop(); document.removeEventListener("click",onDoc,true); } };
-      document.addEventListener("click",onDoc,true);
-    },0);
+    scrim.addEventListener("click",(e)=>{ if(e.target===scrim) closePop(); });
+    function closePop(){
+      scrim.classList.remove("show");
+      document.body.style.overflow="";
+      setTimeout(()=>scrim.remove(),240);
+    }
   }
   async function callChatRetry(messages, userMsg){
     if(!model){ showToast("Pick a model first."); return; }
@@ -2427,49 +2405,6 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     if(selectedIds.has(activeId)){ activeId=null; clearThreadState(); }
     saveSessions(); setSelectMode(false); renderSessions();
   });
-
-  /* ---- Daily Readings modal (GET /api/readings) ---- */
-  const readingsModal=$("#readingsModal"), readingsBody=$("#readingsBody"),
-        readingsDate=$("#readingsDate"), readingsLink=$("#readingsLink"), sbReadings=$("#sbReadings");
-  let readingsLoaded=false;
-  function openReadings(){
-    if(!readingsModal) return;
-    readingsModal.classList.add("show");
-    document.body.style.overflow="hidden";
-    if(!readingsLoaded) loadReadings();
-  }
-  function closeReadings(){
-    if(!readingsModal) return;
-    readingsModal.classList.remove("show");
-    document.body.style.overflow="";
-  }
-  async function loadReadings(){
-    readingsLoaded=true;
-    readingsBody.innerHTML='<div class="readings-loading"><span class="spinner"></span> Opening today\'s readings…</div>';
-    try{
-      const res=await fetch(API+"/api/readings",{headers:{"Accept":"application/json"}});
-      if(!res.ok) throw new Error("Readings unavailable ("+res.status+")");
-      const data=await res.json();
-      const blocks=[["Reading I",data.first],["Responsorial Psalm",data.psalm],["Gospel",data.gospel]].filter(b=>b[1]);
-      const dateLabel=(data.date? data.date : new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"}));
-      readingsDate.textContent=dateLabel;
-      if(!blocks.length){ throw new Error("No readings returned."); }
-      readingsBody.innerHTML=blocks.map(([label,txt])=>
-        '<div class="reading-block"><span class="rl">'+esc(label)+'</span><p class="rt">'+esc(txt)+'</p></div>'
-      ).join("");
-      if(data.fallback){ readingsBody.insertAdjacentHTML("beforeend",
-        '<p class="readings-fallback">'+esc(data.fallback)+'</p>'); }
-      if(data.link) readingsLink.href=data.link;
-    }catch(e){
-      readingsDate.textContent="Daily Readings";
-      readingsBody.innerHTML='<p class="readings-error">'+esc(e.message||"Could not load today\'s readings.")+
-        ' You can still read them on the USCCB site.</p>';
-    }
-  }
-  if(sbReadings) sbReadings.addEventListener("click",()=>{ openReadings(); if(window.__sbClose) window.__sbClose(); });
-  if(readingsModal){
-    readingsModal.addEventListener("click",(e)=>{ if(e.target===readingsModal) closeReadings(); });
-  }
 
 
   /* ---- boot: sessions + load the free model list ---- */
