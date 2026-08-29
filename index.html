@@ -327,6 +327,64 @@ a{color:inherit}
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--ink-soft);font-size:15px;line-height:1.5;text-shadow:0 1px 10px rgba(250,247,240,0.75)}
 
 
+/* ---------- Daily Devotional ---------- */
+.daily{position:relative;width:min(640px,100%);margin:22px auto 0;padding:18px 20px 16px;text-align:left;
+  background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);border-radius:18px;
+  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%)}
+.daily-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.daily-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(163,130,47,.08);border:1px solid rgba(163,130,47,.28)}
+.daily-shuf{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--glass-strong);color:var(--ink-soft);
+  font-size:11.5px;font-weight:600;font-family:var(--body);padding:5px 10px;border-radius:999px;cursor:pointer;transition:all .14s ease}
+.daily-shuf svg{width:13px;height:13px}
+.daily-shuf:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);color:var(--ink)}
+.daily-text{font-family:var(--display);font-weight:300;font-size:clamp(16px,2.3vw,21px);line-height:1.45;letter-spacing:-.005em;color:var(--ink);margin:0;text-shadow:0 1px 14px rgba(250,247,240,0.6)}
+.daily-src{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:9px 0 0}
+.daily-cta{display:inline-flex;align-items:center;gap:7px;margin-top:14px;border:1px solid rgba(163,130,47,.35);background:var(--accent-deep);color:#fbf7ee;
+  font-size:12.5px;font-weight:600;font-family:var(--body);padding:8px 14px;border-radius:999px;cursor:pointer;box-shadow:0 6px 16px rgba(138,108,37,.28);transition:all .15s ease}
+.daily-cta svg{width:14px;height:14px}
+.daily-cta:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(138,108,37,.38)}
+.daily-cta:active{transform:translateY(0)}
+@media (max-width:768px){
+  .daily{margin-top:14px;padding:13px 13px 11px;border-radius:16px}
+  .daily-text{font-size:14.5px;line-height:1.4}
+  .daily-cta{margin-top:9px;padding:6px 11px;font-size:11px}
+  .daily-shuf{padding:4px 7px;font-size:10.5px}
+  .daily-src{margin-top:6px;font-size:9.5px}
+  .daily-top{margin-bottom:8px}
+  /* compact the greeting so the daily CTA clears the fixed dock/credit chip */
+  .greet .halo{width:84px;height:84px;margin-bottom:10px}
+  .greet .halo::after{inset:27px}
+  .greet .crest{margin-bottom:14px}
+  .greet .eyebrow{margin-bottom:12px}
+  .greet h1{font-size:clamp(24px,6.2vw,32px);line-height:1.18}
+  .greet .sub{margin-top:10px;font-size:14px;line-height:1.45}
+}
+
+/* ---------- Pray modal ---------- */
+.pray-modal{width:min(520px,100%);text-align:left;max-height:88vh;overflow-y:auto;overscroll-behavior:contain}
+.pray-hero{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.pray-hero .mk{width:34px;height:38px;color:var(--accent);flex:none}
+.pray-hero h2{font-family:var(--display);font-weight:400;font-size:21px;margin:0;color:var(--ink);letter-spacing:-.01em}
+.pray-sub{font-size:13px;line-height:1.55;color:var(--ink-soft);margin:0 0 14px}
+.pray-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.pray-field span{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
+.pray-field input{width:100%;border:1px solid var(--border);background:var(--glass);color:var(--ink);font-family:var(--body);
+  font-size:14px;padding:10px 12px;border-radius:11px}
+.pray-field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(163,130,47,.18)}
+.pray-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.pray-mode{display:flex;flex-direction:column;gap:5px;text-align:left;border:1px solid var(--border);background:var(--glass);
+  border-radius:14px;padding:13px 14px;cursor:pointer;transition:all .15s ease;font-family:var(--body)}
+.pray-mode:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);transform:translateY(-1px)}
+.pray-mode b{font-size:13.5px;color:var(--ink);font-weight:600;display:flex;align-items:center;gap:8px}
+.pray-mode b svg{width:15px;height:15px;color:var(--accent);flex:none}
+.pray-mode small{font-size:11.5px;line-height:1.4;color:var(--muted)}
+.pray-trad{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.pray-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.pray-chip{border:1px solid var(--border);background:var(--glass);color:var(--ink-soft);font-size:12px;font-weight:600;font-family:var(--body);
+  padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .14s ease}
+.pray-chip:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);color:var(--ink)}
+.pray-note{font-size:11px;line-height:1.5;color:var(--muted);margin:0 0 4px;border-top:1px solid var(--border);padding-top:12px}
+
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
 .msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
@@ -1215,9 +1273,24 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       <span class="beta">Beta</span>
     </div>
     <p class="eyebrow">A companion in the tradition</p>
-    <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
-    <p class="sub">Ask Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
-  </section>
+        <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
+        <p class="sub">Ask St. Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
+
+        <div class="daily" id="dailyCard" role="complementary" aria-label="Daily devotional">
+          <div class="daily-top">
+            <span class="daily-tag" id="dailyTag">Word for today</span>
+            <button class="daily-shuf" id="dailyShuf" title="Surprise me" aria-label="Surprise me with a new devotion">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Surprise me
+            </button>
+          </div>
+          <p class="daily-text" id="dailyText"></p>
+          <p class="daily-src" id="dailySrc"></p>
+          <button class="daily-cta" id="dailyPray">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
+            St. Augustine, lead me in prayer
+          </button>
+        </div>
+      </section>
 
   <!-- THREAD (hidden until first send) -->
   <section class="thread" id="thread" hidden aria-live="polite"></section>
@@ -1232,7 +1305,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       <button class="icon-btn" id="attachBtn" title="Attach files (PDF, DOCX, TXT)" aria-label="Attach files">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05 12.5 19.9a5 5 0 0 1-7.07-7.07l8.49-8.49a3 3 0 0 1 4.24 4.24l-8.49 8.49a1 1 0 0 1-1.41-1.41l7.78-7.78"/></svg>
       </button>
-      <textarea id="prompt" rows="1" placeholder="Message Augustine…" aria-label="Message Augustine"></textarea>
+      <textarea id="prompt" rows="1" placeholder="Message St. Augustine…" aria-label="Message St. Augustine"></textarea>
       <button class="send" id="send" title="Send" aria-label="Send message" disabled>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
       </button>
@@ -1311,12 +1384,48 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         <button class="tut-skip" id="tutSkip">Skip tour</button>
       </div>
     </div>
-  </div>
-</div>
+      </div>
+    </div>
 
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-  Latest
-</button>
+    <!-- ============ PRAY MODAL ============ -->
+    <div class="modal-scrim" id="prayModal" role="dialog" aria-modal="true" aria-labelledby="prayTitle">
+      <div class="beta-modal pray-modal">
+        <div class="pray-hero">
+          <img class="mk" src="assets/heart.svg" alt="" width="34" height="38" />
+          <h2 id="prayTitle">St. Augustine, lead me in prayer</h2>
+        </div>
+        <p class="pray-sub">Let Augustine guide your prayer, or ask him to teach you how to pray well.</p>
+        <div class="pray-field">
+          <span>What would you like to pray for? <em style="font-style:italic;font-weight:500;letter-spacing:0">(optional)</em></span>
+          <input id="prayIntent" type="text" maxlength="160" placeholder="A worry, a person, a thank-you, a need…" />
+        </div>
+        <div class="pray-modes">
+          <button class="pray-mode" data-mode="lead" aria-label="St. Augustine, lead me in prayer">
+            <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Lead me in prayer</b>
+            <small>I'll pray with you, in my own voice.</small>
+          </button>
+          <button class="pray-mode" data-mode="teach" aria-label="St. Augustine, teach me to pray better">
+            <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>Teach me to pray</b>
+            <small>A method, step by gentle step.</small>
+          </button>
+        </div>
+        <p class="pray-trad">Prayers of the tradition</p>
+        <div class="pray-chips">
+          <button class="pray-chip" data-trad="morning">Morning Offering</button>
+          <button class="pray-chip" data-trad="lectio">Lectio Divina</button>
+          <button class="pray-chip" data-trad="examen">The Examen</button>
+          <button class="pray-chip" data-trad="rest">Prayer before rest</button>
+        </div>
+        <p class="pray-note">Your prayer intention stays on this device, in this conversation — no data is sent beyond the models you've already chosen.</p>
+        <div class="report-ctrl">
+          <button class="rp-cancel" id="prayCancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      Latest
+    </button>
 
 <!-- ============ SETTINGS SHEET ============ -->
 <div class="settings-scrim" id="settingsScrim"></div>
@@ -1920,7 +2029,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           m.className="msg "+role;
           // bounded stagger: last few appended messages get tiny delay offsets, never grows with thread length
           m.style.setProperty("--i", (window.__msgSeq=(window.__msgSeq||0)+1) % 4);
-          const who = role==="user" ? "" : "Augustine";
+          const who = role==="user" ? "" : "St. Augustine";
     const init = role==="user" ? "You".slice(0,1) : "A";
     m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}">${who?`<span class="who">${who}</span>`:''}${html}</div>`;
     if(role==="user"){
@@ -2072,7 +2181,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         }
         inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
                 buf.className = "bubble md";
-                buf.innerHTML = '<span class="who">Augustine</span>'+inner;
+                buf.innerHTML = '<span class="who">St. Augustine</span>'+inner;
                 maybeScroll();
               };
               while(true){
@@ -2100,11 +2209,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       const msg = (e&&e.message)||"Something went wrong.";
       const isAbort = aborted || (e&&e.name==="AbortError");
       if(isAbort){
-        buf.innerHTML='<span class="who">Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>');
+        buf.innerHTML='<span class="who">St. Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>');
         if(acc) history.push({role:"assistant", content:acc});
         recordSession(userMsg, acc||"(stopped)");
       }else{
-        buf.innerHTML='<span class="who">Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>";
+        buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>";
         showToast(msg);
         history.push({role:"assistant", content:"[error] "+msg});
         recordSession(userMsg, msg);
@@ -2180,7 +2289,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       '<div class="report-modal">'+
         '<div class="rp-head"><img class="mk" src="assets/heart.svg" alt="" width="30" height="34" /><h2>Report a reply</h2></div>'+
         '<p class="rp-sub">The response you are reporting:</p>'+
-        (safeReply ? '<div class="rp-response"><span class="who">Augustine</span>'+safeReply+'</div>' : '')+
+        (safeReply ? '<div class="rp-response"><span class="who">St. Augustine</span>'+safeReply+'</div>' : '')+
         '<div class="rp-title">What’s the issue?</div>'+
         '<div class="rp-reasons">'+
           ['Incorrect teaching','Unclear or off-topic','Inappropriate','Broken formatting','Other'].map(r=>'<button class="rp-chip" data-r="'+esc(r)+'">'+esc(r)+'</button>').join("")+
@@ -2226,13 +2335,13 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">Augustine</span>'+inner; maybeScroll(); };
+      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
       while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning!=null){reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
       render(false); if(!acc) acc="(no response)";
       history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
     }catch(e){
       const msg=(e&&e.message)||"Something went wrong.";
-      buf.innerHTML='<span class="who">Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
+      buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
       history.push({role:"assistant",content:"[error] "+msg}); recordSession(userMsg, msg); addRetry(loading, messages, userMsg);
     }finally{
       send.classList.remove("stop"); send.disabled=(prompt.value.trim()===""&&files.length===0);
@@ -2261,7 +2370,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     if(!msgs.length){ showToast("Nothing to export yet."); return; }
     let md = "# Saint Augustine AI — conversation\n\n_Exported "+new Date().toLocaleString()+"_\n\n";
     for(const m of msgs){
-      const who = m.role==="user" ? "You" : "Augustine";
+      const who = m.role==="user" ? "You" : "St. Augustine";
       md += "**"+who+":**\n\n"+(m.content||"")+"\n\n---\n\n";
     }
     try{
@@ -2682,7 +2791,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     let md="# Saint Augustine AI — all conversations\n\n_Exported "+new Date().toLocaleString()+"_\n\n";
     list.forEach((s,i)=>{
       md+="## "+(s.title||"Conversation "+(i+1))+"\n\n";
-      (s.history||[]).forEach(m=>{ md+="**"+(m.role==="user"?"You":"Augustine")+":**\n\n"+(m.content||"")+"\n\n---\n\n"; });
+      (s.history||[]).forEach(m=>{ md+="**"+(m.role==="user"?"You":"St. Augustine")+":**\n\n"+(m.content||"")+"\n\n---\n\n"; });
     });
     const blob=new Blob([md],{type:"text/markdown"});
     const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="saint-augustine-all.md"; a.click();
@@ -2725,11 +2834,96 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   syncSettingsUI();
 
   // First visit: show tutorial right after the beta consent closes; otherwise show immediately.
-  if(!tutSeen){
-    if(betaModal && !betaSeen){ betaAgree.addEventListener("click",()=>setTimeout(startTut,220)); }
-    else { requestAnimationFrame(()=>requestAnimationFrame(startTut)); }
-  }
-})();
+    if(!tutSeen){
+      if(betaModal && !betaSeen){ betaAgree.addEventListener("click",()=>setTimeout(startTut,220)); }
+      else { requestAnimationFrame(()=>requestAnimationFrame(startTut)); }
+    }
+
+    /* ---- Daily Devotional (quote / article of faith / consolation / fun fact) ---- */
+    const DEVOTE = [
+      {t:"Quote of the Day", s:"— St. Augustine, Confessions, I.1", x:"Thou hast made us for Thyself, O Lord, and our heart is restless, until it rests in Thee."},
+      {t:"Quote of the Day", s:"— St. Augustine, Sermon 169", x:"Faith is to believe what you do not see; the reward of this faith is to see what you believe."},
+      {t:"Quote of the Day", s:"— St. Augustine", x:"The measure of love is to love without measure."},
+      {t:"Word of Consolation", s:"— St. Augustine", x:"God is more anxious to bestow His benefits on us than we are to receive them. Everything good, every grace, comes to you from Him."},
+      {t:"Word of Consolation", s:"— St. Augustine", x:"Beauty is so ancient and so new: late have I loved you. And see, you were within, and I was without."},
+      {t:"Word of Consolation", s:"— St. Augustine", x:"He loves each of us as if there were only one of us."},
+      {t:"Article of Faith", s:"On God's presence", x:"Wherever you turn, God is near. He is not far from any one of us, for in Him we live and move and have our being."},
+      {t:"Article of Faith", s:"On grace", x:"Grace is not earned; it is given. What we are, we are by God's mercy — and He who began the good work in you will bring it to completion."},
+      {t:"Article of Faith", s:"On the heart", x:"Our hearts are made for God. Nothing in this world, in our intellect, or even in our friendships is meant to be the final resting place of the soul."},
+      {t:"Fun Fact", s:"About St. Augustine", x:"Augustine was converted reading a passage of St. Paul (Romans 13:13) in a garden in Milan in 386, after years of searching — and then wrote down his whole journey in The Confessions."},
+      {t:"Fun Fact", s:"About St. Augustine", x:"His mother, St. Monica, prayed and wept for his conversion for decades before he was baptized by St. Ambrose at Easter 387."},
+      {t:"Fun Fact", s:"About St. Augustine", x:"He was an accomplished rhetorician — a professor of public speaking — before he ever became a bishop, which is why his writings persuade so well."},
+    ];
+    const dailyTag=$("#dailyTag"), dailyText=$("#dailyText"), dailySrc=$("#dailySrc"),
+          dailyShuf=$("#dailyShuf"), dailyCard=$("#dailyCard"), dailyPray=$("#dailyPray");
+    let dailyIdx = -1;
+    function renderDaily(i){
+      const e=DEVOTE[i % DEVOTE.length];
+      if(dailyTag) dailyTag.textContent=e.t;
+      if(dailyText) dailyText.textContent=e.x;
+      if(dailySrc) dailySrc.textContent=e.s;
+      dailyIdx=i;
+    }
+    function dailyForDate(){
+      const now=new Date();
+      const start=new Date(now.getFullYear(),0,0);
+      const d=Math.floor((now-start)/86400000);
+      return d % DEVOTE.length;
+    }
+    if(dailyShuf){
+      dailyShuf.addEventListener("click",()=>{
+        let i=Math.floor(Math.random()*DEVOTE.length);
+        if(i===dailyIdx) i=(i+1)%DEVOTE.length;
+        renderDaily(i);
+      });
+    }
+    if(dailyPray){
+      dailyPray.addEventListener("click",()=>{ if($("#prayModal")) $("#prayModal").classList.add("show"); });
+    }
+
+    /* ---- Pray modal ---- */
+    const prayModal=$("#prayModal");
+    function closePray(){ if(prayModal){ prayModal.classList.remove("show"); const ii=$("#prayIntent"); if(ii) ii.value=""; } }
+    if(prayModal){
+      prayModal.addEventListener("click",(e)=>{ if(e.target===prayModal) closePray(); });
+      const pCancel=$("#prayCancel"); if(pCancel) pCancel.addEventListener("click",closePray);
+      const pIntent=$("#prayIntent");
+      const PRAY_PROMPTS = {
+        lead:  (intent)=>"As St. Augustine, speak to me as a gentle teacher and spiritual guide. "+
+                      (intent? ("I come to you with this intention: \""+intent+"\". ") : "")+
+                      "Lead me in prayer now — begin with a word of guidance, then pray with me line by line, giving me short phrases I can pray after you, full of love for God. Keep it intimate and unhurried, under 220 words.",
+        teach: (intent)=>"As St. Augustine, teach me to pray better. "+
+                      (intent? ("I'd like my prayer to carry this intention: \""+intent+"\". ") : "")+
+                      "Explain one clear way to pray — like the Examen, Lectio Divina, or a simple breath-prayer — in steady, gentle steps I can follow today, and close with a short prayer to carry with me. Under 220 words.",
+      };
+      const TRAD_PROMPTS = {
+        morning: "Lead me in a Morning Offering prayer as St. Augustine — offering this day, its work, its struggles, and its joys to God, so I can begin the day held by Him.",
+        lectio:  "As St. Augustine, walk me through Lectio Divina right now — read, meditate, pray, contemplate — with a short passage and how to hold it in my heart.",
+        examen:  "As St. Augustine, guide me through the Examen of St. Ignatius — quietly reviewing my day with gratitude, noticing where God was present, and asking grace for tomorrow.",
+        rest:    "As St. Augustine, lead me in a prayer before rest — helping me surrender the day to God and hand over every worry so I can sleep in peace.",
+      };
+      const launch=(text)=>{
+        if(!text) return;
+        prompt.value=text;
+        syncSend();
+        closePray();
+        if(greet && !greet.hidden){ greet.hidden=true; thread.hidden=false; }
+        callChat();
+      };
+      prayModal.querySelectorAll(".pray-mode").forEach(b=>{
+        b.addEventListener("click",()=>{
+          const intent=(pIntent? pIntent.value.trim():"");
+          launch(PRAY_PROMPTS[b.dataset.mode](intent));
+        });
+      });
+      prayModal.querySelectorAll(".pray-chip").forEach(c=>{
+        c.addEventListener("click",()=>launch(TRAD_PROMPTS[c.dataset.trad]));
+      });
+    }
+
+    // populate the daily devotional on first paint
+    renderDaily(dailyForDate());
+  })();
 </script>
 
 </body></body>
