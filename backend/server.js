@@ -325,26 +325,19 @@ async function handleChat(req, res, body) {
 
 /* ---- SSE proxy: OpenRouter upstream -> browser ----
  * Contract: each upstream SSE `data:` JSON carries a `choices[0].delta`.
- * - delta.content -> forwarded live as {text}  (visible reply)
- * - delta.reasoning / delta.thinking -> forwarded live as {reasoning} (Thinking box)
- * Some free "reasoning" models emit their ENTIRE answer under `reasoning` and
- * nothing under `content` (e.g. nvidia/nemotron-3-ultra). For those we must
- * surface the reasoning stream as the visible answer in real time, or the user
- * stares at an empty bubble until a 40s late dump. So:
- *   - Always forward reasoning as {reasoning} (client hides it in a box).
- *   - If NO content has arrived by the time the stream ends, re-emit the
- *     accumulated reasoning as live {text} tokens (visible). But to avoid a
- *     jarring end-dump, we ALSO begin mirroring reasoning->text live once it's
- *     clear this is a reasoning-only model (threshold reached with no content).
+ * - delta.content       -> forwarded live as {text}      (the visible answer ONLY)
+ * - delta.reasoning     -> forwarded live as {reasoning}  (the Thinking box ONLY)
+ * Reasoning is NEVER converted into {text}. Just like ChatGPT/Claude/Gemini,
+ * chain-of-thought stays on its own channel and never leaks into the reply.
+ * If a model produces reasoning but NO real content by stream end (some reasoning
+ * models emit everything under `reasoning`), we send a short honest fallback so the
+ * user is not left with an empty bubble — never the raw reasoning as the answer.
  */
 async function proxyStream(upstream, res) {
   let sawContent = false;
   let sawReasoning = false;
   let reasonAcc = "";
-  let mirrored = false;                       // reasoning-only model: mirroring to text
-  const MIRROR_THRESHOLD = 600;              // chars of reasoning w/ no content yet
   const REASON_TRACE_MAX = 2400;             // cap what we reveal in the Thinking box
-  const REASON_TEXT_MAX = 14000;             // safety cap on mirrored visible text
   const decoder = new TextDecoder();
   let lineBuf = "";
 
@@ -370,30 +363,47 @@ async function proxyStream(upstream, res) {
       const th = delta.reasoning ?? delta.thinking ?? null;
       const tok = delta.content ?? "";
       if (tok) {
-        sawContent = true;
-        flush({ text: tok });
+        // trim obvious reasoning preamble that leaks through `content` on some models
+        const cleaned = stripCoTPrefix(tok, sawContent);
+        if (cleaned) {
+          sawContent = true;
+          flush({ text: cleaned });
+        }
       }
       if (th) {
         sawReasoning = true;
         reasonAcc += th;
         if (reasonAcc.length <= REASON_TRACE_MAX) flush({ reasoning: th });
-        if (!sawContent && !mirrored && reasonAcc.length >= MIRROR_THRESHOLD) {
-          mirrored = true;
-          flush({ reasoning: null });
-        }
-        if (mirrored && reasonAcc.length <= REASON_TEXT_MAX) flush({ text: th });
       }
     }
   }
-  // flush any trailing partial line (defensive; unlikely to contain a full event)
   lineBuf = "";
-  // Fallback: reasoning-only model that never hit the threshold (very short reply).
-  if (!sawContent && sawReasoning && reasonAcc.trim()) {
-    flush({ reasoning: null });
-    flush({ text: reasonAcc.trim() });
+  // If the model only reasoned and never answered, never dump the CoT as the reply.
+  if (!sawContent) {
+      flush({ reasoning: null });
+    if (sawReasoning) {
+      flush({ text: "*I have considered your question and would answer it — but the model produced only thought and no distinct reply this time. Please try again.*" });
+    } else {
+      flush({ text: "" });
+    }
   }
   flush({});                                   // event: done
   res.end();
+}
+
+/**
+ * Strip chain-of-thought that some models emit inside `content` before the real
+ * answer begins. Patterns like "We need to respond as Augustine...", "Key elements
+ * to include: ...", "I should...", "Let me produce..." are dropped while that
+ * preamble is still active. Tracks trailState via leaked `_first` closures isn't
+ * possible mid-stream, so this drops the LEADING reasoning run only.
+ */
+function stripCoTPrefix(tok, alreadySawContent) {
+  if (alreadySawContent) return tok;          // real answer already started: keep everything
+  // Only drop clearly meta/anaphoric planning phrasing that would never open a real
+  // Augustine answer. Kept conservative so a genuine "I think…" / "First…" reply is not clipped.
+  const looksCoT = /^\s*(we need to|let'?s (produce|answer|write|respond)|key elements|the user (is asking|wants|asked)|the question (is|seems)|i should (now )?(answer|respond|cite)|my plan|let me (think|reflect|outline)|based on (the|this)|to answer this|i will (now )?(respond|answer|write|start)|i think (the|it|we)|a brief|here is a draft|i'?m going to)\b/i.test(tok);
+  return looksCoT ? "" : tok;
 }
 
 function sanitize(m) {
