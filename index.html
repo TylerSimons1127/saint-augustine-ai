@@ -132,9 +132,9 @@ a{color:inherit}
 
 /* ---------- Header rail ---------- */
 .rail{
-  position:fixed;top:0;left:264px;right:0;z-index:40;
+  position:fixed;top:60px;left:264px;right:0;z-index:40;
   display:flex;align-items:center;gap:16px;
-  padding:14px clamp(16px,4vw,40px);
+  padding:12px clamp(16px,4vw,40px);
 }
 .brand{display:flex;align-items:center;gap:11px;min-width:0}
 .mark{width:54px;height:62px;flex:none;color:var(--accent)}
@@ -384,6 +384,83 @@ a{color:inherit}
   padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .14s ease}
 .pray-chip:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);color:var(--ink)}
 .pray-note{font-size:11px;line-height:1.5;color:var(--muted);margin:0 0 4px;border-top:1px solid var(--border);padding-top:12px}
+
+/* ---------- Top liquid-glass page nav ---------- */
+.topnav{
+  position:fixed; top:0; left:264px; right:0; z-index:46; height:60px;
+  display:flex; align-items:center; gap:14px; padding:0 max(16px,env(safe-area-inset-left)) 0 max(16px,env(safe-area-inset-right));
+  background:rgba(250,247,240,0.55); backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%);
+  border-bottom:1px solid var(--border); border-top:1px solid var(--border-light);
+  box-shadow:0 10px 30px -18px rgba(40,30,18,0.35), inset 0 1px 0 rgba(255,255,255,0.65);
+}
+.topnav .nav-brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-family:var(--display);font-weight:400;font-size:17px;letter-spacing:-.01em;white-space:nowrap;flex:none}
+.topnav .nav-brand .mark{width:26px;height:29px;color:var(--accent);flex:none}
+.topnav .nav-brand em{font-style:normal;color:var(--accent-deep);font-weight:500}
+.topnav .nav-tabs{display:flex;align-items:center;gap:4px;margin:0 auto;background:rgba(255,255,255,0.5);border:1px solid var(--border);border-radius:999px;padding:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+.nav-tab{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--ink-soft);font-family:var(--body);
+  font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .16s ease}
+.nav-tab svg{width:15px;height:15px}
+.nav-tab:hover{color:var(--ink);background:rgba(255,255,255,0.55)}
+.nav-tab.on{color:#fbf7ee;background:var(--accent-deep);box-shadow:0 4px 12px rgba(108,88,38,.35)}
+.nav-tab.on svg{color:#fbf7ee}
+@media (max-width:600px){
+  .topnav .nav-brand em{display:none}
+  .topnav .nav-tabs{margin-left:52px;width:auto}
+  .nav-tab{flex:1;justify-content:center;padding:8px 12px;font-size:12.5px;white-space:nowrap}
+}
+.topnav .nav-actions{display:flex;align-items:center;gap:8px;flex:none}
+.topnav .nav-search{width:min(180px,22vw)}
+.topnav .nav-search input{font-size:12.5px;padding:8px 10px}
+@media (max-width:760px){
+  .topnav .nav-search{display:none}
+}
+/* page views */
+.page{display:none}
+.page.on{display:flex;flex-direction:column;align-items:center;flex:1;width:100%;min-height:100%}
+.stage{padding-top:calc(60px + env(safe-area-inset-top))}
+
+/* ---------- Daily page ---------- */
+.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 60px;display:flex;flex-direction:column;gap:18px}
+.dp-head{text-align:center}
+.dp-head .dp-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
+.dp-head h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,4.5vw,34px);margin:0;color:var(--ink);letter-spacing:-.015em}
+.dp-head p{margin:8px auto 0;max-width:46ch;font-size:14px;line-height:1.5;color:var(--ink-soft)}
+.dp-card{background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);border-radius:20px;
+  padding:20px 22px;box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%)}
+.dp-card h3{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:400;font-size:18px;margin:0 0 14px;color:var(--ink)}
+.dp-card h3 svg{width:17px;height:17px;color:var(--accent)}
+.dp-readings{display:flex;flex-direction:column;gap:16px}
+.dp-reading .rl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);font-weight:600;display:block;margin-bottom:6px}
+.dp-reading p{margin:0;font-size:14px;line-height:1.62;color:var(--ink-soft);white-space:pre-wrap}
+.dp-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;padding:10px 2px}
+.dp-loading .spinner{width:15px;height:15px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+.dp-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--accent-deep);text-decoration:none}
+.dp-link:hover{text-decoration:underline}
+.dp-error{color:var(--danger);font-size:13.5px;line-height:1.5}
+.dp-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.dp-cols{grid-template-columns:1fr}}
+.dp-act{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--border);background:var(--glass);border-radius:14px;
+  padding:13px 14px;cursor:pointer;transition:all .15s ease;font-family:var(--body)}
+.dp-act:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);transform:translateY(-1px)}
+.dp-act svg{width:18px;height:18px;color:var(--accent);flex:none}
+.dp-act b{font-size:13.5px;color:var(--ink);font-weight:600;display:block;margin-bottom:2px}
+.dp-act small{font-size:11.5px;color:var(--muted);line-height:1.35;display:block}
+.dp-thread{display:flex;flex-direction:column;gap:18px}
+.dp-thread .phead{text-align:center;padding:6px 0 2px}
+.dp-thread .phead h3{font-family:var(--display);font-weight:300;font-size:22px;margin:0 0 4px;color:var(--ink)}
+.dp-thread .phead p{margin:0;font-size:13.5px;color:var(--ink-soft)}
+
+/* ---------- Prayer page ---------- */
+.pray-page{width:min(680px,100%);margin:0 auto;padding:22px 16px 60px;display:flex;flex-direction:column;gap:18px}
+.pp-intent{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.pp-intent label{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.pp-intent input{width:100%;border:1px solid var(--border);background:var(--glass);color:var(--ink);font-family:var(--body);
+  font-size:14.5px;padding:12px 14px;border-radius:12px}
+.pp-intent input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(163,130,47,.18)}
+.dp-card .dp-cta{display:inline-flex;align-items:center;gap:7px;margin-top:4px;border:1px solid rgba(163,130,47,.35);background:var(--accent-deep);color:#fbf7ee;
+  font-size:12.5px;font-weight:600;font-family:var(--body);padding:8px 14px;border-radius:999px;cursor:pointer;box-shadow:0 6px 16px rgba(138,108,37,.28);transition:all .15s ease}
+.dp-card .dp-cta svg{width:14px;height:14px}
+.dp-card .dp-cta:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(138,108,37,.38)}
 
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
@@ -735,6 +812,9 @@ textarea#prompt::placeholder{color:var(--muted)}
 /* ---------- Responsive (phone-first, designer-tuned) ---------- */
 @media (max-width:900px){
   .rail,.stage,.dock{left:0 !important}
+  .topnav{left:0 !important}
+  .topnav .nav-brand{display:none}
+  .topnav .nav-tabs{margin-left:52px;margin-right:auto}
 }
 @media (max-width:768px){
   /* credit chip sits just above the full-width dock on phones */
@@ -815,7 +895,7 @@ textarea#prompt::placeholder{color:var(--muted)}
 /* F: short landscape phones — protect the dock from the rail */
 @media (max-height:480px) and (max-width:900px){
   .rail{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:calc(6px + env(safe-area-inset-top))}
-  .stage{padding-top:calc(52px + env(safe-area-inset-top));padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+  .stage{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:calc(200px + env(safe-area-inset-bottom))}
   .greet h1{font-size:20px}
   .dock{gap:6px}
   .composer{padding:8px 12px 7px}
@@ -1192,6 +1272,34 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   <div class="vignette"></div>
 </div>
 
+<!-- TOP NAV -->
+<nav class="topnav" aria-label="Pages">
+  <div class="nav-brand">
+    <img class="mark" src="assets/heart.svg" alt="" width="26" height="29" />
+    <span>Saint<em>AugustineAI</em></span>
+  </div>
+  <div class="nav-tabs" role="tablist" aria-label="Choose a page">
+    <button class="nav-tab on" data-page="chat" role="tab" aria-selected="true" aria-controls="page-chat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat
+    </button>
+    <button class="nav-tab" data-page="daily" role="tab" aria-selected="false" aria-controls="page-daily">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Daily
+    </button>
+    <button class="nav-tab" data-page="prayer" role="tab" aria-selected="false" aria-controls="page-prayer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Prayer
+    </button>
+  </div>
+  <div class="nav-actions">
+    <label class="search nav-search" id="searchWrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="search" placeholder="Search…" aria-label="Search conversations" />
+    </label>
+    <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
+</nav>
+
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar" aria-label="Conversations">
   <div class="brand">
@@ -1248,21 +1356,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
 <div class="sb-scrim" id="sbScrim" aria-hidden="true"></div>
 
-<!-- HEADER RAIL -->
-<header class="rail">
-  <label class="search" id="searchWrap">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-    <input id="search" type="search" placeholder="Search conversations…" aria-label="Search conversations" />
-  </label>
-  <div class="rail-actions">
-    <button class="icon-btn settings-btn" id="settingsBtn" aria-label="Settings" title="Settings" aria-haspopup="dialog">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    </button>
-  </div>
-</header>
-
 <!-- STAGE -->
 <main class="stage" id="stage">
+
+  <!-- ===== CHAT PAGE ===== -->
+  <div class="page on" id="page-chat" role="tabpanel" aria-label="Chat">
 
   <!-- EMPTY / GREETING -->
   <section class="greet" id="greet">
@@ -1273,28 +1371,106 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       <span class="beta">Beta</span>
     </div>
     <p class="eyebrow">A companion in the tradition</p>
-        <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
-        <p class="sub">Ask St. Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
+            <h1>You have made us for yourself, O Lord, and our heart is restless until it rests in you.</h1>
+            <p class="sub">Ask St. Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
+          </section>
 
-        <div class="daily" id="dailyCard" role="complementary" aria-label="Daily devotional">
+  <!-- THREAD (hidden until first send) -->
+    <section class="thread" id="thread" aria-live="polite"></section>
+    </div><!-- /page-chat -->
+
+    <!-- ===== DAILY PAGE ===== -->
+    <div class="page" id="page-daily" role="tabpanel" aria-label="Daily">
+      <div class="daily-page">
+        <div class="dp-head">
+          <p class="dp-eyebrow" id="dpDateLabel">Today's Bread of Life</p>
+          <h2>Daily</h2>
+          <p>Read today's liturgy, receive a word for the day, and speak to St. Augustine about it.</p>
+        </div>
+
+        <section class="dp-card" aria-label="Today's Daily Readings">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Today's Readings</h3>
+          <div class="dp-readings" id="dpReadings"><div class="dp-loading"><span class="spinner"></span>Opening today's readings…</div></div>
+          <a class="dp-link" id="dpReadingsLink" href="https://bible.usccb.org/daily-bible-readings" target="_blank" rel="noopener noreferrer">Read on USCCB.org ↗</a>
+        </section>
+
+        <section class="dp-card" aria-label="Daily devotional">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Word for Today</h3>
           <div class="daily-top">
-            <span class="daily-tag" id="dailyTag">Word for today</span>
-            <button class="daily-shuf" id="dailyShuf" title="Surprise me" aria-label="Surprise me with a new devotion">
+            <span class="daily-tag" id="dailyTag2">Word for today</span>
+            <button class="daily-shuf" id="dailyShuf2" title="Surprise me" aria-label="Surprise me with a new devotion">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Surprise me
             </button>
           </div>
-          <p class="daily-text" id="dailyText"></p>
-          <p class="daily-src" id="dailySrc"></p>
-          <button class="daily-cta" id="dailyPray">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
-            St. Augustine, lead me in prayer
-          </button>
-        </div>
-      </section>
+          <p class="daily-text" id="dailyText2"></p>
+          <p class="daily-src" id="dailySrc2"></p>
+        </section>
 
-  <!-- THREAD (hidden until first send) -->
-  <section class="thread" id="thread" hidden aria-live="polite"></section>
-</main>
+        <section class="dp-card" aria-label="Explore the daily readings with St. Augustine">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Talk about today's readings</h3>
+          <div class="dp-cols">
+            <button class="dp-act" id="dpActExplain">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>
+              <span><b>Explain today's Gospel</b><small>A gentle unpacking of the message.</small></span>
+            </button>
+            <button class="dp-act" id="dpActPray">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
+              <span><b>Pray with today</b><small>Turn these readings into a prayer.</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="dp-thread">
+          <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to explore today's liturgy with you.</p></div>
+          <div class="thread-inner" id="threadDaily" aria-live="polite"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ===== PRAYER PAGE ===== -->
+    <div class="page" id="page-prayer" role="tabpanel" aria-label="Prayer">
+      <div class="pray-page">
+        <div class="dp-head">
+          <p class="dp-eyebrow">Oratio · Meditatio · Contemplatio</p>
+          <h2>Prayer</h2>
+          <p>Let St. Augustine lead you, teach you to pray, or hold the prayers of the tradition with you.</p>
+        </div>
+
+        <section class="dp-card" aria-label="Pray with St. Augustine">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Pray with St. Augustine</h3>
+          <div class="pp-intent">
+            <label for="prayIntent2">What would you like to pray for? <em style="font-style:italic;text-transform:none;font-weight:500">(optional)</em></label>
+            <input id="prayIntent2" type="text" maxlength="160" placeholder="A worry, a person, a thank-you, a need…" />
+          </div>
+          <div class="dp-cols">
+            <button class="dp-act" id="ppLead">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
+              <span><b>Lead me in prayer</b><small>I'll pray with you, in my own voice.</small></span>
+            </button>
+            <button class="dp-act" id="ppTeach">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>
+              <span><b>Teach me to pray</b><small>A method, step by gentle step.</small></span>
+            </button>
+          </div>
+        </section>
+
+        <section class="dp-card" aria-label="Prayers of the tradition">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Prayers of the tradition</h3>
+          <div class="pray-chips" style="margin-bottom:0">
+            <button class="pray-chip" id="tradMorning">Morning Offering</button>
+            <button class="pray-chip" id="tradLectio">Lectio Divina</button>
+            <button class="pray-chip" id="tradExamen">The Examen</button>
+            <button class="pray-chip" id="tradRest">Prayer before rest</button>
+          </div>
+        </section>
+
+        <section class="dp-thread">
+          <div class="phead"><h3>Prayer</h3><p>Speak — and St. Augustine will pray with you.</p></div>
+          <div class="thread-inner" id="threadPrayer" aria-live="polite"></div>
+        </section>
+      </div>
+    </div>
+  </main>
 
 <!-- COMPOSER DOCK -->
 <div class="dock">
@@ -1387,45 +1563,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       </div>
     </div>
 
-    <!-- ============ PRAY MODAL ============ -->
-    <div class="modal-scrim" id="prayModal" role="dialog" aria-modal="true" aria-labelledby="prayTitle">
-      <div class="beta-modal pray-modal">
-        <div class="pray-hero">
-          <img class="mk" src="assets/heart.svg" alt="" width="34" height="38" />
-          <h2 id="prayTitle">St. Augustine, lead me in prayer</h2>
-        </div>
-        <p class="pray-sub">Let Augustine guide your prayer, or ask him to teach you how to pray well.</p>
-        <div class="pray-field">
-          <span>What would you like to pray for? <em style="font-style:italic;font-weight:500;letter-spacing:0">(optional)</em></span>
-          <input id="prayIntent" type="text" maxlength="160" placeholder="A worry, a person, a thank-you, a need…" />
-        </div>
-        <div class="pray-modes">
-          <button class="pray-mode" data-mode="lead" aria-label="St. Augustine, lead me in prayer">
-            <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Lead me in prayer</b>
-            <small>I'll pray with you, in my own voice.</small>
-          </button>
-          <button class="pray-mode" data-mode="teach" aria-label="St. Augustine, teach me to pray better">
-            <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>Teach me to pray</b>
-            <small>A method, step by gentle step.</small>
-          </button>
-        </div>
-        <p class="pray-trad">Prayers of the tradition</p>
-        <div class="pray-chips">
-          <button class="pray-chip" data-trad="morning">Morning Offering</button>
-          <button class="pray-chip" data-trad="lectio">Lectio Divina</button>
-          <button class="pray-chip" data-trad="examen">The Examen</button>
-          <button class="pray-chip" data-trad="rest">Prayer before rest</button>
-        </div>
-        <p class="pray-note">Your prayer intention stays on this device, in this conversation — no data is sent beyond the models you've already chosen.</p>
-        <div class="report-ctrl">
-          <button class="rp-cancel" id="prayCancel">Cancel</button>
-        </div>
-      </div>
-    </div>
-
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-      Latest
-    </button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+          Latest
+        </button>
 
 <!-- ============ SETTINGS SHEET ============ -->
 <div class="settings-scrim" id="settingsScrim"></div>
@@ -1544,7 +1684,28 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   const $ = (s,r=document)=>r.querySelector(s);
   const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 
-  const stage=$("#stage"), greet=$("#greet"), thread=$("#thread");
+  let stage=$("#stage"), greet=$("#greet"), thread=$("#thread");
+  // ---- three pages (chat/daily/prayer), each with its own thread + history + active session ----
+  const PAGE_ELS = { chat:{wrap:$("#page-chat"), threadEl:$("#thread")}, daily:{wrap:$("#page-daily"), threadEl:$("#threadDaily")}, prayer:{wrap:$("#page-prayer"), threadEl:$("#threadPrayer")} };
+  let PAGE = "chat";
+  const PAGE_HIST = { chat:[], daily:[], prayer:[] };
+  const PAGE_ACTIVE = { chat:null, daily:null, prayer:null };
+  function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
+  function setPage(p){
+    if(p===PAGE) return;
+    PAGE_HIST[PAGE]=history.slice();
+    PAGE_ACTIVE[PAGE]=activeId;
+    PAGE=p;
+    history=PAGE_HIST[p]; activeId=PAGE_ACTIVE[p];
+    thread=PAGE_ELS[p].threadEl;
+    greet = (p==="chat") ? $("#greet") : null;
+    ["chat","daily","prayer"].forEach(k=>{ if(PAGE_ELS[k].wrap) PAGE_ELS[k].wrap.classList.toggle("on", k===p); });
+    $$(".nav-tab").forEach(b=>{ const on=b.dataset.page===p; b.classList.toggle("on",on); b.setAttribute("aria-selected", on?"true":"false"); });
+    renderSessions();
+    if(activeId){ loadSession(activeId); }
+    else { thread.innerHTML=""; if(greet) greet.hidden=false; }
+    requestAnimationFrame(()=>{ if(stage) stage.scrollTop=0; });
+  }
   const prompt=$("#prompt"), send=$("#send"), composer=$("#composer");
   const fileInput=$("#fileInput"), attachBtn=$("#attachBtn"), attachRow=$("#attachRow");
   const modelBtn=$("#modelBtn"), modelPop=$("#modelPop"), modelVal=$("#modelVal"), modelPopScrim=$("#modelPopScrim");
@@ -1568,9 +1729,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   const sbTodayList=$("#sbTodayList"), sbEarlierList=$("#sbEarlierList"), sbEmpty=$("#sbEmpty"), sbToday=$("#sbToday"), sbEarlier=$("#sbEarlier");
   function escAttr(s){ const d=document.createElement("div"); d.textContent=(s==null?"":String(s)); return d.innerHTML.replace(/"/g,"&quot;"); }
   function mkSession(firstMsg, m){
-    const t = sessionTitle(firstMsg);
-    return { id:"s"+Date.now()+Math.random().toString(36).slice(2,6), title:t, model:m?m.name:"Aug", created:Date.now(), updated:Date.now(), threadHtml:"", history:[] };
-  }
+      const t = sessionTitle(firstMsg);
+      return { id:"s"+Date.now()+Math.random().toString(36).slice(2,6), title:t, model:m?m.name:"Aug", page:PAGE, created:Date.now(), updated:Date.now(), threadHtml:"", history:[] };
+    }
   function sessionTitle(firstMsg){
       const s = String(firstMsg||"").trim();
       if(!s) return "New conversation";
@@ -1588,23 +1749,27 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       return String(t||"").trim();
     }
   function saveSessions(){
-    try{ localStorage.setItem(LS_SESSIONS, JSON.stringify(sessions)); if(activeId) localStorage.setItem(LS_ACTIVE, activeId); else localStorage.removeItem(LS_ACTIVE); }catch(_){}
-  }
-  function loadSessions(){
-    try{ const raw=localStorage.getItem(LS_SESSIONS); if(raw){ const d=JSON.parse(raw); if(Array.isArray(d)) sessions=d; } }catch(_){}
-    activeId = localStorage.getItem(LS_ACTIVE)||null;
-    if(activeId && !sessions.some(s=>s.id===activeId)) activeId=null;
-  }
+      PAGE_ACTIVE[PAGE]=activeId;
+      try{ localStorage.setItem(LS_SESSIONS, JSON.stringify(sessions)); localStorage.setItem(LS_ACTIVE, JSON.stringify(PAGE_ACTIVE)); }catch(_){}
+    }
+    function loadSessions(){
+      try{ const raw=localStorage.getItem(LS_SESSIONS); if(raw){ const d=JSON.parse(raw); if(Array.isArray(d)) sessions=d; } }catch(_){}
+      try{ const raw=localStorage.getItem(LS_ACTIVE); if(raw){ const m=JSON.parse(raw); if(m&&typeof m==="object"){ for(const k in PAGE_ACTIVE){ if(typeof m[k]==="string") PAGE_ACTIVE[k]=m[k]; } } } }catch(_){}
+      activeId = PAGE_ACTIVE[PAGE]||null;
+      if(activeId && !sessions.some(s=>s.id===activeId)) activeId=null;
+    }
   function renderSessions(){
-    const now = Date.now();
-    const todayStr = new Date().toDateString();
-    const today = sessions.filter(s=>new Date(s.updated).toDateString()===todayStr).sort((a,b)=>b.updated-a.updated);
-    const earlier = sessions.filter(s=>new Date(s.updated).toDateString()!==todayStr).sort((a,b)=>b.updated-a.updated);
-    sbTodayList.innerHTML = today.map(s=>sessionHtml(s)).join("");
-    sbEarlierList.innerHTML = earlier.map(s=>sessionHtml(s)).join("");
-    sbEmpty.style.display = sessions.length ? "none" : "flex";
-    sbToday.style.display = today.length ? "flex" : "none";
-    sbEarlier.style.display = earlier.length ? "flex" : "none";
+      const now = Date.now();
+      const todayStr = new Date().toDateString();
+      const scoped = sessions.filter(s=>(s.page||"chat")===PAGE);
+      const today = scoped.filter(s=>new Date(s.updated).toDateString()===todayStr).sort((a,b)=>b.updated-a.updated);
+      const earlier = scoped.filter(s=>new Date(s.updated).toDateString()!==todayStr).sort((a,b)=>b.updated-a.updated);
+      sbTodayList.innerHTML = today.map(s=>sessionHtml(s)).join("");
+      sbEarlierList.innerHTML = earlier.map(s=>sessionHtml(s)).join("");
+      const emptyTxt = PAGE==="chat" ? "No conversations yet. Send a message to begin." : (PAGE==="daily" ? "No daily reflections yet. Open the Daily page." : "No prayers yet. Open the Prayer page.");
+            sbEmpty.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 4.5 14 3l-7 7 3 3 7-7c.8.8.8 2 0 2.8L11 18"/><path d="M4 20c2.5-1 4-3 4-6 0-2-1-3.5-3-4.5"/></svg><p>'+esc(emptyTxt)+'</p>';
+      sbToday.style.display = today.length ? "flex" : "none";
+      sbEarlier.style.display = earlier.length ? "flex" : "none";
     $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>{
       el.addEventListener("click",e=>{
         if(selectMode){ e.stopPropagation(); toggleSelect(el.dataset.id, el); return; }
@@ -1647,11 +1812,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       }
       if(sbScrollEl) sbScrollEl.addEventListener("scroll", updateSbGradients);
   function deleteSession(id){
-    const i=sessions.findIndex(s=>s.id===id); if(i<0) return;
-    sessions.splice(i,1);
-    if(activeId===id){ activeId=null; clearThreadState(); }
-    saveSessions(); renderSessions();
-  }
+      const i=sessions.findIndex(s=>s.id===id); if(i<0) return;
+      sessions.splice(i,1);
+      if(activeId===id){ activeId=null; PAGE_ACTIVE[PAGE]=null; clearThreadState(); }
+      saveSessions(); renderSessions();
+    }
   function startRename(el, txt){
     el.classList.add("renaming");
     txt.setAttribute("contenteditable","true"); txt.focus();
@@ -1681,25 +1846,27 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     renderSessions();
   }
   function clearThreadState(){
-    thread.innerHTML=""; thread.hidden=true; greet.hidden=false;
-    prompt.value=""; prompt.style.height="auto"; files.length=0; history.length=0; renderFiles(); syncSend();
-    stage.scrollTop=0;
-  }
+      if(thread) thread.innerHTML=""; if(thread) thread.hidden=true; if(greet) greet.hidden=false;
+      prompt.value=""; prompt.style.height="auto"; files.length=0; history.length=0; renderFiles(); syncSend();
+      stage.scrollTop=0;
+    }
   function loadSession(id){
-    const s=sessions.find(x=>x.id===id); if(!s) return;
-    clearThreadState();
-    if(s.threadHtml){ thread.innerHTML=s.threadHtml; thread.hidden=false; greet.hidden=true; }
-    history.length=0; (s.history||[]).forEach(m=>history.push(m));
-    setActive(id);
-    if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
-    // land on the latest message, like ChatGPT/Claude — not the top of a long thread
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{ stage.scrollTop=stage.scrollHeight; if(jumpLatest) jumpLatest.classList.add("hidden"); }));
-  }
-  function recordSession(firstMsg, assistantReply){
-    if(!history.length) return;
-    let s = activeId ? sessions.find(x=>x.id===activeId) : null;
-    if(!s){ s = mkSession(firstMsg, model); sessions.unshift(s); }
-    s.model = model?model.name:s.model;
+      const s=sessions.find(x=>x.id===id); if(!s) return;
+      if((s.page||"chat")!==PAGE) return; // only load a session belonging to the active page
+      clearThreadState();
+      if(s.threadHtml){ thread.innerHTML=s.threadHtml; thread.hidden=false; greet && (greet.hidden=true); }
+      history.length=0; (s.history||[]).forEach(m=>history.push(m));
+      setActive(id);
+      if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
+      // land on the latest message, like ChatGPT/Claude — not the top of a long thread
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ stage.scrollTop=stage.scrollHeight; if(jumpLatest) jumpLatest.classList.add("hidden"); }));
+    }
+    function recordSession(firstMsg, assistantReply){
+      if(!history.length) return;
+      let s = activeId ? sessions.find(x=>x.id===activeId) : null;
+      if(!s){ s = mkSession(firstMsg, model); sessions.unshift(s); }
+      s.page = PAGE;
+      s.model = model?model.name:s.model;
     s.updated = Date.now();
     s.threadHtml = thread.innerHTML;
     s.history = history.slice();
@@ -2353,9 +2520,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
   /* ---- new chat ---- */
   $("#newChat").addEventListener("click",()=>{
-    // set no active session; next send starts a fresh one
-    activeId=null; saveSessions(); renderSessions();
-    clearThreadState();
+      // set no active session; next send starts a fresh one (per active page)
+      activeId=null; PAGE_ACTIVE[PAGE]=null; saveSessions(); renderSessions();
+      clearThreadState();
     // on phones, also dismiss the drawer + any inline rename so it feels responsive
     if(window.matchMedia("(max-width:900px)").matches){ sbClose(); }
     const renaming=document.querySelector(".sb-item.renaming");
@@ -2854,76 +3021,108 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       {t:"Fun Fact", s:"About St. Augustine", x:"His mother, St. Monica, prayed and wept for his conversion for decades before he was baptized by St. Ambrose at Easter 387."},
       {t:"Fun Fact", s:"About St. Augustine", x:"He was an accomplished rhetorician — a professor of public speaking — before he ever became a bishop, which is why his writings persuade so well."},
     ];
-    const dailyTag=$("#dailyTag"), dailyText=$("#dailyText"), dailySrc=$("#dailySrc"),
-          dailyShuf=$("#dailyShuf"), dailyCard=$("#dailyCard"), dailyPray=$("#dailyPray");
-    let dailyIdx = -1;
-    function renderDaily(i){
-      const e=DEVOTE[i % DEVOTE.length];
-      if(dailyTag) dailyTag.textContent=e.t;
-      if(dailyText) dailyText.textContent=e.x;
-      if(dailySrc) dailySrc.textContent=e.s;
-      dailyIdx=i;
-    }
-    function dailyForDate(){
-      const now=new Date();
-      const start=new Date(now.getFullYear(),0,0);
-      const d=Math.floor((now-start)/86400000);
-      return d % DEVOTE.length;
-    }
-    if(dailyShuf){
-      dailyShuf.addEventListener("click",()=>{
-        let i=Math.floor(Math.random()*DEVOTE.length);
-        if(i===dailyIdx) i=(i+1)%DEVOTE.length;
-        renderDaily(i);
-      });
-    }
-    if(dailyPray){
-      dailyPray.addEventListener("click",()=>{ if($("#prayModal")) $("#prayModal").classList.add("show"); });
-    }
+    const dailyTag2=$('#dailyTag2'), dailyText2=$('#dailyText2'), dailySrc2=$('#dailySrc2'), dailyShuf2=$('#dailyShuf2');
+        let dailyIdx = -1;
+        function dailyForDate(){
+          const now=new Date();
+          const start=new Date(now.getFullYear(),0,0);
+          const d=Math.floor((now-start)/86400000);
+          return d % DEVOTE.length;
+        }
+        function renderDaily(i){
+          const e=DEVOTE[i % DEVOTE.length];
+          if(dailyTag2) dailyTag2.textContent=e.t;
+          if(dailyText2) dailyText2.textContent=e.x;
+          if(dailySrc2) dailySrc2.textContent=e.s;
+          dailyIdx=i;
+        }
+        renderDaily(dailyForDate());
+        if(dailyShuf2){
+          dailyShuf2.addEventListener("click",()=>{
+            let i=Math.floor(Math.random()*DEVOTE.length);
+            if(i===dailyIdx) i=(i+1)%DEVOTE.length;
+            renderDaily(i);
+          });
+        }
 
-    /* ---- Pray modal ---- */
-    const prayModal=$("#prayModal");
-    function closePray(){ if(prayModal){ prayModal.classList.remove("show"); const ii=$("#prayIntent"); if(ii) ii.value=""; } }
-    if(prayModal){
-      prayModal.addEventListener("click",(e)=>{ if(e.target===prayModal) closePray(); });
-      const pCancel=$("#prayCancel"); if(pCancel) pCancel.addEventListener("click",closePray);
-      const pIntent=$("#prayIntent");
-      const PRAY_PROMPTS = {
-        lead:  (intent)=>"As St. Augustine, speak to me as a gentle teacher and spiritual guide. "+
-                      (intent? ("I come to you with this intention: \""+intent+"\". ") : "")+
-                      "Lead me in prayer now — begin with a word of guidance, then pray with me line by line, giving me short phrases I can pray after you, full of love for God. Keep it intimate and unhurried, under 220 words.",
-        teach: (intent)=>"As St. Augustine, teach me to pray better. "+
-                      (intent? ("I'd like my prayer to carry this intention: \""+intent+"\". ") : "")+
-                      "Explain one clear way to pray — like the Examen, Lectio Divina, or a simple breath-prayer — in steady, gentle steps I can follow today, and close with a short prayer to carry with me. Under 220 words.",
-      };
-      const TRAD_PROMPTS = {
-        morning: "Lead me in a Morning Offering prayer as St. Augustine — offering this day, its work, its struggles, and its joys to God, so I can begin the day held by Him.",
-        lectio:  "As St. Augustine, walk me through Lectio Divina right now — read, meditate, pray, contemplate — with a short passage and how to hold it in my heart.",
-        examen:  "As St. Augustine, guide me through the Examen of St. Ignatius — quietly reviewing my day with gratitude, noticing where God was present, and asking grace for tomorrow.",
-        rest:    "As St. Augustine, lead me in a prayer before rest — helping me surrender the day to God and hand over every worry so I can sleep in peace.",
-      };
-      const launch=(text)=>{
-        if(!text) return;
-        prompt.value=text;
-        syncSend();
-        closePray();
-        if(greet && !greet.hidden){ greet.hidden=true; thread.hidden=false; }
-        callChat();
-      };
-      prayModal.querySelectorAll(".pray-mode").forEach(b=>{
-        b.addEventListener("click",()=>{
-          const intent=(pIntent? pIntent.value.trim():"");
-          launch(PRAY_PROMPTS[b.dataset.mode](intent));
+        /* ---- nav tabs: switch pages ---- */
+        $$(".nav-tab").forEach(t=>t.addEventListener("click",()=>setPage(t.dataset.page)));
+
+        /* ---- Daily page: load today's USCCB readings ---- */
+        const dpReadings=$('#dpReadings');
+        function loadDailyReadings(){
+          if(!dpReadings) return;
+          if(dpReadings.dataset.loaded) return; dpReadings.dataset.loaded="1";
+          dpReadings.innerHTML='<div class="dp-loading"><span class="spinner"></span>Opening today\'s readings…</div>';
+          const dLabel=$('#dpDateLabel');
+          if(dLabel) dLabel.textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+          fetch(API+"/api/readings",{headers:{"Accept":"application/json"}}).then(r=>{
+            if(!r.ok) throw new Error("readings "+r.status);
+            return r.json();
+          }).then(d=>{
+            const blocks=[["First Reading",d.first],["Responsorial Psalm",d.psalm],["Gospel",d.gospel]].filter(b=>b[1]);
+            if(!blocks.length) throw new Error("No readings returned.");
+            dpReadings.innerHTML=blocks.map(([label,txt])=>
+              '<div class="dp-reading"><span class="rl">'+esc(label)+'</span><p>'+esc(txt)+'</p></div>').join("");
+            if(d.link){ const l=$('#dpReadingsLink'); if(l && d.link) l.href=d.link; }
+          }).catch(e=>{
+            dpReadings.innerHTML='<p class="dp-error">'+esc(e&&e.message||"Could not load today\'s readings.")+' They are always waiting on the USCCB site.</p>';
+          });
+        }
+
+        /* ---- page-aware chat launch (used by Daily + Prayer action buttons) ---- */
+        function pageChat(text, targetPage){
+          if(!text) return;
+          if(targetPage && targetPage!==PAGE) setPage(targetPage);
+          prompt.value=text;
+          syncSend();
+          if(greet && !greet.hidden){ greet.hidden=true; }
+          if(thread) thread.hidden=false;
+          callChat();
+        }
+
+        /* ---- Daily page: quick actions ---- */
+        const dpActExplain=$('#dpActExplain'), dpActPray=$('#dpActPray');
+        if(dpActExplain) dpActExplain.addEventListener("click",()=>{
+          pageChat("As St. Augustine, help me understand today's Gospel in a way that speaks to my heart. Start with one simple insight, then go a little deeper.", "daily");
         });
-      });
-      prayModal.querySelectorAll(".pray-chip").forEach(c=>{
-        c.addEventListener("click",()=>launch(TRAD_PROMPTS[c.dataset.trad]));
-      });
-    }
+        if(dpActPray) dpActPray.addEventListener("click",()=>{
+          pageChat("As St. Augustine, turn today's readings into a prayer I can pray with you now, in my own words. Around 150 words, intimate and unhurried.", "daily");
+        });
 
-    // populate the daily devotional on first paint
-    renderDaily(dailyForDate());
-  })();
+        /* ---- Prayer page: lead / teach + tradition ---- */
+        const ppLead=$('#ppLead'), ppTeach=$('#ppTeach'), prayIntent2=$('#prayIntent2');
+        const mkIntent=()=> (prayIntent2? prayIntent2.value.trim():"");
+        if(ppLead) ppLead.addEventListener("click",()=>{
+          const intent=mkIntent();
+          pageChat("As St. Augustine, lead me in prayer now. "+(intent?("I bring this intention to you: \""+intent+"\". "):"")+"Begin with a word of guidance, then pray with me line by line so I can pray after you, full of love for God. Intimate and unhurried, under 220 words.","prayer");
+        });
+        if(ppTeach) ppTeach.addEventListener("click",()=>{
+          const intent=mkIntent();
+          pageChat("As St. Augustine, teach me to pray better. "+(intent?("I'd like my prayer to carry this intention: \""+intent+"\". "):"")+"Explain one clear way to pray — the Examen, Lectio Divina, or a simple breath-prayer — in steady gentle steps I can follow today, and close with a short prayer. Under 220 words.","prayer");
+        });
+        const tradMap={
+          tradMorning:"Lead me in a Morning Offering prayer as St. Augustine — offering this day, its work, its struggles, and its joys to God, so I can begin the day held by Him.",
+          tradLectio:"As St. Augustine, walk me through Lectio Divina right now — read, meditate, pray, contemplate — with a short passage and how to hold it in my heart.",
+          tradExamen:"As St. Augustine, guide me through the Examen — quietly reviewing my day with gratitude, noticing where God was present, and asking grace for tomorrow.",
+          tradRest:"As St. Augustine, lead me in a prayer before rest — helping me surrender this day to God and hand over every worry so I can sleep in peace."
+        };
+        ["tradMorning","tradLectio","tradExamen","tradRest"].forEach(id=>{
+          const el=$( "#"+id);
+          if(el) el.addEventListener("click",()=>pageChat(tradMap[id],"prayer"));
+        });
+
+        /* ---- load readings the first time the Daily page is opened ---- */
+        if(PAGE_ELS.daily && PAGE_ELS.daily.wrap){
+          const _dailyWrap=PAGE_ELS.daily.wrap;
+          new IntersectionObserver((entries)=>{
+            entries.forEach(en=>{ if(en.isIntersecting && !dpReadings.dataset.loaded){
+              loadDailyReadings();
+              const t=document.createElement("span"); t.textContent=""; _dailyWrap.appendChild(t); t.remove();
+            }});
+          },{root:stage, threshold:0}).observe(_dailyWrap);
+        }
+      })();
 </script>
 
 </body></body>
