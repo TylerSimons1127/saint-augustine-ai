@@ -31,8 +31,9 @@
   --muted:#6f674f;
   --hi:#ece5d7;
   --glass:rgba(255,252,245,0.34);
-    --glass-strong:rgba(252,249,241,0.52);
+    --glass-strong:rgba(252,249,241,0.66);
   --panel:rgba(250,246,237,0.94);  /* near-opaque warm panel for menus/choosers so text stays crisp */
+  --card:rgba(250,246,237,0.82);   /* daily cards: mostly opaque so text is always viewable over the photo */
   --border:rgba(30,26,20,0.10);
   --border-light:rgba(255,255,255,0.72);
   --accent:#a3822f;          /* antique gold, desaturated */
@@ -422,7 +423,7 @@ a{color:inherit}
 .stage{padding-top:calc(60px + env(safe-area-inset-top))}
 
 /* ---------- Daily page ---------- */
-.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 60px;display:flex;flex-direction:column;gap:18px}
+.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 170px;display:flex;flex-direction:column;gap:18px}
 .dp-head{text-align:center}
 .dp-head .dp-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
 .dp-head h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,4.5vw,34px);margin:0;color:var(--ink);letter-spacing:-.015em}
@@ -433,7 +434,7 @@ a{color:inherit}
 .dp-card h3 svg{width:17px;height:17px;color:var(--accent)}
 .dp-readings{display:flex;flex-direction:column;gap:16px}
 .dp-reading .rl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-deep);font-weight:600;display:block;margin-bottom:6px}
-.dp-reading p{margin:0;font-size:14px;line-height:1.62;color:var(--ink-soft);white-space:pre-wrap}
+.dp-reading p{margin:0;font-size:14px;line-height:1.62;color:var(--ink);white-space:pre-wrap}
 .dp-loading{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13.5px;padding:10px 2px}
 .dp-loading .spinner{width:15px;height:15px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 .dp-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--accent-deep);text-decoration:none}
@@ -451,6 +452,25 @@ a{color:inherit}
 .dp-thread .phead{text-align:center;padding:6px 0 2px}
 .dp-thread .phead h3{font-family:var(--display);font-weight:300;font-size:22px;margin:0 0 4px;color:var(--ink)}
 .dp-thread .phead p{margin:0;font-size:13.5px;color:var(--ink-soft)}
+
+/* sub-section dividers (Today / Study) */
+.dp-subhead{margin:6px 0 -6px}
+.dp-subhead h3{font-family:var(--display);font-weight:400;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-ink);margin:0;padding:0 4px}
+
+/* Selected Topic */
+.topic-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.topic-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(163,130,47,.08);border:1px solid rgba(163,130,47,.28)}
+.topic-name{font-family:var(--display);font-weight:400;font-size:20px;line-height:1.25;color:var(--ink);margin:0 0 8px}
+.topic-quote{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.45;color:var(--ink);margin:0 0 12px;text-shadow:0 1px 14px rgba(250,247,240,0.6)}
+.topic-excerpt{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 12px;white-space:pre-wrap}
+.topic-vocab{display:block;margin:0 0 12px}
+.topic-vocab .rl{display:inline-block;margin-right:8px}
+.topic-vocab span:last-child{font-size:13.5px;color:var(--ink);font-style:italic}
+.topic-summary{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 14px;white-space:pre-wrap}
+.daily-cta{display:inline-flex;align-items:center;gap:7px;margin-top:4px;border:1px solid rgba(163,130,47,.35);background:var(--accent-deep);color:#fbf7ee;
+  font-size:12.5px;font-weight:600;font-family:var(--body);padding:8px 14px;border-radius:999px;cursor:pointer;box-shadow:0 6px 16px rgba(138,108,37,.28);transition:all .15s ease}
+.daily-cta:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(138,108,37,.38)}
+.daily-cta:active{transform:translateY(0)}
 
 /* ---------- Prayer page ---------- */
 .pray-page{width:min(680px,100%);margin:0 auto;padding:22px 16px 60px;display:flex;flex-direction:column;gap:18px}
@@ -473,10 +493,14 @@ a{color:inherit}
 .msg.user{flex-direction:row-reverse}
 .bubble{
   padding:14px 18px;border-radius:var(--r-m);max-width:min(560px,82%);
-  font-size:17px;line-height:1.62;
-  background:var(--glass);border:1px solid var(--border);border-top-color:var(--border-light);
+  font-size:17px;line-height:1.62;color:var(--ink);
+  background:var(--glass-strong);border:1px solid var(--border);border-top-color:var(--border-light);
   box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(30,26,20,0.03);
-  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
+  backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
+}
+/* solid-ink fallback so text is always readable even over a dark/busy photo */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .bubble{background:rgba(252,249,241,0.94)}
 }
 .msg.user .bubble{background:rgba(196,160,72,0.30);border-color:rgba(163,130,47,0.42);color:var(--ink);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.5)}
 .msg.assistant .av{color:var(--ink)}
@@ -1284,11 +1308,14 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <button class="nav-tab on" data-page="chat" role="tab" aria-selected="true" aria-controls="page-chat">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Chat
     </button>
-    <button class="nav-tab" data-page="daily" role="tab" aria-selected="false" aria-controls="page-daily">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Daily
+    <button class="nav-tab" data-page="study" role="tab" aria-selected="false" aria-controls="page-study">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/></svg>Study
+    </button>
+    <button class="nav-tab" data-page="today" role="tab" aria-selected="false" aria-controls="page-today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Today
     </button>
     <button class="nav-tab" data-page="prayer" role="tab" aria-selected="false" aria-controls="page-prayer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Prayer
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Pray
     </button>
   </div>
   <div class="nav-actions">
@@ -1377,23 +1404,17 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <section class="thread" id="thread" aria-live="polite"></section>
     </div><!-- /page-chat -->
 
-    <!-- ===== DAILY PAGE ===== -->
-    <div class="page" id="page-daily" role="tabpanel" aria-label="Daily">
+    <!-- ===== STUDY PAGE ===== -->
+    <div class="page" id="page-study" role="tabpanel" aria-label="Study">
       <div class="daily-page">
         <div class="dp-head">
-          <p class="dp-eyebrow" id="dpDateLabel">Today's Bread of Life</p>
-          <h2>Daily</h2>
-          <p>Read today's liturgy, receive a word for the day, and speak to St. Augustine about it.</p>
+          <p class="dp-eyebrow">Lectio · Study · Understanding</p>
+          <h2>Study</h2>
+          <p>Let St. Augustine teach you by word and by topic — a quote to carry, and a theme drawn from his own writings.</p>
         </div>
 
-        <section class="dp-card" aria-label="Today's Daily Readings">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Today's Readings</h3>
-          <div class="dp-readings" id="dpReadings"><div class="dp-loading"><span class="spinner"></span>Opening today's readings…</div></div>
-          <a class="dp-link" id="dpReadingsLink" href="https://bible.usccb.org/daily-bible-readings" target="_blank" rel="noopener noreferrer">Read on USCCB.org ↗</a>
-        </section>
-
-        <section class="dp-card" aria-label="Daily devotional">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Word for Today</h3>
+        <section class="dp-card" aria-label="Quote of the Day">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 6-2 6-6V9c0-3-2-5-5-5H3v6h3c0 2-1 3-3 3Zm12 0c3 0 6-2 6-6V9c0-3-2-5-5-5h-1v6h3c0 2-1 3-3 3Z"/></svg>Quote of the Day</h3>
           <div class="daily-top">
             <span class="daily-tag" id="dailyTag2">Word for today</span>
             <button class="daily-shuf" id="dailyShuf2" title="Surprise me" aria-label="Surprise me with a new devotion">
@@ -1402,6 +1423,50 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           </div>
           <p class="daily-text" id="dailyText2"></p>
           <p class="daily-src" id="dailySrc2"></p>
+        </section>
+
+        <section class="dp-card" aria-label="Selected Topic">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/></svg>Selected Topic</h3>
+          <div class="topic-top">
+            <span class="topic-tag" id="topicLabel">Topic of the day</span>
+            <button class="daily-shuf" id="topicShuf" title="New topic" aria-label="Pick another topic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Another topic
+            </button>
+          </div>
+          <h4 class="topic-name" id="topicName"></h4>
+          <p class="topic-quote" id="topicQuote"></p>
+          <p class="topic-excerpt" id="topicExcerpt"></p>
+          <div class="topic-vocab"><span class="rl">Vocabulary</span><span id="topicVocab"></span></div>
+          <p class="topic-summary" id="topicSummary"></p>
+          <button class="daily-cta" id="topicAsk">Ask Augustine about this →</button>
+        </section>
+
+        <section class="dp-thread">
+          <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to go deeper on today's topic with you.</p></div>
+          <div class="thread-inner" id="threadStudy" aria-live="polite"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ===== TODAY PAGE ===== -->
+    <div class="page" id="page-today" role="tabpanel" aria-label="Today">
+      <div class="daily-page">
+        <div class="dp-head">
+          <p class="dp-eyebrow" id="dpDateLabel">Today's Bread of Life</p>
+          <h2>Today</h2>
+          <p>Read the Mass readings for this day, meet the saint of the day, and speak to St. Augustine about it.</p>
+        </div>
+
+        <section class="dp-card" aria-label="Today's Daily Readings">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></svg>Today's Readings</h3>
+          <div class="dp-readings" id="dpReadings"><div class="dp-loading"><span class="spinner"></span>Opening today's readings…</div></div>
+          <a class="dp-link" id="dpReadingsLink" href="https://bible.usccb.org/daily-bible-readings" target="_blank" rel="noopener noreferrer">Read on USCCB.org ↗</a>
+        </section>
+
+        <section class="dp-card" id="saintCard" aria-label="Saint or Event of the Day">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/></svg>Saint <span id="saintName">of the Day</span></h3>
+          <p class="dp-reading" id="saintBio"></p>
+          <p class="dp-reading" id="saintConnWrap"><span class="rl">Connected to St. Augustine</span><span id="saintConn"></span></p>
         </section>
 
         <section class="dp-card" aria-label="Explore the daily readings with St. Augustine">
@@ -1419,7 +1484,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         </section>
 
         <section class="dp-thread">
-          <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to explore today's liturgy with you.</p></div>
+          <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to explore today's liturgy and readings with you.</p></div>
           <div class="thread-inner" id="threadDaily" aria-live="polite"></div>
         </section>
       </div>
@@ -1507,10 +1572,10 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       <div class="model-pop-scrim" id="modelPopScrim" aria-hidden="true"></div>
 
       <!-- Reasoning chooser -->
-      <div class="reasoning" role="group" aria-label="Reasoning depth">
-        <button class="seg" data-reason="quick" aria-pressed="false">Quick</button>
-        <button class="seg" data-reason="thoughtful" aria-pressed="true">Thoughtful</button>
-        <button class="seg" data-reason="contemplative" aria-pressed="false">Contemplative</button>
+      <div class="reasoning" role="group" aria-label="Mode">
+        <button class="seg" data-reason="quick" aria-pressed="false">Chat</button>
+        <button class="seg" data-reason="thoughtful" aria-pressed="true">Study</button>
+        <button class="seg" data-reason="contemplative" aria-pressed="false">Pray</button>
       </div>
 
       <span class="divider"></span>
@@ -1618,9 +1683,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <div class="set-row">
       <span class="t">Default depth</span>
       <div class="seg-ctl" data-seg="defaultReasoning">
-        <button data-val="quick">Quick</button>
-        <button data-val="thoughtful">Thoughtful</button>
-        <button data-val="contemplative">Contemplative</button>
+        <button data-val="quick">Chat</button>
+        <button data-val="thoughtful">Study</button>
+        <button data-val="contemplative">Pray</button>
       </div>
     </div>
     <div class="set-row">
@@ -1684,10 +1749,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
   let stage=$("#stage"), greet=$("#greet"), thread=$("#thread");
   // ---- three pages (chat/daily/prayer), each with its own thread + history + active session ----
-  const PAGE_ELS = { chat:{wrap:$("#page-chat"), threadEl:$("#thread")}, daily:{wrap:$("#page-daily"), threadEl:$("#threadDaily")}, prayer:{wrap:$("#page-prayer"), threadEl:$("#threadPrayer")} };
+  const PAGE_ELS = { chat:{wrap:$("#page-chat"), threadEl:$("#thread")}, study:{wrap:$("#page-study"), threadEl:$("#threadStudy")}, today:{wrap:$("#page-today"), threadEl:$("#threadDaily")}, prayer:{wrap:$("#page-prayer"), threadEl:$("#threadPrayer")} };
   let PAGE = "chat";
-  const PAGE_HIST = { chat:[], daily:[], prayer:[] };
-  const PAGE_ACTIVE = { chat:null, daily:null, prayer:null };
+  const PAGES = ["chat","study","today","prayer"];
+  const PAGE_HIST = { chat:[], study:[], today:[], prayer:[] };
+  const PAGE_ACTIVE = { chat:null, study:null, today:null, prayer:null };
   function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
   function setPage(p){
     if(p===PAGE) return;
@@ -1697,7 +1763,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     history=PAGE_HIST[p]; activeId=PAGE_ACTIVE[p];
     thread=PAGE_ELS[p].threadEl;
     greet = (p==="chat") ? $("#greet") : null;
-    ["chat","daily","prayer"].forEach(k=>{ if(PAGE_ELS[k].wrap) PAGE_ELS[k].wrap.classList.toggle("on", k===p); });
+    ["chat","study","today","prayer"].forEach(k=>{ if(PAGE_ELS[k].wrap) PAGE_ELS[k].wrap.classList.toggle("on", k===p); });
     $$(".nav-tab").forEach(b=>{ const on=b.dataset.page===p; b.classList.toggle("on",on); b.setAttribute("aria-selected", on?"true":"false"); });
     renderSessions();
     if(activeId){ loadSession(activeId); }
@@ -1764,7 +1830,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       const earlier = scoped.filter(s=>new Date(s.updated).toDateString()!==todayStr).sort((a,b)=>b.updated-a.updated);
       sbTodayList.innerHTML = today.map(s=>sessionHtml(s)).join("");
       sbEarlierList.innerHTML = earlier.map(s=>sessionHtml(s)).join("");
-      const emptyTxt = PAGE==="chat" ? "No conversations yet. Send a message to begin." : (PAGE==="daily" ? "No daily reflections yet. Open the Daily page." : "No prayers yet. Open the Prayer page.");
+      const emptyTxt = PAGE==="chat" ? "No conversations yet. Send a message to begin." : (PAGE==="study" ? "No study reflections yet. Open the Study page." : (PAGE==="today" ? "No daily reflections yet. Open the Today page." : "No prayers yet. Open the Prayer page."));
             sbEmpty.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 4.5 14 3l-7 7 3 3 7-7c.8.8.8 2 0 2.8L11 18"/><path d="M4 20c2.5-1 4-3 4-6 0-2-1-3.5-3-4.5"/></svg><p>'+esc(emptyTxt)+'</p>';
       sbToday.style.display = today.length ? "flex" : "none";
       sbEarlier.style.display = earlier.length ? "flex" : "none";
@@ -2716,7 +2782,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
   const TUTORIAL=[
     {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. The <b>★ Recommended</b> group — starting with <b>Nemotron 3 Ultra 550B</b> — is tuned for thoughtful, faithful answers. Search any of the free models, or keep the default. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
-    {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
+    {t:"Three ways to meet him", h:"Beneath the composer are three modes — <b>Chat</b>, <b>Study</b>, and <b>Pray</b>. They change how Augustine meets you. <b>Chat</b> is a quick, free conversation: fast answers, back-and-forth, for whatever is on your heart. <b>Study</b> (the default) asks him to slow down and teach — drawn-out, sourced in Scripture and his writings, careful. <b>Pray</b> turns the exchange into prayer and devotion, spoken in his own voice. Pick whichever fits the moment; tap the one you want and he meets you there."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
     {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images, which vision-capable models can actually look at. Files are read <b>on your device</b> and never stored on any server."},
@@ -3043,10 +3109,105 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           });
         }
 
+        /* ---- Saint / Event of the Day (date-correct, offline, connected to Augustine) ---- */
+        const SAINTS = [
+          {m:1,d:1, n:"Mary, Mother of God", bio:"Theotokos — the God-bearer. On this octave of Christmas the Church honors Mary under her highest title.", conn:"Augustine called Mary 'the bearer of the Maker' and saw her fiat as the moment the Word became flesh: 'She believed and it was fulfilled in her according to her faith.' He held her up as the model of virginal motherhood and total obedience to God."},
+          {m:1,d:7, n:"St. Raymond of Peñafort", bio:"A Dominican lawyer-priest (c. 1175–1275) who compiled the Church's first book of canon law and spent his life reconciling sinners.", conn:"Augustine's own transformation from restless wanderer to bishop made him the patron of those who seek order after chaos; Raymond's legal clarity echoes Augustine's conviction that true freedom is found within right law."},
+          {m:1,d:21, n:"St. Agnes", bio:"A Roman girl martyred at about thirteen for refusing to renounce Christ. One of the most honored early virgin-martyrs.", conn:"Augustine preached her feast and marveled that 'a tender girl conquered the tormentors' — pointing to her as proof that God's strength is made perfect in the weakest of his saints."},
+          {m:1,d:25, n:"The Conversion of St. Paul", bio:"The dramatic turning of Saul the persecutor to Paul the apostle on the road to Damascus — the Church's great feast of conversion.", conn:"Augustine's own conversion in the Milan garden (386) is the most famous echo of Paul's: both men were arrested by grace while resisting it, and both spent the rest of their lives proclaiming 'it is no longer I who live.'"},
+          {m:2,d:2, n:"The Presentation of the Lord", bio:"Forty days after Christmas, Mary and Joseph bring the infant Jesus to the Temple, where Simeon calls him 'a light for revelation to the Gentiles.'", conn:"Augustine saw in Simeon the fulfillment of the longing he described in the Confessions — the soul that finally holds the Word it was made for, and can depart in peace."},
+          {m:2,d:14, n:"Sts. Cyril and Methodius", bio:"Brothers (9th c.) who brought the Gospel to the Slavs and gave them a written language. Co-patrons of Europe.", conn:"Augustine, the great teacher of the Gentiles' Scriptures in Latin, would have honored these brothers who did the same in Slavonic — both convinced the faith must come to a people in their own tongue."},
+          {m:2,d:22, n:"The Chair of St. Peter", bio:"The feast of the apostolic see founded on Peter, the rock on whom Christ built his Church.", conn:"Augustine, in his dispute with the Donatists, appealed to 'the Chair of Peter, in which Cyprian found unity' — he taught that communion with Peter's see is the mark of the true Church."},
+          {m:3,d:19, n:"St. Joseph, Husband of Mary", bio:"The silent carpenter of Nazareth, guardian of the Holy Family, declared patron of the universal Church.", conn:"Augustine exalted Joseph as the 'faithful and chaste husband' who, by believing the angel, became the just man who protected the Word made flesh — a model of obedience for every father."},
+          {m:3,d:25, n:"The Annunciation of the Lord", bio:"The angel Gabriel announces to Mary that she will conceive the Son of God; she answers 'let it be done to me.'", conn:"Augustine drew the contrast with Eve: where Eve's assent brought death, Mary's assent brought life — 'Death through Eve, life through Mary.' He called her the 'gate of heaven.'"},
+          {m:4,d:23, n:"St. George", bio:"A Roman soldier-martyr (d. c. 303) who became the patron of England and a thousand legends of Christian courage.", conn:"Augustine, who wrote of the 'militia of Christ,' would recognize in George the soldier who lays down his life not for an earthly emperor but for the King of heaven."},
+          {m:5,d:1, n:"St. Philip and St. James", bio:"Two of the Twelve, apostles who carried the risen Christ to the ends of the earth.", conn:"Augustine's whole missionary heart — 'Restart the race, run to him who calls' — beats in these apostles who left all to follow the One Philip called 'the one Moses wrote about.'"},
+          {m:5,d:31, n:"The Visitation", bio:"Mary, now bearing Christ, hastens to her cousin Elizabeth; the unborn John leaps in the womb.", conn:"Augustine saw in the leaping John a sign that even before birth the soul can know its Lord — a cornerstone of his teaching on the dignity of life."},
+          {m:6,d:24, n:"The Nativity of St. John the Baptist", bio:"The only birthday of a saint kept as a feast — born to Zechariah and Elizabeth, he prepared the way of the Lord.", conn:"Augustine preached John as the 'voice' to Christ the 'Word': 'I am not he; make straight his path.' He used John to teach that the servant must decrease so the Master may increase."},
+          {m:6,d:29, n:"Sts. Peter and Paul", bio:"The two pillars of the early Church — Peter the rock, Paul the apostle to the Gentiles — both martyred in Rome.", conn:"Augustine's favorite image: Peter and Paul, though different in temperament, are 'two rivers from one fountain,' and he urges the faithful to love both as one heart of the Church."},
+          {m:7,d:22, n:"St. Mary Magdalene", bio:"The 'apostle to the apostles,' first to see the risen Christ and sent to tell the others.", conn:"Augustine called her the figure of the Church herself — forgiven much, and so loving much; he preached that her tears at the empty tomb washed the world clean."},
+          {m:7,d:25, n:"St. James the Greater", bio:"Son of Zebedee, brother of John, the first of the Twelve to be martyred (Acts 12).", conn:"Augustine noted James was granted the cup of suffering first; he taught that to sit at Christ's right hand means first to drink the chalice of witnessing unto death."},
+          {m:8,d:15, n:"The Assumption of Mary", bio:"The dogma that at the end of her earthly life Mary was taken body and soul into heavenly glory.", conn:"Augustine, who called Mary 'the most blessed of women,' laid the foundation for this feast by teaching that the woman who bore the Sinless One was herself preserved and exalted above all creatures."},
+          {m:8,d:20, n:"St. Bernard of Clairvaux", bio:"The 'honey-tongued doctor' (1090–1153) whose Marian sermons and reform of monastic life shaped the Church.", conn:"Bernard is unthinkable without Augustine: he drank deeply from the Confessions and City of God, and carried Augustine's mysticism of desire into the high Middle Ages."},
+          {m:8,d:28, n:"St. Augustine of Hippo", bio:"Bishop, theologian, and Doctor of the Church (354–430). Author of the Confessions and City of God. Patron of this very app.", conn:"He is the reason we are here. Converted in a Milan garden in 386, he became the greatest Latin Father of the West — teaching on grace, the Trinity, and the restless heart that finds no rest but in God."},
+          {m:9,d:8, n:"The Birth of the Blessed Virgin Mary", bio:"The nativity of Mary, the dawn that precedes the Sun of righteousness.", conn:"Augustine honored Mary above all creatures as the one who, by her obedience, became the mother of the Head and the image of the whole Church 'both virgin and mother.'"},
+          {m:9,d:14, n:"The Exaltation of the Holy Cross", bio:"The feast of the Cross lifted high — the instrument of death become the tree of life.", conn:"Augustine preached that 'the Cross is a throne': where the devil conquered by a tree, God conquered by a tree. He called the Cross the school of humility for every Christian."},
+          {m:9,d:29, n:"Sts. Michael, Gabriel, and Raphael", bio:"The three archangels named in Scripture — Michael the defender, Gabriel the messenger, Raphael the healer.", conn:"Augustine wrote at length on the angels as 'messengers of God' who contemplate him eternally; he taught that each soul is guarded by an angel, and that the heavenly city is thronged with their praise."},
+          {m:10,d:1, n:"St. Thérèse of Lisieux", bio:"The 'Little Flower' (1873–1897), a Carmelite whose 'little way' of trust and love became a path for millions.", conn:"Thérèse called Augustine her 'brother in the faith'; both wrote of restless hearts and the voyage home to God, and both found sainthood not in grand deeds but in ordinary love done completely."},
+          {m:10,d:4, n:"St. Francis of Assisi", bio:"The poor little man of Assisi (1181–1226) who rebuilt Christ's Church and preached to the birds.", conn:"Francis lived the very poverty Augustine praised in the Confessions — 'Late have I loved you, Beauty ever ancient, ever new' — stripping away all to cling to Christ alone."},
+          {m:10,d:18, n:"St. Luke the Evangelist", bio:"Physician and companion of Paul, author of the third Gospel and the Acts of the Apostles.", conn:"Augustine, in his Harmony of the Gospels, relied on Luke's careful order to show that the four evangelists never contradict but complete one another — the foundation of all later Gospel study."},
+          {m:11,d:1, n:"All Saints", bio:"The feast of the countless unnamed holy ones — known to God, unknown to us — who now rejoice in heaven.", conn:"Augustine's City of God is the great theology of this feast: the pilgrim Church on earth and the triumphant Church above are one city, journeying toward the vision of God."},
+          {m:11,d:2, n:"All Souls", bio:"The day the Church prays for the faithful departed, especially those still being purified.", conn:"Augustine's teaching on purgatory — a merciful fire that prepares the soul for God — shaped the Church's care for the dead and her confidence in praying them home."},
+          {m:11,d:30, n:"St. Andrew the Apostle", bio:"The first-called of the Twelve, brother of Peter, who brought his brother to Christ and died on an X-shaped cross.", conn:"Augustine marveled that Andrew, on recognizing the Messiah, 'did not keep him to himself' but ran to Peter — the pattern of all true evangelization."},
+          {m:12,d:3, n:"St. Francis Xavier", bio:"The 'Apostle of the Indies' (1506–1552), missionary to the East and co-founder of the Jesuits.", conn:"Xavier's burning zeal to carry Christ across the world is the missionary fire Augustine described when he wrote, 'Our hearts are restless until they rest in you' — and then could not keep quiet about it."},
+          {m:12,d:8, n:"The Immaculate Conception", bio:"The dogma that Mary was preserved from original sin from the first moment of her conception.", conn:"Augustine, the great doctor of grace, laid the groundwork by asking who could be sinless — and answering, only she whom God had singled out to bear the Sinless One. 'O happy fault,' he wrote, that won us such a Redeemer."},
+          {m:12,d:25, n:"The Nativity of the Lord", bio:"Christmas — the Word made flesh and dwelling among us.", conn:"Augustine's Christmas sermons are among his most radiant: 'He became small so that you might become great; he emptied himself so that you might be filled.' He taught that the crib is the school of humility."},
+          {m:12,d:26, n:"St. Stephen, First Martyr", bio:"The deacon stoned outside Jerusalem for witnessing to the risen Christ — the first to shed blood for the faith.", conn:"Augustine preached Stephen as the perfect imitator of Christ, praying even for his killers; he used Stephen to teach that martyrdom is simply love 'even to the enemy.'"},
+        ];
+        function renderSaint(){
+          const now=new Date(); const mo=now.getMonth()+1, da=now.getDate();
+          const todayDOY = Math.floor((now - new Date(now.getFullYear(),0,0))/86400000);
+          // exact match first
+          let saint = SAINTS.find(s=>s.m===mo && s.d===da);
+          // otherwise the nearest feast (by day-of-year, wrapping the year)
+          if(!saint){
+            let best=1e9;
+            SAINTS.forEach(s=>{
+              const d=new Date(now.getFullYear(), s.m-1, s.d);
+              let doy=Math.floor((d - new Date(now.getFullYear(),0,0))/86400000);
+              let dist=Math.abs(doy-todayDOY); dist=Math.min(dist, 365-dist);
+              if(dist<best){ best=dist; saint=s; }
+            });
+          }
+          const nm=$('#saintName'), bio=$('#saintBio'), conn=$('#saintConn');
+          if(!nm) return;
+          if(saint){ nm.textContent=saint.n; if(bio) bio.textContent=saint.bio; if(conn) conn.textContent=saint.conn; }
+          else { nm.textContent="of the Day"; if(bio) bio.textContent="A holy man or woman the Church remembers today, whose life points to Christ."; if(conn) conn.textContent="Like Augustine, they sought God with all their heart — and found him."; }
+        }
+        renderSaint();
+
+        /* ---- Selected Topic (quote → excerpt → vocabulary → Augustine's writing) ---- */
+        const TOPICS = [
+          {name:"Angels", quote:"'Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?' (Heb 1:14)", excerpt:"Augustine taught that the angels are pure spirits who contemplate God face to face and, out of that contemplation, are sent to minister to us. They are not competing with God but burning with the love of him; the higher they stand before the throne, the more freely they descend to help the least of his children.", vocab:"Contemplation — the gaze of the mind and heart resting upon God, from which all true action flows.", summary:"In his work On the Trinity and City of God, Augustine describes the angels as the citizens of the heavenly city who never fell, forever praising God and rejoicing in our redemption. He insists they are creatures, not to be worshiped, yet are our constant guardians — each believer, he says, has an angel who 'stands daily in the sight of the Father.'"},
+          {name:"Original Sin", quote:"'For you are forgiven all your sins, and you are washed clean in the blood of the Lamb — yet even the infant is born with the contagion of old sin.'", excerpt:"Augustine came to teach that through Adam's first disobedience, sin and death entered the human race, so that every person is born not guilty of Adam's act but bearing its wound — a weakened will that finds it easier to choose wrongly than rightly. Baptism, he insisted, is the remedy given even to infants.", vocab:"Concupiscence — the disordered leaning of desire toward creatures and away from God, the lingering effect of original sin.", summary:"In his Confessions and On Nature and Grace, Augustine defended original sin against Pelagius, who claimed man could avoid sin by his own power. Augustine answered that without grace 'we can do nothing,' and that the very need for a Savior proves our nature is wounded. His teaching became the backbone of Western theology of grace."},
+          {name:"The Blessed Virgin Mary", quote:"'Death through Eve, life through Mary' — for as the one by believing the serpent brought death, so the other by believing the angel brought life.", excerpt:"Augustine honored Mary above all women as the one who, by her fiat, became the mother of God and the image of the whole Church — both virgin and mother. He saw her obedience as undoing Eve's disobedience, and her humility as the path every soul must walk.", vocab:"Theotokos — Greek for 'God-bearer,' the title defined at Ephesus (431) for Mary as true Mother of God.", summary:"Though the later dogmas of the Immaculate Conception and Assumption were defined after his death, Augustine laid their foundation by asking who could be sinless and answering: only she whom God had singled out to bear the Sinless One. His sermons on the Annunciation remain among the Church's richest Marian texts."},
+          {name:"The Restless Heart", quote:"'You have made us for yourself, O Lord, and our heart is restless until it rests in you.' (Confessions, I.1)", excerpt:"Augustine opens the Confessions with this line, the key to his whole life. Every desire — for wealth, for praise, for love — is a distorted hunger for God. The heart will not be still until it finds the One for whom it was shaped.", vocab:"Restlessness — the uneasy searching of a soul made for God but settled in lesser things; healed only by return to him.", summary:"The Confessions (c. 400) is Augustine's autobiography of the soul's long wandering and sudden capture by grace. More than a memoir, it is a prayer and a philosophy of desire: the will is free, yet only when ordered toward God does it become free indeed. It is the most-read book of Christian antiquity after the Bible."},
+          {name:"The Two Cities", quote:"'Two cities have been formed by two loves: the earthly by the love of self to the contempt of God, the heavenly by the love of God to the contempt of self.'", excerpt:"Augustine's masterwork of political theology contrasts the City of Man, built on pride, and the City of God, built on love. They are mingled in this age, but at the end they will be separated — one to glory, one to woe. Every human heart belongs to one or the other.", vocab:"The City of God — Augustine's name for the communion of the saved, begun here and fulfilled in the age to come.", summary:"Written over thirteen years as Rome fell to the barbarians (c. 413–426), The City of God answers those who blamed Christianity for the collapse of the Empire. Augustine argues that earthly kingdoms rise and fall, but the City of God endures; Christians are citizens of both, rendering to Caesar what is his and to God what is God's."},
+          {name:"Grace", quote:"'Give what you command, and command what you will.' (Confessions, X.29)", excerpt:"Augustine's deepest conviction: we cannot even desire the good without God first moving us. Grace is not a reward for effort but the very source of the desire to try. 'It is God who works in you, both to will and to work.'", vocab:"Prevenient grace — the grace that 'comes before,' stirring the will before any free response is possible.", summary:"Against the Pelagians, Augustine taught in On the Spirit and the Letter and On Grace and Free Will that grace is irresistible in its first touch yet respects our freedom in its flowering. His axiom 'God crowns his own gifts in us' became the heart of Catholic and much Protestant teaching on salvation."},
+          {name:"The Trinity", quote:"'Thou, O Trinity, my one God, glory be to thee.' (Confessions, XII.1)", excerpt:"Augustine spent decades probing how the one God can be three Persons. He turned to the human mind — memory, understanding, and will — as a faint image of the divine threeness, always warning that no creature can fully contain the mystery.", vocab:"Perichoresis — the 'mutual indwelling' of the Father, Son, and Spirit, each wholly in the others.", summary:"In his fifteen-book On the Trinity, Augustine builds from faith to understanding, using love as his central image: the Lover, the Beloved, and Love itself. He concludes that we know the Trinity best not by speculation but by being remade in the image of God through charity."},
+          {name:"Time and Eternity", quote:"'What then is time? If no one asks me, I know; if I wish to explain it to one that asketh, I know not.' (Confessions, XI.14)", excerpt:"Augustine gave the first modern philosophy of time, locating it not 'out there' in the stars but in the stretching of the soul — past as memory, future as expectation, present as attention. God, he says, dwells in an eternal now beyond all succession.", vocab:"Aeviternity — the middle state of the angels, lasting but not eternal; a way of distinguishing created permanence from God's eternity.", summary:"Book XI of the Confessions wrestles with how God created time itself. Augustine concludes that time began with the world; before creation there was no 'before.' His insight freed theology from imagining God inside a timeline and opened the way to meditations on eternity."},
+        ];
+        const topicName=$('#topicName'), topicQuote=$('#topicQuote'), topicExcerpt=$('#topicExcerpt'),
+              topicVocab=$('#topicVocab'), topicSummary=$('#topicSummary'), topicLabel=$('#topicLabel'),
+              topicShuf=$('#topicShuf'), topicAsk=$('#topicAsk');
+        let topicIdx=-1;
+        function topicForDate(){
+          const now=new Date(); const start=new Date(now.getFullYear(),0,0);
+          const d=Math.floor((now-start)/86400000); return d % TOPICS.length;
+        }
+        function renderTopic(i){
+          const t=TOPICS[i % TOPICS.length];
+          if(topicLabel) topicLabel.textContent="Topic of the day";
+          if(topicName) topicName.textContent=t.name;
+          if(topicQuote) topicQuote.textContent=t.quote;
+          if(topicExcerpt) topicExcerpt.textContent=t.excerpt;
+          if(topicVocab) topicVocab.textContent=t.vocab;
+          if(topicSummary) topicSummary.textContent=t.summary;
+          topicIdx=i;
+        }
+        renderTopic(topicForDate());
+        if(topicShuf) topicShuf.addEventListener("click",()=>{
+          let i=Math.floor(Math.random()*TOPICS.length); if(i===topicIdx) i=(i+1)%TOPICS.length; renderTopic(i);
+        });
+        if(topicAsk) topicAsk.addEventListener("click",()=>{
+          const t=TOPICS[topicIdx % TOPICS.length];
+          pageChat("As St. Augustine, teach me about "+t.name+". Draw on your own writings and meet me where I am.", "chat");
+        });
+
         /* ---- nav tabs: switch pages ---- */
         $$(".nav-tab").forEach(t=>t.addEventListener("click",()=>setPage(t.dataset.page)));
 
-        /* ---- Daily page: load today's USCCB readings ---- */
+        /* ---- Today page: load today's USCCB readings ---- */
         const dpReadings=$('#dpReadings');
         function loadDailyReadings(){
           if(!dpReadings) return;
@@ -3079,13 +3240,13 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           callChat();
         }
 
-        /* ---- Daily page: quick actions ---- */
+        /* ---- Today page: quick actions ---- */
         const dpActExplain=$('#dpActExplain'), dpActPray=$('#dpActPray');
         if(dpActExplain) dpActExplain.addEventListener("click",()=>{
-          pageChat("As St. Augustine, help me understand today's Gospel in a way that speaks to my heart. Start with one simple insight, then go a little deeper.", "daily");
+          pageChat("As St. Augustine, help me understand today's Gospel in a way that speaks to my heart. Start with one simple insight, then go a little deeper.", "today");
         });
         if(dpActPray) dpActPray.addEventListener("click",()=>{
-          pageChat("As St. Augustine, turn today's readings into a prayer I can pray with you now, in my own words. Around 150 words, intimate and unhurried.", "daily");
+          pageChat("As St. Augustine, turn today's readings into a prayer I can pray with you now, in my own words. Around 150 words, intimate and unhurried.", "today");
         });
 
         /* ---- Prayer page: lead / teach + tradition ---- */
@@ -3110,13 +3271,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           if(el) el.addEventListener("click",()=>pageChat(tradMap[id],"prayer"));
         });
 
-        /* ---- load readings the first time the Daily page is opened ---- */
-        if(PAGE_ELS.daily && PAGE_ELS.daily.wrap){
-          const _dailyWrap=PAGE_ELS.daily.wrap;
+        /* ---- load readings the first time the Today page is opened ---- */
+        if(PAGE_ELS.today && PAGE_ELS.today.wrap){
+          const _dailyWrap=PAGE_ELS.today.wrap;
           new IntersectionObserver((entries)=>{
             entries.forEach(en=>{ if(en.isIntersecting && !dpReadings.dataset.loaded){
               loadDailyReadings();
-              const t=document.createElement("span"); t.textContent=""; _dailyWrap.appendChild(t); t.remove();
             }});
           },{root:stage, threshold:0}).observe(_dailyWrap);
         }
