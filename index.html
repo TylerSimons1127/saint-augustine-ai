@@ -1573,9 +1573,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
       <!-- Reasoning chooser -->
       <div class="reasoning" role="group" aria-label="Mode">
-        <button class="seg" data-reason="quick" aria-pressed="false">Chat</button>
-        <button class="seg" data-reason="thoughtful" aria-pressed="true">Study</button>
-        <button class="seg" data-reason="contemplative" aria-pressed="false">Pray</button>
+        <button class="seg" data-reason="quick" aria-pressed="false">Quick</button>
+        <button class="seg" data-reason="thoughtful" aria-pressed="true">Thoughtful</button>
+        <button class="seg" data-reason="contemplative" aria-pressed="false">Contemplative</button>
       </div>
 
       <span class="divider"></span>
@@ -1683,9 +1683,9 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     <div class="set-row">
       <span class="t">Default depth</span>
       <div class="seg-ctl" data-seg="defaultReasoning">
-        <button data-val="quick">Chat</button>
-        <button data-val="thoughtful">Study</button>
-        <button data-val="contemplative">Pray</button>
+        <button data-val="quick">Quick</button>
+        <button data-val="thoughtful">Thoughtful</button>
+        <button data-val="contemplative">Contemplative</button>
       </div>
     </div>
     <div class="set-row">
@@ -2782,7 +2782,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
   const TUTORIAL=[
     {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. The <b>★ Recommended</b> group — starting with <b>Nemotron 3 Ultra 550B</b> — is tuned for thoughtful, faithful answers. Search any of the free models, or keep the default. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
-    {t:"Three ways to meet him", h:"Beneath the composer are three modes — <b>Chat</b>, <b>Study</b>, and <b>Pray</b>. They change how Augustine meets you. <b>Chat</b> is a quick, free conversation: fast answers, back-and-forth, for whatever is on your heart. <b>Study</b> (the default) asks him to slow down and teach — drawn-out, sourced in Scripture and his writings, careful. <b>Pray</b> turns the exchange into prayer and devotion, spoken in his own voice. Pick whichever fits the moment; tap the one you want and he meets you there."},
+    {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
     {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images, which vision-capable models can actually look at. Files are read <b>on your device</b> and never stored on any server."},
