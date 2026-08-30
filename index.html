@@ -485,7 +485,7 @@ a{color:inherit}
 .dp-card .dp-cta:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(138,108,37,.38)}
 
 /* ---------- Thread ---------- */
-.thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px}
+.thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px;padding-bottom:200px}
 .msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
 .msg.assistant{flex-wrap:wrap}
 .msg .av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:14px;color:var(--ink);
@@ -2373,7 +2373,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     const buf=loading.querySelector(".bubble");
 
     const messages=[...history];
-    let acc="", reasoningAcc="", bufStr="", hasReasoning=false;
+    let acc="", reasonAcc="", reasonHead="", bufStr="", hasReasoning=false, mirrored=false;
     // prepend attachment note to the newest user message
     if(attachNote && messages.length) messages[messages.length-1]={role:"user", content:attachNote+messages[messages.length-1].content};
 
@@ -2408,14 +2408,18 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       const render=(streaming)=>{
         let inner='';
         if(hasReasoning){
-          inner += '<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reasoningAcc)+'</div></details>';
+          inner += '<details class="reasoning-box"><summary>Thinking</summary><div class="rb">'+esc(reasonAcc)+'</div></details>';
         }
-        inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
-                buf.className = "bubble md";
-                buf.innerHTML = '<span class="who">St. Augustine</span>'+inner;
-                maybeScroll();
-              };
-              while(true){
+        if(acc){
+          inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
+        }else if(streaming){
+          inner += '<span class="who" style="opacity:.5">reflecting…</span>';
+        }
+        buf.className="bubble md";
+        buf.innerHTML='<span class="who">St. Augustine</span>'+inner;
+        maybeScroll();
+      };
+      while(true){
         const {value,done}=await reader.read();
         if(done) break;
         bufStr += dec.decode(value,{stream:true});
@@ -2427,22 +2431,32 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           if(data==="{}" || data==="[DONE]") continue;
           try{
             const j=JSON.parse(data);
-            if(j.reasoning!=null){ reasoningAcc+=j.reasoning; hasReasoning=true; render(true); continue; }
+            // sentinel: backend marks a reasoning-only model — everything after is the answer, not thinking
+            if(j.reasoning===null){ mirrored=true; acc=reasonHead; reasonHead=""; reasonAcc=""; hasReasoning=false; continue; }
+            if(j.reasoning!=null){ reasonHead+=j.reasoning; reasonAcc+=j.reasoning; hasReasoning=true; render(true); continue; }
             if(j.text){ acc+=j.text; render(true); }
           }catch(_){}
         }
       }
       render(false);
+      // reasoning-only model with no separate content: surface the completed answer (already in acc)
+      if(!acc && reasonAcc){ acc=reasonAcc; render(false); }
       if(!acc) acc="(no response)";
       history.push({role:"assistant", content:acc});
       recordSession(userMsg, acc);
     }catch(e){
       const msg = (e&&e.message)||"Something went wrong.";
       const isAbort = aborted || (e&&e.name==="AbortError");
-      if(isAbort){
-        buf.innerHTML='<span class="who">St. Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>');
-        if(acc) history.push({role:"assistant", content:acc});
-        recordSession(userMsg, acc||"(stopped)");
+      if(acc && acc.trim()){
+        // stream was cut off (timeout/network) but we have a partial answer — keep it, don't discard
+        const note = isAbort ? '<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>'
+                             : '<p style="color:var(--muted);font-size:13px">⚠ The response was cut off. Tap Retry to try again.</p>';
+        buf.innerHTML='<span class="who">St. Augustine</span>'+ mdToHtml(acc) + note;
+        history.push({role:"assistant", content:acc});
+        recordSession(userMsg, acc);
+      }else if(isAbort){
+        buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--muted)">Stopped.</span>';
+        recordSession(userMsg, "(stopped)");
       }else{
         buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>";
         showToast(msg);
@@ -2560,20 +2574,27 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     send.onclick=()=>{ aborted=true; controller.abort(); };
     const loading=bubble("assistant",'<span class="dots"><i></i><i></i><i></i></span>');
     const buf=loading.querySelector(".bubble");
-    let acc="", reason="", bufStr="", hasR=false;
+    let acc="", reason="", reasonHead="", bufStr="", hasR=false, mirrored=false;
     try{
       const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages}),signal:controller.signal});
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
-      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning!=null){reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
-      render(false); if(!acc) acc="(no response)";
+      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking</summary><div class="rb">'+esc(reason)+'</div></details>'; } if(acc){ inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); } else if(s){ inner+='<span class="who" style="opacity:.5">reflecting…</span>'; } buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
+      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning===null){ mirrored=true; acc=reasonHead; reasonHead=""; reason=""; hasR=false; continue; } if(j.reasoning!=null){reasonHead+=j.reasoning;reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
+      render(false); if(!acc && reason){ acc=reason; render(false); } if(!acc) acc="(no response)";
       history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
     }catch(e){
       const msg=(e&&e.message)||"Something went wrong.";
-      buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
-      history.push({role:"assistant",content:"[error] "+msg}); recordSession(userMsg, msg); addRetry(loading, messages, userMsg);
+      const isAbort = aborted || (e&&e.name==="AbortError");
+      if(acc && acc.trim()){
+        const note = isAbort ? '<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>'
+                             : '<p style="color:var(--muted);font-size:13px">⚠ The response was cut off. Tap Retry to try again.</p>';
+        buf.innerHTML='<span class="who">St. Augustine</span>'+mdToHtml(acc)+note; history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
+      }else{
+        buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
+        history.push({role:"assistant",content:"[error] "+msg}); recordSession(userMsg, msg); addRetry(loading, messages, userMsg);
+      }
     }finally{
       send.classList.remove("stop"); send.disabled=(prompt.value.trim()===""&&files.length===0);
       send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'; send.onclick=null; syncSend(); stage.scrollTop=stage.scrollHeight;
