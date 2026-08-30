@@ -423,15 +423,17 @@ function makeAnswerGate() {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
+        const s = trimmed;
         if (!trimmed) continue;
         // Commit ONLY when the line opens addressing the reader (you / peace / dear friend…).
         // Planning prose never does, so this is the reliable boundary.
         if (addressesReader(line)) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return [head]; }
         if (planLine(line)) continue;
-        // A line that is prose yet does NOT open addressing the reader is still planning
-        // (e.g. "The distinction: servile fear (timor servilis) is…", "Sermon 158 on the…").
-        // Do NOT auto-commit it — keep scanning; the real answer always opens with an
-        // address to the reader. Only the safety cap below may release the buffer.
+        // First substantial prose line that is NOT planning and NOT self-narration is the
+        // real answer beginning (the model may open with a scripture quote or a reflection,
+        // not necessarily "you"). Commit here and start streaming; post-answer planning is
+        // still stripped by the filtering below.
+        if (s.length >= 30) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return [head]; }
         continue;
       }
       return [];
