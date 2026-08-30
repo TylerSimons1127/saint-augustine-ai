@@ -406,7 +406,9 @@ async function proxyStream(upstream, res) {
 function makeAnswerGate() {
   let decided = false;                    // have we locked onto the answer start?
   let buf = "";                           // all content streamed so far that is pre-answer
-  const MAX_PRE = 1600;                   // never buffer more than this before deciding
+  const MAX_PRE = 7000;                   // never buffer more than this before deciding
+                                          // (planning/source outlines can run long; the
+                                          // real answer always addresses the reader)
   return function (tok) {
     if (decided) return [tok];            // answer already streaming: pass through
     buf += tok;
@@ -422,13 +424,22 @@ function makeAnswerGate() {
       const line = lines[i];
       const trimmed = line.trim();
       if (!trimmed) continue;
-      if (isOutlineLine(line)) continue;
-      if (isPlanLikely(line)) continue;
-      if (!addressesReader(line)) continue;
-      decided = true;
-      const head = lines.slice(i).join("\n");
-      buf = "";
-      return [head];
+      // A line that directly addresses the reader ("you", a greeting, a vocative like
+      // "friend"/"peace") IS the answer start — commit immediately. Planning prose talks
+      // about "the user" or "I will / let me", never to the reader, so this is the
+      // reliable boundary and must be checked before the plan heuristics.
+      if (addressesReader(line)) {
+        decided = true;
+        const head = lines.slice(i).join("\n");
+        buf = "";
+        return [head];
+      }
+      // Drop outline / plan / source-citation lines and keep scanning for the answer.
+      if (isOutlineLine(line) || isPlanLikely(line) || isSourceCitation(line)) continue;
+      // A line that is prose yet does NOT open addressing the reader is still planning
+      // (e.g. "The distinction: servile fear (timor servilis) is…", "Sermon 158 on the…").
+      // Drop it and keep scanning; the real answer always opens with an address.
+      continue;
     }
     return [];
   };
@@ -437,13 +448,18 @@ function makeAnswerGate() {
 /* Does this line speak TO the reader (second person / vocative / greeting) rather than
  * describe the task or the speaker's process? Planning fragments ("The user wants…",
  * "Let me structure this…", "I'll draw on…") do not address the reader and are kept
- * out. A real Augustine opening addresses "you" or ushers the reader with a greeting. */
+ * out. A real Augustine opening addresses "you" or ushers the reader with a greeting.
+ * We deliberately do NOT fall back to "any long sentence with punctuation" — bare
+ * topic headers ("The distinction: servile fear vs the fear of love.") match that and
+ * would wrongly commit the gate. The answer is identified by how it SPEAKS, not by
+ * length. */
 function addressesReader(line) {
   const s = line.trim();
-  // second-person pronouns / contractions that directly speak to the reader
-  if (/\b(you|your|yours|you're|you've|you'll|friend|my friend|dearest|beloved|peace be with|come|listen|sit|ask me)\b/i.test(s)) return true;
-  // an actual full sentence with sentence-final punctuation
-  if (/[.!?]/.test(s) && s.length >= 30) return true;
+  // The line must OPEN speaking to the reader (second-person / greeting / vocative),
+  // not merely contain "you" somewhere — a citation line ("2 Cor 12:7-10 — My grace
+  // is sufficient for YOU...") contains "you" but opens with a reference, so it is NOT
+  // the answer start. Augustine's real answer opens with the address.
+  if (/^(you|your|yours|peace (be|to)|my (dear|beloved|dearest)|dear (friend|soul|brother)|beloved|greetings|i greet you|well, (my|dear)|come,|listen,|sit,|ask me|you (ask|come|seek|wonder|say|write)|friend|dearest|beloved)\b/i.test(s)) return true;
   return false;
 }
 
@@ -479,6 +495,20 @@ function isPlanLikely(line) {
   if (/\b(the user|the question|the prompt|the request|this question (wants|asks|is about)|they (ask|want|asked))\b/i.test(s)) return true;
     // A heading-style fragment (title-case words, no sentence punctuation)
   if (!/[.!?;]/.test(s) && s.length < 70 && /^[A-Z][a-z]+(\s+[a-z]+){1,10}\.?$/.test(s)) return true;
+  return false;
+}
+
+/* True if a line is a source/citation reference the model lists while planning
+ * (e.g. "On the Spirit and the Letter - his letter to Sixtus, c. 412", "2 Cor 12:7-10 -",
+ * "Sermon 158 on the...."). These are the model rehearsing authorities, not the answer. */
+function isSourceCitation(line) {
+  const s = line.trim();
+  // A verse / chapter reference (2 Cor 12:7, Rom 5.12, Ps 51:3...)
+  if (/(\d?\s?(cor|tim|rom|john|matt|ps|gen|exod|isa|jer|aug)\.?\s*\d*[:.]\d+)/i.test(s)) return true;
+  // A titled work + dash + description (On the Spirit and the Letter - ...)
+  if (/^[^–—-]{0,60}\s[–—-]\s/.test(s) && /(c\.?\s?\d{3,4}|sermon|letter|homily|treatise|confessions|de (trinitate|doctrina|civitate|spiritu)|on (the|his))/i.test(s)) return true;
+  // A bare parenthetical attribution
+  if (/^\s*\(.{0,40}\)\s*$/.test(s)) return true;
   return false;
 }
 
