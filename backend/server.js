@@ -414,26 +414,37 @@ function makeAnswerGate() {
     // the real answer (plans are short) — pass everything rather than stall.
     if (buf.length >= MAX_PRE) { decided = true; const h = buf; buf = ""; return [h]; }
     const lines = buf.split("\n");
-    // Find the first line that is confidently the start of the real answer.
+    // The answer begins at the first non-blank line that reads as prose addressed to
+    // the reader (contains "you", a greeting, or a vocative like "friend"/"peace").
+    // Planning lines instead talk about "the user", "I'll", "Let me structure", source
+    // lists, etc., so they fail this test and stay dropped.
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const trimmed = line.trim();
       if (!trimmed) continue;
       if (isOutlineLine(line)) continue;
-      // A non-outline line: the answer may start here. But be conservative — a short
-      // fragment that looks like a heading or is a possible plan continuation should
-      // not start the answer unless it is a confident prose SENTENCE. We keep
-      // buffering while the peeked line still reads like plan, so a real answer's
-      // opening grows into a full sentence before we commit.
-      if (!isPlanLikely(line)) {
-        decided = true;
-        const head = lines.slice(i).join("\n");
-        buf = "";
-        return [head];
-      }
+      if (isPlanLikely(line)) continue;
+      if (!addressesReader(line)) continue;
+      decided = true;
+      const head = lines.slice(i).join("\n");
+      buf = "";
+      return [head];
     }
     return [];
   };
+}
+
+/* Does this line speak TO the reader (second person / vocative / greeting) rather than
+ * describe the task or the speaker's process? Planning fragments ("The user wants…",
+ * "Let me structure this…", "I'll draw on…") do not address the reader and are kept
+ * out. A real Augustine opening addresses "you" or ushers the reader with a greeting. */
+function addressesReader(line) {
+  const s = line.trim();
+  // second-person pronouns / contractions that directly speak to the reader
+  if (/\b(you|your|yours|you're|you've|you'll|friend|my friend|dearest|beloved|peace be with|come|listen|sit|ask me)\b/i.test(s)) return true;
+  // an actual full sentence with sentence-final punctuation
+  if (/[.!?]/.test(s) && s.length >= 30) return true;
+  return false;
 }
 
 /* True if a line is "outline" — a bullet, numbered item, bare label, or explicit
@@ -463,6 +474,9 @@ function isPlanLikely(line) {
     // will write, rather than addressing the soul before it. These never belong in the
     // visible reply.
     if (/\b(i'?ll|i will|i want|i need to|i will now|i should|let me write|let me make|let me keep|i'?m going to|no headers|no bullet|bullet points|flowing prose|not a lecture|substantial meditation|keep it|make sure|i'?ll end|end with|the tldr|write this as|draw on|weave in|describe the |["']?tolle lege["']?\s*(scene|for)?)\b/i.test(s)) return true;
+  // The speaker referring to the human as "the user" / "the question" / "the prompt"
+  // is narrating the task, not addressing the soul — never an Augustine opening.
+  if (/\b(the user|the question|the prompt|the request|this question (wants|asks|is about)|they (ask|want|asked))\b/i.test(s)) return true;
     // A heading-style fragment (title-case words, no sentence punctuation)
   if (!/[.!?;]/.test(s) && s.length < 70 && /^[A-Z][a-z]+(\s+[a-z]+){1,10}\.?$/.test(s)) return true;
   return false;
