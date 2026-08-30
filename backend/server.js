@@ -378,6 +378,8 @@ async function proxyStream(upstream, res) {
     }
   }
   lineBuf = "";
+  // Flush any buffered final line from the answer gate (incomplete tail).
+  for (const part of answerGate.final()) if (part) { sawContent = true; flush({ text: part }); }
   // If the model only reasoned and never answered, never dump the CoT as the reply.
   if (!sawContent) {
     flush({ reasoning: null });
@@ -405,44 +407,54 @@ async function proxyStream(upstream, res) {
  */
 function makeAnswerGate() {
   let decided = false;                    // have we locked onto the answer start?
-  let buf = "";                           // all content streamed so far that is pre-answer
-  const MAX_PRE = 7000;                   // never buffer more than this before deciding
-                                          // (planning/source outlines can run long; the
-                                          // real answer always addresses the reader)
-  return function (tok) {
-    if (decided) return [tok];            // answer already streaming: pass through
-    buf += tok;
-    // Safety: if we've buffered a lot and still can't tell, it's almost certainly
-    // the real answer (plans are short) — pass everything rather than stall.
-    if (buf.length >= MAX_PRE) { decided = true; const h = buf; buf = ""; return [h]; }
-    const lines = buf.split("\n");
-    // The answer begins at the first non-blank line that reads as prose addressed to
-    // the reader (contains "you", a greeting, or a vocative like "friend"/"peace").
-    // Planning lines instead talk about "the user", "I'll", "Let me structure", source
-    // lists, etc., so they fail this test and stay dropped.
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      // A line that directly addresses the reader ("you", a greeting, a vocative like
-      // "friend"/"peace") IS the answer start — commit immediately. Planning prose talks
-      // about "the user" or "I will / let me", never to the reader, so this is the
-      // reliable boundary and must be checked before the plan heuristics.
-      if (addressesReader(line)) {
-        decided = true;
-        const head = lines.slice(i).join("\n");
-        buf = "";
-        return [head];
-      }
-      // Drop outline / plan / source-citation lines and keep scanning for the answer.
-      if (isOutlineLine(line) || isPlanLikely(line) || isSourceCitation(line)) continue;
-      // A line that is prose yet does NOT open addressing the reader is still planning
-      // (e.g. "The distinction: servile fear (timor servilis) is…", "Sermon 158 on the…").
-      // Drop it and keep scanning; the real answer always opens with an address.
-      continue;
-    }
-    return [];
+  let buf = "";                           // pre-answer buffer (planning / self-narration)
+  let emitBuf = "";                       // post-answer: current line being built
+  const MAX_PRE = 40000;                  // safety cap; real answers appear well before this
+  const planLine = (line) => {
+    const s = line.trim();
+    if (!s) return false;
+    return isOutlineLine(line) || isPlanLikely(line) || isSourceCitation(line) || isSelfNarration(line);
   };
+  const gate = function (tok) {
+    if (!decided) {
+      buf += tok;
+      if (buf.length >= MAX_PRE) { decided = true; const h = buf; buf = ""; return [h]; }
+      const lines = buf.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        // Commit ONLY when the line opens addressing the reader (you / peace / dear friend…).
+        // Planning prose never does, so this is the reliable boundary.
+        if (addressesReader(line)) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return [head]; }
+        if (planLine(line)) continue;
+        // A line that is prose yet does NOT open addressing the reader is still planning
+        // (e.g. "The distinction: servile fear (timor servilis) is…", "Sermon 158 on the…").
+        // Do NOT auto-commit it — keep scanning; the real answer always opens with an
+        // address to the reader. Only the safety cap below may release the buffer.
+        continue;
+      }
+      return [];
+    }
+    // Post-answer: STILL strip any interleaved planning / self-narration lines.
+    emitBuf += tok;
+    const out = [];
+    let nl;
+    while ((nl = emitBuf.indexOf("\n")) >= 0) {
+      const line = emitBuf.slice(0, nl);
+      emitBuf = emitBuf.slice(nl + 1);
+      if (planLine(line)) continue;
+      out.push(line + "\n");
+    }
+    return out;
+  };
+  gate.final = function () {
+    const t = emitBuf.trim();
+    emitBuf = "";
+    if (!t || planLine(t)) return [];
+    return [t];
+  };
+  return gate;
 }
 
 /* Does this line speak TO the reader (second person / vocative / greeting) rather than
@@ -509,6 +521,24 @@ function isSourceCitation(line) {
   if (/^[^–—-]{0,60}\s[–—-]\s/.test(s) && /(c\.?\s?\d{3,4}|sermon|letter|homily|treatise|confessions|de (trinitate|doctrina|civitate|spiritu)|on (the|his))/i.test(s)) return true;
   // A bare parenthetical attribution
   if (/^\s*\(.{0,40}\)\s*$/.test(s)) return true;
+  return false;
+}
+
+/* True if a line is the model NARRATING ITS OWN WRITING rather than answering —
+ * e.g. "ST. AUGUSTINE THINKING…", "I should write as Augustine", "Let me structure this:",
+ * "Key texts:", "I'll cite the actual homily", "Substantial, meditative, with a prayer".
+ * This is chain-of-thought that leaked into the content channel; it is dropped even after
+ * the answer has begun streaming, so interleaved planning never reaches the bubble. */
+function isSelfNarration(line) {
+  const s = line.trim();
+  if (!s) return false;
+  // The model labelling its own process: "ST. AUGUSTINE THINKING…", "Augustine will…"
+  if (/^(st\.? augustine|augustine)\b[^\x0A]{0,40}\b(thinking|will|should|want|need|must|reflect|consider|plan|begin|note)\b/i.test(s)) return true;
+  // "I/we will|should|let me + a composition verb" — writing/structuring, not answering
+  if (/\b(i should|i will|i want|i need to|i must|let me|i'll|we need to|i'm going to)\b/i.test(s)
+      && /\b(write|structure|outline|compose|frame|format|organize|phrase|set (it|this) out|weave|draw on|cite|reference|reflect|plan|note|mention|make sure|ensure|keep it|rehearse|sketch)\b/i.test(s)) return true;
+  // Explicit plan labels the model emits while rehearsing
+  if (/^(key texts|key sources|also references|references:|sources:|the distinction between timor|personal opening|theological distinction|a meditation|substantial, meditative|close with a blessing|i'll cite|actually, the famous passage|here is (a|my)|in augustine'?s voice|the famous passage is|tractatus in epistolam|let me set)/i.test(s)) return true;
   return false;
 }
 
