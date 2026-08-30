@@ -2406,15 +2406,17 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       const reader=res.body.getReader();
       const dec=new TextDecoder();
       const render=(streaming)=>{
-        // Thinking box is a SEPARATE collapsed dropdown, kept OUT of the answer bubble
-        let box=buf.parentElement.querySelector(".reasoning-box");
+        let inner='';
         if(hasReasoning){
-          if(!box){ box=document.createElement("details"); box.className="reasoning-box"; buf.parentElement.insertBefore(box, buf); }
-          box.innerHTML='<summary>Thinking</summary><div class="rb">'+esc(reasonAcc)+'</div>';
-        }else if(box){ box.remove(); }
-        // bubble shows ONLY the completed answer
+          inner += '<details class="reasoning-box"><summary>Thinking</summary><div class="rb">'+esc(reasonAcc)+'</div></details>';
+        }
+        if(acc){
+          inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
+        }else if(streaming){
+          inner += '<span class="who" style="opacity:.5">reflecting…</span>';
+        }
         buf.className="bubble md";
-        buf.innerHTML='<span class="who">St. Augustine</span>'+(acc? (streaming?esc(acc)+'<span class="caret"></span>':mdToHtml(acc)) : (streaming?'<span class="who" style="opacity:.5">reflecting…</span>':'(no response)'));
+        buf.innerHTML='<span class="who">St. Augustine</span>'+inner;
         maybeScroll();
       };
       while(true){
@@ -2578,7 +2580,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ let box=buf.parentElement.querySelector(".reasoning-box"); if(hasR){ if(!box){ box=document.createElement("details"); box.className="reasoning-box"; buf.parentElement.insertBefore(box, buf); } box.innerHTML='<summary>Thinking</summary><div class="rb">'+esc(reason)+'</div>'; } else if(box){ box.remove(); } buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+(acc? (s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc)) : (s?'<span class="who" style="opacity:.5">reflecting…</span>':'(no response)')); maybeScroll(); };
+      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking</summary><div class="rb">'+esc(reason)+'</div></details>'; } if(acc){ inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); } else if(s){ inner+='<span class="who" style="opacity:.5">reflecting…</span>'; } buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
       while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning===null){ mirrored=true; acc=reasonHead; reasonHead=""; reason=""; hasR=false; continue; } if(j.reasoning!=null){reasonHead+=j.reasoning;reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
       render(false); if(!acc && reason){ acc=reason; render(false); } if(!acc) acc="(no response)";
       history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
