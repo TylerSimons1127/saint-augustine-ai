@@ -342,6 +342,7 @@ async function proxyStream(upstream, res) {
   let lineBuf = "";
 
   const flush = (obj) => res.write(`data: ${JSON.stringify(obj)}\n\n`);
+  const answerGate = makeAnswerGate();
 
   for await (const chunk of upstream.body) {
     const text = decoder.decode(chunk, { stream: true })
@@ -363,11 +364,10 @@ async function proxyStream(upstream, res) {
       const th = delta.reasoning ?? delta.thinking ?? null;
       const tok = delta.content ?? "";
       if (tok) {
-        // trim obvious reasoning preamble that leaks through `content` on some models
-        const cleaned = stripCoTPrefix(tok, sawContent);
-        if (cleaned) {
-          sawContent = true;
-          flush({ text: cleaned });
+        // The real answer only: strip any planning/outline that some reasoning
+        // models write into `content` before the actual reply begins.
+        for (const part of answerGate(tok)) {
+          if (part) { sawContent = true; flush({ text: part }); }
         }
       }
       if (th) {
@@ -380,7 +380,7 @@ async function proxyStream(upstream, res) {
   lineBuf = "";
   // If the model only reasoned and never answered, never dump the CoT as the reply.
   if (!sawContent) {
-      flush({ reasoning: null });
+    flush({ reasoning: null });
     if (sawReasoning) {
       flush({ text: "*I have considered your question and would answer it — but the model produced only thought and no distinct reply this time. Please try again.*" });
     } else {
@@ -391,19 +391,78 @@ async function proxyStream(upstream, res) {
   res.end();
 }
 
-/**
- * Strip chain-of-thought that some models emit inside `content` before the real
- * answer begins. Patterns like "We need to respond as Augustine...", "Key elements
- * to include: ...", "I should...", "Let me produce..." are dropped while that
- * preamble is still active. Tracks trailState via leaked `_first` closures isn't
- * possible mid-stream, so this drops the LEADING reasoning run only.
+/* ---- content chain-of-thought filter ----
+ * Some free reasoning models (e.g. nvidia/nemotron-3-ultra) emit their planning
+ * outline / chain-of-thought INSIDE `delta.content` before the real answer:
+ * bullet lists ("- House of fear:"), label lines ("Key themes:"), header-y prose
+ * ("The house of fear vs love."), or meta notes ("Let me write this as…"). Without
+ * filtering, that plan leaks into the visible reply. We buffer the leading content
+ * and drop everything up to the first clean "answer paragraph" — a line of flowing
+ * prose that is NOT an outline and (to be safe) does not look like a plan heading or
+ * a bullet continuation. Filtering then turns off so the rest streams unchanged.
+ * Conservative by design: we never risk clipping the middle of a real answer — we
+ * only drop a LEADING block that reads as planning.
  */
-function stripCoTPrefix(tok, alreadySawContent) {
-  if (alreadySawContent) return tok;          // real answer already started: keep everything
-  // Only drop clearly meta/anaphoric planning phrasing that would never open a real
-  // Augustine answer. Kept conservative so a genuine "I think…" / "First…" reply is not clipped.
-  const looksCoT = /^\s*(we need to|let'?s (produce|answer|write|respond)|key elements|the user (is asking|wants|asked)|the question (is|seems)|i should (now )?(answer|respond|cite)|my plan|let me (think|reflect|outline)|based on (the|this)|to answer this|i will (now )?(respond|answer|write|start)|i think (the|it|we)|a brief|here is a draft|i'?m going to)\b/i.test(tok);
-  return looksCoT ? "" : tok;
+function makeAnswerGate() {
+  let decided = false;                    // have we locked onto the answer start?
+  let buf = "";                           // all content streamed so far that is pre-answer
+  const MAX_PRE = 1600;                   // never buffer more than this before deciding
+  return function (tok) {
+    if (decided) return [tok];            // answer already streaming: pass through
+    buf += tok;
+    // Safety: if we've buffered a lot and still can't tell, it's almost certainly
+    // the real answer (plans are short) — pass everything rather than stall.
+    if (buf.length >= MAX_PRE) { decided = true; const h = buf; buf = ""; return [h]; }
+    const lines = buf.split("\n");
+    // Find the first line that is confidently the start of the real answer.
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      if (isOutlineLine(line)) continue;
+      // A non-outline line: the answer may start here. But be conservative — a short
+      // fragment that looks like a heading or is a possible plan continuation should
+      // not start the answer unless it is a confident prose SENTENCE. We keep
+      // buffering while the peeked line still reads like plan, so a real answer's
+      // opening grows into a full sentence before we commit.
+      if (!isPlanLikely(line)) {
+        decided = true;
+        const head = lines.slice(i).join("\n");
+        buf = "";
+        return [head];
+      }
+    }
+    return [];
+  };
+}
+
+/* True if a line is "outline" — a bullet, numbered item, bare label, or explicit
+ * planning/meta phrasing. */
+function isOutlineLine(line) {
+  const s = line.trim();
+  if (!s) return false;
+  if (/^[-*•·]\s/.test(s)) return true;                        // bullet item
+  if (/^\d+[.)]\s/.test(s)) return true;                       // numbered item
+  if (/^[A-Za-z][^:.&]{0,28}:\s*$/.test(s)) return true;       // bare label "Key themes:"
+  if (/\b(key (themes|elements|points|ideas)|i (will|should|must|need|want) to|let me (write|think|reflect|outline|structure|begin)|here is (a|my)|my (plan|outline|structure)|to answer this|based on (the|this)|we need to|let's (write|answer|produce|output)|now i|i'm going to|as augustine i would|in this (answer|reply|response)|i'll (write|start|cover))\b/i.test(s)) return true;
+  return false;
+}
+
+/* True if a non-outline line still LOOKS like plan prose rather than a real answer
+ * opening — e.g. a short heading fragment, a continuation of a thought, or a line
+ * whose length is too small to be a genuine sentence and reads like a topic header
+ * ("The house of fear vs love."). We keep this conservative: only long prose lines
+ * (>= 60 chars) or lines ending in sentence punctuation that clearly address the
+ * reader are treated as the answer start. */
+function isPlanLikely(line) {
+  const s = line.trim();
+  if (s.length < 24) return true;                              // tiny fragment -> plan
+  if (/^(\[(system|plan|reasoning)\])|^\(.*\)$/.test(s)) return true;
+  if (/\b(here's (a|my)|next,|now,|first(ly)?,|second(ly)?,|third,|finally,|in conclusion|in summary|let me (now )?|so, |okay,)\b/i.test(s)) return true;
+  // A run of short/title-case-only words with a trailing colon-ish structure still
+  // smells like a heading; a real Augustine opening is a full human sentence.
+  if (!/[.!?;]/.test(s) && s.length < 70 && /^[A-Z][a-z]+(\s+[a-z]+){1,10}\.?$/.test(s)) return true;
+  return false;
 }
 
 function sanitize(m) {
