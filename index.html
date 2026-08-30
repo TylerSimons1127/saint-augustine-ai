@@ -30,8 +30,8 @@
   --ink-soft:#423b2e;
   --muted:#6f674f;
   --hi:#ece5d7;
-  --glass:rgba(255,252,245,0.14);
-  --glass-strong:rgba(255,252,245,0.24);
+  --glass:rgba(255,252,245,0.34);
+    --glass-strong:rgba(252,249,241,0.52);
   --panel:rgba(250,246,237,0.94);  /* near-opaque warm panel for menus/choosers so text stays crisp */
   --border:rgba(30,26,20,0.10);
   --border-light:rgba(255,255,255,0.72);
@@ -142,15 +142,18 @@ a{color:inherit}
 .wordmark em{font-style:normal;color:var(--gold-ink);font-weight:500}
 .rail-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
 
-/* ---------- Sidebar (sessions) ---------- */
+/* ---------- Sidebar (sessions) — merged into one connected glass armature ---------- */
 .sidebar{
-  position:fixed;top:0;left:0;bottom:0;z-index:45;width:264px;
-  display:flex;flex-direction:column;gap:14px;padding:16px 14px;
-  background:linear-gradient(to right, rgba(255,252,245,0.22) 0%, rgba(255,252,245,0.16) 55%, rgba(255,252,245,0.02) 92%, rgba(255,252,245,0) 100%);
-  backdrop-filter:blur(28px) saturate(170%);
-  -webkit-backdrop-filter:blur(28px) saturate(170%);
+  position:fixed;top:60px;left:0;bottom:0;z-index:45;width:264px;
+  display:flex;flex-direction:column;gap:14px;padding:18px 14px 16px;
+  background:rgba(250,247,240,0.78);
+  backdrop-filter:blur(26px) saturate(170%);
+  -webkit-backdrop-filter:blur(26px) saturate(170%);
+  border-top-right-radius:20px; /* curve where the sidebar meets the top bar */
   border-right:0;
   box-shadow:var(--shadow-sm);
+  -webkit-mask-image:linear-gradient(to right, #000 82%, rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to right, #000 82%, rgba(0,0,0,0) 100%);
 }
 .sidebar::after{content:none}
 .sidebar .brand{margin-bottom:2px}
@@ -196,7 +199,8 @@ a{color:inherit}
 .sb-item:hover{background:var(--accent-soft);border-color:var(--border)}
 .sb-item[aria-current="true"]{background:var(--glass-strong);border-color:rgba(163,130,47,0.35);color:var(--ink);font-weight:500}
 .sb-item:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-.sb-empty{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:var(--ink);font-size:12.5px;line-height:1.5;padding:18px 12px;opacity:1;text-shadow:0 1px 9px rgba(250,247,240,0.7)}
+.sb-empty{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:var(--ink);font-size:12.5px;line-height:1.5;padding:18px 12px;opacity:1}
+.sb-empty p{color:var(--ink-soft)}
 .sb-empty svg{color:var(--accent);opacity:.7}
 .sb-empty p{margin:0}
 .sb-foot{display:flex;align-items:center;gap:9px;padding:10px 6px 2px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
@@ -385,13 +389,16 @@ a{color:inherit}
 .pray-chip:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);color:var(--ink)}
 .pray-note{font-size:11px;line-height:1.5;color:var(--muted);margin:0 0 4px;border-top:1px solid var(--border);padding-top:12px}
 
-/* ---------- Top liquid-glass page nav ---------- */
+/* ---------- Top liquid-glass page nav (full width — merged with sidebar) ---------- */
 .topnav{
-  position:fixed; top:0; left:264px; right:0; z-index:46; height:60px;
+  position:fixed; top:0; left:0; right:0; z-index:56; height:60px;
   display:flex; align-items:center; gap:14px; padding:0 max(16px,env(safe-area-inset-left)) 0 max(16px,env(safe-area-inset-right));
-  background:rgba(250,247,240,0.55); backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%);
+  background:rgba(250,247,240,0.78);
+  backdrop-filter:blur(26px) saturate(170%); -webkit-backdrop-filter:blur(26px) saturate(170%);
   border-bottom:1px solid var(--border); border-top:1px solid var(--border-light);
-  box-shadow:0 10px 30px -18px rgba(40,30,18,0.35), inset 0 1px 0 rgba(255,255,255,0.65);
+  box-shadow:0 10px 30px -18px rgba(40,30,18,0.4), inset 0 1px 0 rgba(255,255,255,0.7);
+  -webkit-mask-image:linear-gradient(to bottom, #000 82%, rgba(0,0,0,0) 100%);
+  mask-image:linear-gradient(to bottom, #000 82%, rgba(0,0,0,0) 100%);
 }
 .topnav .nav-brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-family:var(--display);font-weight:400;font-size:17px;letter-spacing:-.01em;white-space:nowrap;flex:none}
 .topnav .nav-brand .mark{width:26px;height:29px;color:var(--accent);flex:none}
@@ -1300,12 +1307,8 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   </div>
 </nav>
 
-<!-- SIDEBAR -->
+<!-- SIDEBAR (its top brand now lives in the full-width top bar) -->
 <aside class="sidebar" id="sidebar" aria-label="Conversations">
-  <div class="brand">
-          <img class="mark" src="assets/heart.svg" alt="Sacred Heart" width="54" height="62" />
-          <span class="wordmark">SaintAugustine<em>AI</em></span>
-      </div>
   <button class="sb-new" id="newChat">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     New conversation
