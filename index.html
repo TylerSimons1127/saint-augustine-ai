@@ -1950,7 +1950,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         const ms=d.models||[];
         models.length=0; models.push(...ms);
         renderModelOptions();
-        const rec = ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")
+        const rec = ms.find(m=>m.id==="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free")
                  || ms.find(m=>m.featured)
                  || ms[0];
         if(ms.length) selectModel(rec);
@@ -2373,7 +2373,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     const buf=loading.querySelector(".bubble");
 
     const messages=[...history];
-    let acc="", reasonAcc="", reasonHead="", bufStr="", hasReasoning=false, mirrored=false;
+    let acc="", reasonAcc="", reasonHead="", pendingAnswer="", bufStr="", hasReasoning=false, mirrored=false;
     // prepend attachment note to the newest user message
     if(attachNote && messages.length) messages[messages.length-1]={role:"user", content:attachNote+messages[messages.length-1].content};
 
@@ -2431,17 +2431,28 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           if(data==="{}" || data==="[DONE]") continue;
           try{
             const j=JSON.parse(data);
-            // sentinel: backend marks a reasoning-only model — everything after is the answer, not thinking
-            if(j.reasoning===null){ mirrored=true; acc=reasonHead; reasonHead=""; reasonAcc=""; hasReasoning=false; continue; }
+            if(j.reasoning===null){ mirrored=true; reasonHead=""; continue; }
             if(j.reasoning!=null){ reasonHead+=j.reasoning; reasonAcc+=j.reasoning; hasReasoning=true; render(true); continue; }
-            if(j.text){ acc+=j.text; render(true); }
+            if(j.text){
+              if(mirrored){ reasonAcc+=j.text; hasReasoning=true; render(true); }       // reasoning-only: mirrored text is thinking, not the answer
+              else if(hasReasoning){
+                // some models leak chain-of-thought into the answer field — keep CoT-like text in the Thinking box, real answer -> bubble
+                const t=j.text;
+                const stillThinking = pendingAnswer==="" && /\b(let's|lets|we need to|i should|the user is|the question is|to answer|my plan|i think|i'll|i will|okay|first,|second,|step \d|as augustine|greeting then)\b/i.test(t);
+                if(stillThinking){ reasonAcc+=t; } else { pendingAnswer+=t; }
+              }
+              else { acc+=j.text; render(true); }
+            }
           }catch(_){}
         }
       }
       render(false);
-      // reasoning-only model with no separate content: surface the completed answer (already in acc)
-      if(!acc && reasonAcc){ acc=reasonAcc; render(false); }
+      // release the held answer (for models that stream thinking then a clean answer in one content stream)
+      if(!acc && pendingAnswer){ acc=pendingAnswer; }
+      // reasoning-only model (mirrored): the completed answer is the reasoning — show it once in the bubble, hide the box
+      if(!acc && mirrored && reasonAcc){ acc=reasonAcc; hasReasoning=false; }
       if(!acc) acc="(no response)";
+      render(false);
       history.push({role:"assistant", content:acc});
       recordSession(userMsg, acc);
     }catch(e){
@@ -2574,15 +2585,15 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     send.onclick=()=>{ aborted=true; controller.abort(); };
     const loading=bubble("assistant",'<span class="dots"><i></i><i></i><i></i></span>');
     const buf=loading.querySelector(".bubble");
-    let acc="", reason="", reasonHead="", bufStr="", hasR=false, mirrored=false;
+    let acc="", hasR=false, reason="", reasonHead="", pendingAnswer="", bufStr="", mirrored=false;
     try{
       const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages}),signal:controller.signal});
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
       const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking</summary><div class="rb">'+esc(reason)+'</div></details>'; } if(acc){ inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); } else if(s){ inner+='<span class="who" style="opacity:.5">reflecting…</span>'; } buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
-      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning===null){ mirrored=true; acc=reasonHead; reasonHead=""; reason=""; hasR=false; continue; } if(j.reasoning!=null){reasonHead+=j.reasoning;reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
-      render(false); if(!acc && reason){ acc=reason; render(false); } if(!acc) acc="(no response)";
+      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning===null){ mirrored=true; reasonHead=""; continue; } if(j.reasoning!=null){reasonHead+=j.reasoning;reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){ if(mirrored){ reason+=j.text; hasR=true; render(true); } else if(hasR){ const t=j.text; const stillThinking = pendingAnswer==="" && /\b(let's|lets|we need to|i should|the user is|the question is|to answer|my plan|i think|i'll|i will|okay|first,|second,|step \d|as augustine|greeting then)\b/i.test(t); if(stillThinking){ reason+=t; } else { pendingAnswer+=t; } } else { acc+=j.text; render(true); } } }catch(_){} } }
+      render(false); if(!acc && pendingAnswer){ acc=pendingAnswer; } if(!acc && mirrored && reason){ acc=reason; hasR=false; } if(!acc) acc="(no response)"; render(false);
       history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
     }catch(e){
       const msg=(e&&e.message)||"Something went wrong.";
