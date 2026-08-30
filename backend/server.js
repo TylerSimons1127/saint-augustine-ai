@@ -459,8 +459,11 @@ function isPlanLikely(line) {
   if (s.length < 24) return true;                              // tiny fragment -> plan
   if (/^(\[(system|plan|reasoning)\])|^\(.*\)$/.test(s)) return true;
   if (/\b(here's (a|my)|next,|now,|first(ly)?,|second(ly)?,|third,|finally,|in conclusion|in summary|let me (now )?|so, |okay,)\b/i.test(s)) return true;
-  // A run of short/title-case-only words with a trailing colon-ish structure still
-  // smells like a heading; a real Augustine opening is a full human sentence.
+  // Self-referential planning meta: the model narrating what it will write or how it
+    // will write, rather than addressing the soul before it. These never belong in the
+    // visible reply.
+    if (/\b(i'?ll|i will|i want|i need to|i will now|i should|let me write|let me make|let me keep|i'?m going to|no headers|no bullet|bullet points|flowing prose|not a lecture|substantial meditation|keep it|make sure|i'?ll end|end with|the tldr|write this as|draw on|weave in|describe the |["']?tolle lege["']?\s*(scene|for)?)\b/i.test(s)) return true;
+    // A heading-style fragment (title-case words, no sentence punctuation)
   if (!/[.!?;]/.test(s) && s.length < 70 && /^[A-Z][a-z]+(\s+[a-z]+){1,10}\.?$/.test(s)) return true;
   return false;
 }
