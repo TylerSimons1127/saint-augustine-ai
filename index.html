@@ -981,6 +981,8 @@ textarea#prompt::placeholder{color:var(--muted)}
 }
 .modal-scrim.show .beta-modal{transform:translateY(0) scale(1)}
 .beta-modal .mk{width:64px;height:64px;margin:0 auto 12px;color:var(--accent)}
+.beta-brand{display:block;font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:-.01em;color:var(--ink);text-align:center;margin:0 auto 14px}
+.beta-brand em{font-style:normal;color:var(--accent-deep);font-weight:500}
 .beta-modal h2{font-family:var(--display);font-weight:400;font-size:24px;margin:0 0 4px;color:var(--ink);letter-spacing:-.01em}
 .beta-modal .tag{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#fbf7ee;background:var(--accent-deep);padding:3px 9px;border-radius:999px;margin-bottom:14px}
 .beta-modal p{font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin:0 0 12px;text-align:left}
@@ -1640,8 +1642,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 <!-- BETA CONSENT MODAL (first visit only) -->
 <div class="modal-scrim" id="betaModal" role="dialog" aria-modal="true" aria-labelledby="betaTitle">
   <div class="beta-modal">
-    <img class="mk" src="assets/heart.svg" alt="Sacred Heart" width="38" height="44" />
-    <span class="tag">Beta</span>
+    <span class="beta-brand">Saint<em>AugustineAI</em></span>
     <h2 id="betaTitle">Welcome to Saint Augustine AI</h2>
     <p>Created by <b>Tyler Simons</b>, a student at Seton Hall Prep. This is a <b>beta</b> project still being tested and improved.</p>
     <p>By using it you understand:</p>
