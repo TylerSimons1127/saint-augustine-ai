@@ -612,6 +612,102 @@ function curatedReadings() {
   return { ...r, disclaimer: "From the tradition" };
 }
 
+// ---- saint of the day (Franciscan Media, with offline fallback) ----
+// Franciscan Media bot-blocks bare requests; a realistic browser UA is required.
+const SAINT_UA = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+};
+function cleanHtml(h) {
+  return String(h)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&[a-z]+;/gi, " ")
+    .replace(/&#\d+;/g, " ")
+    .replace(/&#x?[0-9a-f]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+async function getSaint() {
+  try {
+    const list = await fetchWithTimeout("https://www.franciscanmedia.org/saint-of-the-day/", { headers: SAINT_UA }, 9000);
+    if (!list.ok) throw new Error("saint list " + list.status);
+    const html = await list.text();
+
+    // First saint card on the page.
+    const boxRe = /<a\s+class="elementor-post__thumbnail__link"\s+href="(https:\/\/www\.franciscanmedia\.org\/saint-of-the-day\/[^"]+)\/"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"/i;
+    const box = html.match(boxRe);
+    if (!box) throw new Error("no saint card found");
+    const url = box[1].replace(/\/$/, "");
+    const image = box[2];
+
+    // Name + excerpt live in the same card, just after the thumbnail link.
+    const cardPos = html.indexOf(box[1]);
+    const titlePos = html.indexOf("elementor-post__title", cardPos);
+    const nameM = html.slice(titlePos, titlePos + 500).match(/<a[^>]+href="[^"]+"[^>]*>([^<]+)<\/a>/i);
+    const name = nameM ? nameM[1].trim() : "";
+    const excPos = html.indexOf("elementor-post__excerpt", cardPos);
+    const excerptM = excPos > 0 ? html.slice(excPos).match(/<p[^>]*>([\s\S]*?)<\/p>/) : null;
+    const excerpt = excerptM ? cleanHtml(excerptM[1]).slice(0, 320) : "";
+    const datePos = html.indexOf("elementor-post-date", cardPos);
+    const dateM = datePos > 0 ? html.slice(datePos).match(/>\s*([A-Z][a-z]+ \d{1,2})\s*</) : null;
+    const date = dateM ? dateM[1].trim() : "";
+
+    // Pull the fuller biography from the detail page.
+    let bio = "";
+    try {
+      const det = await fetchWithTimeout(url + "/", { headers: SAINT_UA }, 9000);
+      if (det.ok) {
+        const dh = await det.text();
+        const storyH = dh.match(/<h[34][^>]*>([^<]*?)(?:&#8217;|')s Story<\/h[34]>/i);
+        if (storyH) {
+          const start = dh.indexOf(storyH[0]) + storyH[0].length;
+          let end = dh.indexOf("<h4", start);
+          if (end < 0) end = dh.indexOf("<blockquote", start);
+          const seg = dh.slice(start, end > 0 ? end : start + 6000);
+          const ps = [...seg.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)]
+            .map((m) => cleanHtml(m[1]))
+            .filter((t) => t.length > 40);
+          bio = ps.slice(0, 3).join(" ").slice(0, 520);
+        }
+      }
+    } catch (_) {
+      /* detail fetch is best-effort; excerpt still carries the summary */
+    }
+
+    if (!name) throw new Error("parsed empty saint name");
+    return {
+      name,
+      date,
+      excerpt: excerpt || bio.slice(0, 320),
+      bio: bio || excerpt,
+      image,
+      link: url,
+      source: "Franciscan Media",
+    };
+  } catch (e) {
+    // Site unreachable / blocked / changed markup: fall back to a curated,
+    // on-theme saint so the card is never empty. Clearly labeled.
+    return curatedSaint();
+  }
+}
+// Evergreen offline rotation (name + bio + a "connected to Augustine" line).
+const FALLBACK_SAINTS = [
+  { name: "St. Augustine of Hippo", date: "August 28", bio: "Bishop, theologian, and Doctor of the Church (354–430). Author of the Confessions and the City of God, he became the greatest Latin Father of the West — teaching on grace, the Trinity, and the restless heart that finds no rest but in God. Converted in a Milan garden in 386, he is the patron of this very app.", conn: "He is the reason we are here. Like him, we are made for God and restless until we rest in him." },
+  { name: "St. Monica", date: "August 27", bio: "Mother of St. Augustine and a woman of great and persevering prayer. For years she wept and pleaded for the conversion of her son; her tears, Augustine said, watered the Church. She is the patron of mothers and of those who pray for wayward loved ones.", conn: "Augustine called her the faithful one whose prayers wrested him from his wandering and gave the world a bishop." },
+  { name: "St. Thérèse of Lisieux", date: "October 1", bio: "The 'Little Flower' (1873–1897), a Carmelite whose 'little way' of trust and love became a path for millions. She taught that holiness is found not in grand deeds but in ordinary love done completely.", conn: "Thérèse called Augustine her 'brother in the faith'; both wrote of restless hearts and the voyage home to God." },
+  { name: "St. Benedict", date: "July 11", bio: "Father of Western monasticism (c. 480–547), author of the Rule that shaped Christian Europe. He taught that we should prefer nothing whatsoever to the love of Christ, and that we begin each day by rising as if to meet the Lord.", conn: "Augustine's restless heart found its rest in God; Benedict built a school of rest wherein a soul learns to seek God in all things." },
+  { name: "St. Francis of Assisi", date: "October 4", bio: "The poor little man of Assisi (1181–1226) who rebuilt Christ's Church and preached to the birds. He bore the wounds of Christ and called all creation his brother and sister.", conn: "Francis lived the poverty Augustine praised in the Confessions — 'Late have I loved you, Beauty ever ancient, ever new.'" },
+  { name: "St. Mary Magdalene", date: "July 22", bio: "The 'apostle to the apostles,' first to see the risen Christ and sent to tell the others. Forgiven much, she loved much, and her tears at the empty tomb washed the world clean.", conn: "Augustine called her the figure of the Church herself — forgiven much, and so loving much." },
+  { name: "St. Joseph", date: "March 19", bio: "The silent carpenter of Nazareth, guardian of the Holy Family, declared patron of the universal Church. By believing the angel he became the just man who protected the Word made flesh.", conn: "Augustine exalted Joseph as the faithful and chaste husband, a model of obedience for every father." },
+];
+function curatedSaint() {
+  const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const s = FALLBACK_SAINTS[doy % FALLBACK_SAINTS.length];
+  return { name: s.name, date: s.date, excerpt: s.bio.slice(0, 320), bio: s.bio, image: "", link: "https://www.franciscanmedia.org/saint-of-the-day/", conn: s.conn, source: "from the tradition" };
+}
+
 const server = http.createServer(async (req, res) => {
   cors(res);
   if (req.method === "OPTIONS") { res.writeHead(204); res.end(); return; }
@@ -641,6 +737,10 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && url === "/api/readings") {
       try { return sendJson(res, 200, await getReadings()); }
       catch (e) { return sendJson(res, 502, { error: "Could not fetch today's readings." }); }
+    }
+    if (req.method === "GET" && url === "/api/saint") {
+      try { return sendJson(res, 200, await getSaint()); }
+      catch (e) { return sendJson(res, 502, { error: "Could not fetch today's saint." }); }
     }
     if (req.method === "POST" && url === "/api/chat") {
       if (rateLimited(getClientIp(req))) {
@@ -679,5 +779,5 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 
 // Export internals for unit tests only (no effect on normal runtime).
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, sanitize };
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, sanitize };
 }

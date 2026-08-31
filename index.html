@@ -424,7 +424,7 @@ a{color:inherit}
 .stage{padding-top:calc(60px + env(safe-area-inset-top))}
 
 /* ---------- Daily page ---------- */
-.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 170px;display:flex;flex-direction:column;gap:18px}
+.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 240px;display:flex;flex-direction:column;gap:18px}
 .dp-head{text-align:center}
 .dp-head .dp-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
 .dp-head h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,4.5vw,34px);margin:0;color:var(--ink);letter-spacing:-.015em}
@@ -441,6 +441,25 @@ a{color:inherit}
 .dp-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--accent-deep);text-decoration:none}
 .dp-link:hover{text-decoration:underline}
 .dp-error{color:var(--danger);font-size:13.5px;line-height:1.5}
+/* ---- Saint of the Day card (live, portrait + bio + CTA) ---- */
+.saint-card{display:flex;gap:16px;align-items:flex-start;margin-top:2px}
+.saint-portrait{flex:none;width:84px;height:104px;border-radius:12px;background:var(--accent-soft) center/cover no-repeat;
+  border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.saint-portrait.empty{background:linear-gradient(160deg,rgba(163,130,47,.16),rgba(163,130,47,.05))}
+.saint-text{flex:1;min-width:0}
+.saint-date{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
+.saint-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px}
+.dp-cta{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(163,130,47,.35);background:var(--accent-deep);color:#fbf7ee;
+  font-family:var(--body);font-size:13px;font-weight:600;padding:10px 15px;border-radius:12px;cursor:pointer;transition:all .16s ease}
+.dp-cta svg{width:15px;height:15px}
+.dp-cta:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(138,108,37,.34)}
+.dp-cta:active{transform:translateY(0)}
+.dp-cta:disabled{opacity:.6;cursor:default;transform:none;box-shadow:none}
+@media (max-width:640px){.saint-card{gap:12px}.saint-portrait{width:64px;height:80px}}
+.saint-skel{background:linear-gradient(90deg,rgba(163,130,47,.10) 25%,rgba(163,130,47,.20) 37%,rgba(163,130,47,.10) 63%);background-size:400% 100%;animation:skel 1.2s ease infinite;border-radius:6px}
+@keyframes skel{0%{background-position:100% 0}100%{background-position:-100% 0}}
+/* thread spacing: give messages real vertical rhythm (fixes flush stacking on Today/Pray/Study) */
+.thread-inner{display:flex;flex-direction:column;gap:16px}
 .dp-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media (max-width:640px){.dp-cols{grid-template-columns:1fr}}
 .dp-act{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--border);background:var(--glass);border-radius:14px;
@@ -474,7 +493,7 @@ a{color:inherit}
 .daily-cta:active{transform:translateY(0)}
 
 /* ---------- Prayer page ---------- */
-.pray-page{width:min(680px,100%);margin:0 auto;padding:22px 16px 220px;display:flex;flex-direction:column;gap:18px}
+.pray-page{width:min(680px,100%);margin:0 auto;padding:22px 16px 240px;display:flex;flex-direction:column;gap:18px}
 .pp-intent{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .pp-intent label{font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .pp-intent input{width:100%;border:1px solid var(--border);background:var(--glass);color:var(--ink);font-family:var(--body);
@@ -1482,8 +1501,21 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
         <section class="dp-card" id="saintCard" aria-label="Saint or Event of the Day">
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/></svg>Saint <span id="saintName">of the Day</span></h3>
-          <p class="dp-reading" id="saintBio"></p>
-          <p class="dp-reading" id="saintConnWrap"><span class="rl">Connected to St. Augustine</span><span id="saintConn"></span></p>
+          <div class="saint-card" id="saintBody" aria-live="polite">
+            <div class="saint-portrait" id="saintPortrait" aria-hidden="true"></div>
+            <div class="saint-text">
+              <p class="saint-date" id="saintDate"></p>
+              <p class="dp-reading" id="saintBio">Opening the saint of the day…</p>
+              <p class="dp-reading" id="saintConnWrap" hidden><span class="rl">Connected to St. Augustine</span><span id="saintConn"></span></p>
+            </div>
+          </div>
+          <div class="saint-actions">
+            <button class="dp-cta" id="saintAsk">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span id="saintAskLabel">Ask Augustine about the saint</span>
+            </button>
+            <a class="dp-link" id="saintLink" href="https://www.franciscanmedia.org/saint-of-the-day/" target="_blank" rel="noopener noreferrer">Read more on Franciscan Media ↗</a>
+          </div>
         </section>
 
         <section class="dp-card" aria-label="Explore the daily readings with St. Augustine">
@@ -3153,62 +3185,55 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           });
         }
 
-        /* ---- Saint / Event of the Day (date-correct, offline, connected to Augustine) ---- */
-        const SAINTS = [
-          {m:1,d:1, n:"Mary, Mother of God", bio:"Theotokos — the God-bearer. On this octave of Christmas the Church honors Mary under her highest title.", conn:"Augustine called Mary 'the bearer of the Maker' and saw her fiat as the moment the Word became flesh: 'She believed and it was fulfilled in her according to her faith.' He held her up as the model of virginal motherhood and total obedience to God."},
-          {m:1,d:7, n:"St. Raymond of Peñafort", bio:"A Dominican lawyer-priest (c. 1175–1275) who compiled the Church's first book of canon law and spent his life reconciling sinners.", conn:"Augustine's own transformation from restless wanderer to bishop made him the patron of those who seek order after chaos; Raymond's legal clarity echoes Augustine's conviction that true freedom is found within right law."},
-          {m:1,d:21, n:"St. Agnes", bio:"A Roman girl martyred at about thirteen for refusing to renounce Christ. One of the most honored early virgin-martyrs.", conn:"Augustine preached her feast and marveled that 'a tender girl conquered the tormentors' — pointing to her as proof that God's strength is made perfect in the weakest of his saints."},
-          {m:1,d:25, n:"The Conversion of St. Paul", bio:"The dramatic turning of Saul the persecutor to Paul the apostle on the road to Damascus — the Church's great feast of conversion.", conn:"Augustine's own conversion in the Milan garden (386) is the most famous echo of Paul's: both men were arrested by grace while resisting it, and both spent the rest of their lives proclaiming 'it is no longer I who live.'"},
-          {m:2,d:2, n:"The Presentation of the Lord", bio:"Forty days after Christmas, Mary and Joseph bring the infant Jesus to the Temple, where Simeon calls him 'a light for revelation to the Gentiles.'", conn:"Augustine saw in Simeon the fulfillment of the longing he described in the Confessions — the soul that finally holds the Word it was made for, and can depart in peace."},
-          {m:2,d:14, n:"Sts. Cyril and Methodius", bio:"Brothers (9th c.) who brought the Gospel to the Slavs and gave them a written language. Co-patrons of Europe.", conn:"Augustine, the great teacher of the Gentiles' Scriptures in Latin, would have honored these brothers who did the same in Slavonic — both convinced the faith must come to a people in their own tongue."},
-          {m:2,d:22, n:"The Chair of St. Peter", bio:"The feast of the apostolic see founded on Peter, the rock on whom Christ built his Church.", conn:"Augustine, in his dispute with the Donatists, appealed to 'the Chair of Peter, in which Cyprian found unity' — he taught that communion with Peter's see is the mark of the true Church."},
-          {m:3,d:19, n:"St. Joseph, Husband of Mary", bio:"The silent carpenter of Nazareth, guardian of the Holy Family, declared patron of the universal Church.", conn:"Augustine exalted Joseph as the 'faithful and chaste husband' who, by believing the angel, became the just man who protected the Word made flesh — a model of obedience for every father."},
-          {m:3,d:25, n:"The Annunciation of the Lord", bio:"The angel Gabriel announces to Mary that she will conceive the Son of God; she answers 'let it be done to me.'", conn:"Augustine drew the contrast with Eve: where Eve's assent brought death, Mary's assent brought life — 'Death through Eve, life through Mary.' He called her the 'gate of heaven.'"},
-          {m:4,d:23, n:"St. George", bio:"A Roman soldier-martyr (d. c. 303) who became the patron of England and a thousand legends of Christian courage.", conn:"Augustine, who wrote of the 'militia of Christ,' would recognize in George the soldier who lays down his life not for an earthly emperor but for the King of heaven."},
-          {m:5,d:1, n:"St. Philip and St. James", bio:"Two of the Twelve, apostles who carried the risen Christ to the ends of the earth.", conn:"Augustine's whole missionary heart — 'Restart the race, run to him who calls' — beats in these apostles who left all to follow the One Philip called 'the one Moses wrote about.'"},
-          {m:5,d:31, n:"The Visitation", bio:"Mary, now bearing Christ, hastens to her cousin Elizabeth; the unborn John leaps in the womb.", conn:"Augustine saw in the leaping John a sign that even before birth the soul can know its Lord — a cornerstone of his teaching on the dignity of life."},
-          {m:6,d:24, n:"The Nativity of St. John the Baptist", bio:"The only birthday of a saint kept as a feast — born to Zechariah and Elizabeth, he prepared the way of the Lord.", conn:"Augustine preached John as the 'voice' to Christ the 'Word': 'I am not he; make straight his path.' He used John to teach that the servant must decrease so the Master may increase."},
-          {m:6,d:29, n:"Sts. Peter and Paul", bio:"The two pillars of the early Church — Peter the rock, Paul the apostle to the Gentiles — both martyred in Rome.", conn:"Augustine's favorite image: Peter and Paul, though different in temperament, are 'two rivers from one fountain,' and he urges the faithful to love both as one heart of the Church."},
-          {m:7,d:22, n:"St. Mary Magdalene", bio:"The 'apostle to the apostles,' first to see the risen Christ and sent to tell the others.", conn:"Augustine called her the figure of the Church herself — forgiven much, and so loving much; he preached that her tears at the empty tomb washed the world clean."},
-          {m:7,d:25, n:"St. James the Greater", bio:"Son of Zebedee, brother of John, the first of the Twelve to be martyred (Acts 12).", conn:"Augustine noted James was granted the cup of suffering first; he taught that to sit at Christ's right hand means first to drink the chalice of witnessing unto death."},
-          {m:8,d:15, n:"The Assumption of Mary", bio:"The dogma that at the end of her earthly life Mary was taken body and soul into heavenly glory.", conn:"Augustine, who called Mary 'the most blessed of women,' laid the foundation for this feast by teaching that the woman who bore the Sinless One was herself preserved and exalted above all creatures."},
-          {m:8,d:20, n:"St. Bernard of Clairvaux", bio:"The 'honey-tongued doctor' (1090–1153) whose Marian sermons and reform of monastic life shaped the Church.", conn:"Bernard is unthinkable without Augustine: he drank deeply from the Confessions and City of God, and carried Augustine's mysticism of desire into the high Middle Ages."},
-          {m:8,d:28, n:"St. Augustine of Hippo", bio:"Bishop, theologian, and Doctor of the Church (354–430). Author of the Confessions and City of God. Patron of this very app.", conn:"He is the reason we are here. Converted in a Milan garden in 386, he became the greatest Latin Father of the West — teaching on grace, the Trinity, and the restless heart that finds no rest but in God."},
-          {m:9,d:8, n:"The Birth of the Blessed Virgin Mary", bio:"The nativity of Mary, the dawn that precedes the Sun of righteousness.", conn:"Augustine honored Mary above all creatures as the one who, by her obedience, became the mother of the Head and the image of the whole Church 'both virgin and mother.'"},
-          {m:9,d:14, n:"The Exaltation of the Holy Cross", bio:"The feast of the Cross lifted high — the instrument of death become the tree of life.", conn:"Augustine preached that 'the Cross is a throne': where the devil conquered by a tree, God conquered by a tree. He called the Cross the school of humility for every Christian."},
-          {m:9,d:29, n:"Sts. Michael, Gabriel, and Raphael", bio:"The three archangels named in Scripture — Michael the defender, Gabriel the messenger, Raphael the healer.", conn:"Augustine wrote at length on the angels as 'messengers of God' who contemplate him eternally; he taught that each soul is guarded by an angel, and that the heavenly city is thronged with their praise."},
-          {m:10,d:1, n:"St. Thérèse of Lisieux", bio:"The 'Little Flower' (1873–1897), a Carmelite whose 'little way' of trust and love became a path for millions.", conn:"Thérèse called Augustine her 'brother in the faith'; both wrote of restless hearts and the voyage home to God, and both found sainthood not in grand deeds but in ordinary love done completely."},
-          {m:10,d:4, n:"St. Francis of Assisi", bio:"The poor little man of Assisi (1181–1226) who rebuilt Christ's Church and preached to the birds.", conn:"Francis lived the very poverty Augustine praised in the Confessions — 'Late have I loved you, Beauty ever ancient, ever new' — stripping away all to cling to Christ alone."},
-          {m:10,d:18, n:"St. Luke the Evangelist", bio:"Physician and companion of Paul, author of the third Gospel and the Acts of the Apostles.", conn:"Augustine, in his Harmony of the Gospels, relied on Luke's careful order to show that the four evangelists never contradict but complete one another — the foundation of all later Gospel study."},
-          {m:11,d:1, n:"All Saints", bio:"The feast of the countless unnamed holy ones — known to God, unknown to us — who now rejoice in heaven.", conn:"Augustine's City of God is the great theology of this feast: the pilgrim Church on earth and the triumphant Church above are one city, journeying toward the vision of God."},
-          {m:11,d:2, n:"All Souls", bio:"The day the Church prays for the faithful departed, especially those still being purified.", conn:"Augustine's teaching on purgatory — a merciful fire that prepares the soul for God — shaped the Church's care for the dead and her confidence in praying them home."},
-          {m:11,d:30, n:"St. Andrew the Apostle", bio:"The first-called of the Twelve, brother of Peter, who brought his brother to Christ and died on an X-shaped cross.", conn:"Augustine marveled that Andrew, on recognizing the Messiah, 'did not keep him to himself' but ran to Peter — the pattern of all true evangelization."},
-          {m:12,d:3, n:"St. Francis Xavier", bio:"The 'Apostle of the Indies' (1506–1552), missionary to the East and co-founder of the Jesuits.", conn:"Xavier's burning zeal to carry Christ across the world is the missionary fire Augustine described when he wrote, 'Our hearts are restless until they rest in you' — and then could not keep quiet about it."},
-          {m:12,d:8, n:"The Immaculate Conception", bio:"The dogma that Mary was preserved from original sin from the first moment of her conception.", conn:"Augustine, the great doctor of grace, laid the groundwork by asking who could be sinless — and answering, only she whom God had singled out to bear the Sinless One. 'O happy fault,' he wrote, that won us such a Redeemer."},
-          {m:12,d:25, n:"The Nativity of the Lord", bio:"Christmas — the Word made flesh and dwelling among us.", conn:"Augustine's Christmas sermons are among his most radiant: 'He became small so that you might become great; he emptied himself so that you might be filled.' He taught that the crib is the school of humility."},
-          {m:12,d:26, n:"St. Stephen, First Martyr", bio:"The deacon stoned outside Jerusalem for witnessing to the risen Christ — the first to shed blood for the faith.", conn:"Augustine preached Stephen as the perfect imitator of Christ, praying even for his killers; he used Stephen to teach that martyrdom is simply love 'even to the enemy.'"},
-        ];
-        function renderSaint(){
-          const now=new Date(); const mo=now.getMonth()+1, da=now.getDate();
-          const todayDOY = Math.floor((now - new Date(now.getFullYear(),0,0))/86400000);
-          // exact match first
-          let saint = SAINTS.find(s=>s.m===mo && s.d===da);
-          // otherwise the nearest feast (by day-of-year, wrapping the year)
-          if(!saint){
-            let best=1e9;
-            SAINTS.forEach(s=>{
-              const d=new Date(now.getFullYear(), s.m-1, s.d);
-              let doy=Math.floor((d - new Date(now.getFullYear(),0,0))/86400000);
-              let dist=Math.abs(doy-todayDOY); dist=Math.min(dist, 365-dist);
-              if(dist<best){ best=dist; saint=s; }
-            });
+        /* ---- Saint / Event of the Day (LIVE from Franciscan Media via /api/saint) ---- */
+        // Offline "connected to Augustine" lines, keyed by saint name — used only as a
+        // graceful fallback when the live fetch is unavailable, so the card is never empty.
+        const SAINT_CONN = {
+          "St. Augustine of Hippo": "He is the reason we are here. Converted in a Milan garden in 386, he became the greatest Latin Father of the West — teaching on grace, the Trinity, and the restless heart that finds no rest but in God.",
+          "St. Monica": "Augustine called her the faithful one whose prayers wrested him from his wandering and gave the world a bishop.",
+          "St. Thérèse of Lisieux": "Thérèse called Augustine her 'brother in the faith'; both wrote of restless hearts and the voyage home to God.",
+          "St. Mary Magdalene": "Augustine called her the figure of the Church herself — forgiven much, and so loving much.",
+          "St. Joseph": "Augustine exalted Joseph as the faithful and chaste husband, a model of obedience for every father.",
+          "St. Francis of Assisi": "Francis lived the poverty Augustine praised in the Confessions — 'Late have I loved you, Beauty ever ancient, ever new.'",
+        };
+        const saintName=$('#saintName'), saintBio=$('#saintBio'), saintDate=$('#saintDate'),
+              saintConn=$('#saintConn'), saintConnWrap=$('#saintConnWrap'),
+              saintPortrait=$('#saintPortrait'), saintLink=$('#saintLink'),
+              saintAsk=$('#saintAsk'), saintAskLabel=$('#saintAskLabel'),
+              saintCard=$('#saintCard');
+        function applySaint(d){
+          if(!d || !d.name) return;
+          if(saintName) saintName.textContent=d.name.replace(/^Saint\s+/i,"") || d.name;
+          if(saintDate) saintDate.textContent=d.date || "";
+          if(saintBio)  saintBio.textContent=d.bio || d.excerpt || "A holy man or woman the Church remembers today, whose life points to Christ.";
+          // "Connected to St. Augustine" — use the curated line if we have one, else a general tie.
+          const conn = SAINT_CONN[d.name] || SAINT_CONN[d.name.replace(/^Saint\s+/i,"St. ")] ||
+            "Like Augustine, they sought God with all their heart — and found him.";
+          if(saintConn){ saintConn.textContent=conn; if(saintConnWrap) saintConnWrap.hidden=false; }
+          // Portrait
+          if(saintPortrait){
+            if(d.image){ saintPortrait.style.backgroundImage=`url("${d.image}")`; saintPortrait.classList.remove("empty"); saintPortrait.setAttribute("aria-hidden","true"); }
+            else { saintPortrait.style.backgroundImage=""; saintPortrait.classList.add("empty"); }
           }
-          const nm=$('#saintName'), bio=$('#saintBio'), conn=$('#saintConn');
-          if(!nm) return;
-          if(saint){ nm.textContent=saint.n; if(bio) bio.textContent=saint.bio; if(conn) conn.textContent=saint.conn; }
-          else { nm.textContent="of the Day"; if(bio) bio.textContent="A holy man or woman the Church remembers today, whose life points to Christ."; if(conn) conn.textContent="Like Augustine, they sought God with all their heart — and found him."; }
+          // Link + CTA
+          if(saintLink && d.link) saintLink.href=d.link;
+          if(saintAskLabel) saintAskLabel.textContent=`Ask Augustine about ${d.name.replace(/^Saint\s+/i,"")}`;
+          if(saintAsk) saintAsk.disabled=false;
+          if(saintCard) saintCard.dataset.loaded="1";
         }
-        renderSaint();
+        function loadSaint(){
+          if(!saintCard || saintCard.dataset.loaded) return;
+          if(saintBio) saintBio.innerHTML='<span class="saint-skel" style="display:block;height:12px;width:92%;margin:0 0 9px"></span><span class="saint-skel" style="display:block;height:12px;width:78%;margin:0 0 9px"></span><span class="saint-skel" style="display:block;height:12px;width:84%"></span>';
+          fetch(API+"/api/saint",{headers:{"Accept":"application/json"}}).then(r=>{
+            if(!r.ok) throw new Error("saint "+r.status);
+            return r.json();
+          }).then(applySaint).catch(()=>{
+            // Total failure: show a quiet, on-theme default rather than a broken card.
+            if(saintBio) saintBio.textContent="The saint of the day is waiting on Franciscan Media. Open the link below to meet them.";
+            if(saintConnWrap) saintConnWrap.hidden=true;
+            if(saintAsk) saintAsk.disabled=false;
+          });
+        }
 
         /* ---- Selected Topic (quote → excerpt → vocabulary → Augustine's writing) ---- */
         const TOPICS = [
@@ -3292,6 +3317,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         if(dpActPray) dpActPray.addEventListener("click",()=>{
           pageChat("As St. Augustine, turn today's readings into a prayer I can pray with you now, in my own words. Around 150 words, intimate and unhurried.", "today");
         });
+        // "Ask Augustine about the saint of the day" — uses the currently loaded saint.
+        if(saintAsk) saintAsk.addEventListener("click",()=>{
+          const who = (saintName && saintName.textContent) ? saintName.textContent : "the saint of the day";
+          pageChat("As St. Augustine, tell me about "+who+". Who were they, why does the Church remember them, and what can their life teach my own? Speak as yourself, with warmth and a story or two.", "today", null,
+            {lastanswer:"Give ONE single answer of about 180 words — a few sentences of introduction, then the heart of why the Church remembers them, then one lesson for my own life. Do not break it into labeled sections."});
+        });
 
         /* ---- Prayer page: lead / teach + tradition ---- */
         const ppLead=$('#ppLead'), ppTeach=$('#ppTeach'), prayIntent2=$('#prayIntent2');
@@ -3315,12 +3346,13 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           if(el) el.addEventListener("click",()=>pageChat(tradMap[id],"prayer"));
         });
 
-        /* ---- load readings the first time the Today page is opened ---- */
+        /* ---- load readings + saint the first time the Today page is opened ---- */
         if(PAGE_ELS.today && PAGE_ELS.today.wrap){
           const _dailyWrap=PAGE_ELS.today.wrap;
           new IntersectionObserver((entries)=>{
-            entries.forEach(en=>{ if(en.isIntersecting && !dpReadings.dataset.loaded){
-              loadDailyReadings();
+            entries.forEach(en=>{ if(en.isIntersecting){
+              if(!dpReadings.dataset.loaded) loadDailyReadings();
+              if(saintCard && !saintCard.dataset.loaded) loadSaint();
             }});
           },{root:stage, threshold:0}).observe(_dailyWrap);
         }
