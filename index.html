@@ -1575,6 +1575,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             <button class="pray-chip" id="tradLectio">Lectio Divina</button>
             <button class="pray-chip" id="tradExamen">The Examen</button>
             <button class="pray-chip" id="tradRest">Prayer before rest</button>
+            <button class="pray-chip" id="tradSpirit">Holy Spirit Prayer</button>
           </div>
         </section>
 
@@ -3340,9 +3341,10 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           tradMorning:"Lead me in a Morning Offering prayer as St. Augustine — offering this day, its work, its struggles, and its joys to God, so I can begin the day held by Him.",
           tradLectio:"As St. Augustine, walk me through Lectio Divina right now — read, meditate, pray, contemplate — with a short passage and how to hold it in my heart.",
           tradExamen:"As St. Augustine, guide me through the Examen — quietly reviewing my day with gratitude, noticing where God was present, and asking grace for tomorrow.",
-          tradRest:"As St. Augustine, lead me in a prayer before rest — helping me surrender this day to God and hand over every worry so I can sleep in peace."
+          tradRest:"As St. Augustine, lead me in a prayer before rest — helping me surrender this day to God and hand over every worry so I can sleep in peace.",
+          tradSpirit:"As St. Augustine, pray with me the Prayer to the Holy Spirit — 'Breathe in me, O Holy Spirit, that my thoughts may all be holy; act in me, O Holy Spirit, that my works, too, may be holy; draw my heart, O Holy Spirit, that I may love but what is holy; strengthen me, O Holy Spirit, to defend all that is holy; guard me, O Holy Spirit, that I may always be holy. Amen.' Let its words sink into my heart."
         };
-        ["tradMorning","tradLectio","tradExamen","tradRest"].forEach(id=>{
+        ["tradMorning","tradLectio","tradExamen","tradRest","tradSpirit"].forEach(id=>{
           const el=$( "#"+id);
           if(el) el.addEventListener("click",()=>pageChat(tradMap[id],"prayer"));
         });
