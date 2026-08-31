@@ -294,7 +294,7 @@ a{color:inherit}
 .stage::-webkit-scrollbar-thumb{background:rgba(30,26,20,0.14);border-radius:99px;border:3px solid transparent;background-clip:content-box}
 
 /* ---------- Empty / greeting ---------- */
-.greet{width:min(680px,100%);text-align:center;margin:auto 0;position:relative}
+.greet{width:min(680px,100%);text-align:center;margin:0 auto;position:relative}
 .greet-brand{
   display:block;font-family:var(--display);font-weight:400;font-size:30px;line-height:1;
   letter-spacing:-.02em;color:var(--ink);margin:0 auto 18px;
@@ -397,6 +397,9 @@ a{color:inherit}
 /* page views */
 .page{display:none}
 .page.on{display:flex;flex-direction:column;align-items:center;flex:1;width:100%;min-height:100%}
+/* empty/greeting state: center the greeting, hide the (empty) thread so its 200px padding doesn't push content up */
+#page-chat:has(#greet:not([hidden])){justify-content:center}
+#page-chat:has(#greet:not([hidden])) #thread{display:none}
 .stage{padding-top:calc(60px + env(safe-area-inset-top))}
 
 /* ---------- Daily page ---------- */
