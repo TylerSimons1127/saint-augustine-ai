@@ -469,7 +469,20 @@ a{color:inherit}
 .topic-vocab{display:block;margin:0 0 12px}
 .topic-vocab .rl{display:inline-block;margin-right:8px}
 .topic-vocab span:last-child{font-size:13.5px;color:var(--ink);font-style:italic}
+.lesson-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
 .topic-summary{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 14px;white-space:pre-wrap}
+.lesson-flow{margin:4px 0 2px;padding:0 0 0 4px}
+.ls{position:relative;display:flex;gap:14px;padding:14px 0}
+.ls:not(:last-child)::before{content:"";position:absolute;left:14px;top:30px;bottom:0;width:2px;background:linear-gradient(var(--border-light),rgba(163,130,47,.32) 60%,transparent)}
+.ls-n{flex:none;width:30px;height:30px;border-radius:999px;display:grid;place-items:center;
+  background:var(--accent-deep);color:#fbf7ee;font-size:13px;font-weight:700;
+  box-shadow:0 3px 10px rgba(138,108,37,.28);z-index:1}
+.ls-b{flex:1;min-width:0;padding-bottom:2px}
+.ls-l{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold-ink);margin:0 0 5px}
+.ls .topic-quote,.ls .topic-excerpt,.ls .topic-summary{margin:0}
+.ls .topic-vocab{margin:0}
+.ls .topic-vocab .rl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-style:normal}
 .daily-cta{display:inline-flex;align-items:center;gap:7px;margin-top:4px;border:1px solid rgba(163,130,47,.35);background:var(--accent-deep);color:#fbf7ee;
   font-size:12.5px;font-weight:600;font-family:var(--body);padding:8px 14px;border-radius:999px;cursor:pointer;box-shadow:0 6px 16px rgba(138,108,37,.28);transition:all .15s ease}
 .daily-cta:hover{transform:translateY(-1px);box-shadow:0 9px 22px rgba(138,108,37,.38)}
@@ -1425,32 +1438,46 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           <p>Let St. Augustine teach you by word and by topic — a quote to carry, and a theme drawn from his own writings.</p>
         </div>
 
-        <section class="dp-card" aria-label="Quote of the Day">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 6-2 6-6V9c0-3-2-5-5-5H3v6h3c0 2-1 3-3 3Zm12 0c3 0 6-2 6-6V9c0-3-2-5-5-5h-1v6h3c0 2-1 3-3 3Z"/></svg>Quote of the Day</h3>
-          <div class="daily-top">
-            <span class="daily-tag" id="dailyTag2">Word for today</span>
-            <button class="daily-shuf" id="dailyShuf2" title="Surprise me" aria-label="Surprise me with a new devotion">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Surprise me
+        <section class="dp-card lesson" aria-label="Lesson of the Day">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/></svg>Lesson of the Day</h3>
+          <div class="lesson-head">
+            <span class="daily-tag" id="lessonTag">A connected study</span>
+            <button class="daily-shuf" id="lessonShuf" title="Another lesson" aria-label="Pick another lesson">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Another lesson
             </button>
           </div>
-          <p class="daily-text" id="dailyText2"></p>
-          <p class="daily-src" id="dailySrc2"></p>
-        </section>
-
-        <section class="dp-card" aria-label="Selected Topic">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/></svg>Selected Topic</h3>
-          <div class="topic-top">
-            <span class="topic-tag" id="topicLabel">Topic of the day</span>
-            <button class="daily-shuf" id="topicShuf" title="New topic" aria-label="Pick another topic">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Another topic
-            </button>
+          <h4 class="topic-name" id="lessonName"></h4>
+          <div class="lesson-flow" id="lessonFlow">
+            <div class="ls">
+              <span class="ls-n">&#9312;</span>
+              <div class="ls-b">
+                <span class="ls-l">Quote</span>
+                <p class="topic-quote" id="lessonQuote"></p>
+              </div>
+            </div>
+            <div class="ls">
+              <span class="ls-n">&#9313;</span>
+              <div class="ls-b">
+                <span class="ls-l">From his writings</span>
+                <p class="topic-excerpt" id="lessonExcerpt"></p>
+              </div>
+            </div>
+            <div class="ls">
+              <span class="ls-n">&#9314;</span>
+              <div class="ls-b">
+                <span class="ls-l">Vocabulary</span>
+                <div class="topic-vocab"><span class="rl">Word</span><span id="lessonVocab"></span></div>
+              </div>
+            </div>
+            <div class="ls">
+              <span class="ls-n">&#9315;</span>
+              <div class="ls-b">
+                <span class="ls-l" id="lessonWritingLabel">Summary of a writing</span>
+                <p class="topic-summary" id="lessonSummary"></p>
+              </div>
+            </div>
           </div>
-          <h4 class="topic-name" id="topicName"></h4>
-          <p class="topic-quote" id="topicQuote"></p>
-          <p class="topic-excerpt" id="topicExcerpt"></p>
-          <div class="topic-vocab"><span class="rl">Vocabulary</span><span id="topicVocab"></span></div>
-          <p class="topic-summary" id="topicSummary"></p>
-          <button class="daily-cta" id="topicAsk">Ask Augustine about this →</button>
+          <button class="daily-cta" id="lessonAsk">Ask Augustine about this &rarr;</button>
         </section>
 
         <section class="dp-thread">
@@ -3122,46 +3149,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       else { requestAnimationFrame(()=>requestAnimationFrame(startTut)); }
     }
 
-    /* ---- Daily Devotional (quote / article of faith / consolation / fun fact) ---- */
-    const DEVOTE = [
-      {t:"Quote of the Day", s:"— St. Augustine, Confessions, I.1", x:"\u201cThou hast made us for Thyself, O Lord, and our heart is restless, until it rests in Thee.\u201d"},
-      {t:"Quote of the Day", s:"— St. Augustine, Sermon 169", x:"\u201cFaith is to believe what you do not see; the reward of this faith is to see what you believe.\u201d"},
-      {t:"Quote of the Day", s:"— St. Augustine", x:"\u201cThe measure of love is to love without measure.\u201d"},
-      {t:"Word of Consolation", s:"— St. Augustine", x:"\u201cGod is more anxious to bestow His benefits on us than we are to receive them. Everything good, every grace, comes to you from Him.\u201d"},
-      {t:"Word of Consolation", s:"— St. Augustine", x:"\u201cBeauty is so ancient and so new: late have I loved You. And see, You were within, and I was without.\u201d"},
-      {t:"Word of Consolation", s:"— St. Augustine", x:"\u201cHe loves each of us as if there were only one of us.\u201d"},
-      {t:"Article of Faith", s:"On God's presence", x:"\u201cWherever you turn, God is near. He is not far from any one of us, for in Him we live and move and have our being.\u201d"},
-      {t:"Article of Faith", s:"On grace", x:"\u201cGrace is not earned; it is given. What we are, we are by God's mercy \u2014 and He who began the good work in you will bring it to completion.\u201d"},
-      {t:"Article of Faith", s:"On the heart", x:"\u201cOur hearts are made for God. Nothing in this world, in our intellect, or even in our friendships is meant to be the final resting place of the soul.\u201d"},
-      {t:"Fun Fact", s:"About St. Augustine", x:"Augustine was converted reading a passage of St. Paul (Romans 13:13) in a garden in Milan in 386, after years of searching — and then wrote down his whole journey in The Confessions."},
-      {t:"Fun Fact", s:"About St. Augustine", x:"His mother, St. Monica, prayed and wept for his conversion for decades before he was baptized by St. Ambrose at Easter 387."},
-      {t:"Fun Fact", s:"About St. Augustine", x:"He was an accomplished rhetorician — a professor of public speaking — before he ever became a bishop, which is why his writings persuade so well."},
-    ];
-    const dailyTag2=$('#dailyTag2'), dailyText2=$('#dailyText2'), dailySrc2=$('#dailySrc2'), dailyShuf2=$('#dailyShuf2');
-        let dailyIdx = -1;
-        function dailyForDate(){
-          const now=new Date();
-          const start=new Date(now.getFullYear(),0,0);
-          const d=Math.floor((now-start)/86400000);
-          return d % DEVOTE.length;
-        }
-        function renderDaily(i){
-          const e=DEVOTE[i % DEVOTE.length];
-          if(dailyTag2) dailyTag2.textContent=e.t;
-          if(dailyText2) dailyText2.textContent=e.x;
-          if(dailySrc2) dailySrc2.textContent=e.s;
-          dailyIdx=i;
-        }
-        renderDaily(dailyForDate());
-        if(dailyShuf2){
-          dailyShuf2.addEventListener("click",()=>{
-            let i=Math.floor(Math.random()*DEVOTE.length);
-            if(i===dailyIdx) i=(i+1)%DEVOTE.length;
-            renderDaily(i);
-          });
-        }
-
-        /* ---- Saint / Event of the Day (LIVE from Franciscan Media via /api/saint) ---- */
+    /* ---- Saint / Event of the Day (LIVE from Franciscan Media via /api/saint) ---- */
         // Offline "connected to Augustine" lines, keyed by saint name — used only as a
         // graceful fallback when the live fetch is unavailable, so the card is never empty.
         const SAINT_CONN = {
@@ -3211,42 +3199,44 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
           });
         }
 
-        /* ---- Selected Topic (quote → excerpt → vocabulary → Augustine's writing) ---- */
-        const TOPICS = [
-          {name:"Angels", quote:"'Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?' (Heb 1:14)", excerpt:"Augustine taught that the angels are pure spirits who contemplate God face to face and, out of that contemplation, are sent to minister to us. They are not competing with God but burning with the love of him; the higher they stand before the throne, the more freely they descend to help the least of his children.", vocab:"Contemplation — the gaze of the mind and heart resting upon God, from which all true action flows.", summary:"In his work On the Trinity and City of God, Augustine describes the angels as the citizens of the heavenly city who never fell, forever praising God and rejoicing in our redemption. He insists they are creatures, not to be worshiped, yet are our constant guardians — each believer, he says, has an angel who 'stands daily in the sight of the Father.'"},
-          {name:"Original Sin", quote:"'For you are forgiven all your sins, and you are washed clean in the blood of the Lamb — yet even the infant is born with the contagion of old sin.'", excerpt:"Augustine came to teach that through Adam's first disobedience, sin and death entered the human race, so that every person is born not guilty of Adam's act but bearing its wound — a weakened will that finds it easier to choose wrongly than rightly. Baptism, he insisted, is the remedy given even to infants.", vocab:"Concupiscence — the disordered leaning of desire toward creatures and away from God, the lingering effect of original sin.", summary:"In his Confessions and On Nature and Grace, Augustine defended original sin against Pelagius, who claimed man could avoid sin by his own power. Augustine answered that without grace 'we can do nothing,' and that the very need for a Savior proves our nature is wounded. His teaching became the backbone of Western theology of grace."},
-          {name:"The Blessed Virgin Mary", quote:"'Death through Eve, life through Mary' — for as the one by believing the serpent brought death, so the other by believing the angel brought life.", excerpt:"Augustine honored Mary above all women as the one who, by her fiat, became the mother of God and the image of the whole Church — both virgin and mother. He saw her obedience as undoing Eve's disobedience, and her humility as the path every soul must walk.", vocab:"Theotokos — Greek for 'God-bearer,' the title defined at Ephesus (431) for Mary as true Mother of God.", summary:"Though the later dogmas of the Immaculate Conception and Assumption were defined after his death, Augustine laid their foundation by asking who could be sinless and answering: only she whom God had singled out to bear the Sinless One. His sermons on the Annunciation remain among the Church's richest Marian texts."},
-          {name:"The Restless Heart", quote:"'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' (Confessions, I.1)", excerpt:"Augustine opens the Confessions with this line, the key to his whole life. Every desire — for wealth, for praise, for love — is a distorted hunger for God. The heart will not be still until it finds the One for whom it was shaped.", vocab:"Restlessness — the uneasy searching of a soul made for God but settled in lesser things; healed only by return to him.", summary:"The Confessions (c. 400) is Augustine's autobiography of the soul's long wandering and sudden capture by grace. More than a memoir, it is a prayer and a philosophy of desire: the will is free, yet only when ordered toward God does it become free indeed. It is the most-read book of Christian antiquity after the Bible."},
-          {name:"The Two Cities", quote:"'Two cities have been formed by two loves: the earthly by the love of self to the contempt of God, the heavenly by the love of God to the contempt of self.'", excerpt:"Augustine's masterwork of political theology contrasts the City of Man, built on pride, and the City of God, built on love. They are mingled in this age, but at the end they will be separated — one to glory, one to woe. Every human heart belongs to one or the other.", vocab:"The City of God — Augustine's name for the communion of the saved, begun here and fulfilled in the age to come.", summary:"Written over thirteen years as Rome fell to the barbarians (c. 413–426), The City of God answers those who blamed Christianity for the collapse of the Empire. Augustine argues that earthly kingdoms rise and fall, but the City of God endures; Christians are citizens of both, rendering to Caesar what is his and to God what is God's."},
-          {name:"Grace", quote:"'Give what you command, and command what you will.' (Confessions, X.29)", excerpt:"Augustine's deepest conviction: we cannot even desire the good without God first moving us. Grace is not a reward for effort but the very source of the desire to try. 'It is God who works in you, both to will and to work.'", vocab:"Prevenient grace — the grace that 'comes before,' stirring the will before any free response is possible.", summary:"Against the Pelagians, Augustine taught in On the Spirit and the Letter and On Grace and Free Will that grace is irresistible in its first touch yet respects our freedom in its flowering. His axiom 'God crowns his own gifts in us' became the heart of Catholic and much Protestant teaching on salvation."},
-          {name:"The Trinity", quote:"'Thou, O Trinity, my one God, glory be to thee.' (Confessions, XII.1)", excerpt:"Augustine spent decades probing how the one God can be three Persons. He turned to the human mind — memory, understanding, and will — as a faint image of the divine threeness, always warning that no creature can fully contain the mystery.", vocab:"Perichoresis — the 'mutual indwelling' of the Father, Son, and Spirit, each wholly in the others.", summary:"In his fifteen-book On the Trinity, Augustine builds from faith to understanding, using love as his central image: the Lover, the Beloved, and Love itself. He concludes that we know the Trinity best not by speculation but by being remade in the image of God through charity."},
-          {name:"Time and Eternity", quote:"'What then is time? If no one asks me, I know; if I wish to explain it to one that asketh, I know not.' (Confessions, XI.14)", excerpt:"Augustine gave the first modern philosophy of time, locating it not 'out there' in the stars but in the stretching of the soul — past as memory, future as expectation, present as attention. God, he says, dwells in an eternal now beyond all succession.", vocab:"Aeviternity — the middle state of the angels, lasting but not eternal; a way of distinguishing created permanence from God's eternity.", summary:"Book XI of the Confessions wrestles with how God created time itself. Augustine concludes that time began with the world; before creation there was no 'before.' His insight freed theology from imagining God inside a timeline and opened the way to meditations on eternity."},
+        /* ---- Lesson of the Day (one topic, walked through quote → excerpt → vocabulary → a named writing) ---- */
+        const LESSON = [
+          {name:"Angels", writing:"On the Trinity", writingNote:"a work on the inner life of God, from which he draws his vision of the angelic host", quote:"'Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?' (Heb 1:14)", excerpt:"Augustine taught that the angels are pure spirits who contemplate God face to face and, out of that contemplation, are sent to minister to us. They are not competing with God but burning with the love of him; the higher they stand before the throne, the more freely they descend to help the least of his children.", vocab:"Contemplation — the gaze of the mind and heart resting upon God, from which all true action flows.", summary:"In On the Trinity and The City of God, Augustine describes the angels as the citizens of the heavenly city who never fell, forever praising God and rejoicing in our redemption. He insists they are creatures, not to be worshiped, yet are our constant guardians — each believer, he says, has an angel who 'stands daily in the sight of the Father.'"},
+          {name:"Original Sin", writing:"On Nature and Grace", writingNote:"his reply to Pelagius, defending that our wounded will needs grace to choose the good", quote:"'For you are forgiven all your sins, and you are washed clean in the blood of the Lamb — yet even the infant is born with the contagion of old sin.'", excerpt:"Augustine came to teach that through Adam's first disobedience, sin and death entered the human race, so that every person is born not guilty of Adam's act but bearing its wound — a weakened will that finds it easier to choose wrongly than rightly. Baptism, he insisted, is the remedy given even to infants.", vocab:"Concupiscence — the disordered leaning of desire toward creatures and away from God, the lingering effect of original sin.", summary:"In his Confessions and On Nature and Grace, Augustine defended original sin against Pelagius, who claimed man could avoid sin by his own power. Augustine answered that without grace 'we can do nothing,' and that the very need for a Savior proves our nature is wounded. His teaching became the backbone of Western theology of grace."},
+          {name:"The Blessed Virgin Mary", writing:"Sermon 72A (On the Assumption)", writingNote:"a homily in which he honors Mary as the image of the whole Church — virgin and mother", quote:"'Death through Eve, life through Mary' — for as the one by believing the serpent brought death, so the other by believing the angel brought life.", excerpt:"Augustine honored Mary above all women as the one who, by her fiat, became the mother of God and the image of the whole Church — both virgin and mother. He saw her obedience as undoing Eve's disobedience, and her humility as the path every soul must walk.", vocab:"Theotokos — Greek for 'God-bearer,' the title defined at Ephesus (431) for Mary as true Mother of God.", summary:"Though the later dogmas of the Immaculate Conception and Assumption were defined after his death, Augustine laid their foundation by asking who could be sinless and answering: only she whom God had singled out to bear the Sinless One. His sermons on the Annunciation remain among the Church's richest Marian texts."},
+          {name:"The Restless Heart", writing:"Confessions, Book I", writingNote:"the opening prayer of his autobiography of the soul's long wandering and capture by grace", quote:"'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' (Confessions, I.1)", excerpt:"Augustine opens the Confessions with this line, the key to his whole life. Every desire — for wealth, for praise, for love — is a distorted hunger for God. The heart will not be still until it finds the One for whom it was shaped.", vocab:"Restlessness — the uneasy searching of a soul made for God but settled in lesser things; healed only by return to him.", summary:"The Confessions (c. 400) is Augustine's autobiography of the soul's long wandering and sudden capture by grace. More than a memoir, it is a prayer and a philosophy of desire: the will is free, yet only when ordered toward God does it become free indeed. It is the most-read book of Christian antiquity after the Bible."},
+          {name:"The Two Cities", writing:"The City of God", writingNote:"his masterwork of political theology, written as Rome fell to the barbarians", quote:"'Two cities have been formed by two loves: the earthly by the love of self to the contempt of God, the heavenly by the love of God to the contempt of self.'", excerpt:"Augustine's masterwork of political theology contrasts the City of Man, built on pride, and the City of God, built on love. They are mingled in this age, but at the end they will be separated — one to glory, one to woe. Every human heart belongs to one or the other.", vocab:"The City of God — Augustine's name for the communion of the saved, begun here and fulfilled in the age to come.", summary:"Written over thirteen years as Rome fell (c. 413–426), The City of God answers those who blamed Christianity for the collapse of the Empire. Augustine argues that earthly kingdoms rise and fall, but the City of God endures; Christians are citizens of both, rendering to Caesar what is his and to God what is God's."},
+          {name:"Grace", writing:"On Grace and Free Will", writingNote:"a treatise answering how a free will can be wholly the work of grace", quote:"'Give what you command, and command what you will.' (Confessions, X.29)", excerpt:"Augustine's deepest conviction: we cannot even desire the good without God first moving us. Grace is not a reward for effort but the very source of the desire to try. 'It is God who works in you, both to will and to work.'", vocab:"Prevenient grace — the grace that 'comes before,' stirring the will before any free response is possible.", summary:"Against the Pelagians, Augustine taught in On the Spirit and the Letter and On Grace and Free Will that grace is irresistible in its first touch yet respects our freedom in its flowering. His axiom 'God crowns his own gifts in us' became the heart of Catholic and much Protestant teaching on salvation."},
+          {name:"The Trinity", writing:"On the Trinity", writingNote:"his fifteen-book ascent from faith to understanding, using love as the central image", quote:"'Thou, O Trinity, my one God, glory be to thee.' (Confessions, XII.1)", excerpt:"Augustine spent decades probing how the one God can be three Persons. He turned to the human mind — memory, understanding, and will — as a faint image of the divine threeness, always warning that no creature can fully contain the mystery.", vocab:"Perichoresis — the 'mutual indwelling' of the Father, Son, and Spirit, each wholly in the others.", summary:"In his fifteen-book On the Trinity, Augustine builds from faith to understanding, using love as his central image: the Lover, the Beloved, and Love itself. He concludes that we know the Trinity best not by speculation but by being remade in the image of God through charity."},
+          {name:"Time and Eternity", writing:"Confessions, Book XI", writingNote:"his meditation on how God created time itself, and dwells in an eternal now", quote:"'What then is time? If no one asks me, I know; if I wish to explain it to one that asketh, I know not.' (Confessions, XI.14)", excerpt:"Augustine gave the first modern philosophy of time, locating it not 'out there' in the stars but in the stretching of the soul — past as memory, future as expectation, present as attention. God, he says, dwells in an eternal now beyond all succession.", vocab:"Aeviternity — the middle state of the angels, lasting but not eternal; a way of distinguishing created permanence from God's eternity.", summary:"Book XI of the Confessions wrestles with how God created time itself. Augustine concludes that time began with the world; before creation there was no 'before.' His insight freed theology from imagining God inside a timeline and opened the way to meditations on eternity."},
         ];
-        const topicName=$('#topicName'), topicQuote=$('#topicQuote'), topicExcerpt=$('#topicExcerpt'),
-              topicVocab=$('#topicVocab'), topicSummary=$('#topicSummary'), topicLabel=$('#topicLabel'),
-              topicShuf=$('#topicShuf'), topicAsk=$('#topicAsk');
-        let topicIdx=-1;
-        function topicForDate(){
+        const lessonTag=$('#lessonTag'), lessonName=$('#lessonName'), lessonQuote=$('#lessonQuote'),
+              lessonExcerpt=$('#lessonExcerpt'), lessonVocab=$('#lessonVocab'),
+              lessonSummary=$('#lessonSummary'), lessonLabel=$('#lessonWritingLabel'),
+              lessonShuf=$('#lessonShuf'), lessonAsk=$('#lessonAsk');
+        let lessonIdx=-1;
+        function lessonForDate(){
           const now=new Date(); const start=new Date(now.getFullYear(),0,0);
-          const d=Math.floor((now-start)/86400000); return d % TOPICS.length;
+          const d=Math.floor((now-start)/86400000); return d % LESSON.length;
         }
-        function renderTopic(i){
-          const t=TOPICS[i % TOPICS.length];
-          if(topicLabel) topicLabel.textContent="Topic of the day";
-          if(topicName) topicName.textContent=t.name;
-          if(topicQuote) topicQuote.textContent=t.quote;
-          if(topicExcerpt) topicExcerpt.textContent=t.excerpt;
-          if(topicVocab) topicVocab.textContent=t.vocab;
-          if(topicSummary) topicSummary.textContent=t.summary;
-          topicIdx=i;
+        function renderLesson(i){
+          const t=LESSON[i % LESSON.length];
+          if(lessonTag) lessonTag.textContent="Lesson "+(i % LESSON.length + 1)+" of "+LESSON.length;
+          if(lessonName) lessonName.textContent=t.name;
+          if(lessonQuote) lessonQuote.textContent=t.quote;
+          if(lessonExcerpt) lessonExcerpt.textContent=t.excerpt;
+          if(lessonVocab) lessonVocab.textContent=t.vocab;
+          if(lessonLabel) lessonLabel.textContent="Summary of "+t.writing;
+          if(lessonSummary) lessonSummary.textContent=t.summary;
+          lessonIdx=i;
         }
-        renderTopic(topicForDate());
-        if(topicShuf) topicShuf.addEventListener("click",()=>{
-          let i=Math.floor(Math.random()*TOPICS.length); if(i===topicIdx) i=(i+1)%TOPICS.length; renderTopic(i);
+        renderLesson(lessonForDate());
+        if(lessonShuf) lessonShuf.addEventListener("click",()=>{
+          let i=Math.floor(Math.random()*LESSON.length); if(i===lessonIdx) i=(i+1)%LESSON.length; renderLesson(i);
         });
-        if(topicAsk) topicAsk.addEventListener("click",()=>{
-          const t=TOPICS[topicIdx % TOPICS.length];
-          pageChat("As St. Augustine, teach me about "+t.name+". Draw on your own writings and meet me where I am.", "chat");
+        if(lessonAsk) lessonAsk.addEventListener("click",()=>{
+          const t=LESSON[lessonIdx % LESSON.length];
+          pageChat("As St. Augustine, teach me about "+t.name+". Draw on your own writings — especially "+t.writing+" — and walk with me through it as today's lesson.", "study");
         });
 
         /* ---- nav tabs: switch pages ---- */
