@@ -957,6 +957,33 @@ textarea#prompt::placeholder{color:var(--muted)}
   .composer{padding:8px 12px 7px}
 }
 
+/* G: mobile-native refinements — condensed, decluttered, touch-friendly (phone widths only) */
+@media (max-width:768px){
+  /* 1. hide the floating creator credit — it overlaps lesson text on narrow screens;
+        the brand wordmark lives in the header already */
+  .credit-chip{display:none}
+  /* 2. collapse model + reasoning into ONE row (was 2 tall full-width rows) */
+    .controls{flex-direction:row;align-items:stretch;gap:6px}
+    .model{flex:none;width:auto}
+    .model-btn{width:auto;max-width:150px;justify-content:center;padding:0 9px;font-size:11px}
+    .model-btn .lab{display:none}
+    .reasoning{flex:1;width:auto;min-width:0}
+    .reasoning .seg{height:30px;font-size:11px;padding:0 5px}
+  /* 3. darken the lesson timeline connector so the sequence is readable */
+  .ls:not(:last-child)::before{background:linear-gradient(var(--border),rgba(163,130,47,.55) 60%,transparent)}
+  /* 4. nav tabs: more tap room, slightly tighter pill so four fit comfortably */
+  .nav-tabs{gap:5px}
+  .nav-tab{padding:7px 8px;font-size:12.5px}
+  /* 5. cards: even edges, comfortable inset */
+  .daily-page{padding-left:14px;padding-right:14px}
+  .dp-card{padding:15px 15px 16px}
+}
+@media (max-width:480px){
+  .composer{border-radius:18px}
+  textarea#prompt{min-height:42px}
+  .reasoning .seg{font-size:10.5px;padding:0 3px}
+}
+
 /* ---------- Beta consent modal ---------- */
 .modal-scrim{
   position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;
