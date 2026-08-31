@@ -537,6 +537,22 @@ a{color:inherit}
 .bubble.md pre{background:rgba(30,26,20,0.07);border:1px solid var(--border);border-radius:10px;padding:10px 12px;overflow:auto;margin:8px 0}
 .bubble.md pre code{background:none;padding:0}
 .bubble.md hr{border:0;border-top:1px solid var(--border);margin:12px 0}
+/* message timestamp — quiet, mono, gold-ink, sits under the bubble */
+.ts{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);
+  margin-top:9px;opacity:.8;user-select:none}
+.msg.user .ts{text-align:right}
+/* code block: header bar with language + copy (premium affordance) */
+.bubble.md pre{position:relative;padding:34px 12px 10px}
+.code-wrap{margin:8px 0}
+.code-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  position:absolute;top:0;left:0;right:0;padding:5px 10px;border-bottom:1px solid var(--border);
+  background:rgba(30,26,20,0.04)}
+.code-lang{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.code-copy{border:1px solid var(--border);background:var(--glass);color:var(--ink-soft);
+  font-family:var(--body);font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:all .14s ease}
+.code-copy:hover{background:var(--accent-soft);color:var(--ink);border-color:rgba(163,130,47,.4)}
+.code-copy svg{width:12px;height:12px}
 
 /* ---------- Reasoning expander ---------- */
 .reasoning-box{margin:-2px 0 8px}
@@ -2255,15 +2271,40 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     }));
   }
 
+  /* add language label + copy button to each <pre> in a rendered bubble */
+  function enhanceCodeBlocks(root){
+    if(!root) return;
+    root.querySelectorAll("pre").forEach(pre=>{
+      if(pre.parentElement && pre.parentElement.classList.contains("code-wrap")) return;
+      const code=pre.querySelector("code");
+      const lang=(code && (code.className.match(/language-([a-z0-9+#-]+)/i)||[])[1]) || "";
+      const wrap=document.createElement("div"); wrap.className="code-wrap";
+      const bar=document.createElement("div"); bar.className="code-bar";
+      const lab=document.createElement("span"); lab.className="code-lang"; lab.textContent=lang?lang:"code";
+      const btn=document.createElement("button"); btn.className="code-copy"; btn.type="button";
+      btn.setAttribute("aria-label","Copy code");
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy';
+      btn.addEventListener("click",()=>{
+        const txt=code?code.innerText:pre.innerText;
+        navigator.clipboard.writeText(txt).then(()=>{ btn.textContent="Copied ✓"; setTimeout(()=>{ btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy'; }, 1400); })
+          .catch(()=>{ btn.textContent="Copy failed"; });
+      });
+      bar.appendChild(lab); bar.appendChild(btn);
+      pre.parentNode.insertBefore(wrap, pre);
+      wrap.appendChild(bar); wrap.appendChild(pre);
+    });
+  }
   /* ---- rendering ---- */
+  function fmtTime(d){ try{ return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); }catch(_){ return ''; } }
   function bubble(role,html,bubbleClass){
       const m=document.createElement("div");
           m.className="msg "+role;
           // bounded stagger: last few appended messages get tiny delay offsets, never grows with thread length
           m.style.setProperty("--i", (window.__msgSeq=(window.__msgSeq||0)+1) % 4);
           const who = role==="user" ? "" : "St. Augustine";
+          const ts = fmtTime(new Date());
     const init = role==="user" ? "You".slice(0,1) : "A";
-    m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}">${who?`<span class="who">${who}</span>`:''}${html}</div>`;
+    m.innerHTML=`<div class="av">${init}</div><div class="bubble ${bubbleClass||''}">${who?`<span class="who">${who}</span>`:''}${html}${ts?`<span class="ts">${ts}</span>`:''}</div>`;
     if(role==="user"){
       const ed=document.createElement("button");
       ed.className="msg-edit"; ed.title="Edit message"; ed.setAttribute("aria-label","Edit message");
@@ -2413,7 +2454,8 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         }
         inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
                 buf.className = "bubble md";
-                buf.innerHTML = '<span class="who">St. Augustine</span>'+inner;
+                buf.innerHTML = '<span class="who">St. Augustine</span>'+inner+(!streaming?'<span class="ts">'+fmtTime(new Date())+'</span>':'');
+                if(!streaming) enhanceCodeBlocks(buf);
                 maybeScroll();
               };
               while(true){
@@ -2441,11 +2483,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
       const msg = (e&&e.message)||"Something went wrong.";
       const isAbort = aborted || (e&&e.name==="AbortError");
       if(isAbort){
-        buf.innerHTML='<span class="who">St. Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>');
-        if(acc) history.push({role:"assistant", content:acc});
+        buf.innerHTML='<span class="who">St. Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>')+'<span class="ts">'+fmtTime(new Date())+'</span>';
+        if(acc){ enhanceCodeBlocks(buf); history.push({role:"assistant", content:acc}); }
         recordSession(userMsg, acc||"(stopped)");
       }else{
-        buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>";
+        buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"+'<span class="ts">'+fmtTime(new Date())+'</span>';
         showToast(msg);
         history.push({role:"assistant", content:"[error] "+msg});
         recordSession(userMsg, msg);
