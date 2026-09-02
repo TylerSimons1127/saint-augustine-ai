@@ -487,6 +487,23 @@ a{color:inherit}
 .ls .topic-vocab{margin:0}
 .ls .topic-vocab .rl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-style:normal}
 
+/* ---- Connected Lesson of the Day (Study) — a 5-step journey ---- */
+.lesson-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:0 0 6px}
+.lesson-heading{flex:1;min-width:0}
+.topic-note{font-size:13px;line-height:1.55;color:var(--ink-soft);margin:4px 0 0;max-width:52ch}
+.topic-topic{font-size:15px;line-height:1.55;color:var(--ink);margin:0;font-style:italic}
+.lesson-flow{position:relative}
+.ls-n[data-step]{width:26px;height:26px;font-size:12px;font-weight:600;
+  background:var(--glass-strong);color:var(--accent-deep);border:1px solid rgba(163,130,47,.35);box-shadow:none}
+.ls-n[data-step].done{background:rgba(163,130,47,.16);border-color:rgba(163,130,47,.45);color:var(--accent-deep)}
+.ls .topic-vocab .rl2{display:block;font-size:14px;line-height:1.62;color:var(--ink);font-style:italic;padding:10px 12px;border-radius:10px;background:var(--accent-soft);border:1px solid rgba(163,130,47,.22)}
+.lesson-top .dp-eyebrow-mini{margin:0 0 4px}
+.lesson-top .topic-name{margin:0 0 2px}
+@media (max-width:480px){
+  .lesson-top{flex-direction:column}
+  .lesson-top .daily-shuf{align-self:flex-start}
+}
+
 /* ---- Today: Learn + Quiz cards ---- */
 .dp-card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
 .dp-card-head h3{margin:0}
@@ -1542,45 +1559,54 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         </div>
 
         <section class="dp-card lesson" aria-label="Lesson of the Day">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/></svg>Lesson of the Day</h3>
-          <div class="lesson-head">
-            <span class="daily-tag" id="lessonTag">A connected study</span>
+          <div class="lesson-top">
+            <div class="lesson-heading">
+              <span class="dp-eyebrow-mini" id="lessonKicker">Lesson of the Day</span>
+              <h4 class="topic-name" id="lessonName"></h4>
+              <p class="topic-note" id="lessonNote"></p>
+            </div>
             <button class="daily-shuf" id="lessonShuf" title="Another lesson" aria-label="Pick another lesson">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Another lesson
             </button>
           </div>
-          <h4 class="topic-name" id="lessonName"></h4>
           <div class="lesson-flow" id="lessonFlow">
             <div class="ls">
-              <span class="ls-n">&#9312;</span>
+              <span class="ls-n" data-step="1">1</span>
               <div class="ls-b">
-                <span class="ls-l">Quote</span>
+                <span class="ls-l">Today's Topic</span>
+                <p class="topic-topic" id="lessonTopic"></p>
+              </div>
+            </div>
+            <div class="ls">
+              <span class="ls-n" data-step="2">2</span>
+              <div class="ls-b">
+                <span class="ls-l">A word he said</span>
                 <p class="topic-quote" id="lessonQuote"></p>
               </div>
             </div>
             <div class="ls">
-              <span class="ls-n">&#9313;</span>
+              <span class="ls-n" data-step="3">3</span>
               <div class="ls-b">
-                <span class="ls-l">From his writings</span>
+                <span class="ls-l">In his own words</span>
                 <div class="topic-excerpt" id="lessonExcerpt"></div>
               </div>
             </div>
             <div class="ls">
-              <span class="ls-n">&#9314;</span>
+              <span class="ls-n" data-step="4">4</span>
               <div class="ls-b">
-                <span class="ls-l">Vocabulary</span>
-                <div class="topic-vocab"><span class="rl">Word</span><span id="lessonVocab"></span></div>
+                <span class="ls-l">The key term</span>
+                <div class="topic-vocab"><span class="rl2" id="lessonVocab"></span></div>
               </div>
             </div>
             <div class="ls">
-              <span class="ls-n">&#9315;</span>
+              <span class="ls-n" data-step="5">5</span>
               <div class="ls-b">
-                <span class="ls-l" id="lessonWritingLabel">Summary of a writing</span>
+                <span class="ls-l" id="lessonWritingLabel">The writing behind it</span>
                 <p class="topic-summary" id="lessonSummary"></p>
               </div>
             </div>
           </div>
-          <button class="daily-cta" id="lessonAsk">Ask Augustine about this &rarr;</button>
+          <button class="daily-cta" id="lessonAsk">Walk through today's lesson with Augustine &rarr;</button>
         </section>
 
         <section class="dp-thread">
@@ -3364,7 +3390,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
         /* ---- Lesson of the Day (one topic, walked through quote → excerpt → vocabulary → a named writing) ---- */
         const LESSON = [
-          {name:"Angels", writing:"On the Trinity", writingNote:"a work on the inner life of God, from which he draws his vision of the angelic host", quote:"'Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?' (Heb 1:14)", excerpt:[
+          {name:"Angels", topic:"Today we look upward into the unseen court of heaven — and learn the secret that sets the angels free to serve us.", writing:"On the Trinity", writingNote:"a work on the inner life of God, from which he draws his vision of the angelic host", quote:"'Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?' (Heb 1:14)", excerpt:[
              "Augustine taught that the angels are pure spirits — bodiless, intelligent beings created by God before the human race. They contemplate God face to face, and out of that contemplation they are sent to minister to us. Their greatness consists precisely in their nearness to God: the higher they stand before the throne, the more freely they descend to help the least of his children. They are not rivals to God but burning with love of him.",
              "In The City of God, Augustine calls the unfallen angels the citizens of the heavenly city. They are that part of creation which never turned from God — the citizens who, being present to him, can never lose him. Forever praising him, they also rejoice in our redemption, watching the work of grace in souls below with a joy that surpasses the gladness of this world. Their ministry is one of perfect freedom born of perfect love.",
              "Augustine is very plain that the angels are creatures. As beautiful as they are, they are not to be worshiped; honor and praise belong to God alone. Yet this in no way diminishes their closeness to us, for each believer, he says, has an angel who 'stands daily in the sight of the Father.' This is his Guardian Angel doctrine: one holy spirit is appointed to keep watch over each soul from baptism to the end of life.",
@@ -3378,7 +3404,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Augustine says each believer has an angel who does what?",opts:["Records every sin","Stands daily in the sight of the Father","Carries prayers to heaven","Guards the body only"],ans:1,note:"Each believer has an angel who 'stands daily in the sight of the Father.'"},
             {q:"The word 'contemplation' in Augustine's thought means:",opts:["Reading scripture quickly","The gaze of the mind and heart resting upon God","Silent solitude only","Preaching to others"],ans:1,note:"Contemplation is the gaze of the mind and heart resting upon God, from which all true action flows."}
            ]},
-          {name:"Original Sin", writing:"On Nature and Grace", writingNote:"his reply to Pelagius, defending that our wounded will needs grace to choose the good", quote:"'For you are forgiven all your sins, and you are washed clean in the blood of the Lamb — yet even the infant is born with the contagion of old sin.'", excerpt:[
+          {name:"Original Sin", topic:"Today we name the wound we all inherit at birth — and the medicine that begins its healing in the font.", writing:"On Nature and Grace", writingNote:"his reply to Pelagius, defending that our wounded will needs grace to choose the good", quote:"'For you are forgiven all your sins, and you are washed clean in the blood of the Lamb — yet even the infant is born with the contagion of old sin.'", excerpt:[
              "Augustine came to see the human condition as the aftermath of a catastrophe. Through the first disobedience of our first parent, Adam, sin and death entered the human race, and the whole order of the inner life was thrown off balance. What had been easy — friendship with God — now cost an effort we do not naturally possess. We are born into a world where the wounds of that first fall are real, even before any personal sin of our own.",
              "Augustine insisted on a careful distinction: every person is born bearing the wound of original sin, but not the guilt of Adam's own act. We are not held responsible for what Adam did; rather, we inherit its consequence — a weakened will, darkened mind, and disordered desires. It is a condition, not a verdict. Because it is passed on by the natural order of human birth, nothing we do of ourselves can undo it. The very need for a Savior proves how real the wound is.",
              "This teaching put Augustine in direct conflict with Pelagius, a British monk who argued that a man could avoid sin by his own free will, and that grace merely made an already-good nature a little easier. Augustine answered that such a view empties the cross of its power. 'We can do nothing without grace,' he wrote. If human nature were not wounded, Christ would have died in vain. The existence of a Redeemer is the surest proof that we need redeeming.",
@@ -3392,7 +3418,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"What remedy did Augustine insist upon even for infants?",opts:["Waiting until adulthood","Baptism","Good works","Penance"],ans:1,note:"Baptism is the remedy, given even to infants, against the contagion of old sin."},
             {q:"What is 'concupiscence'?",opts:["A disordered leaning of desire toward creatures and away from God","The desire to sin deliberately","A physical illness","Love of the world's beauty"],ans:0,note:"Concupiscence is the disordered leaning of desire toward creatures and away from God, the lingering effect of original sin."}
            ]},
-          {name:"The Blessed Virgin Mary", writing:"Sermon 72A (On the Assumption)", writingNote:"a homily in which he honors Mary as the image of the whole Church — virgin and mother", quote:"'Death through Eve, life through Mary' — for as the one by believing the serpent brought death, so the other by believing the angel brought life.", excerpt:[
+          {name:"The Blessed Virgin Mary", topic:"Today we come to her whom God prepared from the first moment of her existence to bear the Sinless One.", writing:"Sermon 72A (On the Assumption)", writingNote:"a homily in which he honors Mary as the image of the whole Church — virgin and mother", quote:"'Death through Eve, life through Mary' — for as the one by believing the serpent brought death, so the other by believing the angel brought life.", excerpt:[
              "Augustine honored Mary above all women, but always as one of our race — not a goddess, but the creature God chose to be the gate through which redemption entered the world. He loved to contemplate her as the image of the whole Church: both virgin and mother, as she who conceived Christ in her heart before she conceived him in her body, and who heard and kept his words as no other ever has.",
              "In her own person, Augustine saw the healing of the ancient wound. Where Eve had listened to the serpent and believed a lie, Mary listened to the angel and believed the truth. His famous line holds the whole contrast: 'Death through Eve, life through Mary' — for as the one, by believing the serpent, brought death upon the world, so the other, by believing the angel, brought the author of life. Where the mother of the human race undid us, the Mother of God began our mending.",
              "The title the Church gave her, sealed at the Council of Ephesus in 431, is Theotokos — a Greek word meaning God-bearer, the true Mother of God. It is not a title of flattery but of doctrine: because the Child she bore is God the Son incarnate, she who bore him truly is his Mother. In defending this title against Nestorius, the Church protected the truth that Jesus is one divine Person, and that Mary's fiat mattered utterly.",
@@ -3406,7 +3432,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Augustine's Marian teaching laid the foundation for which later dogmas?",opts:["The Immaculate Conception and Assumption","The Trinity and Incarnation","Transubstantiation and Purgatory","Papal infallibility"],ans:0,note:"Though defined after his death, Augustine laid the foundation for the Immaculate Conception and Assumption."},
             {q:"Augustine saw Mary's humility as:",opts:["A sign of weakness","The path every soul must walk","Unique to her alone","Less important than her virginity"],ans:1,note:"Her humility is the path every soul must walk — the way of receptivity to God."}
            ]},
-          {name:"The Restless Heart", writing:"Confessions, Book I", writingNote:"the opening prayer of his autobiography of the soul's long wandering and capture by grace", quote:"'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' (Confessions, I.1)", excerpt:[
+          {name:"The Restless Heart", topic:"Today we search our own hearts and find the hunger that no earthly plenty can satisfy.", writing:"Confessions, Book I", writingNote:"the opening prayer of his autobiography of the soul's long wandering and capture by grace", quote:"'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' (Confessions, I.1)", excerpt:[
              "Augustine opens the Confessions with the line that is the key to his whole life: 'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' He is not speaking only of himself. He is describing the shape of every human heart — a thing made for a particular center, and out of its true orbit until it finds that center. Everything in him that had seemed chaotic suddenly made sense as the story of a heart looking for where it belonged.",
              "This is why the Confessions is so honest about his sins and wasted years. Augustine believed that every earthly desire — for wealth, for praise, for love, even for knowledge — is in truth a distorted hunger for God. We try to feed the soul's hunger for the infinite with finite things, and they cannot satisfy it; they only make it sharper. Even his famous rebellion was a misdirected search. The heart keeps asking, of everything finite, 'Is this You?' — and nothing finite could answer yes.",
              "The great sentence of the opening prayer — the heart will not be still until it finds the One for whom it was shaped — is both a diagnosis and a promise. It tells us our restlessness is not a flaw to be ashamed of but a sign of our origin: we were made for something this world cannot supply. The cure is not to silence the ache but to answer it with the truth. Restlessness, Augustine teaches, is the soul settled in lesser things, and it is healed only by return to God.",
@@ -3420,7 +3446,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Augustine's 'restlessness' is healed by:",opts:["Acquiring knowledge","Settling in lesser things","Return to God","Discipline alone"],ans:2,note:"Restlessness is the soul settled in lesser things — healed only by return to God."},
             {q:"The Confessions is best described as:",opts:["A history of Rome","An autobiography of the soul's wandering and capture by grace","A collection of sermons","A theological textbook"],ans:1,note:"The Confessions is Augustine's autobiography of the soul's long wandering and sudden capture by grace."}
            ]},
-          {name:"The Two Cities", writing:"The City of God", writingNote:"his masterwork of political theology, written as Rome fell to the barbarians", quote:"'Two cities have been formed by two loves: the earthly by the love of self to the contempt of God, the heavenly by the love of God to the contempt of self.'", excerpt:[
+          {name:"The Two Cities", topic:"Today we open the book Augustine wrote as the world's greatest empire was falling — and read how two loves build two cities.", writing:"The City of God", writingNote:"his masterwork of political theology, written as Rome fell to the barbarians", quote:"'Two cities have been formed by two loves: the earthly by the love of self to the contempt of God, the heavenly by the love of God to the contempt of self.'", excerpt:[
              "Augustine's masterwork, The City of God, opens with a sentence that contains his whole political theology: 'Two cities have been formed by two loves: the earthly by the love of self to the contempt of God, the heavenly by the love of God to the contempt of self.' He is not drawing a map of nations. He is drawing a map of hearts. The 'two cities' are two rival ways of loving — two directions in which a human life can point — and every person belongs in heart to one or the other.",
              "The City of Man is built on pride and the love of self to the contempt of God. Its citizens make themselves the center; their glory is the measure of everything. Such a city prizes power, honors the strong, and treats God as a rival or a means. Augustine was not naive about its attractions, but he insisted it is ultimately self-destroying: the more it grasps, the less it enjoys; the more it exalts itself, the more it falls. Rome, in his judgment, was a great example of this — glorious in its way, yet built on the sand of pride.",
              "The City of God is the communion of the saved — those who love God to the contempt of self. It begins here on earth, hidden among the earthly city's affairs, as citizens of heaven walk through the kingdoms of this world. It will not be completed until the age to come, when the saved are gathered at last before God's throne. Its true ruler is not any earthly power but Christ, and its law is not force but charity, poured out in lives of service.",
@@ -3434,7 +3460,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Augustine wrote The City of God in response to:",opts:["The fall of Rome to the barbarians","The death of Christ","The Council of Nicaea","The Pelagian heresy"],ans:0,note:"Written as Rome fell (413–426), it answers those who blamed Christianity for the Empire's collapse."},
             {q:"Christians, Augustine says, are citizens of:",opts:["The heavenly city only","The earthly city only","Both cities at once","Neither city"],ans:2,note:"Christians are citizens of both cities at once — rendering to Caesar what is his and to God what is God's."}
            ]},
-          {name:"Grace", writing:"On Grace and Free Will", writingNote:"a treatise answering how a free will can be wholly the work of grace", quote:"'Give what you command, and command what you will.' (Confessions, X.29)", excerpt:[
+          {name:"Grace", topic:"Today we learn the astonishing truth that our very desire for God is already God's gift at work within us.", writing:"On Grace and Free Will", writingNote:"a treatise answering how a free will can be wholly the work of grace", quote:"'Give what you command, and command what you will.' (Confessions, X.29)", excerpt:[
              "If there is one conviction that runs beneath everything Augustine ever wrote, it is this: we cannot even desire the good without God first moving us. Grace is not a reward we earn by trying; it is the very source of the desire to try. This is why his famous prayer in the Confessions is so bold: 'Give what you command, and command what you will.' He is saying — if you command me to love, Lord, then give me the love; if you want me to obey, grant the obedience. The command reveals the need, and grace satisfies it.",
              "This turns our usual understanding of goodness upside down. We imagine the order is: first we make a good start, and then God helps the promising effort along. Augustine insists it is the reverse: the good start itself is already God's work in us. 'It is God who works in you, both to will and to work,' he quotes from the apostle. Even the initial turning of the heart toward God — the faintest spark of wanting him — is a gift. Nothing in us, he says, prepares the ground for grace; grace prepares us.",
              "The grace that comes before any human response has a special name: prevenient grace — the grace that 'comes before,' stirring the will before any free response is possible. It is the Father's hand reaching into our darkness before we have asked, before we even know what to ask. Augustine delighted in this priority of God. We do not first find God and then receive his help; he first finds us, and our seeking is already his gift within us. The search itself is the beginning of the answer.",
@@ -3448,7 +3474,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Augustine's axiom on grace became:",opts:["'God crowns His own gifts in us'","'Faith alone saves'","'Works justify'","'Grace is resistible'"],ans:0,note:"'God crowns His own gifts in us' became the heart of Catholic and much Protestant teaching on salvation."},
             {q:"Against the Pelagians, Augustine taught grace is:",opts:["Resistible in its first touch","Irresistible in its first touch yet respects freedom","Unnecessary","Given only to the baptized"],ans:1,note:"Grace is irresistible in its first touch yet respects our freedom in its flowering."}
            ]},
-          {name:"The Trinity", writing:"On the Trinity", writingNote:"his fifteen-book ascent from faith to understanding, using love as the central image", quote:"'Thou, O Trinity, my one God, glory be to thee.' (Confessions, XII.1)", excerpt:[
+          {name:"The Trinity", topic:"Today we stand before the deepest mystery of all — one God in three Persons — and let love lead us in.", writing:"On the Trinity", writingNote:"his fifteen-book ascent from faith to understanding, using love as the central image", quote:"'Thou, O Trinity, my one God, glory be to thee.' (Confessions, XII.1)", excerpt:[
              "Augustine spent decades probing the deepest mystery of the Christian faith: how the one God can be three Persons. It is a question that cannot be answered by standing outside it and taking inventory, the way one eyes a distant object. God is not an object we can see around; he is the light by which we see. Augustine approached the mystery the only way he thought faithful to it — through the scriptures, through worship, and through the likenesses God has scattered through the human soul.",
              "His great intuition was that we ourselves carry a faint image of the divine threeness. In the human mind he found a trinity-like structure: memory, understanding, and will — three distinct powers that are yet one mind. And deeper still, in the act of self-knowledge he found lover, beloved, and the love between them: I who know, the one I know, and the act of knowing that joins us. Augustine was careful to warn that no creature can fully contain the mystery, but the image points the way even where it cannot arrive.",
              "For the mutual life of the three Persons, later theology borrowed his language into a single word: perichoresis — the mutual indwelling of the Father, Son, and Spirit, each wholly in the others. The Father is fully in the Son, the Son fully in the Father, and the Spirit eternally proceeds from the love that unites them, dwelling in both. It is not that the three Persons pour into one another and blur; rather, each remains fully himself, and yet each is entirely given to the others, perfectly at home in the other's being.",
@@ -3462,7 +3488,7 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Augustine's central image for the Trinity is:",opts:["A throne","Love — Lover, Beloved, and Love itself","A chain of being","A kingdom"],ans:1,note:"He uses love as his central image: the Lover, the Beloved, and Love itself."},
             {q:"We know the Trinity best, Augustine says, by:",opts:["Speculation alone","Being remade in the image of God through charity","Reading philosophy","Solitude"],ans:1,note:"We know the Trinity best not by speculation but by being remade in the image of God through charity."}
            ]},
-          {name:"Time and Eternity", writing:"Confessions, Book XI", writingNote:"his meditation on how God created time itself, and dwells in an eternal now", quote:"'What then is time? If no one asks me, I know; if I wish to explain it to one that asketh, I know not.' (Confessions, XI.14)", excerpt:[
+          {name:"Time and Eternity", topic:"Today we climb out of the stream of time to glimpse the eternal now in which God dwells.", writing:"Confessions, Book XI", writingNote:"his meditation on how God created time itself, and dwells in an eternal now", quote:"'What then is time? If no one asks me, I know; if I wish to explain it to one that asketh, I know not.' (Confessions, XI.14)", excerpt:[
              "Augustine gave the first modern philosophy of time, and he did not expect to. It came to him late in the Confessions, in Book XI, where he pauses from the story of his own life to ponder the mystery that lies behind all life: time itself. He begins with the plain, paradoxical confession: 'What then is time? If no one asks me, I know; if I wish to explain it to one that asketh, I know not.' He knows time is real, yet the moment he tries to seize it, it slips through his fingers.",
              "His solution was to look for time not 'out there' in the movements of the stars, as most thinkers had, but in the stretching of the soul. Time, he argued, is the distention of the mind: the past lives on as memory, the future is drawn toward us as expectation, and only the present is real — as the moment of attention between the two. In this he turned the ancient view on its head: time is not a property of the heavens but a property of the soul that remembers, awaits, and attends.",
              "From this Augustine drew a startling conclusion about God. If time is a feature of created minds, then God does not live inside time as we do. God, he says, dwells in an eternal now beyond all succession. For God there is no ticking 'before' and 'after' — no waiting for the future, no mourning of the past. All that we experience as a long and tangled history lies present in a single eternal gaze. Time is God's gift to his creatures; eternity is God's own dwelling place.",
@@ -3477,7 +3503,8 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
             {q:"Aeviternity refers to:",opts:["The middle state of the angels, lasting but not eternal","Human lifespan","The time after judgment","God's timelessness"],ans:0,note:"Aeviternity is the middle state of the angels, lasting but not eternal — distinguishing created permanence from God's eternity."}
            ]},
         ];
-        const lessonTag=$('#lessonTag'), lessonName=$('#lessonName'), lessonQuote=$('#lessonQuote'),
+        const lessonKicker=$('#lessonKicker'), lessonName=$('#lessonName'), lessonNote=$('#lessonNote'),
+              lessonQuote=$('#lessonQuote'), lessonTopic=$('#lessonTopic'),
               lessonExcerpt=$('#lessonExcerpt'), lessonVocab=$('#lessonVocab'),
               lessonSummary=$('#lessonSummary'), lessonLabel=$('#lessonWritingLabel'),
               lessonShuf=$('#lessonShuf'), lessonAsk=$('#lessonAsk');
@@ -3488,12 +3515,14 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         }
         function renderLesson(i){
           const t=LESSON[i % LESSON.length];
-          if(lessonTag) lessonTag.textContent="Lesson "+(i % LESSON.length + 1)+" of "+LESSON.length;
+          if(lessonKicker) lessonKicker.textContent="Lesson of the Day · "+(i % LESSON.length + 1)+" of "+LESSON.length;
           if(lessonName) lessonName.textContent=t.name;
+          if(lessonNote) lessonNote.textContent=t.writingNote||"";
+          if(lessonTopic) lessonTopic.textContent=t.topic||t.name;
           if(lessonQuote) lessonQuote.textContent=t.quote;
           if(lessonExcerpt) lessonExcerpt.innerHTML=(t.excerpt||[]).map(p=>"<p>"+p+"</p>").join("");
           if(lessonVocab) lessonVocab.textContent=t.vocab;
-          if(lessonLabel) lessonLabel.textContent="Summary of "+t.writing;
+          if(lessonLabel) lessonLabel.textContent="The writing behind it — "+t.writing;
           if(lessonSummary) lessonSummary.textContent=t.summary;
           lessonIdx=i;
         }
@@ -3503,7 +3532,8 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
         });
         if(lessonAsk) lessonAsk.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
-          pageChat("As St. Augustine, teach me about "+t.name+". Draw on your own writings — especially "+t.writing+" — and walk with me through it as today's lesson.", "study");
+          const paras=(t.excerpt||[]).join(" ");
+          pageChat("As St. Augustine, teach me today's lesson step by step. Today's topic is "+t.name+". You once wrote: "+t.quote+" Walk me through the meaning of it, drawing on your own writing, "+t.writing+", and help me apply it to my life today.", "study");
         });
 
         /* ---- Today: Learn Today + Daily Quiz ---- */
