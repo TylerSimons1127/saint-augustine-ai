@@ -1735,13 +1735,78 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .sb-peek{display:none !important}
 }
 
-/* small phones */
+/* ══════════════════════════════════════════════════════════════════════
+   v1.8.2 — craft-critic round 2: lesson timeline as gold spine, glass-gold
+   quote actions, quieter thinking expander, right-sized drop cap, clean
+   indicator, no placeholder wrap.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+
+  /* 1. Lesson timeline: gold spine connects filled gold circles — reads as one
+        crafted journey, not a wireframe. */
+  .ls:not(:last-child)::before{
+    left:14px;top:34px;bottom:6px;width:2px;
+    background:linear-gradient(to bottom, rgba(163,130,47,.55), rgba(163,130,47,.16));
+  }
+  .ls-n{
+    width:32px;height:32px;font-size:13px;
+    background:linear-gradient(145deg, var(--accent), var(--accent-deep));
+    box-shadow:0 3px 10px rgba(138,108,37,.32), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+
+  /* 2. Drop cap: ~20% smaller on phones so the letter doesn't dominate the
+        narrow column; same illuminated feel. */
+  .topic-excerpt .pdrop{font-size:2.7em !important;line-height:.84 !important;padding:.05em .1em .02em 0}
+
+  /* 3. Quote actions: glass-gold ghost pills (match the lesson CTA language) */
+  .quote-act{
+    background:rgba(251,247,238,.55);
+    border-color:rgba(163,130,47,.34);
+    color:var(--gold-ink);
+    backdrop-filter:blur(8px) saturate(140%);-webkit-backdrop-filter:blur(8px) saturate(140%);
+  }
+  .quote-act:active{transform:scale(.94)}
+
+  /* 4. Thinking expander: from debug-log to a quiet meditative element —
+        italic serif hint, mono replaced, softer chevron. */
+  .reasoning-box summary{
+    font-family:var(--body);font-size:11.5px;letter-spacing:.02em;text-transform:none;
+    color:var(--ink-soft);font-weight:500;font-style:italic;
+  }
+  .reasoning-box summary::before{border-right-color:var(--gold-ink);border-bottom-color:var(--gold-ink)}
+  .reasoning-box .rb{font-size:12.5px;line-height:1.6;color:var(--muted);font-style:italic}
+
+  /* 7. Message action pills: uniform glass-gold (Retry/Deeper/Copy/feedback) */
+  .msg .acts .act{
+    background:rgba(251,247,238,.55);
+    border:1px solid rgba(163,130,47,.32);
+    color:var(--gold-ink);
+    backdrop-filter:blur(8px) saturate(140%);-webkit-backdrop-filter:blur(8px) saturate(140%);
+  }
+  .msg .acts .act:active{transform:scale(.94)}
+
+  /* 8. Composer: glass treatment to match the message cards */
+  .composer{
+    background:rgba(251,247,238,.82) !important;
+    backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);
+    box-shadow:0 12px 38px rgba(70,52,16,.20), inset 0 0 0 1px rgba(255,255,255,.55) !important;
+  }
+  .composer.controls-open{
+    background:rgba(251,247,238,.92) !important;
+  }
+
+  /* 5. Tab indicator: crisp 3px gold pill (not a block), slightly wider */
+  body>.nav-tabs::after,.topnav .nav-tabs::after{width:44px;height:3px;border-radius:999px}
+}
+
+/* small phones (restored) */
 @media (max-width:380px){
   .topnav .nav-tab,body>.nav-tabs .nav-tab{font-size:9.5px}
   .topnav .nav-tab svg,body>.nav-tabs .nav-tab svg{width:19px;height:19px}
   .ts-n{font-size:20px !important}
   .bubble{font-size:14.5px !important}
 }
+
 
 /* ══════════════════════════════════════════════════════════════════════
    v1.8 PREMIUM POLISH (mobile) — craft-critic punch list:
