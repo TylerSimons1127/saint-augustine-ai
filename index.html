@@ -84,6 +84,11 @@ a{color:inherit}
 .bg .photo{
   position:absolute;left:-4%;top:-4%;width:108%;height:108%;
   background:url("assets/bg.jpg") center/cover no-repeat;
+  /* PERF v1.9: the ONE blur that matters. A single static blur on the photo
+     layer (composited once, cached) gives every translucent card a soft
+     backdrop to float over — the frosted-glass read without 20+ per-card
+     backdrop-filters re-sampling every scroll frame. */
+  filter:blur(14px) saturate(1.05);
   will-change:transform;
   transform:translate3d(var(--px,0px), var(--py,0px), 0);
 }
@@ -108,8 +113,10 @@ a{color:inherit}
     transparent 305deg);
   filter:blur(40px);
   opacity:.5;
-  animation:drift 70s linear infinite;
-  animation-play-state:var(--rays-run, running);
+  /* PERF v1.9: the 70s infinite rotation re-composited a 40px-blurred
+     full-viewport layer every frame, forever. The drift was imperceptible;
+     a static composition reads identical at zero ongoing cost. Parallax
+     (--rx/--ry) still moves it on pointer activity. */
   will-change:transform;
   transform:translate3d(var(--rx,0px), var(--ry,0px), 0);
 }
@@ -121,8 +128,11 @@ a{color:inherit}
   filter:blur(12px);
 }
 .bg .grain{
-  position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  position:absolute;inset:0;opacity:.05;
+  /* PERF v1.9: mix-blend-mode:multiply forced a full-screen re-composite every
+     frame during scroll. The noise SVG at 5% opacity is visually identical as a
+     plain overlay — blend removed, jank gone. */
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/></svg>");
 }
 .bg .vignette{position:absolute;inset:0;background:radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(46,38,24,0.10) 100%)}
 @keyframes drift{to{transform:rotate(360deg)}}
@@ -325,7 +335,9 @@ a{color:inherit}
 /* ---------- Daily Devotional ---------- */
 .daily{position:relative;width:min(640px,100%);margin:22px auto 0;padding:18px 20px 16px;text-align:left;
   background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);border-radius:18px;
-  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%)}
+  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6)}
+/* PERF: .daily is in-scroll — tint, not backdrop-filter (see .dp-card note) */
+@media (min-width:769px){ .daily{background:var(--card)} }
 .daily-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .daily-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(163,130,47,.08);border:1px solid rgba(163,130,47,.28)}
 .daily-shuf{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--glass-strong);color:var(--ink-soft);
@@ -424,7 +436,13 @@ a{color:inherit}
 .dp-head h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,4.5vw,34px);margin:0;color:var(--ink);letter-spacing:-.015em}
 .dp-head p{margin:8px auto 0;max-width:46ch;font-size:14px;line-height:1.5;color:var(--ink-soft)}
 .dp-card{background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);border-radius:20px;
-  padding:20px 22px;box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%)}
+  padding:20px 22px;box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6)}
+/* PERF: in-scroll cards use a near-opaque tint instead of backdrop-filter —
+   each blur surface re-samples the (parallaxing) photo every frame during
+   scroll; 20+ of them = the desktop jank. Behind an 82-90% tint the blurred
+   photo is imperceptible, so the glass reads identical at zero per-frame cost.
+   True backdrop-filter stays ONLY on fixed chrome (nav/dock/tab bar). */
+@media (min-width:769px){ .dp-card{background:var(--card)} }
 .dp-card h3{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:400;font-size:18px;margin:0 0 14px;color:var(--ink)}
 .dp-card h3 svg{width:17px;height:17px;color:var(--accent)}
 .dp-readings{display:flex;flex-direction:column;gap:16px}
@@ -583,8 +601,9 @@ a{color:inherit}
   font-size:17px;line-height:1.62;color:var(--ink);
   background:var(--glass-strong);border:1px solid var(--border);border-top-color:var(--border-light);
   box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(30,26,20,0.03);
-  backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);
 }
+/* PERF: bubbles are in-scroll — tint instead of backdrop-filter (see .dp-card note) */
+@media (min-width:769px){ .bubble{background:var(--glass-strong)} }
 /* solid-ink fallback so text is always readable even over a dark/busy photo */
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
   .bubble{background:rgba(252,249,241,0.94)}
@@ -1176,9 +1195,10 @@ textarea#prompt::placeholder{color:var(--muted)}
 .ts-cell{
   display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:var(--r-m);
   background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);
-  backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
   box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.5);
 }
+/* PERF: in-scroll stat cells — tint, not backdrop-filter */
+@media (min-width:769px){ .ts-cell{background:var(--card)} }
 .ts-cell svg{width:22px;height:22px;color:var(--accent-deep);flex:none}
 .ts-meta{display:flex;flex-direction:column;min-width:0;flex:1}
 .ts-n{font-family:var(--display);font-weight:500;font-size:21px;line-height:1;color:var(--ink)}
@@ -4004,19 +4024,28 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   /* ---- subtle mouse parallax on background photo ---- */
   const bgEl=document.querySelector(".bg");
   if(bgEl && !window.matchMedia("(prefers-reduced-motion:reduce)").matches){
-    let tx=0,ty=0,cx=0,cy=0;
-    window.addEventListener("mousemove",e=>{
-      tx=(e.clientX/window.innerWidth-0.5);
-      ty=(e.clientY/window.innerHeight-0.5);
-    },{passive:true});
-    (function loop(){
+    /* PERF v1.9: the old loop ran an unconditional rAF 60fps forever — moving
+       the photo every frame, which forced every glass surface to re-sample it.
+       Now: parallax only runs while the pointer is actually moving, eases out,
+       and fully stops when idle. Scrolling never triggers it. */
+    let tx=0,ty=0,cx=0,cy=0,rafId=null,lastMove=0;
+    function apply(){
       cx+=(tx-cx)*0.09; cy+=(ty-cy)*0.09;
       bgEl.style.setProperty("--px",(cx*30).toFixed(2)+"px");
       bgEl.style.setProperty("--py",(cy*30).toFixed(2)+"px");
       bgEl.style.setProperty("--rx",(-cx*22).toFixed(2)+"px");
       bgEl.style.setProperty("--ry",(-cy*22).toFixed(2)+"px");
-      requestAnimationFrame(loop);
-    })();
+      // stop when settled (<0.01px movement) AND pointer quiet for 250ms
+      if(Math.abs(tx-cx)<0.0004 && Math.abs(ty-cy)<0.0004 && Date.now()-lastMove>250){ rafId=null; return; }
+      rafId=requestAnimationFrame(apply);
+    }
+    function kick(){ if(rafId==null){ rafId=requestAnimationFrame(apply); } }
+    window.addEventListener("mousemove",e=>{
+      tx=(e.clientX/window.innerWidth-0.5);
+      ty=(e.clientY/window.innerHeight-0.5);
+      lastMove=Date.now();
+      kick();
+    },{passive:true});
   }
 
   /* ---- A: phone search — tap magnifier to expand an inline field ---- */
