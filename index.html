@@ -338,6 +338,15 @@ a{color:inherit}
   text-shadow:0 1px 2px rgba(251,247,238,.55), 0 0 22px rgba(251,247,238,.45);
 }
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--ink-soft);font-size:15px;line-height:1.5;text-shadow:0 1px 10px rgba(250,247,240,0.75)}
+/* v1.9.2: creator credit restored to the greet card (user directive) — always
+   visible on desktop AND mobile, inside the glass veil so it reads cleanly. */
+.greet-credit{
+  margin:22px auto 0;padding-top:14px;
+  border-top:1px solid rgba(163,130,47,.22);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold-ink);
+}
+.greet-credit b{font-weight:700;color:var(--accent-deep)}
 .greet .eyebrow{position:relative;text-shadow:0 1px 8px rgba(251,247,238,.7)}
 
 
@@ -1477,13 +1486,15 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.88}
   .input-row .icon-btn{height:42px;width:42px}
   textarea#prompt{font-size:16px}
   .send{height:40px;width:40px}
-  /* simpler, calmer greeting: drop the duplicate brand wordmark + eyebrow on small
-     phones, smaller quote, room to breathe */
-  .greet-brand{display:none}
-  .greet .eyebrow{display:none}
-  .greet{margin:auto 0;padding:0 18px}
+  /* v1.9.2: brand + eyebrow RESTORED on phones (user directive — the full
+     'Saint Augustine AI / A Catholic companion in the Sacred Tradition'
+     heading must show on mobile too). Quote stays phone-sized. */
+  .greet{margin:auto 0;padding:22px 20px}
+  .greet-brand{display:block;font-size:24px;margin:0 auto 8px}
+  .greet .eyebrow{display:block;margin-bottom:12px;font-size:9.5px;letter-spacing:.14em}
   .greet h1{font-size:clamp(19px,5vw,26px);line-height:1.32;max-width:24ch}
   .greet .sub{display:none}
+  .greet-credit{font-size:9px;letter-spacing:.12em;margin-top:16px;padding-top:10px}
   .stage{padding-bottom:calc(118px + env(safe-area-inset-bottom))}
 }
 
@@ -2289,7 +2300,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <p class="eyebrow">A Catholic companion to the Sacred Tradition</p>
             <h1>&ldquo;You have made us for Yourself, O Lord, and our heart is restless until it rests in You.&rdquo;</h1>
             <p class="sub" id="greetSub">Ask St. Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
-          </section>
+            <p class="greet-credit">Created by <b>Tyler Simons</b> · Seton Hall Prep</p>
+        </section>
 
   <!-- THREAD (hidden until first send) -->
     <section class="thread" id="thread" aria-live="off"></section><!-- polite is toggled on stream end (D55: no chunk spam) -->
