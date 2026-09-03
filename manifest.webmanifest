@@ -1,0 +1,15 @@
+{
+  "name": "Saint Augustine AI — A Catholic companion to the Sacred Tradition",
+  "short_name": "St. Augustine AI",
+  "description": "Ask in the voice of Augustine of Hippo. A Catholic AI companion built by Tyler Simons, Seton Hall Prep.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4efe6",
+  "theme_color": "#f4efe6",
+  "icons": [
+    { "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "assets/heart.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
