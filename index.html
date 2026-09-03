@@ -84,11 +84,10 @@ a{color:inherit}
 .bg .photo{
   position:absolute;left:-4%;top:-4%;width:108%;height:108%;
   background:url("assets/bg.jpg") center/cover no-repeat;
-  /* PERF v1.9: the ONE blur that matters. A single static blur on the photo
-     layer (composited once, cached) gives every translucent card a soft
-     backdrop to float over — the frosted-glass read without 20+ per-card
-     backdrop-filters re-sampling every scroll frame. */
-  filter:blur(14px) saturate(1.05);
+  /* v1.9.1: user directive — background stays CLEAR/sharp. This layer is
+     position:fixed and never scrolls, so sharpness costs no frames; the
+     scroll-perf win came from removing per-card backdrop-filters, which
+     stays. Translucent cards read as glass over the sharp photo. */
   will-change:transform;
   transform:translate3d(var(--px,0px), var(--py,0px), 0);
 }
@@ -318,7 +317,15 @@ a{color:inherit}
 .stage::-webkit-scrollbar-thumb{background:rgba(30,26,20,0.14);border-radius:99px;border:3px solid transparent;background-clip:content-box}
 
 /* ---------- Empty / greeting ---------- */
-.greet{width:min(680px,100%);text-align:center;margin:0 auto;position:relative}
+.greet{width:min(680px,100%);text-align:center;margin:0 auto;position:relative;
+  /* v1.9.1: sharp-photo readability — the same soft glass veil the phone gets.
+     Static (not in-scroll-position: it scrolls, but as ONE surface with no
+     backdrop filter inside the veil) — cost is a single blur, not per-card. */
+  padding:34px 36px 30px;border-radius:24px;
+  background:var(--glass);
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.45), var(--shadow-sm);
+}
 .greet-brand{
   display:block;font-family:var(--display);font-weight:400;font-size:30px;line-height:1;
   letter-spacing:-.02em;color:var(--ink);margin:0 auto 18px;
@@ -328,8 +335,10 @@ a{color:inherit}
   font-family:var(--display);font-weight:300;
   font-size:clamp(28px,5vw,44px);line-height:1.16;letter-spacing:-.01em;
   margin:0 auto;max-width:18ch;color:var(--ink);
+  text-shadow:0 1px 2px rgba(251,247,238,.55), 0 0 22px rgba(251,247,238,.45);
 }
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--ink-soft);font-size:15px;line-height:1.5;text-shadow:0 1px 10px rgba(250,247,240,0.75)}
+.greet .eyebrow{position:relative;text-shadow:0 1px 8px rgba(251,247,238,.7)}
 
 
 /* ---------- Daily Devotional ---------- */
@@ -904,7 +913,7 @@ textarea#prompt{
   font-family:var(--body);font-size:16px;line-height:1.5;color:var(--ink);
   padding:11px 4px;max-height:180px;min-height:24px;
 }
-textarea#prompt::placeholder{color:var(--muted)}
+textarea#prompt::placeholder{color:var(--ink-soft);opacity:.88}
 .send{
   height:44px;width:44px;flex:none;border-radius:50%;border:0;
   background:var(--accent-deep);color:#fbf7ee;display:grid;place-items:center;
