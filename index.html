@@ -7,7 +7,8 @@
 <meta name="description" content="Ask in the voice of Augustine of Hippo. A Catholic AI companion built by Tyler Simons, Seton Hall Prep. Front-end preview." />
 <meta name="theme-color" content="#f4efe6" />
 <meta name="author" content="Tyler Simons, Seton Hall Prep" />
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
+<link rel="icon" href="assets/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
 <link rel="manifest" href="manifest.webmanifest" />
 <!-- Open Graph / social -->
 <meta property="og:title" content="Saint Augustine AI — A Catholic companion to the Sacred Tradition" />
@@ -374,6 +375,7 @@ a{color:inherit}
 .pray-chip{border:1px solid var(--border);background:var(--glass);color:var(--ink-soft);font-size:12px;font-weight:600;font-family:var(--body);
   padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .14s ease}
 .pray-chip:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);color:var(--ink)}
+.pray-chip:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent)}
 .pray-note{font-size:11px;line-height:1.5;color:var(--muted);margin:0 0 4px;border-top:1px solid var(--border);padding-top:12px}
 
 /* ---------- Top liquid-glass page nav (full width — merged with sidebar) ---------- */
@@ -529,6 +531,7 @@ a{color:inherit}
 .quiz-opts{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
 .quiz-opt{display:block;width:100%;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--border);background:var(--glass);color:var(--ink);font-size:14px;line-height:1.4;font-family:var(--body);cursor:pointer;transition:all .15s ease}
 .quiz-opt:hover:not(.disabled){border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 14px rgba(138,108,37,.15)}
+.quiz-opt:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent)}
 .quiz-opt.correct{background:rgba(46,125,50,.12);border-color:#2e7d32;color:#1b5e20;font-weight:600}
 .quiz-opt.wrong{background:rgba(183,28,28,.1);border-color:#c62828;color:#b71c1c}
 .quiz-opt.disabled{opacity:.7;cursor:default;transform:none}
@@ -886,6 +889,18 @@ textarea#prompt::placeholder{color:var(--muted)}
 .send.ready:hover{transform:translateY(-1px) scale(1.03)}
 /* streaming state: the pulse already exists on .send.stop; keep it */
 
+/* C47: composer grip — expands the textarea cap 180→520px for long passages */
+.ta-grip{
+  flex:none;width:30px;height:30px;border:0;background:transparent;color:var(--muted);
+  display:grid;place-items:center;border-radius:8px;cursor:pointer;
+  transition:color .15s ease,background .15s ease;
+}
+.ta-grip:hover{color:var(--gold-ink);background:var(--accent-soft)}
+.ta-grip:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.ta-grip[aria-pressed="true"]{color:var(--gold-ink)}
+.ta-grip[aria-pressed="true"] svg{transform:rotate(180deg)}
+.ta-grip svg{transition:transform .2s ease}
+
 .send .spin{width:18px;height:18px;border:2px solid rgba(251,247,238,.4);border-top-color:#fbf7ee;border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -991,9 +1006,14 @@ textarea#prompt::placeholder{color:var(--muted)}
 
 /* error state (file too big / wrong type) */
 .toast{position:fixed;left:50%;bottom:200px;transform:translateX(-50%);z-index:60;
-  background:rgba(154,59,46,.95);color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;
-  box-shadow:var(--shadow);display:none;animation:rise .2s ease both}
-.toast.show{display:block}
+  background:rgba(44,36,26,.92);color:#fbf7ee;padding:10px 16px;border-radius:999px;font-size:13px;
+  box-shadow:var(--shadow);display:none;animation:rise .2s ease both;align-items:center;gap:9px}
+.toast.show{display:flex}
+.toast .t-ic{flex:none;width:15px;height:15px;display:grid;place-items:center}
+.toast .t-ic svg{width:15px;height:15px}
+.toast.kind-info{background:rgba(44,36,26,.92)}
+.toast.kind-success{background:rgba(46,101,55,.95)}
+.toast.kind-error{background:rgba(154,59,46,.95)}
 .toast-undo{margin-left:12px;padding:2px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
 .toast-undo:hover{background:rgba(255,255,255,.24)}
 
@@ -1250,6 +1270,20 @@ textarea#prompt::placeholder{color:var(--muted)}
   box-shadow:var(--shadow-sm);cursor:pointer;
 }
 .jump-latest.show{display:inline-flex}
+
+/* B27: back-to-top pill on the daily pages (Today/Study/Pray) — same DNA as jump-latest */
+.to-top{
+  position:fixed;right:18px;bottom:calc(96px + env(safe-area-inset-bottom,0));z-index:55;
+  display:none;align-items:center;gap:6px;
+  padding:9px 14px;border-radius:999px;border:1px solid var(--border);
+  background:var(--panel);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);
+  color:var(--ink-soft);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  cursor:pointer;box-shadow:var(--shadow-sm);transition:color .15s ease,transform .15s ease;
+}
+.to-top.show{display:inline-flex}
+.to-top:hover{color:var(--gold-ink);transform:translateY(-1px)}
+.to-top svg{width:13px;height:13px}
+@media (prefers-reduced-motion:reduce){.to-top{transition:none}}
 .jump-latest svg{width:14px;height:14px}
 
 /* skip-to-content (keyboard users) */
@@ -1909,6 +1943,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
       <span>Latest</span>
     </button>
+    <!-- Back to top (daily pages) -->
+    <button class="to-top" id="toTop" aria-label="Back to top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      <span>Top</span>
+    </button>
     </div><!-- /page-chat -->
 
     <!-- ===== STUDY PAGE ===== -->
@@ -2206,6 +2245,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05 12.5 19.9a5 5 0 0 1-7.07-7.07l8.49-8.49a3 3 0 0 1 4.24 4.24l-8.49 8.49a1 1 0 0 1-1.41-1.41l7.78-7.78"/></svg>
       </button>
       <textarea id="prompt" rows="1" placeholder="Message St. Augustine…" aria-label="Message St. Augustine" enterkeyhint="send" autocapitalize="sentences" autocomplete="off"></textarea>
+      <button class="ta-grip" id="taGrip" title="Expand composer" aria-label="Expand composer" aria-pressed="false" aria-expanded="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
       <button class="icon-btn controls-toggle" id="controlsToggle" title="Message options" aria-label="Message options (model and depth)" aria-expanded="false">
         <svg class="ct-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
       </button>
@@ -2511,6 +2551,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     if(stage && PAGE && PAGE_SCROLL[PAGE]!==undefined) PAGE_SCROLL[PAGE]=stage.scrollTop;
     ["chat","study","today","prayer"].forEach(k=>{ if(PAGE_ELS[k].wrap) PAGE_ELS[k].wrap.classList.toggle("on", k===p); });
     $$(".nav-tab").forEach(b=>{ const on=b.dataset.page===p; b.classList.toggle("on",on); b.setAttribute("aria-selected", on?"true":"false"); b.setAttribute("aria-current", on?"page":null); });
+    if(typeof updateToTop==="function") updateToTop();
     renderSessions();
     if(activeId){ loadSession(activeId); }
     else { thread.innerHTML=""; if(greet) greet.hidden=false; }
@@ -2987,14 +3028,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     });
   }
 
-  /* ---- textarea auto-grow + enable send ---- */
+  /* ---- textarea auto-grow + enable send (C47: grip expands cap 180→520) ---- */
+  let taExpanded=false;
   function syncSend(){ const streaming=send.classList.contains("stop"); const has=prompt.value.trim()!=="" || files.length>0; send.disabled = !has && !streaming; send.classList.toggle("ready", has && !streaming); }
   prompt.addEventListener("input",()=>{
     prompt.style.height="auto";
-    prompt.style.height=Math.min(prompt.scrollHeight,180)+"px";
+    prompt.style.height=Math.min(prompt.scrollHeight, taExpanded?520:180)+"px";
     syncSend();
   });
   prompt.addEventListener("keydown",e=>{
+    if(e.key==="Escape" && taExpanded && document.activeElement===prompt){ toggleGrip(); return; }
     const sendWith=(prefs.convo && prefs.convo.sendWith)||"enter";
     if(sendWith==="enter"){
       if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); doSend(); }
@@ -3002,6 +3045,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(e.key==="Enter" && e.shiftKey){ e.preventDefault(); doSend(); }
     }
   });
+  function toggleGrip(){
+    taExpanded=!taExpanded;
+    const g=$("#taGrip");
+    if(g){ g.setAttribute("aria-pressed", taExpanded?"true":"false"); g.title=taExpanded?"Collapse composer":"Expand composer"; }
+    prompt.style.height="auto";
+    prompt.style.height=Math.min(prompt.scrollHeight, taExpanded?520:180)+"px";
+    prompt.focus();
+  }
+  const gripBtn=$("#taGrip");
+  if(gripBtn) gripBtn.addEventListener("click",toggleGrip);
 
   /* ---- model chooser ---- */
   const IS_PHONE=()=>window.matchMedia("(max-width:768px)").matches;
@@ -3047,7 +3100,18 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   function ext(n){ return (n.split(".").pop()||"").toLowerCase(); }
   function fmt(b){ return b<1024?b+" B":b<1048576?(b/1024).toFixed(0)+" KB":(b/1048576).toFixed(1)+" MB"; }
-  function showToast(m, opts){ toast.textContent=m; toast.classList.add("show"); clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"), opts&&opts.sticky?60000:2600); }
+  /* C45: toast with kind icon — success=check, error=alert, info=wordless ink pill */
+  const TOAST_ICONS={
+    success:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    error:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg>'
+  };
+  function showToast(m, opts){
+    const kind=(opts&&opts.kind)|| (/(copied|saved|restored|pinned|done|✓|exported|complete|success)/i.test(m) ? "success" : (/fail|error|too large|unsupported|wrong/i.test(m) ? "error" : "info"));
+    toast.className="toast show kind-"+kind;
+    const ic=TOAST_ICONS[kind];
+    toast.innerHTML=(ic?'<span class="t-ic">'+ic+'</span>':"")+"<span>"+esc(m)+"</span>";
+    clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"), opts&&opts.sticky?60000:2600);
+  }
 
   /* ---- premium confirm dialog (replaces window.confirm) with optional Undo ---- */
   const confirmScrim=$("#confirmScrim"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel"),
@@ -3077,13 +3141,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   /* ---- undoable toast: runs `undoFn` if the user taps Undo within 8s ---- */
   function toastUndo(msg, undoFn){
-    // staged action bar inside the toast
-    toast.innerHTML="";
+    toast.innerHTML='<span class="t-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span>';
     const span=document.createElement("span"); span.textContent=msg;
     const btn=document.createElement("button"); btn.className="toast-undo"; btn.textContent="Undo";
     btn.addEventListener("click",()=>{ clearTimeout(showToast._t); toast.classList.remove("show"); undoFn(); });
     toast.appendChild(span); toast.appendChild(btn);
-    toast.classList.add("show");
+    toast.className="toast show kind-info";
     clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"),8000);
   }
 
@@ -3654,6 +3717,18 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   if(stage) stage.addEventListener("scroll", updateJump, {passive:true});
   if(jumpLatest) jumpLatest.addEventListener("click",()=>{ stage.scrollTop=stage.scrollHeight; updateJump(); });
   updateJump();
+
+  /* ---- B27: back-to-top pill on the daily pages (not Chat — that's jump-latest's job) ---- */
+  const toTop=$("#toTop");
+  function updateToTop(){
+    if(!toTop) return;
+    const deep = stage.scrollTop > 320;
+    const daily = PAGE==="study" || PAGE==="today" || PAGE==="prayer";
+    toTop.classList.toggle("show", deep && daily);
+  }
+  if(stage) stage.addEventListener("scroll", updateToTop, {passive:true});
+  if(toTop) toTop.addEventListener("click",()=>{ stage.scrollTo({top:0,behavior:"smooth"}); });
+  updateToTop();
 
   /* ---- mobile: horizontal swipe switches tabs (vertical scroll untouched) ---- */
   (function swipeTabs(){
@@ -4306,10 +4381,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(!r.ok) throw new Error("saint "+r.status);
             return r.json();
           }).then(applySaint).catch(()=>{
-            // Total failure: show a quiet, on-theme default rather than a broken card.
-            if(saintBio) saintBio.textContent="The saint of the day is waiting on Franciscan Media. Open the link below to meet them.";
+            // Total failure: quiet default + a retry affordance (Render cold-starts happen)
+            if(saintBio) saintBio.innerHTML='The saint of the day is waiting on Franciscan Media. Open the link below to meet them. <button class="dp-cta dp-cta-ghost" id="saintRetry" style="margin-top:10px;display:inline-block">Try again</button>';
             if(saintConnWrap) saintConnWrap.hidden=true;
             if(saintAsk) saintAsk.disabled=false;
+            const sr=document.getElementById("saintRetry");
+            if(sr) sr.addEventListener("click",()=>{ if(saintCard) delete saintCard.dataset.loaded; loadSaint(); });
           });
         }
 
@@ -4671,7 +4748,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               '<div class="dp-reading"><span class="rl">'+esc(label)+'</span><p>'+esc(txt)+'</p></div>').join("");
             if(d.link){ const l=$('#dpReadingsLink'); if(l && d.link) l.href=d.link; }
           }).catch(e=>{
-            dpReadings.innerHTML='<p class="dp-error">'+esc(e&&e.message||"Could not load today\'s readings.")+' They are always waiting on the USCCB site.</p>';
+            dpReadings.innerHTML='<p class="dp-error">'+esc(e&&e.message||"Could not load today's readings.")+' They are always waiting on the USCCB site.</p><button class="dp-cta dp-cta-ghost" id="readingsRetry" style="margin-top:10px">Try again</button>';
+            const rr=document.getElementById("readingsRetry");
+            if(rr) rr.addEventListener("click",()=>{ delete dpReadings.dataset.loaded; loadDailyReadings(); });
           });
         }
 
