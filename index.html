@@ -343,19 +343,84 @@ a{color:inherit}
 .greet-credit{
   margin:22px auto 0;padding-top:14px;
   border-top:1px solid rgba(163,130,47,.22);
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--gold-ink);
+  font-family:var(--mono);font-size:clamp(9px,2.2vw,10.5px);
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold-ink);opacity:.95;
 }
 .greet-credit b{font-weight:700;color:var(--accent-deep)}
 .greet .eyebrow{position:relative;text-shadow:0 1px 8px rgba(251,247,238,.7)}
 
 
-/* ---------- Daily Devotional ---------- */
+/* ══════════════════════════════════════════════════════════════════════
+   v2.0 MOBILE CLEAN PASS — the ChatGPT/Claude/Gemini pattern:
+   assistant text flows quiet and UNBOXED (user bubbles are the only
+   cards), actions collapse to small ghost icons, composer decluttered.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width:768px){
+
+  /* 1. ASSISTANT REPLIES: no card, no border, no left rail, no header —
+        just the words, full width, on the theme. The persona lives in a
+        quiet 10px label above the first line. */
+  .msg.assistant{flex-direction:column;gap:2px}
+  .msg.assistant .av{display:none}
+  .msg.assistant .bubble{
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none !important;
+    max-width:100% !important;
+    padding:2px 2px 0 !important;
+  }
+  .msg.assistant .bubble::before{display:none}
+  .msg.assistant .bubble .who{
+    font-family:var(--body);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--gold-ink);font-weight:700;margin:0 0 6px;
+  }
+  .msg.assistant .bubble .ts{font-size:9px;opacity:.75;margin-top:6px}
+  .msg.assistant .reasoning-box{margin:0 0 6px}
+  .msg.assistant .bubble p{font-size:15.5px;line-height:1.58;max-width:58ch}
+  .msg.assistant .bubble::before{display:none}
+
+  /* 2. USER BUBBLES: the ONLY boxed messages — quiet warm tint, no glow. */
+  .msg.user .bubble{
+    max-width:84% !important;
+    background:rgba(196,160,72,.22);
+    border:0 !important;
+    border-radius:18px;
+    box-shadow:none !important;
+  }
+
+  /* 3. ACTIONS: pure ghost — no bg, no border, gold-ink only on press.
+        Matches ChatGPT/Claude mobile: actions are invisible until needed. */
+  .msg .acts{padding-left:0 !important;gap:6px;margin-top:6px}
+  .msg .acts .act{
+    min-height:34px !important;height:34px !important;padding:0 8px;
+    font-size:11px;border-radius:8px;
+    background:transparent !important;border:0 !important;
+    color:var(--ink-soft) !important;
+    backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+    box-shadow:none !important;
+    transition:color .15s ease;
+  }
+  .msg .acts .act:active{color:var(--gold-ink) !important;transform:scale(.92)}
+  .msg .acts .act svg{width:13px;height:13px;opacity:.7}
+  .msg .acts .act:active svg{opacity:1}
+  .msg .acts .act-sep{display:none}
+
+  /* 4. COMPOSER: strip to essentials — attach · prompt · send. Grip +
+        kebab merge into ONE kebab (grip stays available when expanded). */
+  .input-row .icon-btn[aria-label="Attach files"]{width:40px;height:40px}
+  .ta-grip{display:none}
+  .composer.controls-open .ta-grip{display:grid}
+
+  /* 5. MESSAGE SPACING: 20px rhythm between exchanges (research-backed). */
+  .thread{gap:0}
+  .msg{gap:0;margin-bottom:20px}
+  .msg.user{margin-bottom:22px}
+}
+
 .daily{position:relative;width:min(640px,100%);margin:22px auto 0;padding:18px 20px 16px;text-align:left;
-  background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);border-radius:18px;
+  background:rgba(250,246,237,.88);border:1px solid var(--border);border-top-color:var(--border-light);border-radius:18px;
   box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.6)}
-/* PERF: .daily is in-scroll — tint, not backdrop-filter (see .dp-card note) */
-@media (min-width:769px){ .daily{background:var(--card)} }
 .daily-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
 .daily-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-weight:600;padding:3px 9px;border-radius:999px;background:rgba(163,130,47,.08);border:1px solid rgba(163,130,47,.28)}
 .daily-shuf{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--glass-strong);color:var(--ink-soft);
@@ -1493,8 +1558,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.88}
   .greet-brand{display:block;font-size:24px;margin:0 auto 8px}
   .greet .eyebrow{display:block;margin-bottom:12px;font-size:9.5px;letter-spacing:.14em}
   .greet h1{font-size:clamp(19px,5vw,26px);line-height:1.32;max-width:24ch}
-  .greet .sub{display:none}
-  .greet-credit{font-size:9px;letter-spacing:.12em;margin-top:16px;padding-top:10px}
+  .greet .sub{display:block;margin:14px auto 0;max-width:40ch;color:var(--ink-soft);font-size:14px;line-height:1.55;text-shadow:0 1px 8px rgba(250,247,240,0.75)}
   .stage{padding-bottom:calc(118px + env(safe-area-inset-bottom))}
 }
 
@@ -1715,11 +1779,12 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   }
   .composer{
     pointer-events:auto;
-    border-radius:24px;
+    border-radius:22px;
     padding:5px 5px 5px 2px !important;
     gap:0 !important;
-    background:rgba(251,247,238,.92);
-    box-shadow:0 12px 38px rgba(70,52,16,.22), inset 0 0 0 1px rgba(255,255,255,.65);
+    background:rgba(251,247,238,.86);
+    border:1px solid rgba(255,255,255,.50);
+    box-shadow:0 4px 16px rgba(70,52,16,.12);
   }
   textarea#prompt{flex:1 1 auto;min-width:0 !important;min-height:44px;padding:11px 6px !important;font-size:16px;line-height:1.45 !important}
   textarea#prompt::placeholder{color:var(--ink-soft);opacity:.85}
@@ -1727,7 +1792,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .input-row .icon-btn{width:44px;height:44px;flex:none}
   .ta-grip{width:38px;height:44px;flex:none}
   .controls-toggle{width:38px;height:44px;flex:none}
-  .send{width:46px;height:46px;flex:none;box-shadow:0 4px 14px rgba(138,108,37,.22)}
+  .send{width:44px;height:44px;flex:none;box-shadow:0 2px 8px rgba(138,108,37,.14)}
   .send[disabled]{background:rgba(44,36,26,.34) !important;box-shadow:none}
   .composer.controls-open .controls{max-height:64px !important;flex-direction:row;align-items:center;gap:6px;margin:4px 2px 2px !important}
   .composer .controls .model,.composer .controls .reasoning{width:auto;min-width:0}
