@@ -348,6 +348,18 @@ a{color:inherit}
   color:var(--gold-ink);opacity:.95;
 }
 .greet-credit b{font-weight:700;color:var(--accent-deep)}
+/* v2.0.1: starter chips — tappable prompts under the credit line. */
+.greet-sugg{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0;max-width:52ch}
+.sugg{
+  font-family:var(--body);font-size:12.5px;font-weight:500;color:var(--ink);
+  background:rgba(251,247,238,.66);border:1px solid rgba(163,130,47,.30);
+  border-radius:999px;padding:9px 14px;cursor:pointer;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:transform .16s cubic-bezier(.34,1.4,.5,1), background .16s ease, border-color .16s ease;
+}
+.sugg:hover{background:rgba(251,247,238,.9);border-color:rgba(163,130,47,.55);transform:translateY(-1px)}
+.sugg:active{transform:scale(.96)}
+.sugg:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px}
 .greet .eyebrow{position:relative;text-shadow:0 1px 8px rgba(251,247,238,.7)}
 
 
@@ -1761,11 +1773,11 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .topnav .icon-btn{width:42px;height:42px;flex:none}
 
   /* C. STAGE → full-bleed 16px gutters, clears both bars + breathing room
-        (v1.7.1: 190px — the last card fully clears composer + tab bar at rest) */
+        (v2.0.1: 210px — Today's saint-bio card no longer hides behind the dock) */
   .stage{
     padding-top:calc(54px + env(safe-area-inset-top)) !important;
     padding-left:16px !important;padding-right:16px !important;
-    padding-bottom:calc(190px + env(safe-area-inset-bottom)) !important;
+    padding-bottom:calc(210px + env(safe-area-inset-bottom)) !important;
   }
 
   /* D. COMPOSER DOCK → sits ABOVE the tab bar; one row; keyboard-safe */
@@ -1822,7 +1834,8 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   /* H. PAGE HEADS + CARDS + targets (kept from v1.6) */
   .dp-head h2{font-size:20px !important;margin:2px 0 6px !important;font-weight:400}
   .dp-head p{font-size:13px !important;line-height:1.5 !important}
-  .dp-eyebrow{font-size:9.5px !important;letter-spacing:.12em !important}
+  .dp-eyebrow{font-size:9.5px !important;letter-spacing:.12em !important;
+    text-shadow:0 1px 2px rgba(251,247,238,.9), 0 0 12px rgba(251,247,238,.8)}
   .dp-head-actions{margin-top:12px}
   .dp-link-btn{font-size:11px;padding:9px 15px;min-height:42px;background:rgba(163,130,47,.14);border-color:rgba(163,130,47,.38);color:var(--accent-deep)}
   .daily-page{padding-left:0 !important;padding-right:0 !important;gap:14px !important}
@@ -2366,6 +2379,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <h1>&ldquo;You have made us for Yourself, O Lord, and our heart is restless until it rests in You.&rdquo;</h1>
             <p class="sub" id="greetSub">Ask St. Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
             <p class="greet-credit">Created by <b>Tyler Simons</b> · Seton Hall Prep</p>
+        <div class="greet-sugg" id="greetSugg" role="list" aria-label="Starter questions">
+          <button class="sugg" role="listitem" data-q="Explain the Confessions in a way a teenager can understand.">Explain the Confessions simply</button>
+          <button class="sugg" role="listitem" data-q="I keep failing at the same sin. Does God grow tired of forgiving me?">I keep failing at the same sin</button>
+          <button class="sugg" role="listitem" data-q="Teach me how to pray like you did, from the heart.">Teach me to pray</button>
+          <button class="sugg" role="listitem" data-q="What is God calling me to do with my life right now?">What is God calling me to?</button>
+        </div>
         </section>
 
   <!-- THREAD (hidden until first send) -->
@@ -2390,7 +2409,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <h2>Study</h2>
           <p>Let St. Augustine teach you by word and by topic — a quote to carry, and a theme drawn from his own writings.</p>
           <div class="dp-head-actions">
-            <button class="dp-link-btn" id="glossaryBtn">Glossary</button>
+            <button class="daily-shuf" id="glossaryBtn" title="Glossary of 32 terms" aria-label="Open glossary"><span>Glossary</span></button>
           </div>
         </div>
 
@@ -2406,8 +2425,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               <button class="daily-shuf icon" id="lessonPrev" title="Previous lesson" aria-label="Previous lesson">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
-              <button class="daily-shuf" id="lessonShuf" title="Another lesson" aria-label="Pick another lesson">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg><span>Another</span>
+              <button class="daily-shuf icon" id="lessonShuf" title="Shuffle to another lesson" aria-label="Shuffle to another lesson">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
               </button>
               <button class="daily-shuf icon" id="lessonNext" title="Next lesson" aria-label="Next lesson">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
@@ -2994,6 +3013,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       PAGE_LAST=p;
     }
     $$(".nav-tab").forEach(b=>{ const on=b.dataset.page===p; b.classList.toggle("on",on); b.setAttribute("aria-selected", on?"true":"false"); b.setAttribute("aria-current", on?"page":null); });
+    /* v2.0.1: contextual composer placeholder — the bar says what it does
+       in THIS tab, killing the "two inputs?" confusion on Pray/Study/Today */
+    {
+      const ph = { chat:"Message St. Augustine…", study:"Ask about this lesson…", prayer:"Turn a worry into prayer…", today:"Ask about today's readings…" };
+      const ta=$("#prompt"); if(ta && ph[p]){ ta.placeholder=ph[p]; ta.setAttribute("aria-label", ph[p].replace(/…$/,"")); }
+    }
     if(typeof updateToTop==="function") updateToTop();
     renderSessions();
     try{ window.dispatchEvent(new Event("pagechange")); }catch(e){}   // drives the sliding tab indicator
@@ -4024,6 +4049,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   function doSend(){ callChat(); }
   send.addEventListener("click",doSend);
+  /* v2.0.1: starter chips — tap fills + focuses the composer (ChatGPT-style;
+     user reviews/edits before sending, never a blind fire) */
+  $$("#greetSugg .sugg").forEach(ch=>{
+    ch.addEventListener("click",()=>{
+      prompt.value=ch.dataset.q||"";
+      prompt.dispatchEvent(new Event("input"));
+      syncSend();
+      prompt.focus();
+      prompt.setSelectionRange(prompt.value.length,prompt.value.length);
+    });
+  });
 
   /* ---- new chat ---- */
   $("#newChat").addEventListener("click",()=>{
