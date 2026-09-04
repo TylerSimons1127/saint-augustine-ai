@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /_/
+Sitemap: https://staugustineai.vercel.app/sitemap.xml
