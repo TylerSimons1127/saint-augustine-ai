@@ -201,7 +201,22 @@ a{color:inherit}
   transition:background .14s ease, border-color .14s ease, color .14s ease;
 }
 .sb-item .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--accent);opacity:.7}
-.sb-item .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:26px}
+.sb-item .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:0}
+/* v2.1: pin/delete live IN the row (right of the title), never overlapping it.
+   Hover-revealed on desktop; always visible on touch (no hover). */
+.sb-item .sbp,.sb-item .sbx{position:static;transform:none;width:26px;height:26px;border-radius:50%;
+  background:transparent;border:1px solid transparent;color:var(--muted);
+  display:grid;place-items:center;cursor:pointer;flex:none;
+  transition:opacity .12s, background .16s, color .16s, border-color .16s}
+.sb-item .sbp{opacity:0}
+.sb-item:hover .sbp,.sb-item:focus-visible .sbp,.sb-item .sbp:focus-visible{opacity:1}
+.sb-item .sbx{opacity:0;color:#9a3b2e}
+.sb-item:hover .sbx,.sb-item:focus-visible .sbx,.sb-item .sbx:focus-visible{opacity:1}
+@media (hover:none){
+  .sb-item .sbp,.sb-item .sbx{opacity:1}
+  .sb-item .sbp{width:30px;height:30px}
+  .sb-item .sbx{width:30px;height:30px;border-color:var(--border);background:var(--glass-strong)}
+}
 .sb-item:hover{background:var(--accent-soft);border-color:var(--border)}
 /* B25: hover preview — a quiet peek at the first exchange */
 .sb-item{position:relative}
@@ -317,15 +332,21 @@ a{color:inherit}
 .stage::-webkit-scrollbar-thumb{background:rgba(30,26,20,0.14);border-radius:99px;border:3px solid transparent;background-clip:content-box}
 
 /* ---------- Empty / greeting ---------- */
+/* v2.1: height-aware greet — the card must truly float between the topnav and
+   the composer on ANY viewport/zoom. Available space = 100dvh - nav(60) - dock
+   (~140) - stage padding. Card caps to that minus breathing room, and type
+   steps down on short screens so nothing is ever clipped or hidden under chrome. */
 .greet{width:min(680px,100%);text-align:center;margin:0 auto;position:relative;
-  /* v1.9.1: sharp-photo readability — the same soft glass veil the phone gets.
-     Static (not in-scroll-position: it scrolls, but as ONE surface with no
-     backdrop filter inside the veil) — cost is a single blur, not per-card. */
+  max-height:calc(100dvh - 250px);
+  overflow:hidden auto;               /* internal scroll only if absurdly short */
+  overscroll-behavior:contain;
   padding:34px 36px 30px;border-radius:24px;
   background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
   backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.45), var(--shadow-sm);
 }
+/* v2.1 note: short-viewport compaction tiers live at the END of the sheet
+   (after base + mobile greet rules) so they win source order. */
 .greet-brand{
   display:block;font-family:var(--display);font-weight:400;font-size:30px;line-height:1;
   letter-spacing:-.02em;color:var(--ink);margin:0 auto 18px;
@@ -529,8 +550,17 @@ a{color:inherit}
 /* page views */
 .page{display:none}
 .page.on{display:flex;flex-direction:column;align-items:center;flex:1;width:100%;min-height:100%}
-/* empty/greeting state: center the greeting, hide the (empty) thread so its 200px padding doesn't push content up */
-#page-chat:has(#greet:not([hidden])){justify-content:center}
+/* v2.1 TRULY-FLOATING GREET — the greet must center in the VISUAL WINDOW
+   (viewport minus topnav minus dock), not the stage's content box (which is
+   shrunk by the 240px dock scroll-padding). Old math: page box = vh-300px,
+   card 565px → pinned flush to nav on every short screen; zoom to 80% grew
+   the box → "floating" again. Fix: measure the window, center in the window. */
+#page-chat:has(#greet:not([hidden])){
+  flex-direction:column;justify-content:center;min-height:auto;
+  /* window = 100dvh − nav(60) − dock visual (~156 incl. its shadow gap) */
+  min-height:calc(100dvh - 216px);
+  padding:0 0 24px;       /* tail-weight so optical center sits slightly high */
+}
 #page-chat:has(#greet:not([hidden])) #thread{display:none}
 .stage{padding-top:calc(60px + env(safe-area-inset-top))}
 
@@ -916,12 +946,9 @@ a{color:inherit}
 .send.stop:hover{background:#c0453a}
 .send.stop .sq{width:14px;height:14px;border-radius:3px;background:#fbf7ee}
 
-/* ---------- Session: delete + rename ---------- */
-.sb-item{position:relative;padding-right:30px}
-.sb-item .sbx{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:30px;height:30px;border:1px solid var(--border);border-radius:50%;background:var(--glass-strong);color:#9a3b2e;display:grid;place-items:center;opacity:1;transition:opacity .12s, background .16s, color .16s;cursor:pointer}
-/* B24: pin control — hidden until hover (or when pinned), sits left of delete */
-.sb-item .sbp{position:absolute;right:40px;top:50%;transform:translateY(-50%);width:28px;height:28px;border:1px solid var(--border);border-radius:50%;background:var(--glass-strong);color:var(--muted);display:grid;place-items:center;opacity:0;transition:opacity .12s, color .16s, background .16s;cursor:pointer}
-.sb-item:hover .sbp,.sb-item:focus-visible .sbp{opacity:1}
+/* ---------- Session: delete + rename (v2.1: buttons are in-row flex children —
+   no absolute positioning, no row padding-right hack) ---------- */
+.sb-item{position:relative}
 .sb-item .sbp:hover{color:var(--gold-ink);background:var(--accent-soft)}
 .sb-item .pin-ic{color:var(--gold-ink);flex:none;margin-right:1px}
 @media (pointer:coarse){ .sb-item .sbp{opacity:1} }
@@ -1861,6 +1888,43 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .msg .acts .act{min-height:40px}
   .disclaimer{display:none !important}
   .sb-peek{display:none !important}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   v2.1 — TRULY-FLOATING GREET: height tiers (moved to END of sheet so they
+   win source order over base .greet-brand/.greet h1/.greet .sub at 367-378
+   and all later mobile blocks; the earlier duplicate tier blocks were dead
+   CSS). Card must float with visible slack top+bottom on EVERY viewport:
+   tall screens get the full-bleed composition, short screens (laptops,
+   100%-zoom-1080p-with-chrome, 125-150% OS scaling, phones) step the rhythm
+   down instead of colliding with the topnav. */
+@media (max-height:820px){
+  .greet{max-height:calc(100dvh - 220px)}
+  .greet-brand{font-size:24px;margin-bottom:10px}
+  .greet h1{font-size:clamp(22px,3.2vw,28px);line-height:1.32;margin-bottom:10px}
+  .greet .sub{margin-top:10px;font-size:13px;line-height:1.5}
+  .greet-credit{margin-top:12px;padding-top:10px}
+  .greet-sugg{margin-top:12px;gap:7px}
+  .sugg{padding:8px 11px;font-size:12px}
+}
+@media (max-height:760px){
+  .greet{max-height:calc(100dvh - 208px)}
+  .greet-brand{font-size:22px;margin-bottom:9px}
+  .greet .eyebrow{margin-bottom:8px;font-size:9.5px;letter-spacing:.12em}
+  .greet h1{font-size:clamp(19px,2.8vw,24px);line-height:1.3;margin-bottom:8px}
+  .greet .sub{margin-top:8px;font-size:12.5px;line-height:1.45}
+  .greet-credit{margin-top:10px;padding-top:8px}
+  .greet-sugg{margin-top:10px;gap:6px}
+  .sugg{padding:7px 10px;font-size:11.5px}
+}
+@media (max-height:700px){
+  .greet{max-height:calc(100dvh - 196px)}
+  .greet-brand{font-size:20px;margin-bottom:7px}
+  .greet h1{font-size:clamp(18px,2.6vw,22px);line-height:1.28;margin-bottom:7px}
+  .greet .sub{display:none}
+  .greet-credit{margin-top:8px;padding-top:7px}
+  .greet-sugg{margin-top:9px}
+  .sugg{padding:7px 10px;font-size:11.5px}
 }
 
 /* ══════════════════════════════════════════════════════════════════════
