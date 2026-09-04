@@ -173,7 +173,7 @@ a{color:inherit}
 .sb-new:hover{background:var(--accent-press);transform:translateY(-1px)}
 .sb-new:active{transform:translateY(0)}
 .sb-new:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
-.sb-select{margin-top:8px;display:flex;align-items:center;justify-content:center;gap:7px;height:40px;border-radius:999px;
+.sb-select{margin-top:6px;display:flex;align-items:center;justify-content:center;gap:7px;height:40px;border-radius:999px;
   border:1px solid var(--border);background:var(--panel);color:var(--ink-soft);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--body);
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);transition:border-color .16s ease,color .16s ease}
 .sb-select:hover{background:var(--accent-soft)}
@@ -192,7 +192,9 @@ a{color:inherit}
 .sb-scroll{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:16px;margin-top:2px;padding-right:2px}
 .sb-scroll::-webkit-scrollbar{width:8px}
 .sb-scroll::-webkit-scrollbar-thumb{background:rgba(30,26,20,0.14);border-radius:99px;background-clip:content-box;border:2px solid transparent}
-.sb-group .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:600;padding:0 8px 6px}
+/* v2.1.1 critic fixes: sidebar labels + row titles step up contrast for scanning */
+.sb-group .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#2a2416;font-weight:700;padding:0 8px 6px}
+.sb-item{color:#26211a}
 .sb-list{display:flex;flex-direction:column;gap:2px}
 .sb-item{
   display:flex;align-items:center;gap:10px;width:100%;text-align:left;
@@ -366,13 +368,13 @@ a{color:inherit}
   border-top:1px solid rgba(163,130,47,.22);
   font-family:var(--mono);font-size:clamp(9px,2.2vw,10.5px);
   letter-spacing:.14em;text-transform:uppercase;
-  color:var(--gold-ink);opacity:.95;
+  color:var(--gold-ink);opacity:1;
   /* v2.0.2: dark-scene legibility — warm halo lifts the 9px mono off any backdrop */
   text-shadow:0 1px 2px rgba(251,247,238,.85), 0 0 10px rgba(251,247,238,.55);
 }
 /* v2.0.2: credit gets dedicated near-ink golds — measured 5.0:1+ on even the
    darkest scene veils (forest/coast), vs 2.8-3.6:1 for the old accent-deep */
-.greet-credit, .greet-credit b{color:#3f330e}
+.greet-credit, .greet-credit b{color:#382c0a}
 .greet-credit b{font-weight:700}
 /* v2.0.1: starter chips — tappable prompts under the credit line. */
 .greet-sugg{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0;max-width:52ch}
@@ -423,7 +425,7 @@ a{color:inherit}
   /* 2. USER BUBBLES: the ONLY boxed messages — quiet warm tint, no glow. */
   .msg.user .bubble{
     max-width:84% !important;
-    background:rgba(196,160,72,.22);
+    background:rgba(196,160,72,.40);
     border:0 !important;
     border-radius:18px;
     box-shadow:none !important;
@@ -734,16 +736,16 @@ a{color:inherit}
 .bubble{
   padding:14px 18px;border-radius:var(--r-m);max-width:min(560px,82%);
   font-size:17px;line-height:1.62;color:var(--ink);
-  background:var(--glass-strong);border:1px solid var(--border);border-top-color:var(--border-light);
+  background:rgba(252,249,241,0.86);border:1px solid var(--border);border-top-color:var(--border-light);
   box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -1px 0 rgba(30,26,20,0.03);
 }
 /* PERF: bubbles are in-scroll — tint instead of backdrop-filter (see .dp-card note) */
-@media (min-width:769px){ .bubble{background:var(--glass-strong)} }
+@media (min-width:769px){ .bubble{background:rgba(252,249,241,0.86)} }
 /* solid-ink fallback so text is always readable even over a dark/busy photo */
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-  .bubble{background:rgba(252,249,241,0.94)}
+  .bubble{background:rgba(252,249,241,0.96)}
 }
-.msg.user .bubble{background:rgba(196,160,72,0.30);border-color:rgba(163,130,47,0.42);color:var(--ink);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.5)}
+.msg.user .bubble{background:rgba(196,160,72,0.46);border-color:rgba(163,130,47,0.46);color:var(--ink);box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.5)}
 .msg.assistant .av{color:var(--ink)}
 .bubble .who{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:600;display:block;margin-bottom:6px}
 .bubble .ubox{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px}
@@ -789,7 +791,7 @@ a{color:inherit}
 @media print{
   html,body{overflow:visible;height:auto;background:#fff}
   .bg,.topnav,.sidebar,.sb-toggle,.dock,.credit-chip,.toast,.settings-sheet,.settings-scrim,
-  .modal-scrim,.palette-scrim,.jump-latest,.skip-link,.sb-scrim,.dp-thread,.lesson-nav,.quote-actions{display:none !important}
+  .modal-scrim,.palette-scrim,.skip-link,.sb-scrim,.dp-thread,.lesson-nav,.quote-actions{display:none !important}
   .stage{position:static;overflow:visible;padding:0}
   .page{display:none !important}
   .page.on{display:block !important;opacity:1;transform:none;animation:none}
@@ -1036,7 +1038,7 @@ textarea#prompt{
   font-family:var(--body);font-size:16px;line-height:1.5;color:var(--ink);
   padding:11px 4px;max-height:180px;min-height:24px;
 }
-textarea#prompt::placeholder{color:var(--ink-soft);opacity:.88}
+textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 .send{
   height:44px;width:44px;flex:none;border-radius:50%;border:0;
   background:var(--accent-deep);color:#fbf7ee;display:grid;place-items:center;
@@ -1424,16 +1426,8 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.88}
 .confirm-btns button:active{transform:scale(.97)}
 .confirm-btns button:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
 
-/* J: jump-to-latest pill (mobile auto-scroll helper) */
-.jump-latest{
-  position:fixed;left:50%;transform:translateX(-50%);
-  bottom:calc(96px + env(safe-area-inset-bottom,0));z-index:55;
-  display:none;align-items:center;gap:6px;
-  height:34px;padding:0 14px;border:1px solid var(--border);border-radius:999px;
-  background:var(--panel);color:var(--ink-soft);font-size:12.5px;font-weight:500;
-  box-shadow:var(--shadow-sm);cursor:pointer;
-}
-.jump-latest.show{display:inline-flex}
+/* J: (v2.1.1) jump-to-latest pill REMOVED per user directive; .to-top below
+   (daily pages) keeps this DNA. */
 
 /* B27: back-to-top pill on the daily pages (Today/Study/Pray) — same DNA as jump-latest */
 .to-top{
@@ -1448,7 +1442,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.88}
 .to-top:hover{color:var(--gold-ink);transform:translateY(-1px)}
 .to-top svg{width:13px;height:13px}
 @media (prefers-reduced-motion:reduce){.to-top{transition:none}}
-.jump-latest svg{width:14px;height:14px}
+
 
 /* skip-to-content (keyboard users) */
 .skip-link{
@@ -1836,7 +1830,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
     box-shadow:0 4px 16px rgba(70,52,16,.12);
   }
   textarea#prompt{flex:1 1 auto;min-width:0 !important;min-height:44px;padding:11px 6px !important;font-size:16px;line-height:1.45 !important}
-  textarea#prompt::placeholder{color:var(--ink-soft);opacity:.85}
+  textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .input-row{gap:2px !important;min-height:52px}
   .input-row .icon-btn{width:44px;height:44px;flex:none}
   .ta-grip{width:38px;height:44px;flex:none}
@@ -1850,7 +1844,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .reasoning .seg{height:34px;font-size:11.5px;padding:0 4px}
 
   /* E. floating pills rise above the tab bar */
-  .jump-latest{bottom:calc(132px + env(safe-area-inset-bottom)) !important}
   .to-top{bottom:calc(132px + env(safe-area-inset-bottom)) !important}
 
   /* F. GREET glass card (kept from v1.6) */
@@ -2463,11 +2456,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   <!-- THREAD (hidden until first send) -->
     <section class="thread" id="thread" aria-live="off"></section><!-- polite is toggled on stream end (D55: no chunk spam) -->
-    <!-- Jump to latest (fixed to stage bottom-right, shows when scrolled up mid-conversation) -->
-    <button class="jump-latest" id="jumpLatest" aria-label="Jump to latest message">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
-      <span>Latest</span>
-    </button>
+    <!-- (v2.1.1: jump-latest button removed per user directive — auto-scroll still
+         lands you at the latest message when near the bottom; scroll listeners
+         now only feed to-top on daily pages) -->
     <!-- Back to top (daily pages) -->
     <button class="to-top" id="toTop" aria-label="Back to top">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
@@ -3327,7 +3318,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       setActive(id);
       if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
       // land on the latest message, like ChatGPT/Claude — not the top of a long thread
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{ stage.scrollTop=stage.scrollHeight; if(jumpLatest) jumpLatest.classList.add("hidden"); }));
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ stage.scrollTop=stage.scrollHeight; }));
     }
     function recordSession(firstMsg, assistantReply){
       if(!history.length) return;
@@ -4272,15 +4263,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     toastUndo("All conversations deleted",()=>{ sessions=snapshot; activeId=snapActive; saveSessions(); renderSessions(); showToast("Restored ✓"); });
   });
 
-  /* ---- J: auto-scroll to latest + jump-to-latest pill ---- */
-  const jumpLatest=$("#jumpLatest");
+  /* ---- J: auto-scroll to latest (v2.1.1: jump-latest pill removed per user
+     directive — smart scroll stays: lands you at the newest message only when
+     you're already near the bottom, never yanks you mid-read) ---- */
   function nearBottom(){ return stage.scrollHeight - stage.scrollTop - stage.clientHeight < 80; }
-  function updateJump(){ if(jumpLatest && thread) jumpLatest.classList.toggle("show", !nearBottom() && !thread.hidden); }
-  // auto-scroll only if the user is already near the bottom (don't yank them down mid-read)
-  function maybeScroll(){ if(nearBottom()) stage.scrollTop=stage.scrollHeight; else updateJump(); }
-  if(stage) stage.addEventListener("scroll", updateJump, {passive:true});
-  if(jumpLatest) jumpLatest.addEventListener("click",()=>{ stage.scrollTop=stage.scrollHeight; updateJump(); });
-  updateJump();
+  function maybeScroll(){ if(nearBottom()) stage.scrollTop=stage.scrollHeight; }
 
   /* ---- B27: back-to-top pill on the daily pages (not Chat — that's jump-latest's job) ---- */
   const toTop=$("#toTop");
