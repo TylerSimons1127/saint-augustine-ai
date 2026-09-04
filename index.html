@@ -40,7 +40,7 @@
   --glass:rgba(255,252,245,0.34);
     --glass-strong:rgba(252,249,241,0.66);
   --panel:rgba(250,246,237,0.94);  /* near-opaque warm panel for menus/choosers so text stays crisp */
-  --card:rgba(250,246,237,0.82);   /* daily cards: mostly opaque so text is always viewable over the photo */
+  --card:rgba(250,246,237,0.90);   /* v2.0.2: 82→90% — critics flagged text wash-out over bright skies; glass reads identical, readability wins */
   --border:rgba(30,26,20,0.10);
   --border-light:rgba(255,255,255,0.72);
   --accent:#a3822f;          /* antique gold, desaturated */
@@ -322,7 +322,7 @@ a{color:inherit}
      Static (not in-scroll-position: it scrolls, but as ONE surface with no
      backdrop filter inside the veil) — cost is a single blur, not per-card. */
   padding:34px 36px 30px;border-radius:24px;
-  background:var(--glass);
+  background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
   backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.45), var(--shadow-sm);
 }
@@ -346,8 +346,13 @@ a{color:inherit}
   font-family:var(--mono);font-size:clamp(9px,2.2vw,10.5px);
   letter-spacing:.14em;text-transform:uppercase;
   color:var(--gold-ink);opacity:.95;
+  /* v2.0.2: dark-scene legibility — warm halo lifts the 9px mono off any backdrop */
+  text-shadow:0 1px 2px rgba(251,247,238,.85), 0 0 10px rgba(251,247,238,.55);
 }
-.greet-credit b{font-weight:700;color:var(--accent-deep)}
+/* v2.0.2: credit gets dedicated near-ink golds — measured 5.0:1+ on even the
+   darkest scene veils (forest/coast), vs 2.8-3.6:1 for the old accent-deep */
+.greet-credit, .greet-credit b{color:#3f330e}
+.greet-credit b{font-weight:700}
 /* v2.0.1: starter chips — tappable prompts under the credit line. */
 .greet-sugg{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:18px auto 0;max-width:52ch}
 .sugg{
@@ -360,7 +365,8 @@ a{color:inherit}
 .sugg:hover{background:rgba(251,247,238,.9);border-color:rgba(163,130,47,.55);transform:translateY(-1px)}
 .sugg:active{transform:scale(.96)}
 .sugg:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px}
-.greet .eyebrow{position:relative;text-shadow:0 1px 8px rgba(251,247,238,.7)}
+.greet .eyebrow{position:relative;text-shadow:0 1px 8px rgba(251,247,238,.7), 0 0 14px rgba(251,247,238,.5)}
+.greet-brand{text-shadow:0 1px 3px rgba(251,247,238,.6), 0 0 16px rgba(251,247,238,.4)}
 
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -483,6 +489,9 @@ a{color:inherit}
   padding:7px 12px;border-radius:999px;cursor:pointer;transition:all .14s ease}
 .pray-chip:hover{background:var(--accent-soft);border-color:rgba(163,130,47,.4);color:var(--ink)}
 .pray-chip:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft);border-color:var(--accent)}
+/* v2.0.2: the featured chip (Guided Examen) gets a quiet gold hairline —
+   featured-ness without an icon-inconsistency tell */
+.pray-chip.featured{border-color:rgba(163,130,47,.45);color:var(--gold-ink);background:rgba(163,130,47,.08)}
 .pray-note{font-size:11px;line-height:1.5;color:var(--muted);margin:0 0 4px;border-top:1px solid var(--border);padding-top:12px}
 
 /* ---------- Top liquid-glass page nav (full width — merged with sidebar) ---------- */
@@ -1841,7 +1850,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .daily-page{padding-left:0 !important;padding-right:0 !important;gap:14px !important}
   .dp-card{padding:16px 16px 18px !important;border-radius:20px !important}
   .dp-card h3{font-size:15px !important}
-  .dp-reading p{line-height:1.62 !important}
+  .dp-reading p{line-height:1.78 !important}
   .dp-reading .rl{color:var(--accent-deep) !important;letter-spacing:.1em}
   .dp-link{color:var(--accent-deep) !important;font-weight:600}
   .quiz-opt{min-height:48px;padding:13px 14px !important;font-size:14.5px !important}
@@ -2655,7 +2664,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <button class="pray-chip" id="tradMorning">Morning Offering</button>
             <button class="pray-chip" id="tradLectio">Lectio Divina</button>
             <button class="pray-chip" id="tradExamen">The Examen</button>
-            <button class="pray-chip" id="examenGuided" title="A guided five-step walkthrough">Guided Examen ✦</button>
+            <button class="pray-chip featured" id="examenGuided" title="A guided five-step walkthrough">Guided Examen</button>
             <button class="pray-chip" id="tradRest">Prayer before rest</button>
             <button class="pray-chip" id="tradSpirit">Holy Spirit Prayer</button>
           </div>
