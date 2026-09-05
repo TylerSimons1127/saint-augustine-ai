@@ -194,8 +194,13 @@ a{color:inherit}
 .sb-scroll::-webkit-scrollbar-thumb{background:rgba(30,26,20,0.14);border-radius:99px;background-clip:content-box;border:2px solid transparent}
 /* v2.1.1 critic fixes: sidebar labels + row titles step up contrast for scanning */
 .sb-group .lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#2a2416;font-weight:700;padding:0 8px 6px}
+/* v2.2: .sb-group is JS-set to inline display:flex (to hide empty groups) but
+   flex-direction defaults to ROW — that put the label and the session list
+   SIDE BY SIDE (label column ~72px) and squeezed every session title into a
+   161px column. Fix: always column, list grows full width. */
+.sb-group{display:flex;flex-direction:column;width:100%;min-width:0}
 .sb-item{color:#26211a}
-.sb-list{display:flex;flex-direction:column;gap:2px}
+.sb-list{display:flex;flex-direction:column;gap:2px;align-items:stretch}
 .sb-item{
   display:flex;align-items:center;gap:10px;width:100%;text-align:left;
   padding:9px 10px;border-radius:var(--r-s);border:1px solid transparent;
@@ -539,7 +544,10 @@ a{color:inherit}
 .nav-tab.on{color:#fbf7ee;background:var(--accent-deep);box-shadow:0 4px 12px rgba(108,88,38,.35)}
 .nav-tab.on svg{color:#fbf7ee}
 @media (max-width:600px){
-  .topnav .nav-brand em{display:none}
+  /* v2.2: em kept visible — on phones the topnav no longer holds the tabs
+     (they're in the bottom dock), so 'AugustineAI' has room and the brand
+     reads complete instead of a floating 'Saint'. */
+  .topnav .nav-brand{font-size:15px}
   .topnav .nav-tabs{margin-left:52px;width:auto}
   .nav-tab{flex:1;justify-content:center;padding:8px 12px;font-size:12.5px;white-space:nowrap}
 }
@@ -1817,15 +1825,18 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .composer{
     pointer-events:auto;
     border-radius:22px;
-    padding:5px 5px 5px 2px !important;
-    gap:0 !important;
+    /* v2.2: was 5px 5px 5px 2px — asymmetric left/right = the "warped" bar.
+       Symmetric now; textarea vertically centered against the 44px buttons. */
+    padding:6px 8px !important;
+    gap:4px !important;
     background:rgba(251,247,238,.86);
     border:1px solid rgba(255,255,255,.50);
     box-shadow:0 4px 16px rgba(70,52,16,.12);
   }
-  textarea#prompt{flex:1 1 auto;min-width:0 !important;min-height:44px;padding:11px 6px !important;font-size:16px;line-height:1.45 !important}
+  /* textarea height-capped so it centers in the 44px button row, not sag lower */
+  textarea#prompt{flex:1 1 auto;min-width:0 !important;min-height:44px;padding:11px 6px !important;font-size:16px;line-height:1.45 !important;align-self:center}
   textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .input-row{gap:2px !important;min-height:52px}
+  .input-row{align-items:center;gap:6px !important;min-height:52px}
   .input-row .icon-btn{width:44px;height:44px;flex:none}
   /* v2.1.2: grip gone; keep controls-toggle + send at 44px in the phone dock */
   .controls-toggle{width:38px;height:44px;flex:none}
