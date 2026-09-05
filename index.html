@@ -219,11 +219,9 @@ a{color:inherit}
 .sb-item:hover .sbp,.sb-item:focus-visible .sbp,.sb-item .sbp:focus-visible{opacity:1}
 .sb-item .sbx{opacity:0;color:#9a3b2e}
 .sb-item:hover .sbx,.sb-item:focus-visible .sbx,.sb-item .sbx:focus-visible{opacity:1}
-@media (hover:none){
-  .sb-item .sbp,.sb-item .sbx{opacity:1}
-  .sb-item .sbp{width:30px;height:30px}
-  .sb-item .sbx{width:30px;height:30px;border-color:var(--border);background:var(--glass-strong)}
-}
+/* v2.2.1: touch rows show NO pin/delete circles (user directive — "remove this
+   from all conversations"). On phones, deleting/pinning happens through the
+   Select-conversations bulk mode (tap rows to check them); rows stay clean. */
 .sb-item:hover{background:var(--accent-soft);border-color:var(--border)}
 /* B25: hover preview — a quiet peek at the first exchange */
 .sb-item{position:relative}
@@ -964,7 +962,8 @@ a{color:inherit}
 .sb-item{position:relative}
 .sb-item .sbp:hover{color:var(--gold-ink);background:var(--accent-soft)}
 .sb-item .pin-ic{color:var(--gold-ink);flex:none;margin-right:1px}
-@media (pointer:coarse){ .sb-item .sbp{opacity:1} }
+/* v2.2.1: the old (pointer:coarse) always-show-pin rule removed — matches the
+   touch cleanup above; pinned rows still carry the small gold pin glyph. */
 .sb-item:hover .sbx,.sb-item:focus-within .sbx{opacity:1}
 .sb-item .sbx:hover{color:#fff;background:#b13a2c;border-color:#b13a2c}
 .sb-item .txt[contenteditable=\"true\"]{outline:none;cursor:text;background:rgba(255,255,255,.4);border-radius:5px;padding:0 3px}
