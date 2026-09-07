@@ -289,10 +289,13 @@ a{color:inherit}
 .search svg{flex:none;color:var(--ink-soft)}
 .search input{
   border:0;background:transparent;outline:none;width:100%;
-  font-family:var(--body);font-size:14px;color:var(--ink);
+  font-family:var(--body);font-size:16px;color:var(--ink);
 }
 .search input::placeholder{color:var(--ink-soft);font-weight:500}
 
+/* Global touch hygiene: kill 300ms legacy tap delay + gray tap flash on mobile. */
+html{-webkit-tap-highlight-color:transparent}
+button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reasoning{touch-action:manipulation}
 .icon-btn{
   height:44px;min-width:44px;padding:0 12px;
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
@@ -454,7 +457,7 @@ a{color:inherit}
 
   /* 4. COMPOSER: strip to essentials — attach · prompt · send. Grip +
         kebab merge into ONE kebab (grip stays available when expanded). */
-  .input-row .icon-btn[aria-label="Attach files"]{width:40px;height:40px}
+  .input-row .icon-btn[aria-label="Attach files"]{width:44px;height:44px}
   /* (v2.1.2: grip removed everywhere; the desktop controls row no longer needs to re-show it) */
 
   /* 5. MESSAGE SPACING: 20px rhythm between exchanges (research-backed). */
@@ -501,7 +504,7 @@ a{color:inherit}
 .pray-field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .pray-field span{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
 .pray-field input{width:100%;border:1px solid var(--border);background:var(--glass);color:var(--ink);font-family:var(--body);
-  font-size:14px;padding:10px 12px;border-radius:11px}
+  font-size:16px;padding:10px 12px;border-radius:11px}
 .pray-field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(163,130,47,.18)}
 .pray-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .pray-mode{display:flex;flex-direction:column;gap:5px;text-align:left;border:1px solid var(--border);background:var(--glass);
@@ -551,7 +554,7 @@ a{color:inherit}
 }
 .topnav .nav-actions{display:flex;align-items:center;gap:8px;flex:none}
 .topnav .nav-search{width:min(180px,22vw)}
-.topnav .nav-search input{font-size:12.5px;padding:8px 10px}
+.topnav .nav-search input{font-size:16px;padding:8px 10px}
 @media (max-width:760px){
   .topnav .nav-search{display:none}
 }
@@ -1103,7 +1106,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
   background:rgba(30,26,20,0.04);border:1px solid var(--border);border-radius:var(--r-s);
 }
 .pop .psearch svg{flex:none;color:var(--muted)}
-.pop .psearch input{border:0;background:transparent;outline:none;width:100%;font-family:var(--body);font-size:12.5px;color:var(--ink)}
+.pop .psearch input{border:0;background:transparent;outline:none;width:100%;font-family:var(--body);font-size:16px;color:var(--ink)}
 .pop .psearch input::placeholder{color:var(--muted)}
 .pop .plist{max-height:172px;overflow-y:auto;overscroll-behavior:contain}
 .pop .plist::-webkit-scrollbar{width:8px}
@@ -1204,7 +1207,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 }
 .palette-input svg{width:16px;height:16px;color:var(--muted);flex:none}
 .palette-input input{
-  flex:1;border:0;outline:none;background:transparent;font-family:var(--body);font-size:15.5px;color:var(--ink);
+  flex:1;border:0;outline:none;background:transparent;font-family:var(--body);font-size:16px;color:var(--ink);
 }
 .palette-input input::placeholder{color:var(--muted)}
 .palette-list{overflow-y:auto;overscroll-behavior:contain;padding:7px}
@@ -1717,7 +1720,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 
 /* ---------- Motion preferences ---------- */
 @media (hover:none){           /* touch devices: kill sticky hover-lift */
-  .sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover{transform:none}
+  .sb-new:hover,.icon-btn:hover,.model-btn:hover,.reasoning:hover,.sb-export:hover,.sb-reset:hover,.sb-toggle:hover,.sb-bulk-del:hover,.sb-x:hover,.seg:hover{transform:none !important}
   .msg .acts{opacity:1}          /* no hover on touch — keep retry/controls visible */
 }
 @media (prefers-reduced-motion:reduce){
@@ -1843,7 +1846,15 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .send[disabled]{background:rgba(44,36,26,.34) !important;box-shadow:none}
   .composer.controls-open .controls{max-height:64px !important;flex-direction:row;align-items:center;gap:6px;margin:4px 2px 2px !important}
   .composer .controls .model,.composer .controls .reasoning{width:auto;min-width:0}
-  .model-btn{max-width:52vw;font-size:11.5px;height:34px;padding:0 10px}
+  .model-btn{max-width:52vw;font-size:11.5px;height:40px;padding:0 10px}
+  /* Touch-target floor: lift every compact control to >=40-44px tall on phones. */
+  .sb-new{height:44px}
+  .sb-export,.sb-reset{height:40px}
+  .topnav .icon-btn,.sb-toggle,.icon-btn{height:44px;width:44px;flex:none}
+  .sb-item{padding:11px 10px}
+  .sugg{padding:11px 13px;font-size:12.5px}
+  .settings-close{width:40px;height:40px;font-size:22px}
+  .tut-btns button{min-height:42px}
   .reasoning{gap:4px;flex:1}
   .reasoning .seg{height:34px;font-size:11.5px;padding:0 4px}
 
@@ -2857,7 +2868,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   <div class="beta-modal lesson-browser" role="dialog" aria-modal="true" aria-labelledby="glossaryTitle">
     <span class="tag">Vocabulary</span>
     <h2 id="glossaryTitle">The Glossary</h2>
-    <div style="margin:0 0 12px"><input id="glossarySearch" type="text" placeholder="Search terms…" aria-label="Search glossary" style="width:100%;height:40px;border-radius:999px;border:1px solid var(--border);background:var(--glass-strong);padding:0 16px;font-family:var(--body);font-size:14px;color:var(--ink);outline:none" /></div>
+    <div style="margin:0 0 12px"><input id="glossarySearch" type="text" placeholder="Search terms…" aria-label="Search glossary" style="width:100%;height:40px;border-radius:999px;border:1px solid var(--border);background:var(--glass-strong);padding:0 16px;font-family:var(--body);font-size:16px;color:var(--ink);outline:none" /></div>
     <div class="glossary-list" id="glossaryList"></div>
     <button class="agree" id="glossaryClose" style="margin-top:16px">Close</button>
   </div>
