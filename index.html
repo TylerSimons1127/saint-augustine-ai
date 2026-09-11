@@ -3248,9 +3248,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         if(s){ s.pinned=!s.pinned; saveSessions(); renderSessions(); showToast(s.pinned?"Pinned \u2192":"Unpinned."); }
       });
       if(selectMode && del) del.style.display="none";
-      // double-click the label to rename
-      const txt=el.querySelector(".txt");
-      if(txt) txt.addEventListener("dblclick",e=>{ e.stopPropagation(); startRename(el, txt); });
+      // double-click the label to rename — DELEGATED (per-node listeners died on
+      // the innerHTML rebuild that runs after the first click, so dblclick never fired)
+    });
+    [sbTodayList, sbYesterdayList, sbEarlierList].forEach(list=>{ if(!list) return;
+      list.addEventListener("dblclick",e=>{
+        const txt=e.target.closest(".txt"); if(!txt) return;
+        const el=txt.closest(".sb-item"); if(!el || el.classList.contains("renaming")) return;
+        e.stopPropagation(); startRename(el, txt);
+      });
     });
     if(window.matchMedia("(max-width:900px)").matches){
       $$("#sbTodayList .sb-item, #sbYesterdayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(!el.classList.contains("renaming")) sbClose(); }));
@@ -3317,9 +3323,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     return `<button class="sb-item${selectMode?' selmode':''}${selectedIds.has(s.id)?' sel':''}" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}${pinned?' — pinned':''}">${selectMode?`<span class="sb-check" aria-hidden="true"></span>`:''}<span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span>${pinned?'<svg class="pin-ic" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-label="Pinned"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg>':''}${peek}<span class="sbp" role="button" aria-label="${pinned?'Unpin':'Pin'} conversation" data-pin="${escAttr(s.id)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="${pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg></span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
   }
   function setActive(id){
-    activeId=id;
-    renderSessions();
-  }
+      if(activeId===id) return;   // already active — don't rebuild the list (this kept dblclick-rename from ever firing)
+      activeId=id;
+      renderSessions();
+    }
   function clearThreadState(){
       if(thread) thread.innerHTML=""; if(thread) thread.hidden=true; if(greet) greet.hidden=false;
       prompt.value=""; prompt.style.height="auto"; files.length=0; history.length=0; renderFiles(); syncSend();
@@ -4672,7 +4679,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   let lastFocus=null;
   /* B16: browser-back closes the topmost overlay instead of leaving the app */
   const OVERLAYS=[];   // stack of {close:fn}
-  function pushOverlay(close){ OVERLAYS.push(close); }
+  function pushOverlay(close){ OVERLAYS.push({close}); }
   window.addEventListener("popstate",()=>{
     const top=OVERLAYS.pop();
     if(top && top.close) top.close();
@@ -4681,7 +4688,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     lastFocus=document.activeElement;
     sheet.classList.add("show"); scrim.classList.add("show"); sheet.setAttribute("aria-hidden","false");
     syncSettingsUI(); settingsClose.focus();
-    history.pushState({ov:"settings"},""); pushOverlay(closeSettings);
+    window.history.pushState({ov:"settings"},""); pushOverlay(closeSettings);
   }
   function closeSettings(){
     sheet.classList.remove("show"); scrim.classList.remove("show"); sheet.setAttribute("aria-hidden","true");
