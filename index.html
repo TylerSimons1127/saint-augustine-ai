@@ -2347,14 +2347,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
    1px bright top border, inset top+bottom highlight, deep soft shadow.
    R3 adds edge refraction (bevel maps) on top of the CLEAR base.
    ═══════════════════════════════════════════════════════════════════════════
-   R1 — opaque readable default (unchanged, for reduced-transparency users) */
-.topnav, .sidebar, .composer, .reasoning, .nav-tabs, .settings-sheet{
-  background:rgba(251,247,238,.92);
-}
+   R1 removed — glass is the hard default. (prefers-reduced-transparency maps
+     to Windows' global "Transparency effects" toggle, which performance
+     users disable OS-wide — that served them the opaque pane. Opt-in instead.) */
 
-/* R2 — CLEAR GLASS (every modern engine). This IS the Apple look:
+/* R2 — CLEAR GLASS (every modern engine), UNGATED — this IS the Apple look:
    see-through, rim-lit, depth. Saturation 180% keeps scenery alive. */
-@media (prefers-reduced-transparency: no-preference){
   .topnav{
     background:rgba(255,255,255,.06);
     -webkit-backdrop-filter:blur(3px) saturate(185%) brightness(1.06);
@@ -2432,7 +2430,6 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     border:1px solid rgba(255,255,255,.52);
     box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 24px 64px -24px rgba(70,52,16,.30);
   }
-}
 
 /* R3 — REFRACTION (Chromium only): edges bend the backdrop. Applied on top
    of the clear base so scenery stays visible while the bezel refracts. */
@@ -2453,19 +2450,28 @@ html.lg-refract .pop.open{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 18px 44px -14px rgba(70,52,16,.30);
 }
 
-/* Motion guards */
+/* Motion guard */
 @media (prefers-reduced-motion:reduce){
   .reasoning::after{transition:none}
   .reasoning.lg-moving::after{backdrop-filter:blur(2px)}
 }
-@media (prefers-reduced-transparency:reduce){
-  html.lg-refract .topnav, html.lg-refract .sidebar, html.lg-refract .composer,
-  html.lg-refract .reasoning, html.lg-refract .nav-tabs, html.lg-refract .settings-sheet,
-  html.lg-refract .topnav .nav-tabs, html.lg-refract body>.nav-tabs{
-    background:rgba(251,247,238,.92) !important; backdrop-filter:none !important;
-  }
+/* Manual opaque mode — opt-in "Reduce glass" (html.no-glass). a11y users and
+   low-GPU machines can switch it on; the OS-level preference is deliberately
+   not auto-honored because Windows maps it to the global transparency toggle. */
+html.no-glass .topnav, html.no-glass .sidebar, html.no-glass .composer,
+html.no-glass .reasoning, html.no-glass .nav-tabs, html.no-glass .settings-sheet,
+html.no-glass .topnav .nav-tabs, html.no-glass body>.nav-tabs,
+html.no-glass .pop.open{
+  background:rgba(251,247,238,.92) !important;
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  box-shadow:none;
+}
+html.no-glass .reasoning::after{
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  background:rgba(255,255,255,.94) !important;
 }
 </style>
+
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -5680,6 +5686,13 @@ html.lg-refract .pop.open{
     }); });
   }
 
+  /* --- opt-in opaque mode: ?noglass param or localStorage sa_noglass=1 --- */
+  try{
+    var urlNog=new URLSearchParams(location.search).has('noglass');
+    var lsNog=localStorage.getItem('sa_noglass')==='1';
+    if(urlNog||lsNog) document.documentElement.classList.add('no-glass');
+  }catch(_){}
+
   /* --- seg-thumb driver (works on all browsers: frost rung) --- */
   function lgSyncThumb(seg){
     var tr=seg.closest('.reasoning'); if(!tr) return;
@@ -5715,5 +5728,5 @@ html.lg-refract .pop.open{
   }
 })();
 </script>
-</body></body>
+</body>
 </html>
