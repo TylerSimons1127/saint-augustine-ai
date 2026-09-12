@@ -2054,10 +2054,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 }
 
 
-
-  .ts-cell.quiz{display:flex !important}
-}
-
 </style>
 <!-- ============ PREFS: settings menu styles ============ -->
 <style id="prefs-styles">
@@ -2341,6 +2337,137 @@ document.addEventListener("visibilitychange",()=>{
 /* register the offline-shell service worker (PWA) */
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script>
+
+<style id="liquid-glass-v3">
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPLE LIQUID GLASS v3 — researched implementation (HIG + kube.io + emit)
+   Ladder: R1 opaque default (a11y) → R2 deep frost everywhere → R3 Chromium
+   refraction via runtime SDF-squircle bevel displacement maps (alpha-255,
+   fresh IDs, JS-gated: Firefox parses url() but renders nothing).
+   Material: convex squircle bezel (y=⁴√(1-(1-x)⁴)), Snell n≈1.5, specular rim.
+   Glass on the NAV/OVERLAY layer only — never content (Apple's own rule).
+   ═══════════════════════════════════════════════════════════════════════════
+   R1 — DEFAULT: readable, near-opaque. Glass is the ENHANCEMENT, never the
+   baseline (Safari can't detect prefers-reduced-transparency at all). */
+.topnav, .sidebar, .composer, .reasoning, .nav-tabs, .settings-sheet{
+  background:rgba(251,247,238,.92);
+}
+
+/* R2 — FROST (every modern engine): deep blur + saturation lift + the rim. */
+@media (prefers-reduced-transparency: no-preference){
+  .topnav{
+    background:linear-gradient(to bottom, rgba(251,247,238,.42), rgba(251,247,238,.20));
+    -webkit-backdrop-filter:blur(24px) saturate(185%);
+    backdrop-filter:blur(24px) saturate(185%);
+    border-bottom:1px solid rgba(255,255,255,.50);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 0 10px 32px -18px rgba(70,52,16,.28);
+  }
+  .sidebar{
+    background:linear-gradient(to right, rgba(251,247,238,.34), rgba(251,247,238,.24) 62%, rgba(251,247,238,.04) 96%, rgba(251,247,238,0) 100%);
+    -webkit-backdrop-filter:blur(22px) saturate(180%);
+    backdrop-filter:blur(22px) saturate(180%);
+    border-right:1px solid rgba(255,255,255,.40);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 14px 0 44px -22px rgba(70,52,16,.32);
+  }
+  .composer{
+    background:linear-gradient(to bottom, rgba(251,247,238,.38), rgba(251,247,238,.22));
+    -webkit-backdrop-filter:blur(20px) saturate(180%) brightness(1.03);
+    backdrop-filter:blur(20px) saturate(180%) brightness(1.03);
+    border:1px solid rgba(255,255,255,.48);
+    border-top-color:rgba(255,255,255,.72);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.68), 0 2px 10px rgba(70,52,16,.10), 0 18px 44px -16px rgba(70,52,16,.28);
+  }
+  /* Segmented control: glass track; the thumb is a separate glass pill. */
+  .reasoning{
+    background:rgba(251,247,238,.26);
+    -webkit-backdrop-filter:blur(14px) saturate(160%);
+    backdrop-filter:blur(14px) saturate(160%);
+    border:1px solid rgba(255,255,255,.45);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.60);
+  }
+  .reasoning::after{
+    /* THE THUMB — Liquid-Glass pill: heavy frost while gliding (.lg-moving),
+       clear + refracting when settled over the chosen mode. */
+    content:"";position:absolute;z-index:0;
+    left:var(--lg-x,3px);top:3px;height:calc(100% - 6px);width:var(--lg-w,96px);
+    border-radius:999px;
+    background:linear-gradient(to bottom, rgba(255,255,255,.58), rgba(251,247,238,.30));
+    border:1px solid rgba(255,255,255,.78);
+    box-shadow:inset 0 1px 0 rgba(255,200,120,.35), inset 0 -1px 0 rgba(30,26,20,.05), 0 4px 12px -4px rgba(70,52,16,.30);
+    transition:left .42s cubic-bezier(.32,.9,.28,1.02), width .42s cubic-bezier(.32,.9,.28,1.02);
+  }
+  .reasoning.lg-moving::after{
+    background:linear-gradient(to bottom, rgba(255,255,255,.72), rgba(251,247,238,.46));
+    -webkit-backdrop-filter:blur(28px) saturate(165%);
+    backdrop-filter:blur(28px) saturate(165%);
+  }
+  .reasoning .seg{position:relative;z-index:1;border:0;background:transparent;color:var(--ink-soft);transition:color .18s ease}
+  .reasoning .seg[aria-pressed="true"]{color:var(--gold-ink);font-weight:600;background:transparent;border:0}
+  .reasoning .seg:not([aria-pressed="true"]):hover{
+    border-radius:999px;background:rgba(255,255,250,.34);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  }
+  /* Mobile tab dock: glass slab. */
+  @media (max-width:768px){
+    .topnav .nav-tabs,body>.nav-tabs{
+      background:linear-gradient(to bottom, rgba(251,247,238,.36), rgba(251,247,238,.18)) !important;
+      -webkit-backdrop-filter:blur(24px) saturate(185%) !important;
+      backdrop-filter:blur(24px) saturate(185%) !important;
+      border-top:1px solid rgba(255,255,255,.42) !important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.58), 0 -10px 36px -16px rgba(70,52,16,.24) !important;
+    }
+  }
+  /* Scroll-edge effect: frost intensifies as content scrolls beneath the bar
+     (class .scrolled added by delegated JS). */
+  .topnav.scrolled{
+    background:linear-gradient(to bottom, rgba(251,247,238,.58), rgba(251,247,238,.34));
+    -webkit-backdrop-filter:blur(30px) saturate(190%);
+    backdrop-filter:blur(30px) saturate(190%);
+  }
+  /* Settings sheet rides the same material. */
+  .settings-sheet{
+    background:linear-gradient(to bottom, rgba(251,247,238,.52), rgba(251,247,238,.40));
+    -webkit-backdrop-filter:blur(26px) saturate(180%);
+    backdrop-filter:blur(26px) saturate(180%);
+    border:1px solid rgba(255,255,255,.50);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.68), 0 24px 64px -24px rgba(70,52,16,.40);
+  }
+}
+
+/* R3 — REFRACTION (Chromium only, JS-gated: adds .lg-refract to <html>).
+   Each chrome element gets its own runtime-generated SDF-squircle bevel map
+   (alpha-255, fresh filter id) so edges bend the backdrop like real glass. */
+html.lg-refract .topnav{backdrop-filter:blur(24px) saturate(185%) url(#lg-map-topnav)}
+html.lg-refract .sidebar{backdrop-filter:blur(22px) saturate(180%) url(#lg-map-sidebar)}
+html.lg-refract .composer{backdrop-filter:blur(20px) saturate(180%) url(#lg-map-composer)}
+html.lg-refract .reasoning::after{backdrop-filter:blur(22px) saturate(170%) url(#lg-map-thumb)}
+html.lg-refract .reasoning.lg-moving::after{backdrop-filter:blur(28px) saturate(165%)}  /* frost in motion, no map */
+@media (max-width:768px){
+  html.lg-refract .topnav .nav-tabs, html.lg-refract body>.nav-tabs{
+    backdrop-filter:blur(24px) saturate(185%) url(#lg-map-dock) !important;
+  }
+}
+/* Popovers (model picker) — small-pane refraction. */
+html.lg-refract .pop.open{
+  background:rgba(251,247,238,.55) !important;
+  backdrop-filter:blur(24px) saturate(170%) url(#lg-map-pop) !important;
+  border:1px solid rgba(255,255,255,.52);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.66), 0 18px 44px -14px rgba(70,52,16,.34);
+}
+
+/* Motion guards */
+@media (prefers-reduced-motion:reduce){
+  .reasoning::after{transition:none}
+  .reasoning.lg-moving::after{backdrop-filter:blur(22px)}
+}
+@media (prefers-reduced-transparency:reduce){
+  html.lg-refract .topnav, html.lg-refract .sidebar, html.lg-refract .composer,
+  html.lg-refract .reasoning, html.lg-refract .nav-tabs, html.lg-refract .settings-sheet,
+  html.lg-refract .topnav .nav-tabs, html.lg-refract body>.nav-tabs{
+    background:rgba(251,247,238,.92) !important; backdrop-filter:none !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -5454,5 +5581,141 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       })();
 </script>
 
+
+<script>
+/* ═══ APPLE LIQUID GLASS v3 ENGINE (delegated — no app code touched) ═══
+   Rung-gating: R3 refraction is Chromium-only. Firefox parses url() in
+   backdrop-filter but renders NOTHING (an @supports lie), so we UA-check.
+   Maps: SDF of a rounded squircle → gradient = surface normal → Snell n≈1.5
+   displacement, encoded R=horizontal G=vertical, neutral 128, alpha-255
+   (alpha-0 is premultiplied to zero by Chromium = dead filter). Fresh filter
+   ids per element; filters cached by id, so rebuilds assign new ones. */
+(function(){
+  "use strict";
+  if(window.__lgV3) return; window.__lgV3=1;
+  var isChromium = !!window.chrome && !!(window.CSS && CSS.supports) && CSS.supports('backdrop-filter','blur(1px)') && /Chrom(e|ium)/.test(navigator.userAgent) && !/Edg\//.test(navigator.userAgent)===false || (!!window.chrome);
+  /* simpler truth: Chrome/Edge/Brave expose window.chrome; Safari/Firefox don't */
+  isChromium = !!window.chrome;
+
+  /* --- SDF squircle bevel displacement map (canvas → PNG data-URL) --- */
+  function bevelMap(w,h,r,bezel,scalePx){
+    var c=document.createElement('canvas'); c.width=Math.max(2,Math.round(w)); c.height=Math.max(2,Math.round(h));
+    var x=c.getContext('2d'), img=x.createImageData(c.width,c.height), d=img.data;
+    var W=c.width,H=c.height;
+    function sq(t){ // squircle profile y=⁴√(1-(1-x)^4), t∈[0,1]
+      var u=1-t; return Math.pow(Math.max(0,1-Math.pow(u,4)),0.25);
+    }
+    for(var yy=0; yy<H; yy++){
+      for(var xx=0; xx<W; xx++){
+        var px=xx+.5, py=yy+.5;
+        // signed distance to rounded-rect boundary (approx via clamped corner distance)
+        var cx=Math.max(r-px, px-(W-r), 0), cy=Math.max(r-py, py-(H-r), 0);
+        var dist; // distance from edge, 0 at boundary, positive inside
+        if(cx>0&&cy>0){ dist=Math.hypot(cx,cy)-r; } // wait — corner region
+        else { // inside straight or edge zone: distance to nearest side
+          dist=Math.min(px, W-px, py, H-py); if(cx>0||cy>0){ /* recompute below */ }
+        }
+        // robust: distance to rounded rect = min over sides & corner circles
+        var nx=Math.min(px, W-px), ny=Math.min(py, H-py);
+        if (px>=r && px<=W-r) dist=ny;                 // vertical band
+        else if (py>=r && py<=H-r) dist=nx;             // horizontal band
+        else {                                          // corner zone
+          var qx=Math.min(Math.abs(px-r),Math.abs(px-(W-r))), qy=Math.min(Math.abs(py-r),Math.abs(py-(H-r)));
+          var ox=Math.max(r-px, px-(W-r), 0), oy=Math.max(r-py, py-(H-r), 0);
+          dist=Math.hypot(ox,oy)===0 ? Math.min(nx,ny) : (Math.hypot(ox,oy)-r+Math.min(nx,ny)) ;
+        }
+        dist=Math.max(0,dist);
+        var t=Math.min(1, dist/bezel);      // 0 at edge → 1 at bezel end
+        var hgt=sq(t);                      // glass height at this point
+        // surface slope via derivative → refraction displacement outward
+        var delta=bezel*0.02;
+        var t2=Math.min(1,(dist+delta)/bezel);
+        var slope=(sq(t2)-hgt)/delta;        // d(height)/d(dist)
+        // displacement magnitude ∝ slope * (n-1), direction = away from edge
+        var mag=Math.min(1, Math.abs(slope)*0.15*scalePx);
+        // direction: outward normal
+        var dirx=0, diry=0;
+        var ox2=Math.max(r-px, px-(W-r), 0), oy2=Math.max(r-py, py-(H-r), 0);
+        if(px<r) dirx=-1; else if(px>W-r) dirx=1;
+        if(py<r) diry=-1; else if(py>H-r) diry=1;
+        if(ox2>0&&oy2>0){ var L=Math.hypot(ox2,oy)||1; dirx=ox2/L*Math.sign(px<W/2?-1:1); diry=oy2/L*Math.sign(py<H/2?-1:1); }
+        var Rv=Math.round(128 + 127*mag*dirx);
+        var Gv=Math.round(128 + 127*mag*diry);
+        var i=(yy*W+xx)*4;
+        d[i]=Math.max(0,Math.min(255,Rv)); d[i+1]=Math.max(0,Math.min(255,Gv));
+        d[i+2]=128; d[i+3]=255;   /* ALPHA 255 — never 0 (premultiply trap) */
+      }
+    }
+    x.putImageData(img,0,0);
+    return c.toDataURL('image/png');
+  }
+
+  function buildFilters(){
+    var defs=document.createElement('div'); defs.id='lg-filters';
+    var svg='<svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">';
+    var specs=[
+      {id:'lg-map-topnav', sel:'.topnav', w:innerWidth, h:60, r:0, bezel:14, scale:2.2},
+      {id:'lg-map-sidebar', sel:'.sidebar', w:264, h:innerHeight-60, r:18, bezel:16, scale:2.0},
+      {id:'lg-map-composer', sel:'.composer', w:720, h:120, r:26, bezel:12, scale:2.4},
+      {id:'lg-map-thumb', sel:'.reasoning', w:256, h:36, r:18, bezel:8, scale:1.6},
+      {id:'lg-map-dock', sel:'.nav-tabs', w:innerWidth, h:64, r:0, bezel:12, scale:2.0},
+      {id:'lg-map-pop', sel:'.pop.open', w:375, h:420, r:22, bezel:14, scale:2.0}
+    ];
+    specs.forEach(function(sp){
+      try{
+        var href=bevelMap(Math.min(sp.w,1200), Math.min(sp.h,800), sp.r, sp.bezel, sp.scale);
+        svg+='<filter id="'+sp.id+'" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">'
+           +'<feImage href="'+href+'" preserveAspectRatio="none" x="0" y="0" width="100%" height="100%" result="map"/>'
+           +'<feDisplacementMap in="SourceGraphic" in2="map" scale="'+Math.round(60*sp.scale)+'" xChannelSelector="R" yChannelSelector="G" result="disp"/>'
+           +'<feMerge><feMergeNode in="disp"/></feMerge>'   /* map never the final output */
+           +'</filter>';
+      }catch(e){/* skip pane */}
+    });
+    svg+='</svg>';
+    defs.innerHTML=svg;
+    document.body.appendChild(defs.firstChild);
+  }
+
+  if(isChromium){
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      try{ buildFilters(); document.documentElement.classList.add('lg-refract'); }catch(e){}
+    }); });
+  }
+
+  /* --- seg-thumb driver (works on all browsers: frost rung) --- */
+  function lgSyncThumb(seg){
+    var tr=seg.closest('.reasoning'); if(!tr) return;
+    var r=seg.getBoundingClientRect(), t=tr.getBoundingClientRect();
+    tr.style.setProperty('--lg-x',(r.left-t.left)+'px');
+    tr.style.setProperty('--lg-w', r.width+'px');
+    tr.classList.add('lg-moving');
+    clearTimeout(tr._lgT); tr._lgT=setTimeout(function(){tr.classList.remove('lg-moving')},460);
+  }
+  function lgInitThumb(){
+    var on=document.querySelector('.reasoning .seg[aria-pressed="true"]');
+    if(on){ lgSyncThumb(on); var tr=on.closest('.reasoning'); tr&&tr.classList.remove('lg-moving'); }
+  }
+  document.addEventListener('click',function(e){
+    var s=e.target.closest('.reasoning .seg'); if(s) lgSyncThumb(s);
+  },true);
+  window.addEventListener('load',lgInitThumb);
+  window.addEventListener('resize',function(){lgInitThumb()},{passive:true});
+
+  /* --- scroll-edge effect on top bar --- */
+  var scrollEl=document.querySelector('.stage')||document.scrollingElement;
+  if(scrollEl){
+    var raf2=null;
+    var onScroll=function(){
+      if(raf2) return;
+      raf2=requestAnimationFrame(function(){
+        raf2=null;
+        var y=scrollEl.scrollTop||window.scrollY||window.pageYOffset||0;
+        document.querySelector('.topnav').classList.toggle('scrolled', y>8);
+      });
+    };
+    scrollEl.addEventListener('scroll',onScroll,{passive:true});
+  }
+})();
+</script>
 </body></body>
 </html>
