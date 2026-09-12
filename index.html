@@ -243,6 +243,8 @@ a{color:inherit}
 .sb-empty p{color:var(--ink-soft)}
 .sb-empty svg{color:var(--accent);opacity:.7}
 .sb-empty p{margin:0}
+.sb-foot{display:flex;align-items:center;gap:9px;padding:10px 6px 2px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+.sb-foot .ft{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .sb-toggle{display:none}
 /* tap scrim behind the off-canvas sidebar (phones) — sits BELOW the sidebar so it
    dims the page but never blurs/blocks the menu itself */
@@ -800,7 +802,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 /* ---- Print: lessons & quizzes become clean printables, glass stripped ---- */
 @media print{
   html,body{overflow:visible;height:auto;background:#fff}
-  .bg,.topnav,.sidebar,.sb-toggle,.dock,.credit-chip,.toast,.settings-sheet,.settings-scrim,
+  .bg,.topnav,.sidebar,.sb-toggle,.dock,.toast,.settings-sheet,.settings-scrim,
   .modal-scrim,.palette-scrim,.skip-link,.sb-scrim,.dp-thread,.lesson-nav,.quote-actions{display:none !important}
   .stage{position:static;overflow:visible;padding:0}
   .page{display:none !important}
@@ -1005,22 +1007,6 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
   transition:border-color .18s ease, box-shadow .18s ease}
 
 /* ---------- creator credit (persistent bottom-left) ---------- */
-.credit-chip{
-  position:fixed; left:max(14px, env(safe-area-inset-left)); bottom:max(12px, env(safe-area-inset-bottom)); z-index:25;
-  display:flex; align-items:center; gap:9px; padding:7px 13px 7px 9px;
-  background:var(--glass-strong); backdrop-filter:blur(20px) saturate(165%); -webkit-backdrop-filter:blur(20px) saturate(165%);
-  border:1px solid var(--border); border-radius:999px; box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,0.55);
-  max-width:min(78vw,420px);
-}
-.credit-chip .av{
-  width:26px;height:26px;flex:none;border-radius:50%;display:grid;place-items:center;
-  font-family:var(--display);font-weight:600;font-size:13px;color:#fff7e8;
-  background:radial-gradient(120% 120% at 42% 30%, #9c2735, #741824 55%, #4a0d16);
-  box-shadow:inset 0 0 0 1px rgba(202,162,74,.6);
-}
-.credit-chip .ct{ font-size:12.5px; line-height:1.2; color:var(--ink); font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.credit-chip .ct b{ font-weight:700; color:var(--ink); }
-.credit-chip .ct .beta{ font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:#fbf7ee; background:var(--accent-deep); padding:1px 7px; border-radius:999px; margin-left:4px; font-weight:700; }
 .composer:focus-within{border-color:rgba(163,130,47,.55);box-shadow:0 10px 34px rgba(120,96,33,0.14), inset 0 1px 0 rgba(255,255,255,0.7), 0 0 0 3px var(--accent-soft)}
 .attach-row{display:flex;flex-wrap:wrap;gap:8px}
 .fchip{
@@ -1463,8 +1449,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 }
 @media (max-width:768px){
   /* credit chip sits just above the full-width dock on phones */
-  .credit-chip{ bottom:calc(214px + env(safe-area-inset-bottom)); max-width:84vw; }
-}
+  }
 @media (max-width:768px){
   /* rail offset so it clears the fixed sidebar toggle (44px at left:12px) */
   .rail{
@@ -1548,8 +1533,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 @media (max-width:768px){
   /* 1. hide the floating creator credit — it overlaps lesson text on narrow screens;
         the brand wordmark lives in the header already */
-  .credit-chip{display:none}
-  /* 2. collapse model + reasoning into ONE row (was 2 tall full-width rows) */
+    /* 2. collapse model + reasoning into ONE row (was 2 tall full-width rows) */
     .controls{flex-direction:row;align-items:stretch;gap:6px}
     .model{flex:none;width:auto}
     .model-btn{width:auto;max-width:150px;justify-content:center;padding:0 9px;font-size:11px}
@@ -2552,16 +2536,25 @@ html.no-glass .reasoning::after{
     <button class="sb-bulk-del" id="sbBulkDel">Delete selected</button>
     <button class="sb-bulk-cancel" id="sbBulkCancel">Cancel</button>
   </div>
+
+  <!-- sidebar footer: creator credit + data tools (restored v3.4) -->
+  <div class="sb-foot"><span class="ft">Saint Augustine AI · Beta · by Tyler Simons</span>
+    <button class="sb-export" id="sbExport" title="Copy this conversation as Markdown" aria-label="Export conversation">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg>
+      <span>Export</span>
+    </button>
+    <button class="sb-reset" id="sbReset" title="Delete all conversations" aria-label="Delete all conversations">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/></svg>
+      <span>Delete all</span>
+    </button>
+  </div>
 </aside>
 
 <button class="sb-toggle" id="sbToggle" aria-label="Conversations" title="Conversations">
   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 5H7"/><path d="M17 9H7"/></svg>
 </button>
 
-<!-- CREATOR CREDIT (persistent, bottom-left) -->
-<div class="credit-chip" id="creditChip" role="contentinfo" aria-label="About this app">
-  <span class="ct"><b>Saint Augustine AI</b> · Beta · by <b>Tyler Simons</b></span>
-</div>
+<!-- CREATOR CREDIT: moved into the sidebar footer (sb-foot) — v3.4 -->
 
 <div class="sb-scrim" id="sbScrim" aria-hidden="true"></div>
 
