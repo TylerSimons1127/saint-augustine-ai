@@ -62,6 +62,8 @@
 }
 
 *{box-sizing:border-box}
+img,svg,video,canvas{max-width:100%;height:auto}
+
 html,body{height:100%}
 html,body{height:100dvh}               /* dynamic viewport: no address-bar gap on mobile */
 html,body{overflow:hidden}            /* real scroller is .stage; stops iOS rubber-band */
@@ -204,7 +206,7 @@ a{color:inherit}
 .sb-item{
   display:flex;align-items:center;gap:10px;width:100%;text-align:left;
   padding:9px 10px;border-radius:var(--r-s);border:1px solid transparent;
-  background:transparent;color:var(--ink);font-size:13.5px;line-height:1.3;
+  background:transparent;color:var(--ink);font-size:13.5px;line-height:1.45;
   transition:background .14s ease, border-color .14s ease, color .14s ease;
 }
 .sb-item .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--accent);opacity:.7}
@@ -683,7 +685,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .dp-card-head h3{margin:0}
 .dp-mini-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink);padding:3px 9px;border-radius:999px;background:var(--accent-soft);white-space:nowrap}
 .dp-eyebrow-mini{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
-.learn-title{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.2;color:var(--ink);margin:0 0 10px}
+.learn-title{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.35;color:var(--ink);margin:0 0 10px}
 .learn-quote{font-family:var(--display);font-weight:300;font-size:16px;line-height:1.45;color:var(--ink);margin:0 0 12px}
 .learn-body{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 14px}
 .learn-body p{margin:0 0 10px}
@@ -1337,7 +1339,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 .tomorrow-teaser svg{width:20px;height:20px;color:var(--accent-deep);flex:none}
 .tt-meta{display:flex;flex-direction:column;gap:2px;min-width:0}
 .tt-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink)}
-.tt-name{font-family:var(--display);font-size:15px;color:var(--ink);line-height:1.3}
+.tt-name{font-family:var(--display);font-size:15px;color:var(--ink);line-height:1.45}
 
 .wn-list p{font-size:13px !important;text-align:left !important;margin:0 0 10px !important;color:var(--ink-soft) !important}
 .wn-list b{color:var(--gold-ink)}
@@ -1554,7 +1556,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
   textarea#prompt{min-height:42px}
   .reasoning .seg{font-size:10.5px;padding:0 3px}
   /* keep the model-status line clear of the safe-area bottom edge */
-  .disclaimer{width:100%;text-align:center;padding:0 4px 1px;line-height:1.3;opacity:.9}
+  .disclaimer{width:100%;text-align:center;padding:0 4px 3px;line-height:1.45;opacity:.9}
   .dock{row-gap:6px}
 }
 /* H: phone composer collapses to a single slim row — model/depth controls tuck
@@ -1899,7 +1901,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .greet{max-height:calc(100dvh - 208px)}
   .greet-brand{font-size:22px;margin-bottom:9px}
   .greet .eyebrow{margin-bottom:8px;font-size:9.5px;letter-spacing:.12em}
-  .greet h1{font-size:clamp(19px,2.8vw,24px);line-height:1.3;margin-bottom:8px}
+  .greet h1{font-size:clamp(19px,2.8vw,24px);line-height:1.35;margin-bottom:8px}
   .greet .sub{margin-top:8px;font-size:12.5px;line-height:1.45}
   .greet-credit{margin-top:10px;padding-top:8px}
   .greet-sugg{margin-top:10px;gap:6px}
@@ -3830,7 +3832,7 @@ html.no-glass .reasoning::after{
     attachRow.hidden=false;
     attachRow.innerHTML=files.map(f=>`
       <span class="fchip ok" data-id="${f.id}">
-        ${f.isImg && f.content ? `<img class="fthumb" src="${esc(f.content)}" alt="" />`
+        ${f.isImg && f.content ? `<img class="fthumb" src="${esc(f.content)}" alt="" loading="lazy" decoding="async" />`
           : `<span class="fic">${f.type.toUpperCase().slice(0,4)}</span>`}
         <span class="fname">${esc(f.name)}${f.reading?' <em style="opacity:.6">· reading…</em>':''}</span>
         ${f.isImg?'<span class="fsize">image</span>':`<span class="fsize">${fmt(f.size)}</span>`}
@@ -3893,7 +3895,7 @@ html.no-glass .reasoning::after{
     if(files.length){
       const imgs=files.filter(f=>f.isImg&&f.content);
       const names=files.filter(f=>!f.isImg).map(f=>esc(f.name));
-      if(imgs.length) h += `<div class="ubox">${imgs.map(f=>`<img alt="${esc(f.name)}" src="${esc(f.content)}" />`).join("")}</div>`;
+      if(imgs.length) h += `<div class="ubox">${imgs.map(f=>`<img alt="${esc(f.name)}" src="${esc(f.content)}" loading="lazy" decoding="async" />`).join("")}</div>`;
       const label=[...names];
       if(label.length) h += `<div style="margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--muted)">+ ${label.length} file${label.length>1?'s':''} attached: ${label.join(', ')}</div>`;
     }
