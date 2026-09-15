@@ -246,7 +246,7 @@ a{color:inherit}
 .sb-empty svg{color:var(--accent);opacity:.7}
 .sb-empty p{margin:0}
 .sb-foot{display:flex;align-items:center;gap:9px;padding:10px 6px 2px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
-.sb-foot .ft{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-foot .av{width:26px;height:26px;border-radius:50%;background:var(--glass-strong);border:1px solid var(--border);display:grid;place-items:center;color:var(--accent);font-family:var(--display);font-size:12px}
 .sb-toggle{display:none}
 /* tap scrim behind the off-canvas sidebar (phones) — sits BELOW the sidebar so it
    dims the page but never blurs/blocks the menu itself */
@@ -804,7 +804,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 /* ---- Print: lessons & quizzes become clean printables, glass stripped ---- */
 @media print{
   html,body{overflow:visible;height:auto;background:#fff}
-  .bg,.topnav,.sidebar,.sb-toggle,.dock,.toast,.settings-sheet,.settings-scrim,
+  .bg,.topnav,.sidebar,.sb-toggle,.dock,.credit-chip,.toast,.settings-sheet,.settings-scrim,
   .modal-scrim,.palette-scrim,.skip-link,.sb-scrim,.dp-thread,.lesson-nav,.quote-actions{display:none !important}
   .stage{position:static;overflow:visible;padding:0}
   .page{display:none !important}
@@ -975,6 +975,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .sb-item.renaming .txt{white-space:normal}
 
 /* ---------- Export button (sidebar foot) ---------- */
+.sb-foot{justify-content:space-between;gap:10px}
 .sb-export,.sb-reset{
   border:1px solid var(--border); background:var(--glass-strong);
   color:var(--ink-soft); display:inline-flex; align-items:center; gap:7px;
@@ -988,6 +989,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .sb-reset{ color:#9a3b2e; border-color:rgba(154,59,46,0.28); background:rgba(154,59,46,0.06); }
 .sb-reset:hover{ color:#fff; background:#b13a2c; border-color:#b13a2c; }
 .sb-reset svg{width:17px;height:17px}
+.sb-foot .ft{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
 /* ---------- Search empty state ---------- */
 .sb-empty.search{display:flex}
@@ -2036,6 +2038,149 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 }
 
 
+
+  .ts-cell.quiz{display:flex !important}
+}
+
+
+/* ════════════════════════════════════════════════════════════════════════
+   APPLE LIQUID GLASS LAYER (v2.3) — retrofitted onto existing structure.
+   Material model: frosted base blur + saturation lift, white specular rim,
+   soft refraction shadow, subtle inner glow at the top edge (light source).
+   Signature: the reasoning segmented-control bubble — BLURRY while gliding,
+   CLEARS on settle (Apple's knob-in-motion behavior, doc: "controls ... come
+   to life when a person interacts with them").
+   Layered last so it wins the cascade without disturbing desktop layout.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ---------- Material tokens ---------- */
+:root{
+  --lg-blur:26px;             /* base frost */
+  --lg-blur-deep:34px;        /* nav chrome frost */
+  --lg-sat:180%;              /* saturation lift (glass picks up color from scenery) */
+  --lg-tint:rgba(251,247,238,0.16);          /* warm glass tint */
+  --lg-tint-strong:rgba(251,247,238,0.30);  /* prominent lens (composer) */
+  --lg-rim:rgba(255,255,255,0.55);           /* specular rim */
+  --lg-rim-strong:rgba(255,255,255,0.75);
+  --lg-refract:0 2px 14px rgba(70,52,16,.14), 0 12px 36px -14px rgba(70,52,16,.28);
+  --lg-glow-in:inset 0 1px 0 rgba(255,255,255,.65);
+}
+
+/* ---------- 1. TOP BAR: deep nav glass ---------- */
+.topnav{
+  background:linear-gradient(to bottom, rgba(251,247,238,0.34), rgba(251,247,238,0.14));
+  backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
+  -webkit-backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
+  border-bottom:1px solid rgba(255,255,255,0.42);
+  box-shadow:var(--lg-glow-in), 0 1px 0 rgba(30,26,20,0.04), 0 10px 32px -18px rgba(70,52,16,.30);
+}
+
+/* ---------- 2. SIDEBAR: liquid-glass sheet, right edge dissolves ---------- */
+.sidebar{
+  background:linear-gradient(to right,
+    rgba(251,247,238,0.30) 0%, rgba(251,247,238,0.22) 62%,
+    rgba(251,247,238,0.06) 93%, rgba(251,247,238,0) 100%);
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
+  border-right:0;
+  box-shadow:var(--lg-glow-in), 0 18px 44px -22px rgba(70,52,16,.42);
+}
+
+/* ---------- 3. COMPOSER: prominent lens glass ---------- */
+.composer{
+  background:linear-gradient(to bottom, rgba(251,247,238,0.30), rgba(251,247,238,0.18));
+  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.03);
+  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.03);
+  border:1px solid rgba(255,255,255,0.5);
+  border-top-color:rgba(255,255,255,0.72);
+  box-shadow:var(--lg-glow-in), 0 2px 10px rgba(70,52,16,.10), 0 18px 44px -16px rgba(70,52,16,.30);
+}
+
+/* ---------- 4. THE SIGNATURE: segmented control glass bubble ---------- */
+/* Structure: .reasoning keeps relative+padding track; a single .lg-thumb
+   absolutely positioned via --lg-x (left offset) + --lg-w (width), set by JS
+   measuring the chosen segment. Track = glass container with its own rim. */
+.reasoning{
+  position:relative;
+  background:linear-gradient(to bottom, rgba(251,247,238,0.22), rgba(251,247,238,0.10));
+  backdrop-filter:blur(14px) saturate(150%);
+  -webkit-backdrop-filter:blur(14px) saturate(150%);
+  border:1px solid rgba(255,255,255,0.45);
+  border-radius:999px;
+  padding:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 4px 14px -6px rgba(70,52,16,.20);
+}
+.reasoning .seg{position:relative;z-index:1;border:0;background:transparent;color:var(--ink-soft);transition:color .18s ease}
+.reasoning .seg[aria-pressed="true"]{color:var(--gold-ink);font-weight:600;background:transparent;border:0}
+.reasoning::after{
+  /* THE BUBBLE — the single Liquid-Glass pill that glides between segments.
+     BLURRY while moving (animation), CLEAR when settled (frost drains away). */
+  content:"";
+  position:absolute;z-index:0;
+  left:var(--lg-x, 3px); top:3px; height:calc(100% - 6px); width:var(--lg-w, 96px);
+  border-radius:999px;
+  background:linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(251,247,238,0.30));
+  backdrop-filter:blur(22px) saturate(170%);
+  -webkit-backdrop-filter:blur(22px) saturate(170%);
+  border:1px solid rgba(255,255,255,0.75);
+  box-shadow:inset 0 1px 0 rgba(255,165,84,0.30), inset 0 -1px 0 rgba(30,26,20,0.05), 0 4px 12px -4px rgba(70,52,16,.30);
+  transition:left .42s cubic-bezier(.32,.9,.28,1.02), width .42s cubic-bezier(.32,.9,.28,1.02), backdrop-filter .38s ease .2s, -webkit-backdrop-filter .38s ease .2s;
+}
+/* Motion state: while the thumb travels it frosts up (blurry glass),
+   on settle the frost drains — set via .lg-moving class from JS */
+.reasoning.lg-moving::after{
+  backdrop-filter:blur(30px) saturate(160%);
+  -webkit-backdrop-filter:blur(30px) saturate(160%);
+  transition:transform .38s cubic-bezier(.32,.9,.28,1.02), backdrop-filter .28s ease, -webkit-backdrop-filter .28s ease;
+  animation:lg-frost .42s ease;
+}
+@keyframes lg-frost{
+  0%{backdrop-filter:blur(22px) saturate(170%)}
+  50%{backdrop-filter:blur(30px) saturate(160%)}
+  100%{backdrop-filter:blur(22px) saturate(170%)}
+}
+/* Reduced motion & reduced transparency guards */
+@media (prefers-reduced-motion:reduce){
+  .reasoning::after{transition:none}
+  .reasoning.lg-moving::after{animation:none}
+}
+@media (prefers-reduced-transparency:reduce){
+  .topnav,.sidebar,.composer,.reasoning{backdrop-filter:none;background:rgba(251,247,238,0.92)}
+  .reasoning::after{backdrop-filter:none;background:rgba(255,255,255,0.94);border-color:var(--accent)}
+}
+
+/* 5. Segments get glass on interaction (Apple: controls "come to life") */
+.reasoning .seg:not([aria-pressed="true"]):hover,
+.reasoning .seg:not([aria-pressed="true"]):focus-visible{
+  border-radius:999px;
+  background:rgba(255,255,250,0.35);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+/* 6. Icon buttons: liquid glass while pressed */
+.icon-btn:not([disabled]):active{
+  background:rgba(255,255,250,0.40);
+  backdrop-filter:blur(10px) saturate(160%);
+  -webkit-backdrop-filter:blur(10px) saturate(160%);
+}
+
+/* ---------- 7. Mobile tab dock: liquid glass slab ---------- */
+@media (max-width:768px){
+  .topnav .nav-tabs,body>.nav-tabs{
+    background:linear-gradient(to bottom, rgba(251,247,238,0.30), rgba(251,247,238,0.12));
+    backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
+    -webkit-backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
+    border-top:1px solid rgba(255,255,255,0.40);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.60), 0 -10px 36px -16px rgba(70,52,16,.25);
+  }
+  .topnav .nav-tab.on,body>.nav-tabs .nav-tab.on{background:transparent !important;color:var(--gold-ink) !important}
+  .topnav .nav-tab:active,body>.nav-tabs .nav-tab:active{transform:scale(.94)}
+}
+
+/* ---------- 8. Bubble tint boost (glass chrome vs bubble separation) ---------- */
+.msg.user .ubox, .msg.user .bubble{background:rgba(196,160,72,0.34);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.msg.assistant .bubble{background:rgba(255,252,245,0.20);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+
 </style>
 <!-- ============ PREFS: settings menu styles ============ -->
 <style id="prefs-styles">
@@ -2319,141 +2464,6 @@ document.addEventListener("visibilitychange",()=>{
 /* register the offline-shell service worker (PWA) */
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script>
-
-<style id="liquid-glass-v3">
-/* ═══════════════════════════════════════════════════════════════════════════
-   APPLE LIQUID GLASS v3.1 — TRUE SPEC (per HIG + emit research).
-   The material is CLEAR, not frosted: scenery reads through the pane with
-   slight blur only. Identity = the SPECULAR RIM + inner light + depth shadow.
-   Recipe: blur(2-4px) saturate(180%) brightness(1.1), tint 0.06 white,
-   1px bright top border, inset top+bottom highlight, deep soft shadow.
-   R3 adds edge refraction (bevel maps) on top of the CLEAR base.
-   ═══════════════════════════════════════════════════════════════════════════
-   R1 removed — glass is the hard default. (prefers-reduced-transparency maps
-     to Windows' global "Transparency effects" toggle, which performance
-     users disable OS-wide — that served them the opaque pane. Opt-in instead.) */
-
-/* R2 — CLEAR GLASS (every modern engine), UNGATED — this IS the Apple look:
-   see-through, rim-lit, depth. Saturation 180% keeps scenery alive. */
-  .topnav{
-    background:rgba(255,255,255,.06);
-    -webkit-backdrop-filter:blur(3px) saturate(185%) brightness(1.06);
-    backdrop-filter:blur(3px) saturate(185%) brightness(1.06);
-    border-bottom:1px solid rgba(255,255,255,.55);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.75), inset 0 -1px 0 rgba(255,255,255,.15), 0 8px 32px rgba(70,52,16,.18);
-  }
-  .topnav.scrolled{
-    background:rgba(255,255,255,.10);
-    -webkit-backdrop-filter:blur(4px) saturate(190%) brightness(1.06);
-    backdrop-filter:blur(4px) saturate(190%) brightness(1.06);
-  }
-  .sidebar{
-    background:linear-gradient(to right,
-      rgba(255,255,255,.07) 0%, rgba(255,255,255,.05) 70%,
-      rgba(255,255,255,.015) 96%, rgba(255,255,255,0) 100%);
-    -webkit-backdrop-filter:blur(3px) saturate(180%) brightness(1.05);
-    backdrop-filter:blur(3px) saturate(180%) brightness(1.05);
-    border-right:1px solid rgba(255,255,255,.45);
-    box-shadow:inset 1px 1px 0 rgba(255,255,255,.70), 0 18px 44px -22px rgba(70,52,16,.22);
-  }
-  .composer{
-    background:rgba(255,255,255,.08);
-    -webkit-backdrop-filter:blur(4px) saturate(185%) brightness(1.06);
-    backdrop-filter:blur(4px) saturate(185%) brightness(1.06);
-    border:1px solid rgba(255,255,255,.52);
-    border-top-color:rgba(255,255,255,.80);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.78), inset 0 -1px 0 rgba(255,255,255,.10), 0 14px 40px -12px rgba(70,52,16,.22), 0 2px 8px rgba(70,52,16,.08);
-  }
-  .reasoning{
-    background:rgba(255,255,255,.08);
-    -webkit-backdrop-filter:blur(3px) saturate(170%) brightness(1.05);
-    backdrop-filter:blur(3px) saturate(170%) brightness(1.05);
-    border:1px solid rgba(255,255,255,.50);
-    box-shadow:inset 0 1px 0 rgba(255,220,170,.30), inset 0 -1px 0 rgba(255,255,255,.15);
-  }
-  .reasoning::after{
-    /* THE THUMB — clear glass pill: frosts while gliding, clears on settle.
-       The warm inset is Apple's "inner light", not a tint. */
-    content:"";position:absolute;z-index:0;
-    left:var(--lg-x,3px);top:3px;height:calc(100% - 6px);width:var(--lg-w,96px);
-    border-radius:999px;
-    background:rgba(255,255,255,.30);
-    border:1px solid rgba(255,255,255,.85);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(255,200,120,.28), 0 3px 10px -2px rgba(70,52,16,.22);
-    transition:left .42s cubic-bezier(.32,.9,.28,1.02), width .42s cubic-bezier(.32,.9,.28,1.02);
-  }
-  .reasoning.lg-moving::after{
-    /* Motion state: heavier frost while traveling */
-    background:rgba(255,255,255,.52);
-    -webkit-backdrop-filter:blur(18px) saturate(170%);
-    backdrop-filter:blur(18px) saturate(170%);
-  }
-  .reasoning .seg{position:relative;z-index:1;border:0;background:transparent;color:var(--ink-soft);transition:color .18s ease}
-  .reasoning .seg[aria-pressed="true"]{color:var(--gold-ink);font-weight:600;background:transparent;border:0}
-  .reasoning .seg:not([aria-pressed="true"]):hover{
-    border-radius:999px;background:rgba(255,255,250,.20);
-    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-  }
-  /* Mobile tab dock — the clearest glass on the screen (it floats over content) */
-  @media (max-width:768px){
-    .topnav .nav-tabs,body>.nav-tabs{
-      background:rgba(255,255,255,.09) !important;
-      -webkit-backdrop-filter:blur(4px) saturate(190%) brightness(1.05) !important;
-      backdrop-filter:blur(4px) saturate(190%) !important;
-      border-top:1px solid rgba(255,255,255,.48) !important;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 -8px 32px -14px rgba(70,52,16,.20) !important;
-    }
-  }
-  /* Settings sheet — clear pane with strong rim */
-  .settings-sheet{
-    background:rgba(255,255,255,.10);
-    -webkit-backdrop-filter:blur(4px) saturate(180%) brightness(1.04);
-    backdrop-filter:blur(4px) saturate(180%) brightness(1.04);
-    border:1px solid rgba(255,255,255,.52);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 24px 64px -24px rgba(70,52,16,.30);
-  }
-
-/* R3 — REFRACTION (Chromium only): edges bend the backdrop. Applied on top
-   of the clear base so scenery stays visible while the bezel refracts. */
-html.lg-refract .topnav{backdrop-filter:blur(3px) saturate(185%) brightness(1.06) url(#lg-map-topnav)}
-html.lg-refract .sidebar{backdrop-filter:blur(3px) saturate(180%) brightness(1.05) url(#lg-map-sidebar)}
-html.lg-refract .composer{backdrop-filter:blur(4px) saturate(185%) brightness(1.06) url(#lg-map-composer)}
-html.lg-refract .reasoning::after{backdrop-filter:blur(2px) saturate(170%) url(#lg-map-thumb)}
-html.lg-refract .reasoning.lg-moving::after{backdrop-filter:blur(18px) saturate(170%)}
-@media (max-width:768px){
-  html.lg-refract .topnav .nav-tabs, html.lg-refract body>.nav-tabs{
-    backdrop-filter:blur(4px) saturate(190%) brightness(1.05) url(#lg-map-dock) !important;
-  }
-}
-html.lg-refract .pop.open{
-  background:rgba(255,255,255,.10) !important;
-  backdrop-filter:blur(4px) saturate(175%) url(#lg-map-pop) !important;
-  border:1px solid rgba(255,255,255,.55);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.75), 0 18px 44px -14px rgba(70,52,16,.30);
-}
-
-/* Motion guard */
-@media (prefers-reduced-motion:reduce){
-  .reasoning::after{transition:none}
-  .reasoning.lg-moving::after{backdrop-filter:blur(2px)}
-}
-/* Manual opaque mode — opt-in "Reduce glass" (html.no-glass). a11y users and
-   low-GPU machines can switch it on; the OS-level preference is deliberately
-   not auto-honored because Windows maps it to the global transparency toggle. */
-html.no-glass .topnav, html.no-glass .sidebar, html.no-glass .composer,
-html.no-glass .reasoning, html.no-glass .nav-tabs, html.no-glass .settings-sheet,
-html.no-glass .topnav .nav-tabs, html.no-glass body>.nav-tabs,
-html.no-glass .pop.open{
-  background:rgba(251,247,238,.92) !important;
-  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
-  box-shadow:none;
-}
-html.no-glass .reasoning::after{
-  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
-  background:rgba(255,255,255,.94) !important;
-}
-</style>
-
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -2533,13 +2543,6 @@ html.no-glass .reasoning::after{
       <p>No conversations yet. Send a message to begin.</p>
     </div>
   </div>
-  <div class="sb-bulk" id="sbBulk" hidden>
-    <span id="sbBulkCount">0 selected</span>
-    <button class="sb-bulk-del" id="sbBulkDel">Delete selected</button>
-    <button class="sb-bulk-cancel" id="sbBulkCancel">Cancel</button>
-  </div>
-
-  <!-- sidebar footer: creator credit + data tools (restored v3.4) -->
   <div class="sb-foot"><span class="ft">Saint Augustine AI · Beta · by Tyler Simons</span>
     <button class="sb-export" id="sbExport" title="Copy this conversation as Markdown" aria-label="Export conversation">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg>
@@ -2550,13 +2553,17 @@ html.no-glass .reasoning::after{
       <span>Delete all</span>
     </button>
   </div>
+  <div class="sb-bulk" id="sbBulk" hidden>
+    <span id="sbBulkCount">0 selected</span>
+    <button class="sb-bulk-del" id="sbBulkDel">Delete selected</button>
+    <button class="sb-bulk-cancel" id="sbBulkCancel">Cancel</button>
+  </div>
 </aside>
 
 <button class="sb-toggle" id="sbToggle" aria-label="Conversations" title="Conversations">
   <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 5H7"/><path d="M17 9H7"/></svg>
 </button>
 
-<!-- CREATOR CREDIT: moved into the sidebar footer (sb-foot) — v3.4 -->
 
 <div class="sb-scrim" id="sbScrim" aria-hidden="true"></div>
 
@@ -3260,6 +3267,8 @@ html.no-glass .reasoning::after{
     controlsToggle.addEventListener("click",()=>{
       const open=composer.classList.toggle("controls-open");
       controlsToggle.setAttribute("aria-expanded", open?"true":"false");
+      /* re-measure the Liquid-Glass thumb when the controls row expands */
+      if(open && typeof lgInitThumb==="function") setTimeout(lgInitThumb, 320);
     });
     // let the composer close the controls sheet on desktop-size resize for sanity
     window.addEventListener("resize",()=>{
@@ -3747,6 +3756,7 @@ html.no-glass .reasoning::after{
   $$(".reasoning .seg").forEach(s=>s.addEventListener("click",()=>{
     $$(".reasoning .seg").forEach(x=>x.setAttribute("aria-pressed","false"));
     s.setAttribute("aria-pressed","true"); reasoning=s.dataset.reason;
+    lgSyncThumb(s);
   }));
 
   /* ---- file upload (frontend only) ---- */
@@ -4490,8 +4500,6 @@ html.no-glass .reasoning::after{
     cmds.push({group:"Navigate", icon:"bible", label:"Go to Today", hint:"4", run:()=>setPage("today")});
     cmds.push({group:"Actions", icon:"new", label:"New conversation", hint:"N", run:()=>{ if(typeof newChatClick==="function") newChatClick(); else $("#newChat").click(); }});
     cmds.push({group:"Actions", icon:"search", label:"Search conversations", hint:"/", run:()=>{ const s=$("#search"); if(s){ s.focus(); s.closest(".search")&&s.closest(".search").classList.add("open"); } }});
-    cmds.push({group:"Actions", icon:"new", label:"Export conversation as Markdown", run:()=>{ const b=$("#sbExport"); if(b) b.click(); else showToast("Export lives in Settings."); }});
-    cmds.push({group:"Actions", icon:"gear", label:"Delete all conversations", run:()=>{ const b=$("#sbReset"); if(b) b.click(); else showToast("Delete-all lives in Settings."); }});
     cmds.push({group:"Actions", icon:"gear", label:"Open settings", hint:"S", run:()=>$("#settingsBtn").click()});
     return cmds;
   }
@@ -4786,7 +4794,29 @@ html.no-glass .reasoning::after{
   $$('.reasoning .seg[data-reason]').forEach(b=>b.setAttribute("aria-pressed", b.dataset.reason===reasoning));
   $$('.reasoning .seg[data-reason]').forEach(b=>b.addEventListener("click",()=>{
     reasoning=b.dataset.reason; if(prefs.convo) prefs.convo.defaultReasoning=reasoning; savePrefs();
+    lgSyncThumb(b);
   }));
+
+  /* ═══ LIQUID GLASS THUMB DRIVER ═══
+     The single glass pill that glides between Quick/Thoughtful/Contemplative.
+     .lg-moving = traveling (blurry glass); on settle the frost drains (clear). */
+  function lgSyncThumb(seg){
+    const track=seg.closest(".reasoning"); if(!track) return;
+    const r=seg.getBoundingClientRect(), t=track.getBoundingClientRect();
+    track.style.setProperty("--lg-x", (r.left-t.left)+"px");
+    track.style.setProperty("--lg-w", r.width+"px");
+    track.classList.add("lg-moving");
+    clearTimeout(track._lgT);
+    track._lgT=setTimeout(()=>track.classList.remove("lg-moving"), 460);
+  }
+  function lgInitThumb(){
+    const on=document.querySelector('.reasoning .seg[aria-pressed="true"]');
+    if(on){ lgSyncThumb(on); const tr=on.closest(".reasoning"); tr&&tr.classList.remove("lg-moving"); }
+  }
+  /* init + re-measure when controls become visible (mobile kebab) or resize */
+  if(document.readyState==="complete") lgInitThumb();
+  else window.addEventListener("load", lgInitThumb);
+  window.addEventListener("resize", ()=>{ lgInitThumb(); }, {passive:true});
 
   /* ----- sheet open/close ----- */
   const settingsBtn=$("#settingsBtn"), sheet=$("#settingsSheet"), scrim=$("#settingsScrim"), settingsClose=$("#settingsClose");
@@ -5568,141 +5598,5 @@ html.no-glass .reasoning::after{
       })();
 </script>
 
-
-<script>
-/* ═══ APPLE LIQUID GLASS v3 ENGINE (delegated — no app code touched) ═══
-   Rung-gating: R3 refraction is Chromium-only. Firefox parses url() in
-   backdrop-filter but renders NOTHING (an @supports lie), so we UA-check.
-   Maps: SDF of a rounded squircle → gradient = surface normal → Snell n≈1.5
-   displacement, encoded R=horizontal G=vertical, neutral 128, alpha-255
-   (alpha-0 is premultiplied to zero by Chromium = dead filter). Fresh filter
-   ids per element; filters cached by id, so rebuilds assign new ones. */
-(function(){
-  "use strict";
-  if(window.__lgV3) return; window.__lgV3=1;
-  var isChromium = !!window.chrome && !!(window.CSS && CSS.supports) && CSS.supports('backdrop-filter','blur(1px)') && /Chrom(e|ium)/.test(navigator.userAgent) && !/Edg\//.test(navigator.userAgent)===false || (!!window.chrome);
-  /* simpler truth: Chrome/Edge/Brave expose window.chrome; Safari/Firefox don't */
-  isChromium = !!window.chrome;
-
-  /* --- SDF squircle bevel displacement map (canvas → PNG data-URL) ---
-     APPLE-SPEC v3.3: distortion ONLY in a narrow edge band (the bezel).
-     Center = neutral 128 (zero displacement) so the pane stays CLEAR.
-     Small capped displacement (~4-7px) so we never sample past the
-     opposite edge (that mirroring = the "inversion" look; killed here). */
-  function bevelMap(w,h,r,bezel,strength){
-    var W=Math.max(4,Math.round(w)), H=Math.max(4,Math.round(h)); r=Math.max(0,r); bezel=Math.max(2,bezel);
-    var c=document.createElement('canvas'); c.width=W; c.height=H;
-    var x2d=c.getContext('2d'), img=x2d.createImageData(W,H), d=img.data;
-    function sd(px,py){ /* signed distance to rounded-rect boundary; negative inside */
-      var qx=Math.abs(px-W/2)-(W/2-r), qy=Math.abs(py-H/2)-(H/2-r);
-      var ox=Math.max(qx,0), oy=Math.max(qy,0);
-      return Math.hypot(ox,oy)+Math.min(Math.max(qx,qy),0)-r;
-    }
-    function sq(t){ var u=1-Math.max(0,Math.min(1,t)); return Math.pow(Math.max(0,1-u*u*u*u),0.25); } // convex squircle profile
-    var e=0.5;
-    for(var yy=0; yy<H; yy++){
-      for(var xx=0; xx<W; xx++){
-        var px=xx+.5, py=yy+.5;
-        var edgeDist=-sd(px,py);                 // ≥0 inside
-        var Rv=128, Gv=128;
-        if(edgeDist<bezel){                       // bezel band only
-          var t=1-edgeDist/bezel;                 // 1 at rim → 0 at band end
-          var h0=sq(t), hp=sq(Math.min(1,t+e/bezel)), hm=sq(Math.max(0,t-e/bezel));
-          var slope=(hp-hm)/(2*e/bezel);          // dHeight — peaks at the rim
-          var mag=Math.min(0.30, slope*strength); // capped small: Apple-subtle
-          // CONVEX DOME (Apple): rays bend INWARD — the rim samples backdrop
-          // from a few px INSIDE the shape. Never samples past the boundary,
-          // so Chromium's edge-mirror (the "inversion" artifact) can't occur.
-          var nx=(sd(px+e,py)-sd(px-e,py))/2, ny=(sd(px,py+e)-sd(px,py-e))/2;
-          var L=Math.hypot(nx,ny)||1; nx/=-L; ny/=-L;   // ← NEGATED: inward
-          Rv=Math.round(128+127*mag*nx); Gv=Math.round(128+127*mag*ny);
-        }
-        var i=(yy*W+xx)*4;
-        d[i]=Math.max(0,Math.min(255,Rv)); d[i+1]=Math.max(0,Math.min(255,Gv));
-        d[i+2]=128; d[i+3]=255;   /* ALPHA 255 — premultiply trap */
-      }
-    }
-    x2d.putImageData(img,0,0);
-    return c.toDataURL('image/png');
-  }
-
-  function buildFilters(){
-    var defs=document.createElement('div'); defs.id='lg-filters';
-    var svg='<svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true">';
-    var specs=[
-      {id:'lg-map-topnav', sel:'.topnav', w:innerWidth, h:60, r:0, bezel:10, strength:0.14},
-      {id:'lg-map-sidebar', sel:'.sidebar', w:264, h:innerHeight-60, r:16, bezel:12, strength:0.13},
-      {id:'lg-map-composer', sel:'.composer', w:720, h:120, r:26, bezel:10, strength:0.15},
-      {id:'lg-map-thumb', sel:'.reasoning', w:256, h:36, r:18, bezel:7, strength:0.18},
-      {id:'lg-map-dock', sel:'.nav-tabs', w:innerWidth, h:64, r:0, bezel:10, strength:0.14},
-      {id:'lg-map-pop', sel:'.pop.open', w:375, h:420, r:22, bezel:12, strength:0.13}
-    ];
-    specs.forEach(function(sp){
-      try{
-        var href=bevelMap(Math.min(sp.w,1200), Math.min(sp.h,800), sp.r, sp.bezel, sp.strength);
-        svg+='<filter id="'+sp.id+'" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">'
-           +'<feImage href="'+href+'" preserveAspectRatio="none" x="0" y="0" width="100%" height="100%" result="map"/>'
-           +'<feDisplacementMap in="SourceGraphic" in2="map" scale="40" xChannelSelector="R" yChannelSelector="G" result="disp"/>'
-           +'<feMerge><feMergeNode in="disp"/></feMerge>'
-           +'</filter>';
-      }catch(e){/* skip pane */}
-    });
-    svg+='</svg>';
-    defs.innerHTML=svg;
-    document.body.appendChild(defs.firstChild);
-  }
-
-  if(isChromium){
-    /* v3.3: refraction DISABLED by default (user directive — no full-pane
-       distortion, no edge mirroring). Clear frost + specular rim IS the
-       Apple look on the web; the bezel-map engine below stays available:
-       add class 'lg-refract' to <html> manually to A/B it. */
-    // requestAnimationFrame(function(){ requestAnimationFrame(function(){
-    //   try{ buildFilters(); document.documentElement.classList.add('lg-refract'); }catch(e){}
-    // }); });
-  }
-
-  /* --- opt-in opaque mode: ?noglass param or localStorage sa_noglass=1 --- */
-  try{
-    var urlNog=new URLSearchParams(location.search).has('noglass');
-    var lsNog=localStorage.getItem('sa_noglass')==='1';
-    if(urlNog||lsNog) document.documentElement.classList.add('no-glass');
-  }catch(_){}
-
-  /* --- seg-thumb driver (works on all browsers: frost rung) --- */
-  function lgSyncThumb(seg){
-    var tr=seg.closest('.reasoning'); if(!tr) return;
-    var r=seg.getBoundingClientRect(), t=tr.getBoundingClientRect();
-    tr.style.setProperty('--lg-x',(r.left-t.left)+'px');
-    tr.style.setProperty('--lg-w', r.width+'px');
-    tr.classList.add('lg-moving');
-    clearTimeout(tr._lgT); tr._lgT=setTimeout(function(){tr.classList.remove('lg-moving')},460);
-  }
-  function lgInitThumb(){
-    var on=document.querySelector('.reasoning .seg[aria-pressed="true"]');
-    if(on){ lgSyncThumb(on); var tr=on.closest('.reasoning'); tr&&tr.classList.remove('lg-moving'); }
-  }
-  document.addEventListener('click',function(e){
-    var s=e.target.closest('.reasoning .seg'); if(s) lgSyncThumb(s);
-  },true);
-  window.addEventListener('load',lgInitThumb);
-  window.addEventListener('resize',function(){lgInitThumb()},{passive:true});
-
-  /* --- scroll-edge effect on top bar --- */
-  var scrollEl=document.querySelector('.stage')||document.scrollingElement;
-  if(scrollEl){
-    var raf2=null;
-    var onScroll=function(){
-      if(raf2) return;
-      raf2=requestAnimationFrame(function(){
-        raf2=null;
-        var y=scrollEl.scrollTop||window.scrollY||window.pageYOffset||0;
-        document.querySelector('.topnav').classList.toggle('scrolled', y>8);
-      });
-    };
-    scrollEl.addEventListener('scroll',onScroll,{passive:true});
-  }
-})();
-</script>
-</body>
+</body></body>
 </html>
