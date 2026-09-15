@@ -1969,14 +1969,14 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   }
   .msg .acts .act:active{transform:scale(.94)}
 
-  /* 8. Composer: glass treatment to match the message cards */
+  /* 8. Composer: warm glass to match the greet recipe (v3.5) */
   .composer{
-    background:rgba(251,247,238,.82) !important;
-    backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%);
-    box-shadow:0 12px 38px rgba(70,52,16,.20), inset 0 0 0 1px rgba(255,255,255,.55) !important;
+    background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44)) !important;
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 0 18px 44px -22px rgba(70,52,20,.35) !important;
   }
   .composer.controls-open{
-    background:rgba(251,247,238,.92) !important;
+    background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50)) !important;
   }
 
   /* 5. Tab indicator: crisp 3px gold pill (not a block), slightly wider */
@@ -2039,147 +2039,128 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 
 
 
-  .ts-cell.quiz{display:flex !important}
-}
+
 
 
 /* ════════════════════════════════════════════════════════════════════════
-   APPLE LIQUID GLASS LAYER (v2.3) — retrofitted onto existing structure.
-   Material model: frosted base blur + saturation lift, white specular rim,
-   soft refraction shadow, subtle inner glow at the top edge (light source).
-   Signature: the reasoning segmented-control bubble — BLURRY while gliding,
-   CLEARS on settle (Apple's knob-in-motion behavior, doc: "controls ... come
-   to life when a person interacts with them").
-   Layered last so it wins the cascade without disturbing desktop layout.
+   WARM GLASS UNIFICATION (v3.5) — ONE recipe, everywhere.
+   Source of truth = the greet card (Tyler's pick): warm-white tint
+   rgba(255,252,245,.56→.44) + blur(18px) saturate(140%) + white rim.
+   Surfaces: top bar · sidebar · composer · bubbles · mobile tab dock ·
+   settings sheet · popovers · hamburger · reasoning pill + glass thumb.
+   NOTE: no prefers-reduced-transparency gate — that gate is what
+   flattened every bar to dead cream when OS transparency was off.
+   CSS frost renders regardless; unsupported engines fall back to tint.
    ════════════════════════════════════════════════════════════════════════ */
 
-/* ---------- Material tokens ---------- */
-:root{
-  --lg-blur:26px;             /* base frost */
-  --lg-blur-deep:34px;        /* nav chrome frost */
-  --lg-sat:180%;              /* saturation lift (glass picks up color from scenery) */
-  --lg-tint:rgba(251,247,238,0.16);          /* warm glass tint */
-  --lg-tint-strong:rgba(251,247,238,0.30);  /* prominent lens (composer) */
-  --lg-rim:rgba(255,255,255,0.55);           /* specular rim */
-  --lg-rim-strong:rgba(255,255,255,0.75);
-  --lg-refract:0 2px 14px rgba(70,52,16,.14), 0 12px 36px -14px rgba(70,52,16,.28);
-  --lg-glow-in:inset 0 1px 0 rgba(255,255,255,.65);
-}
+/* 1. CHROME BARS — the greet recipe */
+body>.topnav,body>.topnav.topnav{
 
-/* ---------- 1. TOP BAR: deep nav glass ---------- */
-.topnav{
-  background:linear-gradient(to bottom, rgba(251,247,238,0.34), rgba(251,247,238,0.14));
-  backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
-  -webkit-backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
-  border-bottom:1px solid rgba(255,255,255,0.42);
-  box-shadow:var(--lg-glow-in), 0 1px 0 rgba(30,26,20,0.04), 0 10px 32px -18px rgba(70,52,16,.30);
+  background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid rgba(255,255,255,.55); border-top:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 0 18px 44px -22px rgba(70,52,20,.35);
 }
-
-/* ---------- 2. SIDEBAR: liquid-glass sheet, right edge dissolves ---------- */
 .sidebar{
-  background:linear-gradient(to right,
-    rgba(251,247,238,0.30) 0%, rgba(251,247,238,0.22) 62%,
-    rgba(251,247,238,0.06) 93%, rgba(251,247,238,0) 100%);
-  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
-  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat));
-  border-right:0;
-  box-shadow:var(--lg-glow-in), 0 18px 44px -22px rgba(70,52,16,.42);
+  background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-right:1px solid rgba(255,255,255,.50); border-top:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 8px 0 32px -22px rgba(70,52,20,.28);
 }
-
-/* ---------- 3. COMPOSER: prominent lens glass ---------- */
 .composer{
-  background:linear-gradient(to bottom, rgba(251,247,238,0.30), rgba(251,247,238,0.18));
-  backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.03);
-  -webkit-backdrop-filter:blur(var(--lg-blur)) saturate(var(--lg-sat)) brightness(1.03);
-  border:1px solid rgba(255,255,255,0.5);
-  border-top-color:rgba(255,255,255,0.72);
-  box-shadow:var(--lg-glow-in), 0 2px 10px rgba(70,52,16,.10), 0 18px 44px -16px rgba(70,52,16,.30);
+  background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.55); border-top-color:rgba(255,255,255,.72);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), inset 0 -1px 0 rgba(30,26,20,.04), 0 18px 44px -22px rgba(70,52,20,.35);
+}
+/* nav pill inside the bar: lighter tint, no double blur */
+.topnav .nav-tabs{background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.65)}
+
+/* 2. MESSAGING BUBBLES — same warm glass (assistant + user) */
+.msg .bubble{
+  background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.50); border-top-color:rgba(255,255,255,.68);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), var(--shadow-sm);
+}
+.msg.user .bubble{border-color:rgba(163,130,47,.52)}   /* gold hairline identity */
+/* readability fallback where backdrop-filter is unsupported */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .msg .bubble{background:rgba(252,249,241,.96)}
 }
 
-/* ---------- 4. THE SIGNATURE: segmented control glass bubble ---------- */
-/* Structure: .reasoning keeps relative+padding track; a single .lg-thumb
-   absolutely positioned via --lg-x (left offset) + --lg-w (width), set by JS
-   measuring the chosen segment. Track = glass container with its own rim. */
+/* 3. SHEETS + POPOVERS + HAMBURGER */
+.settings-sheet,.settings-sheet.settings-sheet{
+  background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.60);
+}
+.pop.open{
+  background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.55);
+}
+.sb-toggle{
+  background:rgba(255,252,245,.56);
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70);
+}
+
+/* 4. REASONING PILL — glass track + gliding warm-glass thumb
+      (JS driver sets --lg-x / --lg-w; .lg-moving = traveling frost) */
 .reasoning{
   position:relative;
-  background:linear-gradient(to bottom, rgba(251,247,238,0.22), rgba(251,247,238,0.10));
-  backdrop-filter:blur(14px) saturate(150%);
-  -webkit-backdrop-filter:blur(14px) saturate(150%);
-  border:1px solid rgba(255,255,255,0.45);
-  border-radius:999px;
-  padding:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 4px 14px -6px rgba(70,52,16,.20);
+  background:rgba(255,252,245,.40);
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 4px 14px -6px rgba(70,52,16,.18);
 }
-.reasoning .seg{position:relative;z-index:1;border:0;background:transparent;color:var(--ink-soft);transition:color .18s ease}
-.reasoning .seg[aria-pressed="true"]{color:var(--gold-ink);font-weight:600;background:transparent;border:0}
 .reasoning::after{
-  /* THE BUBBLE — the single Liquid-Glass pill that glides between segments.
-     BLURRY while moving (animation), CLEAR when settled (frost drains away). */
-  content:"";
-  position:absolute;z-index:0;
-  left:var(--lg-x, 3px); top:3px; height:calc(100% - 6px); width:var(--lg-w, 96px);
-  border-radius:999px;
-  background:linear-gradient(to bottom, rgba(255,255,255,0.55), rgba(251,247,238,0.30));
-  backdrop-filter:blur(22px) saturate(170%);
-  -webkit-backdrop-filter:blur(22px) saturate(170%);
-  border:1px solid rgba(255,255,255,0.75);
-  box-shadow:inset 0 1px 0 rgba(255,165,84,0.30), inset 0 -1px 0 rgba(30,26,20,0.05), 0 4px 12px -4px rgba(70,52,16,.30);
-  transition:left .42s cubic-bezier(.32,.9,.28,1.02), width .42s cubic-bezier(.32,.9,.28,1.02), backdrop-filter .38s ease .2s, -webkit-backdrop-filter .38s ease .2s;
+  content:""; position:absolute; top:3px; bottom:3px;
+  left:var(--lg-x,4px); width:var(--lg-w,96px); border-radius:999px; z-index:0;
+  background:linear-gradient(rgba(255,252,245,.78), rgba(255,252,245,.62));
+  backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+  border:1px solid rgba(255,255,255,.65);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.85), 0 2px 8px -2px rgba(70,52,16,.22);
+  transition:left .34s cubic-bezier(.32,.72,.28,1), width .34s cubic-bezier(.32,.72,.28,1);
+  pointer-events:none;
 }
-/* Motion state: while the thumb travels it frosts up (blurry glass),
-   on settle the frost drains — set via .lg-moving class from JS */
-.reasoning.lg-moving::after{
-  backdrop-filter:blur(30px) saturate(160%);
-  -webkit-backdrop-filter:blur(30px) saturate(160%);
-  transition:transform .38s cubic-bezier(.32,.9,.28,1.02), backdrop-filter .28s ease, -webkit-backdrop-filter .28s ease;
-  animation:lg-frost .42s ease;
-}
-@keyframes lg-frost{
-  0%{backdrop-filter:blur(22px) saturate(170%)}
-  50%{backdrop-filter:blur(30px) saturate(160%)}
-  100%{backdrop-filter:blur(22px) saturate(170%)}
-}
-/* Reduced motion & reduced transparency guards */
-@media (prefers-reduced-motion:reduce){
-  .reasoning::after{transition:none}
-  .reasoning.lg-moving::after{animation:none}
-}
-@media (prefers-reduced-transparency:reduce){
-  .topnav,.sidebar,.composer,.reasoning{backdrop-filter:none;background:rgba(251,247,238,0.92)}
-  .reasoning::after{backdrop-filter:none;background:rgba(255,255,255,0.94);border-color:var(--accent)}
-}
+.reasoning .seg{position:relative; z-index:1; border:0; background:transparent}
+.reasoning .seg[aria-pressed="true"]{background:transparent; border:0; color:var(--gold-ink); font-weight:600}
+.reasoning.lg-moving::after{backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%)}
+@media (prefers-reduced-motion:reduce){ .reasoning::after{transition:none} }
 
-/* 5. Segments get glass on interaction (Apple: controls "come to life") */
-.reasoning .seg:not([aria-pressed="true"]):hover,
-.reasoning .seg:not([aria-pressed="true"]):focus-visible{
-  border-radius:999px;
-  background:rgba(255,255,250,0.35);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-}
-/* 6. Icon buttons: liquid glass while pressed */
-.icon-btn:not([disabled]):active{
-  background:rgba(255,255,250,0.40);
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-}
-
-/* ---------- 7. Mobile tab dock: liquid glass slab ---------- */
+/* 5. MOBILE — tab dock, drawer, bubbles, greet all wear the same recipe */
 @media (max-width:768px){
-  .topnav .nav-tabs,body>.nav-tabs{
-    background:linear-gradient(to bottom, rgba(251,247,238,0.30), rgba(251,247,238,0.12));
-    backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
-    -webkit-backdrop-filter:blur(var(--lg-blur-deep)) saturate(var(--lg-sat));
-    border-top:1px solid rgba(255,255,255,0.40);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.60), 0 -10px 36px -16px rgba(70,52,16,.25);
+  .topnav .nav-tabs,body>.nav-tabs,body>.nav-tabs.nav-tabs{
+    background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+    border-top:1px solid rgba(255,255,255,.55); border-bottom:0;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 0 -12px 36px -18px rgba(70,52,16,.30);
   }
-  .topnav .nav-tab.on,body>.nav-tabs .nav-tab.on{background:transparent !important;color:var(--gold-ink) !important}
-  .topnav .nav-tab:active,body>.nav-tabs .nav-tab:active{transform:scale(.94)}
+  .msg.assistant .bubble{
+    background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50)) !important;
+    border:1px solid rgba(255,255,255,.50) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55) !important;
+    padding:12px 14px !important; max-width:92% !important; border-radius:18px;
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  }
+  .msg.user .bubble{
+    background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50)) !important;
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  }
+  .greet{
+    background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44)) !important;
+    backdrop-filter:blur(18px) saturate(140%) !important;
+    -webkit-backdrop-filter:blur(18px) saturate(140%) !important;
+  }
+  .sb-toggle{
+    background:rgba(255,252,245,.56);
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  }
 }
-
-/* ---------- 8. Bubble tint boost (glass chrome vs bubble separation) ---------- */
-.msg.user .ubox, .msg.user .bubble{background:rgba(196,160,72,0.34);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
-.msg.assistant .bubble{background:rgba(255,252,245,0.20);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 
 </style>
 <!-- ============ PREFS: settings menu styles ============ -->
