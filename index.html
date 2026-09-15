@@ -652,7 +652,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .topic-summary{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 14px;white-space:pre-wrap}
 .lesson-flow{margin:4px 0 2px;padding:0 0 0 4px}
 .ls{position:relative;display:flex;gap:14px;padding:14px 0}
-.ls:not(:last-child)::before{content:"";position:absolute;left:14px;top:30px;bottom:0;width:2px;background:linear-gradient(var(--border-light),rgba(163,130,47,.32) 60%,transparent)}
+.ls:not(:last-child)::before{content:"";position:absolute;left:14px;top:24px;bottom:0;width:2px;background:linear-gradient(var(--border-light),rgba(163,130,47,.32) 60%,transparent)}
 .ls-n{flex:none;width:30px;height:30px;border-radius:999px;display:grid;place-items:center;
   background:var(--accent-deep);color:#fbf7ee;font-size:13px;font-weight:700;
   box-shadow:0 3px 10px rgba(138,108,37,.28);z-index:1}
@@ -662,6 +662,21 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .ls .topic-quote,.ls .topic-excerpt,.ls .topic-summary{margin:0}
 .ls .topic-vocab{margin:0}
 .ls .topic-vocab .rl{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);font-style:normal}
+
+/* v3.6 — Lesson steps as disclosures (calm by default; mobile-first tap rows) */
+details.ls{position:relative;display:block;padding:0}
+details.ls > summary{
+  list-style:none;cursor:pointer;-webkit-user-select:none;user-select:none;
+  display:flex;align-items:center;gap:12px;min-height:48px;padding:8px 0;
+  border-radius:12px;-webkit-tap-highlight-color:transparent;
+}
+details.ls > summary::-webkit-details-marker,details.ls > summary::marker{display:none;content:""}
+details.ls > summary:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+details.ls .ls-l{flex:1;min-width:0;margin:0}
+.ls-chev{flex:none;width:16px;height:16px;color:var(--gold-ink);opacity:.75;transition:transform .22s cubic-bezier(.4,0,.2,1)}
+details.ls[open] .ls-chev{transform:rotate(180deg)}
+details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
+@media (prefers-reduced-motion:reduce){.ls-chev{transition:none}}
 
 /* ---- Connected Lesson of the Day (Study) — a 5-step journey ---- */
 .lesson-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:0 0 6px}
@@ -1929,7 +1944,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   /* 1. Lesson timeline: gold spine connects filled gold circles — reads as one
         crafted journey, not a wireframe. */
   .ls:not(:last-child)::before{
-    left:14px;top:34px;bottom:6px;width:2px;
+    left:14px;top:24px;bottom:6px;width:2px;
     background:linear-gradient(to bottom, rgba(163,130,47,.55), rgba(163,130,47,.16));
   }
   .ls-n{
@@ -1937,6 +1952,9 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
     background:linear-gradient(145deg, var(--accent), var(--accent-deep));
     box-shadow:0 3px 10px rgba(138,108,37,.32), inset 0 1px 0 rgba(255,255,255,.25);
   }
+  .ls-chev{width:18px;height:18px;opacity:.9}
+  details.ls > summary{min-height:52px}
+  details.ls > .ls-b{padding:2px 0 16px 44px}
 
   /* 2. Drop cap: ~20% smaller on phones so the letter doesn't dominate the
         narrow column; same illuminated feel. */
@@ -2617,17 +2635,23 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             </div>
           </div>
           <div class="lesson-flow" id="lessonFlow">
-            <div class="ls">
-              <span class="ls-n" data-step="1">1</span>
-              <div class="ls-b">
+            <details class="ls" data-step="1" open>
+              <summary>
+                <span class="ls-n" data-step="1">1</span>
                 <span class="ls-l">Today's Topic</span>
+                <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div class="ls-b">
                 <p class="topic-topic" id="lessonTopic"></p>
               </div>
-            </div>
-            <div class="ls">
-              <span class="ls-n" data-step="2">2</span>
-              <div class="ls-b">
+            </details>
+            <details class="ls" data-step="2">
+              <summary>
+                <span class="ls-n" data-step="2">2</span>
                 <span class="ls-l">A word he said</span>
+                <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div class="ls-b">
                 <div class="quote-wrap">
                   <p class="topic-quote" id="lessonQuote"></p>
                   <div class="quote-actions">
@@ -2640,28 +2664,37 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="ls">
-              <span class="ls-n" data-step="3">3</span>
-              <div class="ls-b">
+            </details>
+            <details class="ls" data-step="3">
+              <summary>
+                <span class="ls-n" data-step="3">3</span>
                 <span class="ls-l">In his own words</span>
+                <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div class="ls-b">
                 <div class="topic-excerpt" id="lessonExcerpt"></div>
               </div>
-            </div>
-            <div class="ls">
-              <span class="ls-n" data-step="4">4</span>
-              <div class="ls-b">
+            </details>
+            <details class="ls" data-step="4">
+              <summary>
+                <span class="ls-n" data-step="4">4</span>
                 <span class="ls-l">The key term</span>
+                <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div class="ls-b">
                 <div class="topic-vocab"><span class="rl2" id="lessonVocab"></span></div>
               </div>
-            </div>
-            <div class="ls">
-              <span class="ls-n" data-step="5">5</span>
-              <div class="ls-b">
+            </details>
+            <details class="ls" data-step="5">
+              <summary>
+                <span class="ls-n" data-step="5">5</span>
                 <span class="ls-l" id="lessonWritingLabel">The writing behind it</span>
+                <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div class="ls-b">
                 <p class="topic-summary" id="lessonSummary"></p>
               </div>
-            </div>
+            </details>
           </div>
           <button class="daily-cta" id="lessonAsk">Walk through today's lesson with Augustine &rarr;</button>
           </article>
@@ -5155,9 +5188,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(lessonLabel) lessonLabel.textContent="The writing behind it — "+t.writing;
           if(lessonSummary) lessonSummary.textContent=t.summary;
           lessonIdx=i;
+          if(window.__lessonSteps) window.__lessonSteps.reset();
           updateLessonProgress();
         }
         renderLesson(lessonForDate());
+        /* v3.6 — lesson steps are collapsible: one open at a time, step 1 first */
+        (function lessonSteps(){
+          const steps=$$('.ls');
+          if(!steps.length) return;
+          steps.forEach(d=>d.addEventListener("toggle",()=>{ if(d.open) steps.forEach(o=>{ if(o!==d) o.open=false; }); }));
+          window.__lessonSteps={ reset(){ steps.forEach((d,idx)=>d.open=idx===0); } };
+        })();
         // tomorrow's lesson teaser (closes the daily loop)
         (function tomorrowTeaser(){
           const el=$('#tomorrowName'); if(!el) return;
