@@ -4060,6 +4060,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
     const messages=[...history];
     let acc="", reasoningAcc="", bufStr="", hasReasoning=false;
+    let streamStalled=false, streamTruncated=false;   // v4.1 cutoff events
     // prepend attachment note to the newest user message
     if(attachNote && messages.length) messages[messages.length-1]={role:"user", content:attachNote+messages[messages.length-1].content};
 
@@ -4135,11 +4136,31 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             const j=JSON.parse(data);
             if(j.reasoning!=null){ reasoningAcc+=j.reasoning; hasReasoning=true; render(true); continue; }
             if(j.text){ acc+=j.text; render(true); }
+            if(j.stalled) streamStalled=true;       // v4.1: upstream died mid-answer
+            if(j.truncated) streamTruncated=true;   // v4.1: model hit max_tokens
           }catch(_){}
         }
       }
       render(false);
       if(!acc) acc="(no response)";
+      // v4.1 — the answer was cut short: say so, and offer the fix.
+      if(streamStalled){
+        acc += "\n\n*The connection faltered mid-thought — the reply above may be incomplete.*";
+        render(false);
+        history.push({role:"assistant", content:acc});
+        recordSession(userMsg, acc);
+        addRetry(loading, messages, userMsg);
+        showToast("Answer interrupted — tap Retry to have Augustine continue.");
+        return;
+      }
+      if(streamTruncated){
+        acc += "\n\n*Augustine was still drawing breath when the length limit arrived. Tap Continue for the rest.*";
+        render(false);
+        history.push({role:"assistant", content:acc});
+        recordSession(userMsg, acc);
+        addContinue(loading, messages, userMsg);
+        return;
+      }
       // D55: announce completion once (thread aria-live is off during streaming)
       if(thread){ thread.setAttribute("aria-live","polite"); setTimeout(()=>{ if(thread) thread.setAttribute("aria-live","off"); },1500); }
       if(window.__replyBell) window.__replyBell();
@@ -4167,6 +4188,35 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       syncSend();
       stage.scrollTop=stage.scrollHeight;
     }
+  }
+  /* v4.1 — Continue affordance for length-truncated answers: the half
+     answer STAYS in history; we send a short "resume" instruction so
+     Augustine picks up exactly where the limit cut him off. */
+  function addContinue(loadingMsg, messages, userMsg){
+    if(loadingMsg.querySelector(".acts")) return;
+    const acts=document.createElement("div");
+    acts.className="acts";
+    acts.innerHTML='<button class="act" data-continue><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Continue</button>'+
+      '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy</button>';
+    loadingMsg.appendChild(acts);
+    acts.querySelector("[data-continue]").addEventListener("click",()=>{
+      acts.remove();
+      const lastAssistant=[...history].reverse().find(m=>m.role==="assistant");
+      const tail=lastAssistant? String(lastAssistant.content).slice(-600) : "";
+      const resumeMessages=[...messages,
+        {role:"assistant", content:tail||"(beginning)"},
+        {role:"user", content:"Continue exactly where you left off — do not repeat anything already said, do not restart. Finish the thought, then land your closing paragraph and the short TLDR: line."}
+      ];
+      // append the continuation into THIS bubble's thread position: new turn
+      const um={role:"user", content:"(continue the previous answer)"};
+      history.push(um);
+      callChatRetry(resumeMessages, um);
+    });
+    acts.querySelector("[data-copy]").addEventListener("click",()=>{
+      const b=loadingMsg.querySelector(".bubble");
+      const txt=b? b.innerText.replace(/^Augustine\s*/,"").trim() : "";
+      navigator.clipboard.writeText(txt).then(()=>showToast("Copied")).catch(()=>showToast("Copy failed"));
+    });
   }
   function addRetry(loadingMsg, messages, userMsg){
     if(loadingMsg.querySelector(".acts")) return;

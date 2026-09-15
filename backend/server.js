@@ -233,7 +233,10 @@ async function handleChat(req, res, body) {
       "no 'Sources:' line, no long prayer. If a TLDR would help, it is not needed because the answer is already brief.";
   } else if (reasoning === "contemplative") {
     temperature = 0.4;
-    maxTokens = 2048; // bounded so slow free models finish under the 110s fetch ceiling
+    // v4.1: 2048 was the silent cutoff — a genuinely deep Augustine answer
+    // runs 2500-4000 tokens. 4096 gives the mode room to land its TLDR close
+    // while staying inside the 110s upstream ceiling on free tiers.
+    maxTokens = 4096;
     depthNote =
       "ANSWER MODE — CONTEMPLATIVE (maximum depth, maximum length): I ask of you my own " +
   "best self — be fully unhurried and give the deepest answer you can, as long as it " +
@@ -332,6 +335,14 @@ async function handleChat(req, res, body) {
  * If a model produces reasoning but NO real content by stream end (some reasoning
  * models emit everything under `reasoning`), we send a short honest fallback so the
  * user is not left with an empty bubble — never the raw reasoning as the answer.
+ *
+ * v4.1 CUTOFF FIXES:
+ * - Upstream-stall watchdog: if OpenRouter sends nothing for 75s mid-stream
+ *   (free-tier stalls), we close cleanly with a {stalled:true} event so the
+ *   frontend can offer retry — instead of the browser loop hanging forever
+ *   or ending with a half answer that looks "complete".
+ * - finish_reason surfaced: when the model stops because it HIT max_tokens,
+ *   we send {truncated:true} so the frontend can show "continue" affordance.
  */
 async function proxyStream(upstream, res) {
   let sawContent = false;
@@ -344,39 +355,70 @@ async function proxyStream(upstream, res) {
   const flush = (obj) => res.write(`data: ${JSON.stringify(obj)}\n\n`);
   const answerGate = makeAnswerGate();
 
-  for await (const chunk of upstream.body) {
-    const text = decoder.decode(chunk, { stream: true })
-      .split(String.fromCharCode(13)).join(String.fromCharCode(10));
-    lineBuf += text;
+  // v4.1 stall watchdog: any upstream activity resets the clock; 75s of
+  // silence mid-stream = dead upstream. We use an EXPLICIT reader (not
+  // for-await) because cancelling the body while for-await holds the lock
+  // throws "Cannot cancel a locked stream" — an uncaught exception that
+  // killed the whole server process. reader.cancel() is the legal path.
+  let stalled = false;
+  let watchdog = null;
+  const reader = upstream.body.getReader();
+  const armWatchdog = () => {
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => {
+      stalled = true;
+      try { reader.cancel(); } catch (_) {}
+    }, 75000);
+  };
+  armWatchdog();
 
-    // process complete lines; keep any trailing partial line in the buffer
-    let nl;
-    while ((nl = lineBuf.indexOf("\n")) >= 0) {
-      const line = lineBuf.slice(0, nl);
-      lineBuf = lineBuf.slice(nl + 1);
-      if (!line.startsWith("data:")) continue;
-      const data = line.slice(5).trim();
-      if (data === "[DONE]") { flush({}); continue; }
-      let j;
-      try { j = JSON.parse(data); } catch (_) { continue; }
-      const delta = j.choices?.[0]?.delta;
-      if (!delta) continue;
-      const th = delta.reasoning ?? delta.thinking ?? null;
-      const tok = delta.content ?? "";
-      if (tok) {
-        // The real answer only: strip any planning/outline that some reasoning
-        // models write into `content` before the actual reply begins.
-        for (const part of answerGate(tok)) {
-          if (part) { sawContent = true; flush({ text: part }); }
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      armWatchdog();
+      const text = decoder.decode(value, { stream: true })
+        .split(String.fromCharCode(13)).join(String.fromCharCode(10));
+      lineBuf += text;
+
+      // process complete lines; keep any trailing partial line in the buffer
+      let nl;
+      while ((nl = lineBuf.indexOf("\n")) >= 0) {
+        const line = lineBuf.slice(0, nl);
+        lineBuf = lineBuf.slice(nl + 1);
+        if (!line.startsWith("data:")) continue;
+        const data = line.slice(5).trim();
+        if (data === "[DONE]") { flush({}); continue; }
+        let j;
+        try { j = JSON.parse(data); } catch (_) { continue; }
+        const choice0 = j.choices?.[0];
+        const delta = choice0?.delta;
+        // v4.1: remember WHY the model stopped (length = hit max_tokens)
+        const finishReason = choice0?.finish_reason || null;
+        if (!delta && !finishReason) continue;
+        const th = delta?.reasoning ?? delta?.thinking ?? null;
+        const tok = delta?.content ?? "";
+        if (tok) {
+          // The real answer only: strip any planning/outline that some reasoning
+          // models write into `content` before the actual reply begins.
+          for (const part of answerGate(tok)) {
+            if (part) { sawContent = true; flush({ text: part }); }
+          }
         }
-      }
-      if (th) {
-        sawReasoning = true;
-        reasonAcc += th;
-        if (reasonAcc.length <= REASON_TRACE_MAX) flush({ reasoning: th });
+        if (th) {
+          sawReasoning = true;
+          reasonAcc += th;
+          if (reasonAcc.length <= REASON_TRACE_MAX) flush({ reasoning: th });
+        }
+        if (finishReason === "length") flush({ truncated: true });   // hit max_tokens
       }
     }
+  } catch (_) {
+    // read aborted (watchdog fired, or upstream died) — fall through to close
+  } finally {
+    clearTimeout(watchdog);
   }
+
   lineBuf = "";
   // Flush any buffered final line from the answer gate (incomplete tail).
   for (const part of answerGate.final()) if (part) { sawContent = true; flush({ text: part }); }
@@ -389,6 +431,7 @@ async function proxyStream(upstream, res) {
       flush({ text: "" });
     }
   }
+  if (stalled) flush({ stalled: true });       // tell the browser: upstream died mid-answer
   flush({});                                   // event: done
   res.end();
 }
