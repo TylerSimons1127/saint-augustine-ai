@@ -138,6 +138,14 @@ a{color:inherit}
 .bg .vignette{position:absolute;inset:0;background:radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(46,38,24,0.10) 100%)}
 @keyframes drift{to{transform:rotate(360deg)}}
 
+
+/* v3.8 MOBILE ANIM PERF: the background parallax (--rx/--ry transform on
+   .bg .photo + .rays) is a pointer-driven desktop effect. On phones there
+   is no pointer; the listeners still fire on every touch. Gate the whole
+   parallax system to fine pointers only. */
+@media (hover:none) and (pointer:coarse){
+  .bg .photo,.bg .rays{will-change:auto;transition:none}
+}
 /* ---------- Glass primitive (liquid) ---------- */
 .glass{
   background:var(--glass);
@@ -1690,8 +1698,9 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 @keyframes caretPulse{0%,100%{opacity:.22;transform:translateY(.12em) scaleY(.55)}50%{opacity:.9;transform:translateY(0) scaleY(1)}}
 
 /* message mount: soft rise + settle (replaces plain rise) — staggered with --i */
-.msg{animation:msgIn .5s cubic-bezier(.22,.7,.3,1) both;animation-delay:calc(var(--i,0)*70ms)}
-@keyframes msgIn{0%{opacity:0;transform:translateY(16px) scale(.985);filter:blur(4px)}60%{opacity:1;transform:translateY(-2px) scale(1)}100%{opacity:1;transform:none;filter:blur(0)}}
+ .msg{animation:msgIn .5s cubic-bezier(.22,.7,.3,1) both;animation-delay:calc(var(--i,0)*70ms)}
+@media (max-width:768px){.msg{animation-duration:.34s;animation-delay:calc(var(--i,0)*40ms)}}
+@keyframes msgIn{0%{opacity:0;transform:translateY(14px) scale(.985)}60%{opacity:1;transform:translateY(-2px) scale(1)}100%{opacity:1;transform:none}}
 .bubble{border-radius:var(--r-m)}
 .msg.assistant .bubble{position:relative;overflow:hidden}
 /* soft left reflect on assistant bubbles (quiet elevation, not a colored glow) */
@@ -4453,9 +4462,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       document.addEventListener("touchend",e=>{
         if(x0==null) return;
         const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0, dt=Date.now()-t0;
-        x0=null;
+        const startX=x0; x0=null;
         if(dt>450 || Math.abs(dx)<90 || Math.abs(dy)>50) return;
-        if(Math.min(x0, window.innerWidth-x0)>28) return;
+        if(Math.min(startX, window.innerWidth-startX)>28) return;
         const i=order.indexOf(PAGE); if(i<0) return;
         const next = dx<0 ? order[i+1] : order[i-1];
         if(next) setPage(next);
