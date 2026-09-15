@@ -700,6 +700,22 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 .dp-card-head h3{margin:0}
 .dp-mini-tag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink);padding:3px 9px;border-radius:999px;background:var(--accent-soft);white-space:nowrap}
 .dp-eyebrow-mini{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
+/* v3.7 — Today "The Lesson" pointer card: title + go hint, one tap to Study */
+.lesson-link{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;
+  min-height:52px;padding:10px 16px;margin:6px 0 2px;border-radius:14px;cursor:pointer;
+  background:rgba(163,130,47,.10);border:1px solid rgba(163,130,47,.28);
+  transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.lesson-link:hover{background:rgba(163,130,47,.16);border-color:rgba(163,130,47,.42)}
+.lesson-link:active{transform:scale(.98)}
+.lesson-link:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.lesson-link-name{font-family:var(--display);font-weight:400;font-size:19px;line-height:1.35;color:var(--ink)}
+.lesson-link-hint{flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--gold-ink);opacity:.85}
+@media (max-width:480px){
+  .lesson-link{flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px}
+  .lesson-link-name{font-size:17px}
+  .lesson-link-hint{font-size:10px}
+}
 .learn-title{font-family:var(--display);font-weight:400;font-size:22px;line-height:1.35;color:var(--ink);margin:0 0 10px}
 .learn-quote{font-family:var(--display);font-weight:300;font-size:16px;line-height:1.45;color:var(--ink);margin:0 0 12px}
 .learn-body{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 14px}
@@ -2770,22 +2786,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           </div>
                   </section>
 
-                  <!-- LEARN TODAY: a short lesson tied to the day's topic, then tested -->
-                  <section class="dp-card" aria-label="Learn Today" id="sec-lesson">
+                  <!-- THE LESSON: a pointer card — title only; click opens it in Study -->
+                  <section class="dp-card" aria-label="The Lesson of the Day" id="sec-lesson">
                     <div class="dp-card-head">
-                      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8L20 10l-5.6 2.6L13 18l-1-4.4L8 11l4 1.8z"/><path d="M5 5v14M19 5v4"/></svg>Learn Today</h3>
+                      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.8L20 10l-5.6 2.6L13 18l-1-4.4L8 11l4 1.8z"/><path d="M5 5v14M19 5v4"/></svg>The Lesson</h3>
                       <span class="dp-mini-tag" id="learnTag"></span>
                     </div>
-                    <p class="dp-eyebrow-mini" id="learnTopicLabel">Today's lesson</p>
-                    <h4 class="learn-title" id="learnTitle"></h4>
-                    <p class="learn-quote" id="learnQuote"></p>
-                    <div class="learn-body" id="learnBody"></div>
-                    <div class="learn-foothold">
-                      <button class="dp-cta dp-cta-ghost" id="learnAsk">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>
-                        <span>Ask about today's lesson</span>
-                      </button>
-                    </div>
+                    <button class="lesson-link" id="learnGo" type="button">
+                      <span class="lesson-link-name" id="learnTitle"></span>
+                      <span class="lesson-link-hint">Open in Study &rarr;</span>
+                    </button>
                   </section>
 
                   <!-- DAILY QUIZ: five questions on today's lesson -->
@@ -5342,9 +5352,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         function loadResult(idx){
           try{const r=localStorage.getItem(quizKey(idx)); return r?JSON.parse(r):null;}catch(e){return null;}
         }
-        const learnTag=document.getElementById('learnTag'),learnTopicLabel=document.getElementById('learnTopicLabel'),
-              learnTitle=document.getElementById('learnTitle'),learnQuote=document.getElementById('learnQuote'),
-              learnBody=document.getElementById('learnBody'),learnAsk=document.getElementById('learnAsk'),
+        const learnTag=document.getElementById('learnTag'),
+              learnTitle=document.getElementById('learnTitle'),
               quizProgress=document.getElementById('quizProgress'),quizQ=document.getElementById('quizQ'),
               quizOpts=document.getElementById('quizOpts'),quizNote=document.getElementById('quizNote'),
               quizNext=document.getElementById('quizNext'),quizDone=document.getElementById('quizDone'),
@@ -5354,10 +5363,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         function renderLearn(){
           const t=LESSON[qActiveTopic>=0?qActiveTopic:todayLessonIdx()];
           if(learnTag) learnTag.textContent="Lesson of the day";
-          if(learnTopicLabel) learnTopicLabel.textContent="On "+t.name;
           if(learnTitle) learnTitle.textContent=t.name;
-          if(learnQuote) learnQuote.textContent=t.quote;
-          if(learnBody) learnBody.innerHTML=(t.excerpt||[]).map(p=>"<p>"+p+"</p>").join("");
         }
         function renderQuiz(){
           const topic=LESSON[qActiveTopic].questions,q=topic[qIdx];
@@ -5466,9 +5472,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           const ms=tomorrow-now;
           setTimeout(()=>{ startQuiz(); scheduleMidnightRefresh(); }, ms+1000);
         }
-        if(learnAsk) learnAsk.addEventListener("click",()=>{
-          const t=LESSON[qActiveTopic>=0?qActiveTopic:todayLessonIdx()];
-          pageChat("As St. Augustine, walk me through the lesson on "+t.name+". Begin with the quote and unpack it for me.","today");
+        const learnGo=document.getElementById('learnGo');
+        if(learnGo) learnGo.addEventListener("click",()=>{
+          const idx=qActiveTopic>=0?qActiveTopic:todayLessonIdx();
+          renderLesson(idx);   // load that exact lesson into Study
+          setPage("study");
         });
         if(quizNext) quizNext.addEventListener("click",nextQ);
         if(quizRetry) quizRetry.addEventListener("click",retryQuiz);
