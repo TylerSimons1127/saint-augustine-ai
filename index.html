@@ -1819,11 +1819,18 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
     align-items:center;
   }
   .topnav .nav-brand{
+    /* v3.9 TRUE CENTER: absolute full-bar centering — flex:1 centered the
+       brand inside "space left of the gear", drifting it 24px left of
+       screen center. Absolute span makes the wordmark optically dead-center
+       at every width; pointer-events none keeps taps flowing to the bar. */
+    position:absolute;left:0;right:0;top:0;bottom:0;
     display:flex !important;
-    align-items:center;gap:7px;
-    flex:1;min-width:0;justify-content:center;
+    align-items:center;justify-content:center;
+    gap:7px;flex:none;min-width:0;
     font-size:15px !important;
+    pointer-events:none;
   }
+  .topnav .nav-actions{margin-left:auto}
   .topnav .nav-brand .mark{width:22px;height:24px}
   .topnav .nav-brand em{font-style:normal;color:var(--accent-deep)}
   .topnav .nav-actions{flex:none;display:flex;gap:2px}
@@ -1895,7 +1902,9 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .ts-cell svg{width:18px;height:18px;flex:none;color:var(--gold-ink)}
   .ts-meta{flex-direction:column !important;gap:1px !important;align-items:flex-start !important}
   .ts-n{font-size:19px !important;line-height:1.05 !important;font-weight:600;font-family:var(--display)}
-  .ts-n .ts-d{font-size:11px !important}
+  /* v3.9: "/32" reads at the SAME optical size as pure numbers — consistent
+     baseline + size across all three cells (was 11px, sat visibly lower) */
+  .ts-n .ts-d{font-size:19px !important;color:var(--muted);font-weight:400;margin-left:1px;line-height:1.05 !important;vertical-align:baseline}
   .ts-l{font-size:9.5px !important;letter-spacing:.07em !important}
   .ts-bar{height:5px !important;width:82% !important;border-radius:999px;margin-top:4px;background:rgba(138,108,37,.22);box-shadow:inset 0 0 0 1px rgba(138,108,37,.12)}
   .ts-bar i{border-radius:999px;background:var(--accent-deep);box-shadow:0 1px 3px rgba(138,108,37,.35)}
@@ -3249,7 +3258,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     /* v2.0.1: contextual composer placeholder — the bar says what it does
        in THIS tab, killing the "two inputs?" confusion on Pray/Study/Today */
     {
-      const ph = { chat:"Message St. Augustine…", study:"Ask about this lesson…", prayer:"Turn a worry into prayer…", today:"Ask about today's readings…" };
+      const ph = { chat:"Message St. Augustine…", study:"Ask about this lesson…", prayer:"Turn a worry into prayer…", today:"Ask the readings…" };
       const ta=$("#prompt"); if(ta && ph[p]){ ta.placeholder=ph[p]; ta.setAttribute("aria-label", ph[p].replace(/…$/,"")); }
     }
     if(typeof updateToTop==="function") updateToTop();
