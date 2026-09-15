@@ -315,7 +315,7 @@ async function handleChat(req, res, body) {
       "Access-Control-Allow-Origin": "*",
       "X-Accel-Buffering": "no",
     });
-    await proxyStream(upstream, res);
+    await proxyStream(upstream, res, reasoning);
     recordChat(cand, "ok");
     return;
   }
@@ -344,9 +344,10 @@ async function handleChat(req, res, body) {
  * - finish_reason surfaced: when the model stops because it HIT max_tokens,
  *   we send {truncated:true} so the frontend can show "continue" affordance.
  */
-async function proxyStream(upstream, res) {
+async function proxyStream(upstream, res, expectClose = null) {
   let sawContent = false;
   let sawReasoning = false;
+  let contentAcc = "";              // v4.2: full visible answer, for completeness heuristics
   let reasonAcc = "";
   const REASON_TRACE_MAX = 2400;             // cap what we reveal in the Thinking box
   const decoder = new TextDecoder();
@@ -402,7 +403,7 @@ async function proxyStream(upstream, res) {
           // The real answer only: strip any planning/outline that some reasoning
           // models write into `content` before the actual reply begins.
           for (const part of answerGate(tok)) {
-            if (part) { sawContent = true; flush({ text: part }); }
+            if (part) { sawContent = true; contentAcc += part; flush({ text: part }); }
           }
         }
         if (th) {
@@ -421,7 +422,10 @@ async function proxyStream(upstream, res) {
 
   lineBuf = "";
   // Flush any buffered final line from the answer gate (incomplete tail).
-  for (const part of answerGate.final()) if (part) { sawContent = true; flush({ text: part }); }
+  // v4.2.1: also accumulate into contentAcc — the TLDR close lives in this
+  // tail (streams end without a trailing newline); missing it made every
+  // complete contemplative answer false-positive as truncated.
+  for (const part of answerGate.final()) if (part) { sawContent = true; contentAcc += part; flush({ text: part }); }
   // If the model only reasoned and never answered, never dump the CoT as the reply.
   if (!sawContent) {
     flush({ reasoning: null });
@@ -432,6 +436,15 @@ async function proxyStream(upstream, res) {
     }
   }
   if (stalled) flush({ stalled: true });       // tell the browser: upstream died mid-answer
+  // v4.2 — the SILENT cutoff detector. Free-tier models sometimes stop
+  // generating mid-answer and close the stream "normally": no stall, no
+  // finish_reason, clean [DONE] — a half answer indistinguishable from a
+  // complete one at the transport layer. But contemplative mode MANDATES a
+  // "TLDR:" close in the system prompt. A finished contemplative answer
+  // contains one; a severed one does not. That missing close is our signal.
+  if (expectClose === "contemplative" && sawContent && !/tldr/i.test(contentAcc)) {
+    flush({ truncated: true });
+  }
   flush({});                                   // event: done
   res.end();
 }
