@@ -271,10 +271,11 @@ a{color:inherit}
   .rail,.stage,.dock{left:0 !important}
   .sb-toggle{
     display:inline-flex;position:fixed;z-index:60;
-    top:calc(12px + env(safe-area-inset-top));
-    left:calc(12px + env(safe-area-inset-left));
-    align-items:center;justify-content:center;width:44px;height:44px;
-    background:var(--glass-strong);border:1px solid var(--border);border-radius:999px;
+    top:calc(10px + env(safe-area-inset-top));
+    left:calc(10px + env(safe-area-inset-left));
+    align-items:center;justify-content:center;width:42px;height:42px;
+    background:rgba(255,252,245,.56);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+    border:1px solid rgba(255,255,255,.55);border-radius:999px;
     backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);color:var(--ink-soft);
   }
@@ -379,15 +380,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--ink-soft);font-size:15px;line-height:1.5;text-shadow:0 1px 10px rgba(250,247,240,0.75)}
 /* v1.9.2: creator credit restored to the greet card (user directive) — always
    visible on desktop AND mobile, inside the glass veil so it reads cleanly. */
-.greet-credit{
-  margin:22px auto 0;padding-top:14px;
-  border-top:1px solid rgba(163,130,47,.22);
-  font-family:var(--mono);font-size:clamp(9px,2.2vw,10.5px);
-  letter-spacing:.14em;text-transform:uppercase;
-  color:var(--gold-ink);opacity:1;
-  /* v2.0.2: dark-scene legibility — warm halo lifts the 9px mono off any backdrop */
-  text-shadow:0 1px 2px rgba(251,247,238,.85), 0 0 10px rgba(251,247,238,.55);
-}
+.greet-credit{font-family:var(--body);font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--ink-soft);opacity:.92;margin:14px auto 0;}
 /* v2.0.2: credit gets dedicated near-ink golds — measured 5.0:1+ on even the
    darkest scene veils (forest/coast), vs 2.8-3.6:1 for the old accent-deep */
 .greet-credit, .greet-credit b{color:#382c0a}
@@ -586,7 +579,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .stage{padding-top:calc(60px + env(safe-area-inset-top))}
 
 /* ---------- Daily page ---------- */
-.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 240px;display:flex;flex-direction:column;gap:18px}
+.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 320px;display:flex;flex-direction:column;gap:18px}
 .dp-head{text-align:center}
 .dp-head .dp-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
 .dp-head h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,4.5vw,34px);margin:0;color:var(--ink);letter-spacing:-.015em}
@@ -701,6 +694,9 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 @media (max-width:480px){
   .lesson-top{flex-direction:column}
   .lesson-top .daily-shuf{align-self:flex-start}
+  /* v4.3 mobile: suggestion chips — balanced 2-col grid, equal breathing */
+  .greet-sugg{display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;margin:18px auto 0 !important;width:100% !important;justify-items:stretch}
+  .greet-sugg .sugg{width:100% !important;min-height:44px;justify-content:center;text-align:center;border-radius:14px}
 }
 
 /* ---- Today: Learn + Quiz cards ---- */
@@ -877,7 +873,8 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 
 /* ---- Send button: composing vs streaming states ---- */
 .send{transition:background .18s ease,transform .15s ease,box-shadow .2s ease}
-.send:not(:disabled):not(.stop){background:var(--accent-deep)}
+/* v4.3: enabled send = gold gradient (0,3,0 specificity — beats .send.ready flat) */
+.send:not(:disabled):not(.stop){background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%)}
 .send:not(:disabled):not(.stop):hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(138,108,37,.4)}
 .send.stop{background:var(--danger);animation:sendPulse 1.4s ease-in-out infinite}
 @keyframes sendPulse{0%,100%{box-shadow:0 6px 18px rgba(154,59,46,.28)}50%{box-shadow:0 6px 26px rgba(154,59,46,.5)}}
@@ -1088,7 +1085,8 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 .send:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft),0 6px 18px rgba(138,108,37,0.32)}
 .send[disabled]{background:var(--muted);box-shadow:none;cursor:not-allowed;opacity:.7}
 /* composing state: gold deepens + subtle lift, invites the send (C34) */
-.send.ready{background:var(--accent-deep);box-shadow:0 8px 22px rgba(138,108,37,0.42)}
+/* v4.3: ready = full gold affordance (gradient + warm lift) */
+.send.ready{background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%);box-shadow:0 8px 22px rgba(138,108,37,0.42), inset 0 1px 0 rgba(255,255,255,.35)}
 .send.ready:hover{transform:translateY(-1px) scale(1.03)}
 /* streaming state: the pulse already exists on .send.stop; keep it */
 
@@ -1622,7 +1620,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
     width:auto;
   }
   .composer .controls .reasoning .seg{
-    flex:1;min-width:0;height:36px;
+    flex:1;min-width:0;height:34px;
     font-size:11.5px;padding:0 4px;border-radius:999px;
   }
   .composer .controls .divider{display:none}
@@ -1729,8 +1727,9 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 .composer:focus-within{transform:translateY(-2px);
   box-shadow:0 18px 52px rgba(120,96,33,0.18), 0 2px 0 rgba(255,255,255,.6) inset, 0 0 0 3px var(--accent-soft)}
 
-/* send button: gradient gold, springy press */
-.send{background:linear-gradient(145deg,var(--accent-deep),var(--accent-press) 68%);will-change:transform}
+/* send button: gradient gold, springy press — v4.3 brighter top-light for affordance */
+.send{background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%);
+  box-shadow:0 2px 6px rgba(111,85,32,.35), inset 0 1px 0 rgba(255,255,255,.35);will-change:transform}
 .send:not(:disabled):active{transform:scale(.92)}
 .send svg{transition:transform .16s cubic-bezier(.22,.7,.3,1)}
 .send:not(:disabled):hover svg{transform:translateY(-1px) rotate(-8deg)}
@@ -1850,7 +1849,9 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .topnav .nav-actions{flex:none;display:flex;gap:2px}
   .topnav .nav-search{display:none}      /* search lives in sidebar drawer */
   .sb-toggle{width:42px;height:42px;flex:none}
-  .topnav .icon-btn{width:42px;height:42px;flex:none}
+  .topnav .icon-btn{width:42px;height:42px;flex:none;
+    background:rgba(255,252,245,.56);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+    border:1px solid rgba(255,255,255,.55);border-radius:13px}
 
   /* C. STAGE → full-bleed 16px gutters, clears both bars + breathing room
         (v2.0.1: 210px — Today's saint-bio card no longer hides behind the dock) */
@@ -1883,12 +1884,15 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   /* textarea height-capped so it centers in the 44px button row, not sag lower */
   textarea#prompt{flex:1 1 auto;min-width:0 !important;min-height:44px;padding:11px 6px !important;font-size:16px;line-height:1.45 !important;align-self:center}
   textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .input-row{align-items:center;gap:6px !important;min-height:52px}
+  .input-row{align-items:center;gap:6px !important;min-height:48px}
   .input-row .icon-btn{width:44px;height:44px;flex:none}
+  /* v4.3: slimmer composer — phone bloat fix */
+  .composer{padding:5px 8px !important;gap:3px !important;border-radius:20px}
   /* v2.1.2: grip gone; keep controls-toggle + send at 44px in the phone dock */
   .controls-toggle{width:38px;height:44px;flex:none}
   .send{width:44px;height:44px;flex:none;box-shadow:0 2px 8px rgba(138,108,37,.14)}
-  .send[disabled]{background:rgba(44,36,26,.34) !important;box-shadow:none}
+  /* v4.3: disabled send = quiet waiting gold (not flat dark) */
+  .send[disabled]{background:linear-gradient(160deg,rgba(163,130,47,.34),rgba(111,85,32,.30)) !important;box-shadow:none;opacity:.75}
   /* v4.0: reasoning row always visible — kebab expands only the model chip */
   .model-btn{max-width:52vw;font-size:11.5px;height:40px;padding:0 10px}
   /* Touch-target floor: lift every compact control to >=40-44px tall on phones. */
@@ -2099,7 +2103,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   }
 
   /* 6. Composer send: gold circle always (disabled state softens via opacity) */
-  .send[disabled]{background:var(--accent-deep) !important;opacity:.42 !important;box-shadow:none}
+  .send[disabled]{background:linear-gradient(160deg,rgba(163,130,47,.34),rgba(111,85,32,.30)) !important;opacity:.55 !important;box-shadow:none}
 }
 
 

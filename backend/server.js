@@ -726,6 +726,9 @@ async function getSaint() {
             .map((m) => cleanHtml(m[1]))
             .filter((t) => t.length > 40);
           bio = ps.slice(0, 3).join(" ").slice(0, 520);
+          // v4.3: never end a bio mid-sentence — cut at the last sentence end
+          const lastDot = bio.lastIndexOf(". ");
+          if (lastDot > 200) bio = bio.slice(0, lastDot + 1);
         }
       }
     } catch (_) {
