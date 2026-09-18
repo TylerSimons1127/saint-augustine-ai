@@ -397,7 +397,16 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .greet .sub{margin:16px auto 0;max-width:46ch;color:var(--ink-soft);font-size:15px;line-height:1.5;text-shadow:0 1px 10px rgba(250,247,240,0.75)}
 /* v1.9.2: creator credit restored to the greet card (user directive) — always
    visible on desktop AND mobile, inside the glass veil so it reads cleanly. */
-.greet-credit{font-family:var(--body);font-size:10.5px;letter-spacing:.02em;text-transform:none;color:var(--ink-soft);opacity:.92;margin:14px auto 0;}
+.greet-credit{
+    font-family:var(--body);
+    font-size:10.5px;
+    letter-spacing:.02em;
+    color:var(--ink-soft);
+    opacity:.92;
+    margin:14px auto 0;
+  }
+  .greet-credit b{font-weight:600;color:var(--gold-ink);border-bottom:1.5px solid rgba(163,130,47,.35)}
+  .greet-credit i,.greet-credit em{font-style:normal;color:var(--muted);font-size:10px}
 /* v2.0.2: credit gets dedicated near-ink golds — measured 5.0:1+ on even the
    darkest scene veils (forest/coast), vs 2.8-3.6:1 for the old accent-deep */
 .greet-credit, .greet-credit b{color:#382c0a}
@@ -549,16 +558,20 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
   position:fixed; top:0; left:0; right:0; z-index:56; height:60px;
   display:flex; align-items:center; gap:14px; padding:0 max(16px,env(safe-area-inset-left)) 0 max(16px,env(safe-area-inset-right));
   background:var(--glass-strong);
-  backdrop-filter:blur(22px) saturate(160%);
-  -webkit-backdrop-filter:blur(22px) saturate(160%);
+  backdrop-filter:blur(24px) saturate(170%) ;-webkit-backdrop-filter:blur(24px) saturate(170%);
   border-bottom:1px solid var(--border); border-top:1px solid var(--border-light);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(30,26,20,0.03), 0 18px 44px -22px rgba(70,52,20,0.40);
-  }
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), inset 0 -1px 0 rgba(30,26,20,0.03), 0 18px 44px -22px rgba(70,52,20,0.40);
+  transition:transform var(--mt-fast) var(--ease-out);
+}
+.topnav .nav-brand .mark{filter:drop-shadow(0 1px 2px rgba(111,85,32,.3))}
+.topnav .nav-trans:hover span{opacity:.9}
   .topnav .nav-brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-family:var(--display);font-weight:400;font-size:17px;letter-spacing:-.01em;white-space:nowrap;flex:none}
 .topnav .nav-brand .mark{width:26px;height:29px;color:var(--accent);flex:none}
 .topnav .nav-brand em{font-style:normal;color:var(--accent-deep);font-weight:500}
 .topnav .nav-tabs{display:flex;align-items:center;gap:4px;margin:0 auto;background:rgba(255,255,255,0.5);border:1px solid var(--border);border-radius:999px;padding:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
 .nav-tab{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--ink-soft);font-family:var(--body);
+  border-radius:var(--r-s);padding:8px 12px;min-height:44px;
+  transition:color var(--mt-micro) var(--ease-out),background var(--mt-micro) var(--ease-out),transform var(--mt-micro) var(--ease-spring);
   font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .16s ease}
 .nav-tab{position:relative}
 .nav-tab-icon{position:relative;display:inline-flex;width:15px;height:15px;flex:none}
@@ -574,7 +587,11 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 
 .nav-tab svg{width:15px;height:15px}
 .nav-tab:hover{color:var(--ink);background:rgba(255,255,255,0.55)}
-.nav-tab.on{color:#fbf7ee;background:var(--accent-deep);box-shadow:0 4px 12px rgba(108,88,38,.35)}
+.nav-tab.on{color:#fbf7ee;background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%);
+  border:1px solid rgba(255,255,255,.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6), 0 6px 20px rgba(111,85,32,.38);
+  font-weight:600;
+}
 .nav-tab.on svg{color:#fbf7ee}
 @media (max-width:600px){
   /* v2.2: em kept visible — on phones the topnav no longer holds the tabs
@@ -608,7 +625,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .stage{padding-top:calc(60px + env(safe-area-inset-top))}
 
 /* ---------- Daily page ---------- */
-.daily-page{width:min(720px,100%);margin:0 auto;padding:22px 16px 320px;display:flex;flex-direction:column;gap:18px}
+.daily-page{width:min(var(--content-max),100%);margin:0 auto;padding:20px var(--content-inset) 300px;display:flex;flex-direction:column;gap:var(--fs-md) * 0.75}
 .dp-head{text-align:center}
 .dp-head .dp-eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
 .dp-head h2{font-family:var(--display);font-weight:300;font-size:clamp(24px,4.5vw,34px);margin:0;color:var(--ink);letter-spacing:-.015em}
@@ -1072,8 +1089,8 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
   backdrop-filter:blur(22px) saturate(160%);
   -webkit-backdrop-filter:blur(22px) saturate(160%);
   border:1px solid var(--border);border-top-color:var(--border-light);border-radius:var(--r-l,26px);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(30,26,20,0.03), 0 18px 44px -22px rgba(70,52,20,0.40);
-  transition:border-color .18s ease, box-shadow .18s ease}
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), inset 0 -1px 0 rgba(30,26,20,.03), 0 18px 44px -22px rgba(70,52,20,.40);
+  transition:border-color var(--mt-fast) var(--ease-out), box-shadow var(--mt-fast) var(--ease-out), transform var(--mt-fast) var(--ease-out)}
 
 /* ---------- creator credit (persistent bottom-left) ---------- */
 .composer:focus-within{border-color:rgba(163,130,47,.55);box-shadow:0 10px 34px rgba(120,96,33,0.14), inset 0 1px 0 rgba(255,255,255,0.7), 0 0 0 3px var(--accent-soft)}
@@ -1383,9 +1400,10 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 /* ---- Today strip: streak + lesson progress + quiz count ---- */
 .today-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 .ts-cell{
-  display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:var(--r-m);
+  display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:var(--r-m);
   background:var(--card);border:1px solid var(--border);border-top-color:var(--border-light);
-  box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.5);
+  box-shadow:var(--shadow-sm)
+, inset 0 1px 0 rgba(255,255,255,.5);
 }
 /* PERF: in-scroll stat cells — tint, not backdrop-filter */
 @media (min-width:769px){ .ts-cell{background:var(--card)} }
@@ -1551,7 +1569,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 /* C: condense the greeting on small screens so the input is reachable */
 @media (max-width:480px){
   .greet .eyebrow{margin-bottom:10px}
-  .greet h1{font-size:24px;line-height:1.22;margin:0 0 10px}
+  .greet h1{font-size:var(--fs-h2);line-height:var(--lh-tight);margin:0 0 8px;padding:0 var(--content-inset);letter-spacing:-.005em}
   .greet .sub{display:none}
 }
 /* D: dedicated phone dock — full-width composer, controls stacked tight */
@@ -1939,18 +1957,16 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .to-top{bottom:calc(132px + env(safe-area-inset-bottom)) !important}
 
   /* F. GREET glass card (kept from v1.6) */
-  .greet{margin:auto 0 !important;padding:26px 22px !important;border-radius:22px;background:var(--glass);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
+  .greet{margin:auto 0 !important;padding:22px var(--content-inset) !important;border-radius:22px;background:var(--glass);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45)}
   .greet h1{font-size:clamp(21px,5.6vw,27px) !important;line-height:1.34 !important;max-width:26ch !important;text-shadow:0 1px 2px rgba(251,247,238,.55), 0 0 24px rgba(251,247,238,.5)}
 
   /* G. TODAY STRIP compact row (kept, progress bar visible) */
   .today-strip{grid-template-columns:repeat(3,1fr) !important;gap:8px !important;margin-bottom:12px !important}
-  .ts-cell{display:flex !important;flex-direction:row;align-items:center;justify-content:center;gap:9px !important;padding:10px 8px !important;border-radius:16px;min-height:0}
+  .ts-cell{display:flex !important;flex-direction:row;align-items:center;justify-content:center;gap:9px !important;padding:12px 10px !important;border-radius:15px;min-height:0}
   .ts-cell svg{width:18px;height:18px;flex:none;color:var(--gold-ink)}
   .ts-meta{flex-direction:column !important;gap:1px !important;align-items:flex-start !important}
-  .ts-n{font-size:19px !important;line-height:1.05 !important;font-weight:600;font-family:var(--display)}
-  /* v3.9: "/32" reads at the SAME optical size as pure numbers — consistent
-     baseline + size across all three cells (was 11px, sat visibly lower) */
-  .ts-n .ts-d{font-size:19px !important;color:var(--muted);font-weight:400;margin-left:1px;line-height:1.05 !important;vertical-align:baseline}
+  .ts-n{font-size:21px !important;line-height:1 !important;font-weight:600;font-family:var(--display);font-variant-numeric:tabular-nums}
+  .ts-l{font-size:10.5px !important;letter-spacing:.09em !important;margin-top:3px !important}
   .ts-l{font-size:9.5px !important;letter-spacing:.07em !important}
   .ts-bar{height:5px !important;width:82% !important;border-radius:999px;margin-top:4px;background:rgba(138,108,37,.22);box-shadow:inset 0 0 0 1px rgba(138,108,37,.12)}
   .ts-bar i{border-radius:999px;background:var(--accent-deep);box-shadow:0 1px 3px rgba(138,108,37,.35)}
@@ -2108,6 +2124,11 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 
   /* 2. Tactile press feedback on every card + chip (native feel) */
   .dp-card,.ts-cell,.quiz-opt,.pray-chip,.dp-link-btn,.daily-cta,.tomorrow-teaser{
+    border-radius:var(--r-m,16px) !important;
+    /* deep soft shadow everywhere — natural separation, no neon glows */
+    box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 10px 30px -18px rgba(46,38,24,.35) !important;
+  }
+  .dp-card:active,.ts-cell:active,.tomorrow-teaser:active{transform:scale(.985)}
     transition:transform .16s cubic-bezier(.32,.72,.28,1), box-shadow .16s ease;
     -webkit-tap-highlight-color:transparent;
   }
@@ -2172,10 +2193,11 @@ body>.topnav,body>.topnav.topnav{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.70), inset 0 -1px 0 rgba(30,26,20,.04), 0 18px 44px -22px rgba(70,52,20,.35);
 }
 /* nav pill inside the bar: lighter tint, no double blur */
-.topnav .nav-tabs{background:rgba(255,255,255,.42);border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.65)}
+.topnav .nav-tabs{background:rgba(251,247,238,.18);border:1px solid rgba(255,255,255,.38);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(30,26,20,.04)}
 
 /* 2. MESSAGING BUBBLES — same warm glass (assistant + user) */
-.msg .bubble{
+.msg .bubble{box-shadow:0 8px 24px -14px rgba(70,52,16,.22), 0 2px 6px -2px rgba(70,52,16,.18);
   background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50));
   backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
   border:1px solid rgba(255,255,255,.50); border-top-color:rgba(255,255,255,.68);
@@ -2210,21 +2232,31 @@ body>.topnav,body>.topnav.topnav{
       (JS driver sets --lg-x / --lg-w; .lg-moving = traveling frost) */
 .reasoning{
   position:relative;
-  background:rgba(255,252,245,.40);
+  background:rgba(255,252,245,.30);
   backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
-  border:1px solid rgba(255,255,255,.45); border-radius:999px; padding:3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 4px 14px -6px rgba(70,52,16,.18);
+  border:1px solid rgba(255,255,255,.48); border-radius:999px; padding:4px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.60), inset 0 -1px 0 rgba(30,26,20,.04), 0 4px 18px -8px rgba(70,52,16,.22);
 }
 .reasoning::after{
-  content:""; position:absolute; top:3px; bottom:3px;
-  left:var(--lg-x,4px); width:var(--lg-w,96px); border-radius:999px; z-index:0;
-  background:linear-gradient(rgba(255,252,245,.78), rgba(255,252,245,.62));
-  backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
-  border:1px solid rgba(255,255,255,.65);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.85), 0 2px 8px -2px rgba(70,52,16,.22);
-  transition:left .34s cubic-bezier(.32,.72,.28,1), width .34s cubic-bezier(.32,.72,.28,1);
-  pointer-events:none;
+  content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  background:radial-gradient(circle at 50% 0%, rgba(255,255,255,.30), transparent 60%);
 }
+.reasoning .seg{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;flex:1;min-width:0;height:38px;padding:0 14px;border-radius:999px;
+  border:1px solid transparent;background:transparent;font-size:12px;font-weight:600;letter-spacing:.01em;color:var(--ink-soft);font-family:var(--body);
+  transition:transform var(--mt-micro) var(--ease-spring),color var(--mt-fast) var(--ease-out)}
+.reasoning .seg:hover{color:var(--ink);background:rgba(255,255,255,.35)}
+.reasoning .seg[aria-pressed="true"]{
+  background:var(--accent-deep);color:#fbf7ee;border-color:rgba(255,255,255,.35);
+  box-shadow:0 3px 12px -2px rgba(111,85,32,.35), inset 0 1px 0 rgba(255,255,255,.7);
+}
+.reasoning .seg[aria-pressed="true"]::after{
+  content:""; position:absolute; bottom:calc(100% + 2px); left:14px; width:9px; height:9px;
+  background:linear-gradient(135deg,var(--accent-deep) 0%, var(--accent) 100%);
+  clip-path:polygon(50% 0, 0% 100%, 100% 100%);
+}
+.reasoning.lg-moving::after{animation:lgswing .32s var(--ease-spring)}
+@media (prefers-reduced-motion:reduce){ .reasoning::after{display:none} }
+
 .reasoning .seg{position:relative; z-index:1; border:0; background:transparent}
 .reasoning .seg[aria-pressed="true"]{background:transparent; border:0; color:var(--gold-ink); font-weight:600}
 .reasoning.lg-moving::after{backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%)}
