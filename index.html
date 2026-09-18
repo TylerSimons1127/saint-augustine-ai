@@ -5218,9 +5218,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(saintName) saintName.textContent=d.name.replace(/^Saint\s+/i,"") || d.name;
           if(saintDate) saintDate.textContent=d.date || "";
           if(saintBio)  saintBio.textContent=d.bio || d.excerpt || "A holy man or woman the Church remembers today, whose life points to Christ.";
-          // "Connected to St. Augustine" — use the curated line if we have one, else a general tie.
-          const conn = SAINT_CONN[d.name] || SAINT_CONN[d.name.replace(/^Saint\s+/i,"St. ")] ||
-            "Like Augustine, they sought God with all their heart — and found him.";
+          // "Connected to St. Augustine" — the backend now writes a real,
+          // per-saint line (v4.4). Prefer it; curated map + general tie are
+          // only fallbacks for offline/failure.
+          const conn = d.conn || SAINT_CONN[d.name] || SAINT_CONN[d.name.replace(/^Saint\s+/i,"St. ")] ||
+            "Like Augustine, they sought God with all their heart — and in the seeking, found him.";
           if(saintConn){ saintConn.textContent=conn; if(saintConnWrap) saintConnWrap.hidden=false; }
           // Portrait
           if(saintPortrait){

@@ -736,6 +736,14 @@ async function getSaint() {
     }
 
     if (!name) throw new Error("parsed empty saint name");
+
+    // v4.4 — "Connected to St. Augustine": a real, per-saint line (not the
+    // generic every-day string). Generated ONCE per saint from their actual
+    // bio, in Augustine's first person, 2-3 sentences. Cached forever (saints
+    // recur yearly, so one generation serves every future year). On any
+    // failure we fall through with no conn — the frontend keeps its fallback.
+    let conn = await getSaintConn(name, bio || excerpt);
+
     return {
       name,
       date,
@@ -743,12 +751,59 @@ async function getSaint() {
       bio: bio || excerpt,
       image,
       link: url,
+      conn,
       source: "Franciscan Media",
     };
   } catch (e) {
     // Site unreachable / blocked / changed markup: fall back to a curated,
     // on-theme saint so the card is never empty. Clearly labeled.
     return curatedSaint();
+  }
+}
+
+/* ---- v4.4: per-saint Augustine connection, generated once + cached ----
+ * Grounded STRICTLY in the saint's own bio so every saint gets their own
+ * reason, never the same line twice. Augustine writes it in first person. */
+const saintConnCache = new Map();      // saintName -> conn (persists for process life)
+async function getSaintConn(name, bio) {
+  if (!name || !bio) return null;
+  const key = name.toLowerCase().trim();
+  if (saintConnCache.has(key)) return saintConnCache.get(key);
+  try {
+    const sys = "You are St. Augustine of Hippo, Doctor of the Church, writing in the first person. " +
+      "A companion app shows a short line under each day's saint explaining your bond with them. " +
+      "Write the line for today's saint. Rules: exactly 2 or 3 sentences. First person, as Augustine ('I', 'me', 'my'). " +
+      "Ground it ONLY in facts from the saint's life given to you — name what you share with THIS saint specifically " +
+      "(their trials, their writings, their charity, their conversion, their Marian devotion, their martyrdom — whatever " +
+      "is actually true of them). Never generic filler. You may quote your own Confessions once if it fits naturally. " +
+      "No greeting, no heading, no em-dash signature — just the sentences. 320 characters max. Respond with the line only.";
+    const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
+      body: JSON.stringify({
+        model: CURATED[0],
+        max_tokens: 160,
+        temperature: 0.5,
+        stream: false,
+        messages: [
+          { role: "system", content: sys },
+          { role: "user", content: `Saint: ${name}\nTheir life: ${bio.slice(0, 1400)}\n\nWrite the 2-3 sentence "connected to Augustine" line for this saint.` },
+        ],
+      }),
+    }, 12000);
+    if (!res.ok) return null;
+    const j = await res.json();
+    let line = (j.choices?.[0]?.message?.content || "").trim();
+    // sanitize: strip quotes, headings, "Here is", speech prefixes
+    line = line.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
+               .replace(/^(here( is|'s)[^:]*:\s*)/i, "")
+               .replace(/^(connected( to st\.? augustine)?[^:]*:\s*)/i, "")
+               .replace(/\s+/g, " ").trim();
+    if (!line || line.length < 40 || line.length > 420) return null;
+    saintConnCache.set(key, line);
+    return line;
+  } catch (_) {
+    return null;   // frontend keeps its curated/general fallback
   }
 }
 // Evergreen offline rotation (name + bio + a "connected to Augustine" line).
@@ -838,5 +893,5 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 
 // Export internals for unit tests only (no effect on normal runtime).
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, sanitize };
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, sanitize };
 }
