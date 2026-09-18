@@ -769,42 +769,47 @@ async function getSaintConn(name, bio) {
   if (!name || !bio) return null;
   const key = name.toLowerCase().trim();
   if (saintConnCache.has(key)) return saintConnCache.get(key);
-  try {
-    const sys = "You are St. Augustine of Hippo, Doctor of the Church, writing in the first person. " +
-      "A companion app shows a short line under each day's saint explaining your bond with them. " +
-      "Write the line for today's saint. Rules: exactly 2 or 3 sentences. First person, as Augustine ('I', 'me', 'my'). " +
-      "Ground it ONLY in facts from the saint's life given to you — name what you share with THIS saint specifically " +
-      "(their trials, their writings, their charity, their conversion, their Marian devotion, their martyrdom — whatever " +
-      "is actually true of them). Never generic filler. You may quote your own Confessions once if it fits naturally. " +
-      "No greeting, no heading, no em-dash signature — just the sentences. 320 characters max. Respond with the line only.";
-    const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
-      body: JSON.stringify({
-        model: CURATED[0],
-        max_tokens: 160,
-        temperature: 0.5,
-        stream: false,
-        messages: [
-          { role: "system", content: sys },
-          { role: "user", content: `Saint: ${name}\nTheir life: ${bio.slice(0, 1400)}\n\nWrite the 2-3 sentence "connected to Augustine" line for this saint.` },
-        ],
-      }),
-    }, 12000);
-    if (!res.ok) return null;
-    const j = await res.json();
-    let line = (j.choices?.[0]?.message?.content || "").trim();
-    // sanitize: strip quotes, headings, "Here is", speech prefixes
-    line = line.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
-               .replace(/^(here( is|'s)[^:]*:\s*)/i, "")
-               .replace(/^(connected( to st\.? augustine)?[^:]*:\s*)/i, "")
-               .replace(/\s+/g, " ").trim();
-    if (!line || line.length < 40 || line.length > 420) return null;
-    saintConnCache.set(key, line);
-    return line;
-  } catch (_) {
-    return null;   // frontend keeps its curated/general fallback
+  const sys = "You are St. Augustine of Hippo, Doctor of the Church, writing in the first person. " +
+    "A companion app shows a short line under each day's saint explaining your bond with them. " +
+    "Write the line for today's saint. Rules: exactly 2 or 3 sentences. First person, as Augustine ('I', 'me', 'my'). " +
+    "Ground it ONLY in facts from the saint's life given to you — name what you share with THIS saint specifically " +
+    "(their trials, their writings, their charity, their conversion, their Marian devotion, their martyrdom — whatever " +
+    "is actually true of them). Never generic filler. You may quote your own Confessions once if it fits naturally. " +
+    "No greeting, no heading, no em-dash signature — just the sentences. 320 characters max. Respond with the line only.";
+  // try the fast models first, then the big one — 3 attempts, 20s each.
+  // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
+  // ceiling — a non-stream completion of that class regularly exceeds it.)
+  const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);
+  for (const model of models) {
+    try {
+      const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
+        body: JSON.stringify({
+          model,
+          max_tokens: 220,
+          temperature: 0.5,
+          stream: false,
+          messages: [
+            { role: "system", content: sys },
+            { role: "user", content: `Saint: ${name}\nTheir life: ${bio.slice(0, 1400)}\n\nWrite the 2-3 sentence "connected to Augustine" line for this saint.` },
+          ],
+        }),
+      }, 20000);
+      if (!res.ok) continue;
+      const j = await res.json();
+      let line = (j.choices?.[0]?.message?.content || "").trim();
+      // some reasoning models put the reply in reasoning — take content only, strip wrappers
+      line = line.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
+                 .replace(/^(here( is|'s)[^:]*:\s*)/i, "")
+                 .replace(/^(connected( to st\.? augustine)?[^:]*:\s*)/i, "")
+                 .replace(/\s+/g, " ").trim();
+      if (!line || line.length < 40 || line.length > 500) continue;
+      saintConnCache.set(key, line);
+      return line;
+    } catch (_) { /* try next model */ }
   }
+  return null;   // frontend keeps its curated/general fallback
 }
 // Evergreen offline rotation (name + bio + a "connected to Augustine" line).
 const FALLBACK_SAINTS = [
