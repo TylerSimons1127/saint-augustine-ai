@@ -469,7 +469,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 
   /* 3. ACTIONS: pure ghost — no bg, no border, gold-ink only on press.
         Matches ChatGPT/Claude mobile: actions are invisible until needed. */
-  .msg .acts{padding-left:0 !important;gap:6px;margin-top:6px}
+  .msg .acts{padding-left:0 !important;gap:6px;margin-top:6px!important;margin-left:48px;}
   .msg .acts .act{
     min-height:34px !important;height:34px !important;padding:0 8px;
     font-size:11px;border-radius:8px;
@@ -2620,14 +2620,17 @@ document.addEventListener("visibilitychange",()=>{
     }
     syncTabIndicator();
   }
-  /* A2: sliding gold indicator — --tab-i-x = center of the active tab minus half pill.
-     Runs on page change, resize, and reparent. */
+  /* A2: sliding gold indicator — --tab-i-x = center of the active tab minus
+     half pill, measured RELATIVE to the tabs container (not the viewport).
+     The old code used tab.left/viewport coords, so the pill drifted on every
+     resize or docked layout change. v4.6.2: fixed with tabsRect. */
   function syncTabIndicator(){
     var tabs=document.querySelector('.nav-tabs'); if(!tabs) return;
     var active=tabs.querySelector('.nav-tab.on'); if(!active) return;
-    var bar=tabs.getBoundingClientRect();
-    var r=active.getBoundingClientRect();
-    var x=(r.left - bar.left) + (r.width/2) - 28;   // 28 = half pill width
+    var tabsRect=tabs.getBoundingClientRect();   // container origin
+    var r=active.getBoundingClientRect();       // tabbox in viewport coords
+    // pill width = 56px (CSS); left = tab center relative to container minus half pill.
+    var x=(r.left - tabsRect.left) + (r.width/2) - 28;
     tabs.style.setProperty('--tab-i-x', Math.max(0,x) + 'px');
   }
   window.addEventListener('pagechange', syncTabIndicator);
