@@ -2760,6 +2760,33 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           </div>
         </div>
 
+        <!-- v4.5: THE EXPANDED DAILY QUIZ lives here on Study — Today's card
+             is just a pointer now; this is where you actually take it -->
+        <section class="dp-card" aria-label="Daily Quiz" id="sec-quiz-study">
+          <div class="dp-card-head">
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg>Daily Quiz</h3>
+            <span class="dp-mini-tag" id="quizProgress">Question 1 of 5</span>
+          </div>
+          <p class="quiz-q" id="quizQ"></p>
+          <div class="quiz-opts" id="quizOpts" role="group" aria-label="Answer choices"></div>
+          <p class="quiz-note" id="quizNote" hidden></p>
+          <div class="quiz-next" id="quizNextRow">
+            <button class="dp-cta" id="quizNext" hidden>Next &rarr;</button>
+          </div>
+          <div class="quiz-done" id="quizDone" hidden>
+            <p class="quiz-score" id="quizScore"></p>
+            <div class="quiz-spark" id="quizSpark" aria-label="Your quiz scores this week" role="img"></div>
+            <p class="quiz-praise" id="quizPraise"></p>
+            <div class="quiz-done-actions">
+              <button class="dp-cta dp-cta-ghost" id="quizRetry">Try again</button>
+              <button class="dp-cta" id="quizAsk">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>
+                <span>Ask Augustine about this</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
         <section class="dp-thread">
           <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to go deeper on today's topic with you.</p></div>
           <div class="thread-inner" id="threadStudy" aria-live="polite"></div>
@@ -2800,6 +2827,18 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-book"/></svg>Today's Readings</h3>
           <div class="dp-readings" id="dpReadings"><div class="dp-skel"><div class="skel skel-title"></div><div class="skel skel-line" style="width:88%"></div><div class="skel skel-line" style="width:72%"></div><div class="skel skel-line" style="width:80%"></div></div></div>
           <a class="dp-link" id="dpReadingsLink" href="https://bible.usccb.org/daily-bible-readings" target="_blank" rel="noopener noreferrer">Read on USCCB.org ↗</a>
+          <!-- v4.5: the talk actions live WITH the readings now — the conversation
+               starts where the readings are, not at the bottom of the page -->
+          <div class="dp-cols" style="margin-top:16px">
+            <button class="dp-act" id="dpActExplain">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>
+              <span><b>Explain today's Gospel</b><small>A gentle unpacking of the message.</small></span>
+            </button>
+            <button class="dp-act" id="dpActPray">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
+              <span><b>Pray with today</b><small>Turn these readings into a prayer.</small></span>
+            </button>
+          </div>
         </section>
 
         <section class="dp-card" id="saintCard" aria-label="Saint or Event of the Day">
@@ -2833,45 +2872,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                     </button>
                   </section>
 
-                  <!-- DAILY QUIZ: five questions on today's lesson -->
+                  <!-- v4.5 DAILY QUIZ: collapsed pointer on Today — the expanded
+                       quiz lives on the Study tab now; click to go there -->
                   <section class="dp-card" aria-label="Daily Quiz" id="sec-quiz">
-                    <div class="dp-card-head">
-                      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg>Daily Quiz</h3>
-                      <span class="dp-mini-tag" id="quizProgress">Question 1 of 5</span>
-                    </div>
-                    <p class="quiz-q" id="quizQ"></p>
-                    <div class="quiz-opts" id="quizOpts" role="group" aria-label="Answer choices"></div>
-                    <p class="quiz-note" id="quizNote" hidden></p>
-                    <div class="quiz-next" id="quizNextRow">
-                      <button class="dp-cta" id="quizNext" hidden>Next &rarr;</button>
-                    </div>
-                    <div class="quiz-done" id="quizDone" hidden>
-                      <p class="quiz-score" id="quizScore"></p>
-                      <div class="quiz-spark" id="quizSpark" aria-label="Your quiz scores this week" role="img"></div>
-                      <p class="quiz-praise" id="quizPraise"></p>
-                      <div class="quiz-done-actions">
-                        <button class="dp-cta dp-cta-ghost" id="quizRetry">Try again</button>
-                        <button class="dp-cta" id="quizAsk">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>
-                          <span>Ask Augustine about this</span>
-                        </button>
-                      </div>
-                    </div>
+                    <button class="lesson-link" id="quizGo" type="button">
+                      <span class="lesson-link-name" style="display:flex;align-items:center;gap:9px">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;color:var(--gold-ink)"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg>
+                        <span id="quizPtrLabel">Daily Quiz on today's lesson</span>
+                      </span>
+                      <span class="lesson-link-hint" id="quizPtrTag">5 questions &middot; Open in Study &rarr;</span>
+                    </button>
                   </section>
-
-                  <section class="dp-card" aria-label="Explore the daily readings with St. Augustine">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>Talk about today's readings</h3>
-          <div class="dp-cols">
-            <button class="dp-act" id="dpActExplain">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>
-              <span><b>Explain today's Gospel</b><small>A gentle unpacking of the message.</small></span>
-            </button>
-            <button class="dp-act" id="dpActPray">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
-              <span><b>Pray with today</b><small>Turn these readings into a prayer.</small></span>
-            </button>
-          </div>
-        </section>
 
         <section class="dp-thread">
           <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to explore today's liturgy and readings with you.</p></div>
@@ -5624,6 +5635,20 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         /* ---- page-aware chat launch (used by Daily + Prayer action buttons) ---- */
         const goLessonBtn=$('#goLessonBtn');
         if(goLessonBtn) goLessonBtn.addEventListener("click",()=>{ renderLesson(lessonForDate()); setPage("study"); });
+        /* v4.5: Today's quiz pointer → the expanded quiz on Study */
+        const quizGo=document.getElementById('quizGo');
+        if(quizGo) quizGo.addEventListener("click",()=>{
+          setPage("study");
+          setTimeout(()=>{ const q=document.getElementById("sec-quiz-study"); if(q) q.scrollIntoView({behavior:"smooth",block:"start"}); },120);
+        });
+        /* keep the pointer's tag honest: reflect saved state for today */
+        (function quizPtrSync(){
+          const tag=document.getElementById('quizPtrTag');
+          if(!tag) return;
+          const saved=loadResult(todayLessonIdx());
+          if(saved && saved.completed) tag.textContent="Done today · "+saved.score+"/"+saved.total+" · Open in Study →";
+          else { const prog=loadProgress(todayLessonIdx()); if(prog && prog.q>0) tag.textContent="In progress · Q"+(prog.q+1)+" · Open in Study →"; }
+        })();
         function pageChat(text, targetPage){
           if(!text) return;
           if(targetPage && targetPage!==PAGE) setPage(targetPage);
