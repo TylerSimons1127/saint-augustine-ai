@@ -59,6 +59,23 @@
   /* radius / space */
   --r-s:10px; --r-m:16px; --r-l:24px;
   --sp:8px;
+  /* ═══ v4.6 PREMIUM SYSTEM ═══
+     A disciplined type ladder, a motion grid, and a shared content column.
+     Every surface now reads the same width/padding off these tokens. */
+  --fs-xs: clamp(11px, 2.6vw, 12px);
+  --fs-sm: clamp(13px, 2.9vw, 14px);
+  --fs-md: clamp(15px, 3.4vw, 15.5px);
+  --fs-lg: clamp(17px, 3.8vw, 19px);
+  --fs-h2: clamp(22px, 5.2vw, 28px);
+  --fs-h1: clamp(30px, 8vw, 46px);
+  --fs-display: clamp(27px, 8.6vw, 42px);
+  --lh-tight: 1.18; --lh-base: 1.5; --lh-open: 1.72;
+  --mt-micro: 120ms; --mt-fast: 160ms; --mt-base: 220ms; --mt-lift: 300ms;
+  --ease-out: cubic-bezier(.22,1,.36,1);
+  --ease-spring: cubic-bezier(.34,1.32,.44,1);
+  --ease-smooth: cubic-bezier(.4,0,.2,1);
+  --content-inset: 16px;         /* one page inset, every tab */
+  --content-max: 720px;          /* shared measure width across pages */
 }
 
 *{box-sizing:border-box}
@@ -494,7 +511,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
   .daily-top{margin-bottom:8px}
   /* compact the greeting so the daily CTA clears the fixed dock/credit chip */
   .greet .eyebrow{margin-bottom:12px}
-  .greet h1{font-size:clamp(24px,6.2vw,32px);line-height:1.18}
+  .greet h1{line-height:var(--lh-tight);font-size:clamp(24px,6.2vw,32px);line-height:1.18}
   .greet .sub{margin-top:10px;font-size:14px;line-height:1.45}
 }
 
@@ -543,6 +560,18 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .topnav .nav-tabs{display:flex;align-items:center;gap:4px;margin:0 auto;background:rgba(255,255,255,0.5);border:1px solid var(--border);border-radius:999px;padding:4px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
 .nav-tab{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;color:var(--ink-soft);font-family:var(--body);
   font-size:13.5px;font-weight:600;padding:8px 16px;border-radius:999px;cursor:pointer;transition:all .16s ease}
+.nav-tab{position:relative}
+.nav-tab-icon{position:relative;display:inline-flex;width:15px;height:15px;flex:none}
+.nav-ico{position:absolute;top:0;left:0;width:15px;height:15px;transition:opacity .18s ease,transform .18s ease}
+.nav-ico-line{opacity:1;transform:scale(1)}
+.nav-ico-fill{opacity:0;transform:scale(.82)}
+.nav-tab.on .nav-ico-line{opacity:0;transform:scale(.9)}
+.nav-tab.on .nav-ico-fill{opacity:1;transform:scale(1)}
+@media (max-width:768px){
+  .nav-tab-icon{width:19px;height:19px}
+  .nav-ico{width:19px;height:19px}
+}
+
 .nav-tab svg{width:15px;height:15px}
 .nav-tab:hover{color:var(--ink);background:rgba(255,255,255,0.55)}
 .nav-tab.on{color:#fbf7ee;background:var(--accent-deep);box-shadow:0 4px 12px rgba(108,88,38,.35)}
@@ -2231,6 +2260,72 @@ body>.topnav,body>.topnav.topnav{
   }
 }
 
+
+/* ═══ v4.6 PREMIUM MOTION + SHARED SURFACE ═══ */
+/* One content column on every page, one inset, one motion grammar. */
+.daily-page{max-width:var(--content-max);margin:0 auto;padding-inline:var(--content-inset)}
+
+/* Every card shares identical starting positions + easing */
+.dp-card,.composer,.proto-card,
+.ts-cell,.tomorrow-teaser,.lesson-link{
+  transition:transform var(--mt-fast) var(--ease-out),
+             box-shadow var(--mt-fast) var(--ease-out),
+             border-color var(--mt-fast) var(--ease-out);
+}
+@media (hover:hover){
+  .dp-card:hover,.ts-cell:hover,.lesson-link:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  .dp-card:active,.ts-cell:active,.lesson-link:active{
+    transform:scale(.995);
+  }
+}
+
+/* Buttons get springy press + matte border (the v4.6 icon-scale philosophy) */
+button,.dp-cta,.nav-tab,.icon-btn,.sugg,.quiz-opt,.pray-chip{
+  transition:transform var(--mt-micro) var(--ease-spring),
+             background var(--mt-fast) var(--ease-out),
+             color var(--mt-fast) var(--ease-out),
+             border-color var(--mt-fast) var(--ease-out),
+             box-shadow var(--mt-micro) var(--ease-out);
+  touch-action:manipulation;
+}
+@media (hover:none){
+  :active{transform:scale(.98)}
+}
+
+/* Message mount: stage rise (vars already engineered) */
+.msg{animation:msgIn .38s var(--ease-out) both}
+@media (max-width:768px){ .msg{animation-duration:.3s} }
+
+/* Nav-tab active: keeps the gold gradient from v4.3, now the fill pops */
+.nav-tab.on .nav-ico-fill svg{filter:drop-shadow(0 1px 2px rgba(111,85,32,.4))}
+
+/* Sidebar Items + Session Rows: smoothing the sub-menus */
+.sb-item,.nav-search input{transition:background var(--mt-fast) var(--ease-out), border-color var(--mt-fast) var(--ease-out)}
+.sb-item:hover{background:rgba(255,255,255,.62)}
+
+/* Skeleton shimmer stays; the real content just reads cleaner */
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:.85}}
+.skel{animation:breathe 1.6s ease-in-out infinite}
+
+/* ─── Chat Messages: bubbles share one paddle width ─── */
+.bubble,.msg.user .bubble{min-width:0}
+/* Give Augustine's replies and outer pages the same visual rhythm */
+.thread-inner{grid-gap:14px}
+.page .dp-thread{max-width:var(--content-max);margin-inline:auto;padding-inline:var(--content-inset)}
+
+/* The composer always hugs the same horizontal rails as the cards */
+.composer{width:min(var(--content-max),100%);margin-inline:auto}
+
+/* Focus state is the premium tell: a quiet gold ring on all controls */
+:focus-visible{
+  outline:2px solid var(--accent-deep);
+  outline-offset:2px;
+  border-radius:var(--r-s);
+}
+
 </style>
 <!-- ============ PREFS: settings menu styles ============ -->
 <style id="prefs-styles">
@@ -2522,6 +2617,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 7.5-8 11z"/></symbol>
   <symbol id="ic-book" viewBox="0 0 24 24"><path d="M12 6.5C10.5 5 7.5 4.5 5 5v13c2.5-.5 5.5 0 7 1.5 1.5-1.5 4.5-2 7-1.5V5c-2.5-.5-5.5 0-7 1.5Z"/><path d="M12 6.5V19"/></symbol>
   <symbol id="ic-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
+  <symbol id="ic-chat-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></symbol>
+  <symbol id="ic-book-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/></symbol>
+  <symbol id="ic-heart-fill" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></symbol>
+  <symbol id="ic-today-fill" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
 </svg>
 
 <a class="skip-link" href="#prompt">Skip to conversation</a>
@@ -2542,16 +2641,28 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   </div>
   <div class="nav-tabs" role="tablist" aria-label="Choose a page">
     <button class="nav-tab on" data-page="chat" role="tab" aria-selected="true" aria-controls="page-chat">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>Chat
+      <span class="nav-tab-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="nav-ico nav-ico-line"><use href="#ic-chat"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="nav-ico nav-ico-fill"><use href="#ic-chat-fill"/></svg>
+      </span>Chat
     </button>
     <button class="nav-tab" data-page="study" role="tab" aria-selected="false" aria-controls="page-study">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 3v5h5"/></svg>Study
+      <span class="nav-tab-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="nav-ico nav-ico-line"><use href="#ic-book"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="nav-ico nav-ico-fill"><use href="#ic-book-fill"/></svg>
+      </span>Study
     </button>
     <button class="nav-tab" data-page="prayer" role="tab" aria-selected="false" aria-controls="page-prayer">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Pray
+      <span class="nav-tab-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="nav-ico nav-ico-line"><use href="#ic-heart"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="nav-ico nav-ico-fill"><use href="#ic-heart-fill"/></svg>
+      </span>Pray
     </button>
     <button class="nav-tab" data-page="today" role="tab" aria-selected="false" aria-controls="page-today">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-book"/></svg>Today
+      <span class="nav-tab-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="nav-ico nav-ico-line"><use href="#ic-book"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="none" class="nav-ico nav-ico-fill"><use href="#ic-today-fill"/></svg>
+      </span>Today
     </button>
   </div>
   <div class="nav-actions">
@@ -2707,7 +2818,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                   <p class="topic-quote" id="lessonQuote"></p>
                   <div class="quote-actions">
                     <button class="quote-act" id="quoteCopy" title="Copy quote" aria-label="Copy quote">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-copy"/></svg><span>Copy</span>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg><span>Copy</span>
                     </button>
                     <button class="quote-act" id="quoteShare" title="Share today's lesson" aria-label="Share today's lesson">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg><span>Share</span>
@@ -2780,7 +2891,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <div class="quiz-done-actions">
               <button class="dp-cta dp-cta-ghost" id="quizRetry">Try again</button>
               <button class="dp-cta" id="quizAsk">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-chat"/></svg>
                 <span>Ask Augustine about this</span>
               </button>
             </div>
@@ -2824,7 +2935,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         </div>
 
         <section class="dp-card" aria-label="Today's Daily Readings" id="sec-readings">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-book"/></svg>Today's Readings</h3>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg>Today's Readings</h3>
           <div class="dp-readings" id="dpReadings"><div class="dp-skel"><div class="skel skel-title"></div><div class="skel skel-line" style="width:88%"></div><div class="skel skel-line" style="width:72%"></div><div class="skel skel-line" style="width:80%"></div></div></div>
           <a class="dp-link" id="dpReadingsLink" href="https://bible.usccb.org/daily-bible-readings" target="_blank" rel="noopener noreferrer">Read on USCCB.org ↗</a>
           <!-- v4.5: the talk actions live WITH the readings now — the conversation
@@ -2853,7 +2964,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           </div>
           <div class="saint-actions">
             <button class="dp-cta" id="saintAsk">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-chat"/></svg>
               <span id="saintAskLabel">Ask Augustine about the saint</span>
             </button>
             <a class="dp-link" id="saintLink" href="https://www.franciscanmedia.org/saint-of-the-day/" target="_blank" rel="noopener noreferrer">Read more on Franciscan Media ↗</a>
@@ -2919,7 +3030,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         </section>
 
         <section class="dp-card" aria-label="Prayers of the tradition">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-book"/></svg>Prayers of the tradition</h3>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg>Prayers of the tradition</h3>
           <div class="pray-chips" style="margin-bottom:0">
             <button class="pray-chip" id="tradMorning">Morning Offering</button>
             <button class="pray-chip" id="tradLectio">Lectio Divina</button>
@@ -3094,11 +3205,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         <div><b>Your privacy is yours</b><br><span>Conversations live in your browser only — nothing is stored on our servers.</span></div>
       </div>
       <div class="beta-row">
-        <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-book"/></svg></span>
+        <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg></span>
         <div><b>A companion, not a confessor</b><br><span>It is experimental and not a priest or source of infallible teaching.</span></div>
       </div>
       <div class="beta-row">
-        <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-chat"/></svg></span>
+        <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-chat"/></svg></span>
         <div><b>For matters of conscience</b><br><span>Speak with a priest or confessor — this companion walks beside you, not in their place.</span></div>
       </div>
     </div>
@@ -3939,10 +4050,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const lab=document.createElement("span"); lab.className="code-lang"; lab.textContent=lang?lang:"code";
       const btn=document.createElement("button"); btn.className="code-copy"; btn.type="button";
       btn.setAttribute("aria-label","Copy code");
-      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-copy"/></svg>Copy';
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy';
       btn.addEventListener("click",()=>{
         const txt=code?code.innerText:pre.innerText;
-        navigator.clipboard.writeText(txt).then(()=>{ btn.textContent="Copied ✓"; setTimeout(()=>{ btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-copy"/></svg>Copy'; }, 1400); })
+        navigator.clipboard.writeText(txt).then(()=>{ btn.textContent="Copied ✓"; setTimeout(()=>{ btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy'; }, 1400); })
           .catch(()=>{ btn.textContent="Copy failed"; });
       });
       bar.appendChild(lab); bar.appendChild(btn);
@@ -4239,7 +4350,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     acts.className="acts";
     acts.innerHTML='<button class="act" data-retry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Retry</button>'+
       '<button class="act" data-retry-deep title="Retry with more contemplative depth" aria-label="Retry with more contemplative depth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3c0 1.5 1 2.5 1 4-1.5 0-3-.5-4-2-1 3 0 6 3 8 2 1.5 4.5 2 7 1 3-1 5-4 5-7 0-4-3-8-9-8Z" opacity=".9"/><path d="M5 20c2-1 5-1 7 0 2 1 5 1 7 0"/></svg>Deeper</button>'+
-      '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">><use href="#ic-copy"/></svg>Copy</button>'+
+      '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy</button>'+
       '<span class="act-sep" aria-hidden="true"></span>'+
       '<button class="act fb" data-fb="up" title="This was helpful" aria-label="This was helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11"/><path d="M7 10l4-7a2 2 0 0 1 3 1.7V9h5.5a2 2 0 0 1 2 2.3l-1.4 7a2 2 0 0 1-2 1.7H7"/></svg></button>'+
       '<button class="act fb" data-fb="down" title="This missed the mark" aria-label="This missed the mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V3"/><path d="M17 14l-4 7a2 2 0 0 1-3-1.7V15H4.5a2 2 0 0 1-2-2.3l1.4-7A2 2 0 0 1 5.9 4H17"/></svg></button>'+
