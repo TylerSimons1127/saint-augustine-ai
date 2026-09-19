@@ -918,7 +918,13 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 @media (prefers-reduced-motion:reduce){ .quiz-opt.correct,.quiz-opt.wrong{animation:none} }
 
 /* ---- Send button: composing vs streaming states ---- */
-.send{transition:background .18s ease,transform .15s ease,box-shadow .2s ease}/* boosted via v4.7 */
+.send{
+  transition:background .18s ease,transform .15s ease,box-shadow .2s ease;
+    background: linear-gradient(160deg,#a07c3f 0%, #835f2e 55%, #5f410f 100%);
+    color:#fbf7ee;
+    box-shadow:0 4px 18px rgba(93,66,34,.45), inset 0 1px 0 rgba(255,255,255,.45);
+    cursor:pointer;
+  }/* boosted via v4.7 */
 .send.is-ready{background:linear-gradient(160deg,#9d7440 0%, #7c5a2e 55%, #5d4222 100%) !important;color:#fbf7ee !important;box-shadow:0 4px 16px rgba(93,66,34,.45), inset 0 1px 0 rgba(255,255,255,.45) !important}
 /* v4.3: enabled send = gold gradient (0,3,0 specificity — beats .send.ready flat) */
 .send:not(:disabled):not(.stop){background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%)}
@@ -1113,7 +1119,7 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 .fchip .fx:hover{color:var(--danger);background:rgba(154,59,46,.10)}
 .fchip.ok .fic{background:rgba(79,107,58,.14);color:var(--ok)}
 
-.input-row{display:flex;align-items:flex-end;gap:8px}
+.input-row{display:flex;align-items:center;gap:8px}
 .input-row .icon-btn{height:44px}
 textarea#prompt{
   flex:1;resize:none;border:0;outline:none;background:transparent;
@@ -1123,19 +1129,22 @@ textarea#prompt{
 textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
 .send{
   height:44px;width:44px;flex:none;border:0;border-radius:50%;
-  background: linear-gradient(160deg, #9d7440 0%, #7c5a2e 55%, #5d4222 100%);
+  background:linear-gradient(160deg,#a07c3f 0%, #835f2e 55%, #5f410f 100%);
   color:#fbf7ee;
   display:grid;place-items:center;
-  box-shadow:0 4px 16px rgba(93,66,34,.45), inset 0 1px 0 rgba(255,255,255,.45);
-  transition:transform var(--mt-micro) var(--ease-spring), box-shadow var(--mt-micro) var(--ease-out);
+  box-shadow:0 4px 18px rgba(93,66,34,.45), inset 0 1px 0 rgba(255,255,255,.45);
+  transition:transform .15s ease,box-shadow .2s ease;
 }
+.send:hover{transform:translateY(-1px)}
+.send:active{transform:translateY(0) scale(.97)}
+
 .send:hover{background:var(--accent-press);transform:translateY(-1px)}
 .send:active{transform:translateY(0)}
 .send:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft),0 6px 18px rgba(93,66,34,0.34)}
 .send[disabled]{background:var(--muted);box-shadow:none;cursor:not-allowed;opacity:.7}
 /* composing state: gold deepens + subtle lift, invites the send (C34) */
 /* v4.3: ready = full gold affordance (gradient + warm lift) */
-.send.ready{background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%);box-shadow:0 8px 22px rgba(93,66,34,0.42), inset 0 1px 0 rgba(255,255,255,.35)}
+.send.ready{background:linear-gradient(160deg,#a07c3f 0%, #835f2e 55%, #5f410f 100%);box-shadow:0 6px 20px rgba(93,66,34,.55), inset 0 1px 0 rgba(255,255,255,.55);cursor:pointer}
 .send.ready:hover{transform:translateY(-1px) scale(1.03)}
 /* streaming state: the pulse already exists on .send.stop; keep it */
 
@@ -1785,7 +1794,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 
 /* send button: gradient gold, springy press — v4.3 brighter top-light for affordance */
 .send{background:linear-gradient(160deg,var(--accent) 0%,var(--accent-deep) 55%,var(--accent-press) 100%);
-  box-shadow:0 2px 6px rgba(93,66,34,.35), inset 0 1px 0 rgba(255,255,255,.35);will-change:transform}
 .send:not(:disabled):active{transform:scale(.92)}
 .send svg{transition:transform .16s cubic-bezier(.22,.7,.3,1)}
 .send:not(:disabled):hover svg{transform:translateY(-1px) rotate(-8deg)}
