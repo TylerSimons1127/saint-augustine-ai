@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Saint Augustine AI — A Catholic companion to the Sacred Tradition</title>
 <meta name="description" content="Ask in the voice of Augustine of Hippo. A Catholic AI companion built by Tyler Simons, Seton Hall Prep. Front-end preview." />
-<meta name="theme-color" content="#f4efe6" />
+<meta name="theme-color" content="#f6f2ec" />
 <meta name="author" content="Tyler Simons, Seton Hall Prep" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
 <link rel="icon" href="assets/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
@@ -31,11 +31,11 @@
    ============================================================ */
 :root{
   /* color */
-  --bg:#f4efe6;
-  --bg-2:#ece3d4;
-  --ink:#1e1a14;
-  --ink-soft:#423b2e;
-  --muted:#6f674f;
+  --bg:#f6f2ec;
+  --bg-2:#ece4d8;
+  --ink:#221c16;
+  --ink-soft:#453a30;
+  --muted:#716349;
   --hi:#ece5d7;
   --glass:rgba(255,252,245,0.34);
     --glass-strong:rgba(252,249,241,0.66);
@@ -43,13 +43,13 @@
   --card:rgba(250,246,237,0.90);   /* v2.0.2: 82→90% — critics flagged text wash-out over bright skies; glass reads identical, readability wins */
   --border:rgba(30,26,20,0.10);
   --border-light:rgba(255,255,255,0.72);
-  --accent:#a3822f;          /* antique gold, desaturated */
-  --accent-press:#8a6c25;    /* deeper gold for AA on light text */
+  --accent:#a07c3f;          /* antique gold, desaturated */
+  --accent-press:#7c5a2e;    /* deeper gold for AA on light text */
   --accent-deep:#6f5520;     /* deepest gold for solid fills w/ light text (AA pass) */
   --accent-soft:rgba(163,130,47,0.12);
   --gold-ink:#57481a;        /* dark gold for text ON gold-tinted surfaces */
-  --danger:#9a3b2e;
-  --ok:#4f6b3a;
+  --danger:#a03e30;
+  --ok:#55703f;
   --shadow:0 12px 44px rgba(46,38,24,0.14);
   --shadow-sm:0 4px 18px rgba(46,38,24,0.10);
   /* type */
@@ -244,7 +244,7 @@ a{color:inherit}
   transition:opacity .12s, background .16s, color .16s, border-color .16s}
 .sb-item .sbp{opacity:0}
 .sb-item:hover .sbp,.sb-item:focus-visible .sbp,.sb-item .sbp:focus-visible{opacity:1}
-.sb-item .sbx{opacity:0;color:#9a3b2e}
+.sb-item .sbx{opacity:0;color:#a03e30}
 .sb-item:hover .sbx,.sb-item:focus-visible .sbx,.sb-item .sbx:focus-visible{opacity:1}
 /* v2.2.1: touch rows show NO pin/delete circles (user directive — "remove this
    from all conversations"). On phones, deleting/pinning happens through the
@@ -893,8 +893,8 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
   .dp-card,.today-strip,.tomorrow-teaser{background:#fff !important;border:1px solid #ddd !important;box-shadow:none !important;backdrop-filter:none !important;break-inside:avoid}
   .dp-page,.daily-page,.pray-page{max-width:100%;padding:0}
   .topic-excerpt .pdrop{color:#6f5520}
-  body{color:#1e1a14;font-size:12pt}
-  .dp-card h3,.dp-eyebrow-mini{color:#1e1a14}
+  body{color:#221c16;font-size:12pt}
+  .dp-card h3,.dp-eyebrow-mini{color:#221c16}
   a{color:#6f5520;text-decoration:none}
 }
 
@@ -1068,7 +1068,7 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 }
 .sb-export:hover{ color:var(--accent-deep); border-color:var(--accent); background:var(--accent-soft); }
 .sb-export svg{width:17px;height:17px}
-.sb-reset{ color:#9a3b2e; border-color:rgba(154,59,46,0.28); background:rgba(154,59,46,0.06); }
+.sb-reset{ color:#a03e30; border-color:rgba(154,59,46,0.28); background:rgba(154,59,46,0.06); }
 .sb-reset:hover{ color:#fff; background:#b13a2c; border-color:#b13a2c; }
 .sb-reset svg{width:17px;height:17px}
 .sb-foot .ft{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -2375,7 +2375,7 @@ html[data-bg] .bg .photo{ background-image:var(--bg-img); }
 /* ---------- THEME OVERRIDES (curated, no neon, AA contrast) ---------- */
 /* Light-first schemes set a warm parchment glass; dark schemes tint the photo. */
 html[data-theme="parchment"]{
-  --bg:#f4efe6; --bg-2:#ece6d9; --ink:#211e18; --ink-soft:#403c33;
+  --bg:#f6f2ec; --bg-2:#ece6d9; --ink:#211e18; --ink-soft:#403c33;
   --muted:#6c685c; --panel:rgba(250,247,240,0.95); --glass:rgba(255,252,245,0.30);
   --glass-strong:rgba(255,252,245,0.42); --accent:#9a7e34; --accent-press:#876c2c;
   --accent-deep:#6f5520; --accent-soft:rgba(163,130,47,0.14); --gold-ink:#57481a;
@@ -4987,7 +4987,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
      ===================================================================== */
   const LS_PREFS="sa_prefs_v1";
   const THEMES=[
-    {id:"parchment", name:"Parchment",  c:["#f4efe6","#9a7e34","#fbf7ee"]},
+    {id:"parchment", name:"Parchment",  c:["#f6f2ec","#9a7e34","#fbf7ee"]},
     {id:"vellum",    name:"Vellum",     c:["#f2f1ec","#9a8a3e","#fbf7ee"]},
     {id:"lumen",     name:"Lumen",      c:["#fbf6ea","#c79a2e","#fffaf0"]},
     {id:"ember",     name:"Emberlight", c:["#f6efe6","#b07a4e","#fbf7ee"]},
@@ -5884,4 +5884,4 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
 </body></body>
 </html>
-__BUMP v4.7-css-fix
+__BUMP v4.7-css-fix/* palette: soft caramel deposit, v4.7.2 */
