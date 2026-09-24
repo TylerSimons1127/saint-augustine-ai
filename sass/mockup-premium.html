@@ -1,401 +1,547 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Saint Augustine AI · Premium Mockup</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Saint Augustine — premium mockup v2</title>
+<link rel="icon" href="../assets/heart.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=General+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ================================================================
-   PREMIUM MOCKUP — quiet luxury over the existing heavenly bg.jpg
-   Inspirations: Linear (restraint), Stripe (typography discipline),
-   Awwwards editorial winners (Checkpoint Research, REVERT AI),
-   landing.love (typo.love, illoca — serif display + sans body pairing).
-   All tokens light-theme, no neon, no glow, no gradient hero fill.
-   ================================================================ */
+/* ============================
+   TOKENS — quiet-luxury, warm
+   ============================ */
+:root{
+  /* palette — drawn from bg.jpg (golden-hour Quiraing) */
+  --paper:        #f6f1e6;   /* warm parchment */
+  --panel:        rgba(250,246,238,.92); /* opaque frost, NO blur (Tyler constraint) */
+  --panel-line:   rgba(60,48,26,.14);
+  --ink:          #201a12;   /* near-black warm */
+  --ink-soft:     #4a4234;
+  --ink-mute:     #7a7160;
+  /* gold-on-cream needs deeper base for AA */
+  --gold:         #b98a4f;
+  --gold-deep:    #4f3a15;   /* ≥7:1 vs --paper */
+  --gold-line:    rgba(185,138,79,.35);
+  --shadow:       0 1px 0 rgba(255,255,255,.6) inset, 0 12px 32px -16px rgba(32,26,18,.30);
+  --shadow-tight: 0 1px 0 rgba(255,255,255,.65) inset, 0 4px 12px -6px rgba(32,26,18,.22);
 
-:root {
-  /* --- Font tokens --- */
-  --font-sans: "General Sans", "Avenir Next", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-display: "Playfair Display", "Georgia", serif;
-  /* --- Light palette (muted gold family) --- */
-  --ink:           #1e1a14;
-  --ink-2:         #3a352c;
-  --ink-soft:      #6b6353;
-  --ink-xsoft:     #7a715e;
-  --paper:         #fbf7f0;
-  --panel:         #fdfaf5;
-  --panel-line:    #f0e9de;
-  --gold-ink:      #57481a;
-  --gold-deep:     #6f5520;
-  --gold-soft:     #a3822f;
-  --gold-tint:     rgba(236,227,212,0.68);
-  --radius:        14px;
-  --radius-full:   9999px;
-  --shadow-card:   0 1px 0 rgba(255,255,255,.8) inset, 0 14px 34px -20px rgba(30,26,20,.14);
+  /* type */
+  --display: "Fraunces", Georgia, serif;
+  --sans:    "Inter", -apple-system, "Segoe UI", sans-serif;
+
+  /* type scale (1.333) */
+  --fs-eyebrow: 12px;
+  --fs-body:    16px;
+  --fs-lede:    17.5px;
+  --fs-h2:      24px;
+  --fs-h1:      clamp(34px, 7vw, 56px);
+
+  /* spacing (8px base) */
+  --s-1: 8px;  --s-2: 16px; --s-3: 24px; --s-4: 32px; --s-5: 48px; --s-6: 72px;
+
+  /* radii */
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-pill: 999px;
+
+  /* motion */
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --t-fast: 160ms;
+  --t-med:  320ms;
 }
-html { font-size: 16px; }
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  color: var(--ink-2);
-  background: var(--paper);
-  line-height: 1.5;
-  min-height: 100dvh;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--sans);
+  font-size:var(--fs-body);
+  line-height:1.55;
+  color:var(--ink);
+  background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
 }
-/* ---- living background over bg.jpg ---- */
-.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:url('../assets/bg.jpg') center/cover no-repeat fixed}
-.bg::before{
-  content:"";
-  position:absolute;inset:0;
-  background:linear-gradient(180deg,
-    rgba(255,255,255,.72) 0%,
-    rgba(248,244,235,.6) 32%,
-    rgba(244,239,230,.72) 100%);
-  /* de-emphasize the stock photo so the UI (not the bg) is the composition */
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.7),
-    inset 0 1px 0 rgba(255,255,255,.5);
+
+/* ============================
+   STAGE — heavenly background
+   ============================ */
+.stage{
+  position:fixed; inset:0;
+  background-image:url("../assets/bg.jpg");
+  background-size:cover;
+  background-position:center 30%;
 }
+.bg-grain{
+  position:fixed; inset:0; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  mix-blend-mode:multiply;
+}
+.bg-vignette{
+  position:fixed; inset:0; pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 30%, transparent 50%, rgba(32,26,18,.18) 100%);
+}
+
+/* editorial registration marks (Checkpoint Research DNA) */
+.reg{
+  position:fixed; width:14px; height:14px; pointer-events:none; z-index:2;
+  color:rgba(32,26,18,.35);
+}
+.reg::before,.reg::after{content:""; position:absolute; background:currentColor}
+.reg::before{left:50%; top:0; width:1px; height:100%; transform:translateX(-.5px)}
+.reg::after{top:50%; left:0; height:1px; width:100%; transform:translateY(-.5px)}
+.reg.tl{top:var(--s-3); left:var(--s-3)}
+.reg.tr{top:var(--s-3); right:var(--s-3)}
+.reg.bl{bottom:calc(var(--s-3) + 72px); left:var(--s-3)}
+.reg.br{bottom:calc(var(--s-3) + 72px); right:var(--s-3)}
+@media (max-width:640px){ .reg.bl,.reg.br{display:none} }
+
+/* ============================
+   CHROME — top bar + bottom rail
+   ============================ */
+.topbar{
+  position:fixed; top:0; left:0; right:0; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 28px;
+}
+.brand{
+  display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink);
+}
+.brand img{width:22px; height:22px; display:block}
+.brand .word{
+  font-family:var(--display); font-weight:500; font-size:18px;
+  letter-spacing:.01em; color:var(--ink);
+  font-variation-settings:"opsz" 24;
+}
+.brand .word em{font-style:normal; color:var(--gold-deep)}
+.top-actions{display:flex; align-items:center; gap:10px}
+.close-btn{
+  width:44px; height:44px; display:grid; place-items:center;
+  color:var(--ink-soft); background:var(--panel);
+  border:1px solid var(--panel-line); border-radius:var(--r-pill);
+  cursor:pointer; font-size:16px; line-height:1;
+  box-shadow:var(--shadow-tight);
+  transition:color var(--t-fast) var(--ease);
+}
+.close-btn:hover{color:var(--ink)}
+.close-btn:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+
+/* ============================
+   BOTTOM NAV — floating dock
+   ============================ */
+.dock{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom)); transform:translateX(-50%);
+  z-index:10;
+}
+.dock-inner{
+  position:relative;
+  display:grid; grid-template-columns:repeat(4, minmax(72px,1fr));
+  background:#211b12; color:#efe7d6;
+  border-radius:var(--r-pill);
+  padding:6px;
+  box-shadow:0 16px 40px -18px rgba(32,26,18,.55), 0 0 0 1px rgba(255,255,255,.04) inset;
+}
+.dock-pill{
+  position:absolute; top:6px; bottom:6px; left:6px;
+  width:72px;
+  background:rgba(255,255,255,.10);
+  border-radius:var(--r-pill);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06) inset;
+  transform:translateX(0);
+  transition:transform var(--t-med) var(--ease), width var(--t-med) var(--ease);
+  pointer-events:none;
+}
+.dock button{
+  position:relative; z-index:2;
+  appearance:none; background:transparent; border:0;
+  color:inherit; font:inherit;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:10px 6px; cursor:pointer; min-height:48px;
+  font-size:10.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
+  transition:color var(--t-fast) var(--ease);
+}
+.dock button svg{width:16px; height:16px; opacity:.75; transition:opacity var(--t-fast) var(--ease)}
+.dock button[aria-selected="true"]{color:#f6e6c6}
+.dock button[aria-selected="true"] svg{opacity:1}
+.dock button:focus-visible{outline:2px solid var(--gold); outline-offset:2px; border-radius:var(--r-pill)}
+
+/* ============================
+   STAGE CONTENT — single editorial column
+   ============================ */
+main{
+  position:fixed; inset:0; z-index:1;
+  overflow-y:auto;
+  display:grid;
+  grid-template-columns:1fr;
+  padding:96px 24px 140px;
+  scrollbar-width:none;
+}
+main::-webkit-scrollbar{display:none}
+
+.page{display:none; margin:auto; width:100%; max-width:740px}
+.page.active{display:block}
+
+/* Editorial card */
+.card{
+  background:var(--panel);
+  border:1px solid var(--panel-line);
+  border-radius:var(--r-lg);
+  padding:clamp(28px, 5vw, 48px);
+  box-shadow:var(--shadow);
+  backdrop-filter:none; /* Tyler: no blur */
+}
+
+.eyebrow{
+  font-size:var(--fs-eyebrow); letter-spacing:.18em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:600;
+  display:flex; align-items:center; gap:10px;
+  margin:0 0 var(--s-4) 0;
+}
+.eyebrow::before{content:""; width:24px; height:1px; background:var(--gold-line)}
+
+h1.display{
+  font-family:var(--display);
+  font-size:var(--fs-h1);
+  font-weight:400;
+  line-height:1.05;
+  letter-spacing:-.015em;
+  margin:0 0 var(--s-3) 0;
+  font-variation-settings:"opsz" 90;
+  color:var(--ink);
+}
+h1.display em{
+  font-style:italic; font-weight:300; color:var(--gold-deep);
+}
+
+h2{
+  font-family:var(--display); font-weight:500;
+  font-size:var(--fs-h2); line-height:1.2; letter-spacing:-.01em;
+  margin:0 0 var(--s-2) 0;
+}
+
+p.lede{
+  font-size:var(--fs-lede); line-height:1.6; color:var(--ink-soft);
+  margin:0 0 var(--s-4) 0;
+  text-wrap:pretty;
+}
+p{margin:0 0 var(--s-3) 0}
+.dim{color:var(--ink-mute); font-size:13.5px}
+
+/* reference mark */
+.rule{height:1px; background:var(--panel-line); margin:var(--s-4) 0; border:0}
+
+/* ============================
+   PAGE: CHAT (home)
+   ============================ */
+.chat-thread{
+  display:flex; flex-direction:column; gap:14px;
+  margin:var(--s-4) 0 var(--s-3) 0;
+}
+.msg{
+  max-width:78%;
+  padding:12px 16px;
+  border-radius:var(--r-md);
+  font-size:14.5px; line-height:1.55;
+}
+.msg.user{
+  align-self:flex-end;
+  background:var(--panel);
+  border:1px solid var(--gold-line);
+  color:var(--ink);
+  box-shadow:var(--shadow-tight);
+}
+.msg.saint{
+  align-self:flex-start;
+  background:var(--panel);
+  border:1px solid var(--panel-line);
+  color:var(--ink);
+  box-shadow:var(--shadow-tight);
+}
+.msg.saint .who{
+  display:block; font-family:var(--display); font-style:italic;
+  font-size:13px; color:var(--gold-deep); margin-bottom:4px; font-weight:500;
+}
+
+.composer{
+  display:flex; align-items:flex-end; gap:8px;
+  background:var(--panel);
+  border:1px solid var(--panel-line);
+  border-radius:var(--r-lg);
+  padding:8px;
+  box-shadow:var(--shadow);
+}
+.composer textarea{
+  flex:1; resize:none; border:0; outline:0; background:transparent;
+  font:inherit; color:var(--ink);
+  padding:10px 12px; min-height:44px; max-height:140px;
+}
+.composer textarea::placeholder{color:var(--ink-mute)}
+.send{
+  appearance:none; border:0; cursor:pointer;
+  display:grid; place-items:center;
+  width:44px; height:44px; border-radius:var(--r-md);
+  background:#211b12; color:#f6e6c6;
+  transition:transform var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+.send:hover{background:#2c2415}
+.send:active{transform:scale(.97)}
+.send:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+
+/* ============================
+   PAGE: STUDY
+   ============================ */
+.toc{
+  list-style:none; padding:0; margin:var(--s-3) 0 0 0;
+  display:grid; gap:2px;
+}
+.toc a{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:baseline; gap:14px;
+  padding:14px 4px;
+  color:var(--ink); text-decoration:none;
+  border-bottom:1px solid var(--panel-line);
+  transition:padding var(--t-fast) var(--ease);
+}
+.toc a:last-child{border-bottom:0}
+.toc a:hover{padding-left:10px}
+.toc .num{
+  font-family:var(--display); font-style:italic;
+  color:var(--gold-deep); font-size:13px; min-width:2ch;
+}
+.toc .title{font-family:var(--display); font-size:19px; font-weight:500; letter-spacing:-.005em}
+.toc .meta{font-size:11.5px; color:var(--ink-mute); letter-spacing:.12em; text-transform:uppercase; font-weight:500}
+
+/* ============================
+   PAGE: PRAY
+   ============================ */
+.pray-block{
+  font-family:var(--display);
+  font-size:clamp(22px, 4.6vw, 30px);
+  line-height:1.45;
+  font-weight:300;
+  color:var(--ink);
+  text-wrap:balance;
+}
+.pray-block em{font-style:italic; color:var(--gold-deep)}
+.pray-cap{
+  margin-top:var(--s-4);
+  font-size:11.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-mute); font-weight:500;
+  display:flex; align-items:center; gap:12px;
+}
+.pray-cap::before,.pray-cap::after{content:""; flex:1; height:1px; background:var(--panel-line)}
+
+/* ============================
+   PAGE: TODAY
+   ============================ */
+.today-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin-bottom:var(--s-2);
+}
+.today-date{
+  font-family:var(--display); font-style:italic;
+  color:var(--gold-deep); font-size:15px; font-weight:500;
+}
+.today-verse{
+  font-family:var(--display);
+  font-size:clamp(20px, 4.4vw, 28px);
+  line-height:1.4; font-weight:400;
+  color:var(--ink);
+  margin:0 0 6px 0;
+}
+.today-ref{
+  font-size:11.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink-mute); font-weight:500;
+}
+
+/* ============================
+   FOOTER (small signature)
+   ============================ */
+.sig{
+  position:fixed; right:20px; bottom:calc(20px + env(safe-area-inset-bottom)); z-index:9;
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-soft);
+  background:var(--panel); border:1px solid var(--panel-line);
+  border-radius:var(--r-pill); padding:7px 12px;
+  box-shadow:var(--shadow-tight);
+}
+
+@media (max-width:640px){
+  .topbar{padding:14px 16px}
+  .sig{display:none}
+  main{padding:80px 14px 120px}
+  .card{padding:24px 20px}
+  .msg{max-width:88%}
+  h1.display{font-size:clamp(30px, 8.4vw, 36px)}
+  .toc .title{font-size:17px}
+  .pray-block{font-size:clamp(19px, 5vw, 24px)}
+  .today-verse{font-size:clamp(18px, 4.6vw, 22px)}
+}
+
+/* iOS safe-area + keyboard: dock lifts off the bottom bar */
+.dock{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+@supports (-webkit-touch-callout:none){
+  .dock{bottom:calc(24px + env(safe-area-inset-bottom, 0px))}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition:none !important; animation:none !important}
 }
 </style>
 </head>
 <body>
-<div class="bg"></div>
 
-<!-- ===== Top bar: full wordmark + gear, no truncation ===== -->
-<header class="top">
-  <div class="top-inner">
-    <a href="#" class="brand">
-      <img src="../assets/heart.svg" alt="" width="24" height="26" class="brand-mark">
-      <span class="wordmark">Saint Augustine AI</span>
-    </a>
-    <nav class="nav-actions">
-      <button class="icon-btn" aria-label="Settings" title="Settings">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06"></path>
-        </svg>
-      </button>
-    </nav>
+<div class="stage" aria-hidden="true"></div>
+<div class="bg-grain" aria-hidden="true"></div>
+<div class="bg-vignette" aria-hidden="true"></div>
+<span class="reg tl" aria-hidden="true"></span>
+<span class="reg tr" aria-hidden="true"></span>
+<span class="reg bl" aria-hidden="true"></span>
+<span class="reg br" aria-hidden="true"></span>
+
+<header class="topbar">
+  <a class="brand" href="#">
+    <img src="../assets/heart.svg" alt="">
+    <span class="word">Saint <em>Augustine</em></span>
+  </a>
+  <div class="top-actions">
+    <button class="close-btn" type="button" aria-label="Close">×</button>
   </div>
 </header>
 
-<!-- ===== Bottom nav rail (Chat / Study / Pray / Today) ===== -->
-<nav class="bottom-nav" role="tablist" aria-label="Pages">
-  <div class="nav-track">
-    <button class="nav-item on" data-page="chat" role="tab" aria-selected="true">
-      <span class="nav-ico">
-        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </span>
-      <span class="nav-label">Chat</span>
-    </button>
-    <button class="nav-item" data-page="study" role="tab" aria-selected="false">
-      <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M2 6h20v4H2zm0 6h20v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/></svg></span>
-      <span class="nav-label">Study</span>
-    </button>
-    <button class="nav-item" data-page="prayer" role="tab" aria-selected="false">
-      <span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.35-7-12 3-9 7-9 7 4.35 7 9-3 9-7 12z"/></svg></span>
-      <span class="nav-label">Pray</span>
-    </button>
-    <button class="nav-item" data-page="today" role="tab" aria-selected="false">
-      <span class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/></svg></span>
-      <span class="nav-label">Today</span>
-    </button>
-  </div>
-  <!-- single gliding pill indicator -->
-  <span class="nav-pill" style="transform:translateX(6px)"></span>
-</nav>
+<main id="main">
 
-<!-- ===== Main content ===== -->
-<main class="main">
-  <!-- Chat view -->
-  <section class="page page-chat" data-page="chat">
-    <div class="stage">
-      <div class="bubble assistant">
-        <div class="bubble-inner">
-          <p class="bubble-copy">What shall we speak of today, my child?</p>
-        </div>
+  <!-- CHAT -->
+  <section class="page active" data-page="chat" aria-label="Chat">
+    <div class="card">
+      <p class="eyebrow">Confessions · i · 1</p>
+      <h1 class="display">Late have I loved thee, <em>beauty so old and so new.</em></h1>
+      <p class="lede">Ask Augustine anything — theology, doubt, desire, grace. He answers from the Confessions and the City of God.</p>
+
+      <div class="chat-thread" aria-live="polite">
+        <div class="msg saint"><span class="who">Augustine</span>What are you carrying today?</div>
+        <div class="msg user">I keep putting off the thing I know I should do.</div>
+        <div class="msg saint"><span class="who">Augustine</span>I knew that weight. I prayed, “Give me chastity — but not yet.” Tell me what you’re afraid to lose.</div>
       </div>
-      <div class="bubble user">
-        <div class="bubble-inner">
-          <p class="bubble-copy">I'm troubled by the gap between what I know is right and what I do.</p>
-        </div>
-      </div>
-    </div>
-    <div class="composer">
-      <textarea id="prompt" placeholder="Ask Augustine…" rows="1"></textarea>
-      <button class="icon-btn send" aria-label="Send">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13"></line>
-          <polyline points="22 2 15 22 11 12 2 4 13 9"></polyline>
-        </svg>
-      </button>
+
+      <form class="composer" onsubmit="return false">
+        <textarea rows="1" placeholder="Ask Augustine…" aria-label="Ask Augustine"></textarea>
+        <button class="send" type="submit" aria-label="Send">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
     </div>
   </section>
 
-  <!-- Today view -->
-  <section class="page" data-page="today" hidden>
-    <div class="stage">
-      <div class="content-card">
-        <div class="eyebrow">Saint of the Day</div>
-        <h1 class="today-title">Saint Thérèse of Lisieux</h1>
-        <p class="today-desc">She made holiness small and trustful, the little way of doing each duty with great love — the quiet confidence Augustine called the truest form of contemplation.</p>
-        <button class="pill-btn pill-primary">Read her letters</button>
-      </div>
+  <!-- STUDY -->
+  <section class="page" data-page="study" aria-label="Study" hidden>
+    <div class="card">
+      <p class="eyebrow">Study</p>
+      <h2>Confessions, in order.</h2>
+      <p class="lede">Read the work as Augustine wrote it — a prayer, not a memoir.</p>
+      <hr class="rule">
+      <ul class="toc">
+        <li><a href="#"><span class="num">I</span><span class="title">The restless heart</span><span class="meta">Book 1</span></a></li>
+        <li><a href="#"><span class="num">II</span><span class="title">The pear tree</span><span class="meta">Book 2</span></a></li>
+        <li><a href="#"><span class="num">III</span><span class="title">Carthage, a cauldron</span><span class="meta">Book 3</span></a></li>
+        <li><a href="#"><span class="num">VIII</span><span class="title">Tolle, lege</span><span class="meta">Book 8</span></a></li>
+        <li><a href="#"><span class="num">X</span><span class="title">Memory and desire</span><span class="meta">Book 10</span></a></li>
+      </ul>
     </div>
   </section>
 
-  <!-- Study view -->
-  <section class="page" data-page="study" hidden>
-    <div class="stage">
-      <h2 class="section-title">On the Trinity</h2>
-      <p class="body-copy">Augustine argues that our knowledge of God is not intellectual abstraction but the very act of love by which the soul is drawn home...</p>
-      <div class="pill-row">
-        <span class="pill-btn pill-secondary">On Grace</span>
-        <span class="pill-btn pill-secondary">Confessions</span>
-        <span class="pill-btn pill-secondary">City of God</span>
-      </div>
+  <!-- PRAY -->
+  <section class="page" data-page="pray" aria-label="Pray" hidden>
+    <div class="card">
+      <p class="eyebrow">Prayer</p>
+      <p class="pray-block">O Lord, <em>our hearts are restless</em> until they rest in thee.</p>
+      <p class="pray-cap">Confessions · i · 1</p>
     </div>
   </section>
 
-  <!-- Pray view -->
-  <section class="page" data-page="prayer" hidden>
-    <div class="stage">
-      <div class="pray-line" aria-hidden="true"></div>
-      <p class="pray-text">Lord, you have made us for yourself; and our hearts are restless until they rest in you.<br><span class="pray-ref">— Confessions, Book 1</span></p>
-      <button class="pray-btn">Begin prayer</button>
+  <!-- TODAY -->
+  <section class="page" data-page="today" aria-label="Today" hidden>
+    <div class="card">
+      <div class="today-head">
+        <p class="eyebrow" style="margin:0">Today</p>
+        <span class="today-date">Sept 24</span>
+      </div>
+      <p class="today-verse">“Thou hast made us for thyself, O Lord, and our heart is restless until it finds its rest in thee.”</p>
+      <p class="today-ref">Confessions · I · 1</p>
+      <hr class="rule">
+      <p class="dim">Read Book 1 in Study, or ask Augustine what restlessness felt like for him.</p>
     </div>
   </section>
+
 </main>
 
-<footer class="footer">
-  <span class="footer-panel"><span class="sig">Tyler Simons · Seton Hall Prep</span></span>
-</footer>
+<nav class="dock" aria-label="Primary">
+  <div class="dock-inner" id="dock">
+    <span class="dock-pill" id="dockPill" aria-hidden="true"></span>
+    <button type="button" data-page="chat"  aria-selected="true">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M2 4.5A2.5 2.5 0 0 1 4.5 2h7A2.5 2.5 0 0 1 14 4.5v4a2.5 2.5 0 0 1-2.5 2.5H7L4 13.5V11a2.5 2.5 0 0 1-2-2.45v-4.05Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Chat
+    </button>
+    <button type="button" data-page="study" aria-selected="false">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M3 2.5h6.5A1.5 1.5 0 0 1 11 4v9.5H4.5A1.5 1.5 0 0 1 3 12V2.5Z" stroke="currentColor" stroke-width="1.4"/><path d="M11 4h1.5A1.5 1.5 0 0 1 14 5.5V13a1 1 0 0 1-1 1h-2" stroke="currentColor" stroke-width="1.4"/></svg>
+      Study
+    </button>
+    <button type="button" data-page="pray"  aria-selected="false">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 2s4 3.8 4 7a4 4 0 1 1-8 0c0-3.2 4-7 4-7Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      Pray
+    </button>
+    <button type="button" data-page="today" aria-selected="false">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2.5" y="3.5" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Today
+    </button>
+  </div>
+</nav>
 
-<style>
-/* ===== Layout primitives (not a single gradient hero) ===== */
-:root{
-  --transition-glide: transform .28s cubic-bezier(.32,.72,.28,1);
-  --transition-fade: opacity .16s ease, transform .16s ease;
-}
-.top{
-  position:sticky;top:0;z-index:20;
-  padding: env(safe-area-inset-top) 16px 8px;
-  background:linear-gradient(to bottom, var(--panel) 60%, transparent);
-  border-bottom:1px solid var(--panel-line);
-  backdrop-filter:blur(10px) saturate(160%);
-  -webkit-backdrop-filter:blur(10px) saturate(160%);
-}
-.top-inner{display:flex;align-items:center;justify-content:space-between;max-width:1180px;margin:0 auto}
-.brand{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-sans);font-weight:500;font-size:17px;letter-spacing:-.01em;color:var(--ink);text-decoration:none}
-.brand em{font-style:normal;color:var(--gold-deep);font-weight:500}
-.icon-btn{
-  width:40px;height:40px;border:1px solid var(--panel-line);
-  border-radius:var(--radius-full);
-  background:var(--panel);
-  display:inline-flex;align-items:center;justify-content:center;
-  color:var(--ink-2);cursor:pointer;
-  transition:var(--transition-fade);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-}
-.icon-btn:hover{transform:scale(1.06);background:var(--paper);border-color:rgba(87,72,26,.12)}
-.icon-btn:active{transform:scale(.96)}
-
-/* ===== Bottom nav rail (inspired by Linear mobile) ===== */
-.bottom-nav{
-  position:fixed;left:50%;bottom:env(safe-area-inset-bottom);
-  transform:translateX(-50%);z-index:30;
-  width:min(412px, calc(100% - 32px));
-}
-.nav-track{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:6px;
-  background:var(--panel);
-  border:1px solid var(--panel-line);
-  border-radius:var(--radius-full);
-  box-shadow:var(--shadow-card);
-  backdrop-filter:blur(14px) saturate(180%);
-  -webkit-backdrop-filter:blur(14px) saturate(180%);
-  position:relative;
-}
-.nav-pill{
-  position:absolute;inset:6px;
-  height:48px;
-  background:rgba(236,227,212,.82);
-  border-radius:var(--radius-full);
-  transition:transform .28s cubic-bezier(.32,.72,.28,1), width .28s cubic-bezier(.32,.72,.28,1);
-  pointer-events:none; /* allow clicks to pass through to nav items */
-}
-.nav-item{
-  position:relative;z-index:2;flex:1;display:flex;flex-direction:column;
-  align-items:center;gap:3px;
-  border:none;background:transparent;cursor:pointer;
-  padding:8px 0;gap:4px;
-  font-size:12px;font-weight:600;
-  color:var(--ink-soft);
-  transition:color .18s ease;
-}
-.nav-item.on{color:var(--ink);font-weight:700}
-.nav-ico{width:18px;height:18px;margin-bottom:-2px;
-  display:inline-flex;align-items:center;justify-content:center;
-  opacity:.42;transition:opacity .18s,transform .18s}
-.nav-ico svg{width:15px;height:15px;fill:currentColor;stroke:none}
-.nav-item.on .nav-ico{opacity:1;transform:scale(1)}
-.nav-label{font-size:11px;line-height:1}
-
-/* ===== Pages ===== */
-.main{max-width:1180px;margin:0 auto;padding:80px 16px 90px}
-.page{opacity:0;pointer-events:none}
-.page.active{opacity:1;pointer-events:auto}
-.stage{max-width:720px;margin:0 auto}
-.content-card{
-  background:rgba(253,250,245,.94);
-  border:1px solid var(--panel-line);
-  border-radius:var(--radius);
-  padding:28px 32px;
-  box-shadow:var(--shadow-card);
-  /* opaque frost — no blur per user constraint: bg stays sharp, panel floats above */
-}
-.content-card .eyebrow{margin:0 0 12px}
-.content-card .today-title{margin:0 0 16px}
-.content-card .today-desc{margin:0 0 20px;font-family:var(--font-sans)}
-
-/* ===== Typography (editorial hierarchy: Playfair Display heads, General Sans body) ===== */
-h1{font-family:var(--font-display);font-size:2.25rem;line-height:1.15;font-weight:600;letter-spacing:-.02em;margin:0 0 16px}
-h2{font-family:var(--font-display);font-size:1.5rem;line-height:1.25;font-weight:600;letter-spacing:-.01em;margin:0 0 16px}
-h3{font-family:var(--font-display);font-size:1.125rem;line-height:1.4;font-weight:600;margin:0 0 12px}
-.body-copy{font-size:1.0625rem;line-height:1.68;color:var(--ink-2);max-width:48ch}
-.bubble-copy{font-size:.95rem;line-height:1.6}
-
-/* ===== Chat bubbles (unboxed assistant, soft user) ===== */
-.bubble{display:flex;flex-direction:column;gap:3px;margin:0 auto 20px;max-width:82%}
-.bubble-inner{padding:14px 18px;border-radius:22px;background:var(--panel);border:1px solid var(--panel-line);box-shadow:var(--shadow-card)}
-.bubble.assistant{border-bottom-left-radius:6px;margin-right:auto}
-.bubble.user{border-bottom-right-radius:6px;margin-left:auto;background:var(--panel);border-color:rgba(87,72,26,.08)}
-.bubble.user .bubble-inner{background:var(--paper);box-shadow:0 4px 16px -8px rgba(30,26,20,.06)}
-
-/* ===== Composer (full-bleed on mobile) ===== */
-.composer{
-  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 76px);
-  transform:translateX(-50%);
-  width:min(412px,calc(100% - 32px));
-  display:flex;align-items:flex-end;gap:8px;
-}
-#prompt{
-  flex:1;resize:none;
-  font-family:var(--font-sans);font-size:1rem;line-height:1.4;
-  padding:10px 16px;
-  border:1px solid var(--panel-line);
-  border-radius:var(--radius);
-  background:rgba(253,250,245,.78);
-  color:var(--ink);
-  min-height:42px;max-height:150px;
-  outline:none;
-  transition:border-color .18s;
-}
-#prompt:focus{border-color:rgba(87,72,26,.18);background:var(--paper)}
-.send{background:var(--gold-deep);color:#fff;border:none}
-.send:hover{background:var(--gold-ink);box-shadow:0 2px 8px rgba(87,72,26,.18)}
-
-/* ===== Buttons ===== */
-.pill-btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:.85rem;font-weight:600;
-  padding:7px 14px;border-radius:var(--radius-full);
-  border:1px solid var(--panel-line);
-  background:var(--panel);cursor:pointer;
-  transition:var(--transition-fade);
-}
-.pill-primary{background:var(--gold-deep);color:#fff;border-color:var(--gold-deep)}
-.pill-primary:hover{background:var(--gold-ink)}
-.pill-secondary{color:var(--ink-soft);border-color:rgba(87,72,26,.12)}
-.pill-secondary:hover{background:rgba(87,72,26,.04);color:var(--ink)}
-
-/* ===== Special pages ===== */
-.eyebrow{font-family:var(--font-sans);font-size:.78rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 12px}
-.today-title{font-family:var(--font-display);font-size:1.85rem;line-height:1.18;font-weight:600;letter-spacing:-.015em;margin:0 0 16px}
-.section-title{font-family:var(--font-display);font-size:1.5rem;line-height:1.25;font-weight:600;letter-spacing:-.01em;margin:0 0 16px}
-.pray-text{font-size:1.35rem;line-height:1.55;text-align:center;font-style:italic;font-weight:300;margin:0 auto}
-.pray-ref{display:block;font-size:.9rem;font-style:normal;color:var(--ink-soft);margin-top:14px;font-family:var(--font-sans)}
-.pray-btn{margin-top:32px;background:var(--panel);border:1px solid var(--panel-line);color:var(--ink);font-weight:500}
-.pill-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
-
-/* ===== Footer signature ===== */
-.footer{max-width:1180px;margin:0 auto;padding:14px 16px;text-align:center}
-.footer-panel{
-  display:inline-block;
-  background:var(--panel)/.9;
-  border:1px solid var(--panel-line);
-  border-radius:12px;
-  padding:6px 14px;
-  box-shadow:var(--shadow-card);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-}
-.sig{font-family:var(--font-sans);font-size:.78rem;color:var(--ink-2);letter-spacing:.06em}
-.sig em{color:var(--gold-soft);font-style:normal}
-
-@media (max-width:768px){
-  .top{padding:0 12px 4px}
-  .top-inner{padding-top:env(safe-area-inset-top)}
-  .main{padding:88px 12px 90px}
-  .bottom-nav .nav-track{gap:4px}
-  .nav-item{font-size:10px}
-  .bubble{max-width:88%}
-  .composer{bottom:calc(env(safe-area-inset-bottom) + 72px)}
-  h1{font-size:1.85rem}
-  h2{font-size:1.3rem}
-}
-
-@media (max-width:480px){
-  .nav-item{font-size:9px}
-  .nav-label{font-size:9px}
-  .bubble{max-width:90%}
-}
-</style>
+<div class="sig">Tyler Simons · Seton Hall Prep</div>
 
 <script>
-(() => {
-  const items = document.querySelectorAll('.nav-item');
-  const pages = document.querySelectorAll('.page');
-  const pill = document.querySelector('.nav-pill');
-  const go = (page) => {
+(function(){
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const btns  = Array.from(document.querySelectorAll('#dock button'));
+  const pill  = document.getElementById('dockPill');
+  const dock  = document.getElementById('dock');
+
+  function placePill(btn){
+    const dr = dock.getBoundingClientRect();
+    const br = btn.getBoundingClientRect();
+    pill.style.width = br.width + 'px';
+    pill.style.transform = 'translateX(' + (br.left - dr.left - 6) + 'px)';
+  }
+
+  function go(name){
     pages.forEach(p => {
-      const isActive = p.dataset.page === page;
-      p.classList.toggle('active', isActive);
-      if (isActive) {
-        p.removeAttribute('hidden');
-      } else {
-        p.setAttribute('hidden', '');
-      }
+      const on = p.dataset.page === name;
+      p.classList.toggle('active', on);
+      if (on) p.removeAttribute('hidden'); else p.setAttribute('hidden','');
     });
-    items.forEach(i => {
-      i.setAttribute('aria-selected', i.dataset.page === page);
-      i.classList.toggle('on', i.dataset.page === page);
+    btns.forEach(b => {
+      const on = b.dataset.page === name;
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+      if (on) placePill(b);
     });
-    if (pill) {
-      const idx = [...items].findIndex(i => i.dataset.page === page);
-      if (idx >= 0) {
-        const rect = items[idx].getBoundingClientRect();
-        const track = pill.parentElement.getBoundingClientRect();
-        // pill should sit exactly under the active tab
-        const offsetX = rect.left - track.left;
-        pill.style.transform = `translateX(${offsetX}px)`;
-        // set pill width to match the tab width
-        pill.style.width = `${rect.width}px`;
-      }
-    }
-  };
-  items.forEach(it => it.addEventListener('click', () => go(it.dataset.page)));
-  go('chat');
+    document.getElementById('main').scrollTop = 0;
+  }
+
+  btns.forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
+  window.addEventListener('resize', () => {
+    const cur = btns.find(b => b.getAttribute('aria-selected') === 'true');
+    if (cur) placePill(cur);
+  });
+  // initial position after fonts
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => placePill(btns[0]));
+  } else {
+    placePill(btns[0]);
+  }
 })();
 </script>
 </body>
