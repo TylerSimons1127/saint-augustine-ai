@@ -2128,11 +2128,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
     /* deep soft shadow everywhere — natural separation, no neon glows */
     box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 10px 30px -18px rgba(46,38,24,.35) !important;
   }
-  .dp-card:active,.ts-cell:active,.tomorrow-teaser:active{transform:scale(.985)}
-    transition:transform .16s cubic-bezier(.32,.72,.28,1), box-shadow .16s ease;
-    -webkit-tap-highlight-color:transparent;
-  }
-  .dp-card:active,.ts-cell:active,.tomorrow-teaser:active{transform:scale(.985)}
+  .dp-card:active,.ts-cell:active,.tomorrow-teaser:active{transform:scale(.985);transition:transform .16s cubic-bezier(.32,.72,.28,1), box-shadow .16s ease;-webkit-tap-highlight-color:transparent}
   .quiz-opt:active,.pray-chip:active,.dp-link-btn:active,.daily-cta:active{transform:scale(.97)}
   .dp-card:active{box-shadow:var(--shadow), inset 0 0 0 1px rgba(163,130,47,.14)}
 
