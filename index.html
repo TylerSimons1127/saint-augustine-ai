@@ -2183,40 +2183,26 @@ body>.topnav,body>.topnav.topnav{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 8px 0 32px -22px rgba(70,52,20,.28);
 }
 .composer{
-  background:rgba(252,249,241,0.82);
-  backdrop-filter:none;-webkit-backdrop-filter:none;
-  border:1px solid rgba(30,26,20,0.10); border-top-color:rgba(255,255,255,0.6);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), 0 14px 34px -18px rgba(46,38,24,.28);
+  background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.55); border-top-color:rgba(255,255,255,.72);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), inset 0 -1px 0 rgba(30,26,20,.04), 0 18px 44px -22px rgba(70,52,20,.35);
 }
 /* nav pill inside the bar: lighter tint, no double blur */
 .topnav .nav-tabs{background:rgba(251,247,238,.18);border:1px solid rgba(255,255,255,.38);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 -1px 0 rgba(30,26,20,.04)}
 
-/* 2. MESSAGING BUBBLES — assistant floats on wallpaper; user wears soft pill */
-.msg .bubble{
-  background:transparent;
-  border:0;
-  box-shadow:none;
-  backdrop-filter:none;-webkit-backdrop-filter:none;
+/* 2. MESSAGING BUBBLES — same warm glass (assistant + user) */
+.msg .bubble{box-shadow:0 8px 24px -14px rgba(70,52,16,.22), 0 2px 6px -2px rgba(70,52,16,.18);
+  background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50));
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.50); border-top-color:rgba(255,255,255,.68);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), var(--shadow-sm);
 }
-/* subtle scrim behind Augustine's text so it reads against bright wallpaper */
-.msg.assistant .bubble{
-  text-shadow:0 1px 2px rgba(252,249,241,0.55), 0 1px 12px rgba(252,249,241,0.4);
-}
-.msg.assistant .bubble .who,
-.msg.assistant .bubble .ts{
-  text-shadow:0 1px 2px rgba(252,249,241,0.6);
-}
-.msg.user .bubble{
-  background:rgba(252,249,241,0.78);
-  border:1px solid rgba(163,130,47,.42);   /* gold hairline identity */
-  border-radius:18px;
-  padding:12px 16px;
-  box-shadow:0 1px 0 rgba(255,255,255,0.5) inset, 0 4px 14px -8px rgba(46,38,24,0.18);
-}
+.msg.user .bubble{border-color:rgba(163,130,47,.52)}   /* gold hairline identity */
 /* readability fallback where backdrop-filter is unsupported */
 @supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
-  .msg.user .bubble{background:rgba(252,249,241,0.94)}
+  .msg .bubble{background:rgba(252,249,241,.96)}
 }
 
 /* 3. SHEETS + POPOVERS + HAMBURGER */
@@ -2277,23 +2263,20 @@ body>.topnav,body>.topnav.topnav{
     box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 0 -12px 36px -18px rgba(70,52,16,.30);
   }
   .msg.assistant .bubble{
-    background:transparent !important;
-    border:0 !important;
-    box-shadow:none !important;
-    padding:2px 2px 0 !important; max-width:100% !important; border-radius:0;
-    backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+    background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50)) !important;
+    border:1px solid rgba(255,255,255,.50) !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.55) !important;
+    padding:12px 14px !important; max-width:92% !important; border-radius:18px;
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
   }
   .msg.user .bubble{
-    background:rgba(252,249,241,0.78) !important;
-    border:1px solid rgba(163,130,47,0.42) !important; border-radius:18px;
-    padding:12px 16px;
-    backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
-    box-shadow:0 1px 0 rgba(255,255,255,0.5) inset, 0 4px 14px -8px rgba(46,38,24,0.18) !important;
+    background:linear-gradient(rgba(255,252,245,.62), rgba(255,252,245,.50)) !important;
+    backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
   }
   .greet{
-    background:rgba(252,249,241,0.78) !important;
-    backdrop-filter:none !important;
-    -webkit-backdrop-filter:none !important;
+    background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44)) !important;
+    backdrop-filter:blur(18px) saturate(140%) !important;
+    -webkit-backdrop-filter:blur(18px) saturate(140%) !important;
   }
   .sb-toggle{
     background:rgba(255,252,245,.56);
