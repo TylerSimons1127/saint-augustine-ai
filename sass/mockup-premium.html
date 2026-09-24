@@ -236,9 +236,23 @@ p{margin:0 0 var(--s-3) 0}
 /* ============================
    PAGE: CHAT (home)
    ============================ */
+/* ============================
+   CHAT — head floats on wallpaper, bubbles are real
+   ============================ */
+.chat-head{
+  margin-bottom:var(--s-4);
+}
+.chat-head .display,
+.chat-head .eyebrow,
+.chat-head .lede{
+  /* ink on busy photo: high-contrast parchment scrim behind glyphs only */
+  text-shadow:0 1px 0 rgba(250,246,238,.4), 0 2px 18px rgba(250,246,238,.7), 0 1px 3px rgba(32,26,18,.15);
+}
+.chat-head .lede{color:#2f2a1f; font-weight:500}
+
 .chat-thread{
   display:flex; flex-direction:column; gap:14px;
-  margin:var(--s-4) 0 var(--s-3) 0;
+  margin:0 0 var(--s-3) 0;
 }
 .msg{
   max-width:78%;
@@ -417,24 +431,24 @@ p{margin:0 0 var(--s-3) 0}
 
   <!-- CHAT -->
   <section class="page active" data-page="chat" aria-label="Chat">
-    <div class="card">
+    <div class="chat-head">
       <p class="eyebrow">Confessions · i · 1</p>
       <h1 class="display">Late have I loved thee, <em>beauty so old and so new.</em></h1>
       <p class="lede">Ask Augustine anything — theology, doubt, desire, grace. He answers from the Confessions and the City of God.</p>
-
-      <div class="chat-thread" aria-live="polite">
-        <div class="msg saint"><span class="who">Augustine</span>What are you carrying today?</div>
-        <div class="msg user">I keep putting off the thing I know I should do.</div>
-        <div class="msg saint"><span class="who">Augustine</span>I knew that weight. I prayed, “Give me chastity — but not yet.” Tell me what you’re afraid to lose.</div>
-      </div>
-
-      <form class="composer" onsubmit="return false">
-        <textarea rows="1" placeholder="Ask Augustine…" aria-label="Ask Augustine"></textarea>
-        <button class="send" type="submit" aria-label="Send">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      </form>
     </div>
+
+    <div class="chat-thread" aria-live="polite">
+      <div class="msg saint"><span class="who">Augustine</span>What are you carrying today?</div>
+      <div class="msg user">I keep putting off the thing I know I should do.</div>
+      <div class="msg saint"><span class="who">Augustine</span>I knew that weight. I prayed, “Give me chastity — but not yet.” Tell me what you’re afraid to lose.</div>
+    </div>
+
+    <form class="composer" onsubmit="return false">
+      <textarea rows="1" placeholder="Ask Augustine…" aria-label="Ask Augustine"></textarea>
+      <button class="send" type="submit" aria-label="Send">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h11M9 3.5 13.5 8 9 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
   </section>
 
   <!-- STUDY -->
