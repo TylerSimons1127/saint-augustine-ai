@@ -181,7 +181,7 @@ main{
 }
 main::-webkit-scrollbar{display:none}
 
-.page{display:none; margin:auto; width:100%; max-width:740px}
+.page{display:none; margin:auto; width:100%; max-width:min(740px, 100%)}
 .page.active{display:block}
 
 /* Editorial card */
@@ -253,18 +253,27 @@ p{margin:0 0 var(--s-3) 0}
 .chat-thread{
   display:flex; flex-direction:column; gap:16px;
   margin:0 0 var(--s-4) 0;
+  width:100%;
+  max-width:100%;
+  overflow-wrap:anywhere;
 }
+.chat-thread > *{max-width:100%; min-width:0}
 .msg{
   max-width:78%;
+  min-width:0;
   padding:14px 18px;
   border-radius:20px;
   font-size:15px; line-height:1.65;
+  overflow-wrap:anywhere;
   /* hairline fits the editorial tone better than filled card */
   transition:transform .16s ease, box-shadow .16s ease;
 }
 .msg:hover{transform:translateY(-1px)}
 .msg.user{
   align-self:flex-end;
+  /* keep inside the column, account for message avatar + scrollbar */
+  max-width:min(78%, calc(100% - 8px));
+  margin-left:auto;
   background:rgba(250,246,238,.88);
   border:1px solid var(--gold-line);
   color:var(--ink);
@@ -285,7 +294,8 @@ p{margin:0 0 var(--s-3) 0}
 }
 
 .composer{
-  display:flex; align-items:flex-end; gap:8px;
+  display:flex; flex-direction:column; align-items:stretch; gap:8px;
+  width:100%; max-width:100%;
   background:rgba(250,246,238,.94);
   border:1px solid rgba(193,150,111,.22);
   border-radius:22px;
@@ -293,6 +303,7 @@ p{margin:0 0 var(--s-3) 0}
   box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 20px 40px -20px rgba(32,26,18,.32), 0 4px 12px -4px rgba(32,26,18,.16);
   transition:border-color .16s ease, box-shadow .16s ease;
 }
+.composer .row{display:flex; align-items:flex-end; gap:8px; width:100%}
 .composer:focus-within{
   border-color:rgba(111,85,32,.4);
   box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 24px 46px -22px rgba(32,26,18,.38), 0 0 0 3px rgba(193,150,111,.18);
@@ -513,7 +524,7 @@ p{margin:0 0 var(--s-3) 0}
 /* ============================
    COMPOSER augmentation: attach + model + reasoning
    ============================ */
-.composer-foot{display:flex; align-items:center; gap:8px; padding:8px 4px 2px; flex-wrap:wrap; row-gap:6px}
+.composer-foot{display:flex; align-items:center; gap:8px; padding:8px 4px 2px; flex-wrap:wrap; row-gap:6px; width:100%; flex-basis:100%; align-self:stretch}
 .composer-foot .chipset{flex:none; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .chipset{
   appearance:none; border:1px solid var(--panel-line); background:rgba(255,255,255,.4);
@@ -610,11 +621,13 @@ p{margin:0 0 var(--s-3) 0}
 @media (max-width:640px){
   .topbar{padding:14px 16px}
   .sig{display:none}
-  main{padding:80px 14px 132px}
+  main{padding:80px 14px 180px}
   .card{padding:26px 22px}
   .msg{max-width:88%}
   h1.display{font-size:clamp(30px, 8.4vw, 36px)}
   .toc .title{font-size:17px}
+  .toc a{padding:12px 4px; gap:10px}
+  .toc .meta{font-size:10.5px; letter-spacing:.1em}
   .pray-block{font-size:clamp(19px, 5vw, 24px)}
   .today-verse{font-size:clamp(18px, 4.6vw, 22px)}
   .composer-foot{gap:6px; padding-top:8px}
@@ -723,7 +736,7 @@ p{margin:0 0 var(--s-3) 0}
     </div>
 
     <form class="composer" onsubmit="return false">
-      <div style="display:flex; align-items:flex-end; gap:8px">
+      <div class="row">
         <button class="close-btn" type="button" aria-label="Attach file" style="background:transparent; border:1px solid var(--panel-line); box-shadow:none; width:40px; height:40px">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M11 6.5 6.85 10.65a2.32 2.32 0 0 1-3.3-3.3L8.5 2.4a1.45 1.45 0 0 1 2.05 2.05L5.6 9.4a.58.58 0 0 1-.82-.82L9.5 3.85" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
