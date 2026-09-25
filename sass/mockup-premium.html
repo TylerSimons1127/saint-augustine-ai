@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================
-   TOKENS — quiet-luxury, warm
+   THEMES — swatch-driven palette
    ============================ */
 :root{
   /* palette — drawn from bg.jpg (golden-hour Quiraing) */
@@ -26,7 +26,51 @@
   --gold-line:    rgba(185,138,79,.35);
   --shadow:       0 1px 0 rgba(255,255,255,.6) inset, 0 12px 32px -16px rgba(32,26,18,.30);
   --shadow-tight: 0 1px 0 rgba(255,255,255,.65) inset, 0 4px 12px -6px rgba(32,26,18,.22);
+}
 
+[data-theme="dusk"]{
+  --paper:   #efe4d0;
+  --panel:   rgba(239,228,208,.93);
+  --ink:     #261c0e;
+  --ink-soft:#3f3223;
+  --ink-mute:#7a6a52;
+  --gold:    #b98a4f;
+  --gold-deep:#5c421a;
+  --gold-line:rgba(185,138,79,.45);
+}
+[data-theme="study"]{
+  --paper: #f4ead9;
+  --panel: rgba(244,234,217,.93);
+  --ink:   #1e1a14;
+  --ink-soft:#3c3428;
+  --ink-mute:#756853;
+  --gold:  #a37e46;
+  --gold-deep:#62491e;
+}
+[data-theme="candle"]{
+  --paper: #efe5d1;
+  --panel: rgba(239,229,209,.94);
+  --ink:   #1f1508;
+  --ink-soft:#3f3018;
+  --ink-mute:#6f5e44;
+  --gold:  #8f5f16;
+  --gold-deep:#3a2505;
+  --gold-line:rgba(143,95,22,.45);
+  --shadow:0 1px 0 rgba(255,255,255,.45) inset, 0 14px 36px -18px rgba(31,21,8,.4);
+}
+
+/* Candle theme: dim the photograph so it feels dusk-lit */
+[data-theme="candle"] .bg-vignette{background:radial-gradient(110% 80% at 50% 30%, transparent 35%, rgba(31,21,8,.34) 100%)}
+[data-theme="candle"] .stage::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:rgba(120,80,30,.18); mix-blend-mode:multiply;
+}
+[data-theme="dusk"] .stage::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:rgba(255,215,150,.06); mix-blend-mode:overlay;
+}
+
+:root{
   /* type */
   --display: "Fraunces", Georgia, serif;
   --sans:    "Inter", -apple-system, "Segoe UI", sans-serif;
@@ -64,6 +108,11 @@ body{
   background:var(--paper);
   -webkit-font-smoothing:antialiased;
   overflow:hidden;
+  transition:background-color .3s ease, color .3s ease;
+}
+.card, .msg, .composer, .sidebar, .settings, .palette,
+.chipset, .toc a, .office, .sb-item, .swatch{
+  transition:background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease;
 }
 
 /* ============================
@@ -1110,6 +1159,22 @@ p{margin:0 0 var(--s-3) 0}
       });
     }, { passive: true });
   }
+
+  /* ---------- theme swatches ---------- */
+  const themes = ['heritage','dusk','study','candle'];
+  const swatches = document.querySelectorAll('.swatch');
+  function applyTheme(name){
+    if (!themes.includes(name)) name = 'heritage';
+    if (name === 'heritage') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', name);
+    swatches.forEach((s,i) => s.setAttribute('aria-pressed', themes[i] === name ? 'true' : 'false'));
+    try { localStorage.setItem('sa_theme', name); } catch(e){}
+  }
+  swatches.forEach((s,i) => s.addEventListener('click', () => applyTheme(themes[i])));
+  try {
+    const saved = localStorage.getItem('sa_theme');
+    if (saved) applyTheme(saved);
+  } catch(e){}
 })();
 </script>
 </body>
