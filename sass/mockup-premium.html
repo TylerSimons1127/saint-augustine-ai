@@ -162,8 +162,8 @@ body{
 .brand img{width:22px; height:22px; display:block}
 .brand .word{
   font-family:var(--display); font-weight:500; font-size:18px;
-  letter-spacing:.01em; color:var(--ink);
-  font-variation-settings:"opsz" 24;
+  letter-spacing:-.005em; color:var(--ink);
+  font-variation-settings:"opsz" 18;
 }
 .brand .word em{font-style:normal; color:var(--gold-deep)}
 .top-actions{display:flex; align-items:center; gap:10px}
@@ -256,19 +256,21 @@ h1.display{
   font-size:var(--fs-h1);
   font-weight:400;
   line-height:1.05;
-  letter-spacing:-.015em;
+  letter-spacing:-.02em;
   margin:0 0 var(--s-3) 0;
-  font-variation-settings:"opsz" 90;
+  font-variation-settings:"opsz" 144;
   color:var(--ink);
 }
 h1.display em{
   font-style:italic; font-weight:300; color:var(--gold-deep);
+  font-variation-settings:"opsz" 144;
 }
 
 h2{
   font-family:var(--display); font-weight:500;
   font-size:var(--fs-h2); line-height:1.2; letter-spacing:-.01em;
   margin:0 0 var(--s-2) 0;
+  font-variation-settings:"opsz" 40;
 }
 
 p.lede{
@@ -286,8 +288,36 @@ p{margin:0 0 var(--s-3) 0}
    PAGE: CHAT (home)
    ============================ */
 /* ============================
-   CHAT — head floats on wallpaper, bubbles are real
+   CHAT — empty state (before first user message)
    ============================ */
+.chat-empty{
+  grid-column:1/-1;
+  display:flex; flex-direction:column; align-items:flex-start; gap:14px;
+  margin:var(--s-3) 0 var(--s-3);
+  padding:22px 4px;
+  border-top:1px solid var(--panel-line);
+  border-bottom:1px solid var(--panel-line);
+}
+.chat-empty .lbl{
+  font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-mute); font-weight:600;
+  display:flex; align-items:center; gap:12px;
+}
+.chat-empty .lbl::after{content:""; width:36px; height:1px; background:var(--gold-line)}
+.chat-empty ul{
+  list-style:none; padding:0; margin:0;
+  display:flex; flex-direction:column; gap:2px;
+}
+.chat-empty li{
+  display:flex; align-items:baseline; gap:14px;
+  padding:10px 0;
+  color:var(--ink-soft); font-size:14.5px;
+  cursor:pointer;
+  transition:color .15s ease;
+}
+.chat-empty li:hover{color:var(--ink)}
+.chat-empty li .n{font-family:var(--display); font-style:italic; color:var(--gold-deep); font-size:12px; min-width:2ch; text-align:right}
+.chat-empty li .q{font-style:italic}
 .chat-head{
   margin-bottom:var(--s-4);
 }
@@ -361,6 +391,7 @@ p{margin:0 0 var(--s-3) 0}
   flex:1; resize:none; border:0; outline:0; background:transparent;
   font:inherit; color:var(--ink);
   padding:10px 12px; min-height:44px; max-height:140px;
+  transition:min-height .18s var(--ease);
 }
 .composer textarea::placeholder{color:var(--ink-mute)}
 .send{
@@ -841,6 +872,15 @@ p{margin:0 0 var(--s-3) 0}
     </div>
 
     <div class="chat-thread" aria-live="polite">
+      <div class="chat-empty" id="chatEmpty" hidden>
+        <div class="lbl">Begin here</div>
+        <ul>
+          <li data-prompt="Explain the Confessions simply."><span class="n">i</span><span class="q">“Explain the Confessions simply.”</span></li>
+          <li data-prompt="I keep falling at the same sin."><span class="n">ii</span><span class="q">“I keep falling at the same sin.”</span></li>
+          <li data-prompt="Teach me to pray."><span class="n">iii</span><span class="q">“Teach me to pray.”</span></li>
+          <li data-prompt="What is God calling me to do?"><span class="n">iv</span><span class="q">“What is God calling me to do?”</span></li>
+        </ul>
+      </div>
       <div class="msg saint"><span class="who">Augustine</span>What are you carrying today?</div>
       <div class="msg user">I keep putting off the thing I know I should do.</div>
       <div class="msg saint"><span class="who">Augustine</span>I knew that weight. I prayed, "Give me chastity — but not yet." Tell me what you're afraid to lose.</div>
@@ -1175,6 +1215,15 @@ p{margin:0 0 var(--s-3) 0}
     const saved = localStorage.getItem('sa_theme');
     if (saved) applyTheme(saved);
   } catch(e){}
+
+  /* ---------- empty-state prompts ---------- */
+  document.querySelectorAll('.chat-empty li').forEach(li => {
+    li.addEventListener('click', () => {
+      const p = li.dataset.prompt || li.textContent.trim();
+      if (ta) { ta.value = p; ta.dispatchEvent(new Event('input')); ta.focus(); }
+      document.getElementById('chatEmpty').hidden = true;
+    });
+  });
 })();
 </script>
 </body>
