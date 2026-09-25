@@ -418,6 +418,15 @@ p{margin:0 0 var(--s-3) 0}
 .send[disabled]{opacity:.45; cursor:not-allowed}
 @keyframes rot{to{transform:rotate(360deg)}}
 
+/* streaming caret */
+.stream-caret{
+  display:inline-block; width:9px; height:16px;
+  background:var(--gold-deep); vertical-align:-2px;
+  animation:caretBlink .9s step-end infinite;
+  border-radius:1px; margin-left:2px;
+}
+@keyframes caretBlink{50%{opacity:0}}
+
 /* ============================
    PAGE: STUDY
    ============================ */
@@ -1236,35 +1245,79 @@ p{margin:0 0 var(--s-3) 0}
   const thread = document.querySelector('.chat-thread');
   const sendBtn = document.getElementById('sendBtn');
   const REPLIES = [
-    "Tell me more about that. What is underneath it?",
-    "I knew that weight too. Restless hearts find rest only in the eternal.",
-    "The pear tree taught me: sometimes we sin not for the fruit, but for the company of thieves.",
-    "Memory is a palace. What room are you afraid to enter?",
-    "Beauty so old and so new — He has been pursuing you longer than you've been running."
+    "Tell me more about that. What is underneath it? The thing we cannot name is often the thing that owns us.",
+    "I knew that weight too. Restless hearts find rest only in the eternal — I spent thirty-two years learning that one sentence.",
+    "The pear tree taught me: sometimes we sin not for the fruit, but for the company of thieves. Who are you doing this for?",
+    "Memory is a palace. What room are you afraid to enter? God waits there, in the room you keep locked.",
+    "Beauty so old and so new — He has been pursuing you longer than you've been running. Stop running."
   ];
   let replyIdx = 0;
-  function addMsg(role, html){
+
+  /* persistence — device only, never leaves localStorage */
+  const HISTORY_KEY = 'sa_mock_history';
+  function loadHistory(){
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || 'null'); } catch(e){ return null; }
+  }
+  function saveHistory(){
+    try {
+      const arr = [];
+      thread.querySelectorAll('.msg').forEach(m => {
+        const role = m.classList.contains('user') ? 'user' : 'saint';
+        arr.push({ role, html: m.innerHTML.replace(/^<span class="who">Augustine<\/span>/,'') });
+      });
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(-20)));
+    } catch(e){}
+  }
+  function restoreHistory(){
+    const h = loadHistory();
+    if (!h || !h.length) return;
+    thread.innerHTML = '';
+    document.getElementById('chatEmpty')?.remove();
+    h.forEach(m => addMsg(m.role, m.html, true));
+  }
+
+  function addMsg(role, html, skipSave){
     const el = document.createElement('div');
     el.className = 'msg ' + role;
     if (role === 'saint') el.innerHTML = '<span class="who">Augustine</span>' + html;
-    else el.innerHTML = html;
+    else el.innerHTML = html.replace(/</g,'&lt;');
     thread.appendChild(el);
-    // scroll parent main, not thread (thread is in normal flow)
     const mainEl = document.getElementById('main');
     if (mainEl) mainEl.scrollTo({ top: mainEl.scrollHeight, behavior: 'smooth' });
+    if (!skipSave) saveHistory();
     return el;
   }
-  function fakeReply(){
+
+  /* streaming typewriter reveal for Augustine */
+  function streamReply(text){
     sendBtn.classList.add('loading');
     sendBtn.disabled = true;
-    setTimeout(() => {
-      addMsg('saint', REPLIES[replyIdx % REPLIES.length]);
-      replyIdx++;
-      sendBtn.classList.remove('loading');
-      sendBtn.disabled = false;
-      if (ta) ta.focus();
-    }, 900);
+    const msg = addMsg('saint', '<span class="stream-caret"></span>', false);
+    const target = msg;
+    const caret = target.querySelector('.stream-caret');
+    let i = 0;
+    const words = text.split(/(\s+)/); // keep whitespace tokens
+    const tick = () => {
+      if (i >= words.length) {
+        caret.remove();
+        sendBtn.classList.remove('loading');
+        sendBtn.disabled = false;
+        saveHistory();
+        if (ta) ta.focus();
+        return;
+      }
+      // insert next word+space before the caret
+      target.insertBefore(document.createTextNode(words[i]), caret);
+      i++;
+      const mainEl = document.getElementById('main');
+      if (mainEl) mainEl.scrollTop = mainEl.scrollHeight;
+      // human-ish pace: 18–48ms per word, slightly slower after punctuation
+      const t = /[.!?;:,—]$/.test(words[i-1]) ? 90 : 24 + Math.random() * 30;
+      setTimeout(tick, t);
+    };
+    setTimeout(tick, 400); // brief pause before Augustine speaks
   }
+
   if (composer) {
     composer.addEventListener('submit', e => {
       e.preventDefault();
@@ -1272,19 +1325,30 @@ p{margin:0 0 var(--s-3) 0}
       if (!v || sendBtn.disabled) return;
       const user = document.getElementById('chatEmpty');
       if (user && !user.hidden) user.hidden = true;
-      addMsg('user', v.replace(/</g,'&lt;'));
+      addMsg('user', v);
       ta.value = ''; ta.dispatchEvent(new Event('input'));
-      fakeReply();
+      streamReply(REPLIES[replyIdx++ % REPLIES.length]);
     });
   }
-  /* Enter submits, Shift+Enter newline (native default of textarea is newline only;
-     hijack plain Enter only) */
+  /* Enter submits, Shift+Enter newline */
   if (ta) ta.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       composer.requestSubmit();
     }
   });
+
+  /* ---------- tab shortcuts ⌘1–4 / Ctrl+1–4 ---------- */
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && ['1','2','3','4'].includes(e.key)) {
+      e.preventDefault();
+      const order = ['chat','study','pray','today'];
+      go(order[parseInt(e.key,10) - 1]);
+    }
+  });
+
+  /* restore history on boot */
+  restoreHistory();
 
   /* ---------- focus trap in palette & settings ---------- */
   function trapFocus(container){
