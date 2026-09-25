@@ -245,10 +245,10 @@ p{margin:0 0 var(--s-3) 0}
 .chat-head .display,
 .chat-head .eyebrow,
 .chat-head .lede{
-  /* ink on busy photo: high-contrast parchment scrim behind glyphs only */
-  text-shadow:0 1px 0 rgba(250,246,238,.4), 0 2px 18px rgba(250,246,238,.7), 0 1px 3px rgba(32,26,18,.15);
+  /* ink on busy photo: strong parchment scrim so bright sky doesn't swallow glyphs */
+  text-shadow:0 1px 0 rgba(250,246,238,.5), 0 2px 24px rgba(250,246,238,.9), 0 1px 2px rgba(32,26,18,.25), 0 0 60px rgba(250,246,238,.55);
 }
-.chat-head .lede{color:#2f2a1f; font-weight:500}
+.chat-head .lede{color:#2f2a1f; font-weight:500; max-width:56ch}
 
 .chat-thread{
   display:flex; flex-direction:column; gap:16px;
@@ -258,7 +258,7 @@ p{margin:0 0 var(--s-3) 0}
   max-width:78%;
   padding:14px 18px;
   border-radius:20px;
-  font-size:15px; line-height:1.6;
+  font-size:15px; line-height:1.65;
   /* hairline fits the editorial tone better than filled card */
   transition:transform .16s ease, box-shadow .16s ease;
 }
@@ -365,24 +365,44 @@ p{margin:0 0 var(--s-3) 0}
 .office{
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 4px; border-bottom:1px solid var(--panel-line);
+  gap:12px;
 }
 .office:last-child{border-bottom:0}
 .office .nm{font-family:var(--display); font-size:17px; font-weight:500}
 .office .tm{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-mute)}
-.office[aria-current="true"] .nm{color:var(--gold-deep)}
-.office[aria-current="true"] .tm{color:var(--gold-deep)}
+.office[aria-current="true"]{background:rgba(193,150,111,.08); border-radius:8px; padding:14px 12px; margin:0 -8px}
+.office[aria-current="true"] .nm{color:var(--gold-deep); font-weight:600}
+.office[aria-current="true"] .tm{color:var(--gold-deep); font-weight:600; position:relative; padding-left:14px}
+.office[aria-current="true"] .tm::before{
+  content:""; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:6px; height:6px; border-radius:50%; background:var(--gold-deep);
+  box-shadow:0 0 0 3px rgba(111,85,32,.15);
+}
 
 /* ============================
    TODAY — verse card + hours
    ============================ */
 .today-meta{
-  display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
-  margin-top:var(--s-3); padding-top:var(--s-3);
+  display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+  margin-top:var(--s-3); padding:var(--s-3) 4px;
   border-top:1px solid var(--panel-line);
+  border-bottom:1px solid var(--panel-line);
 }
-.today-meta .cell{display:flex; flex-direction:column; gap:2px}
+.today-meta .cell{display:flex; flex-direction:column; gap:4px; border-left:2px solid var(--gold-line); padding-left:12px}
 .today-meta .k{font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-mute); font-weight:600}
-.today-meta .v{font-family:var(--display); font-size:15px; color:var(--ink); font-weight:500}
+.today-meta .v{font-family:var(--display); font-size:16px; color:var(--ink); font-weight:500; letter-spacing:-.005em}
+
+/* Today action chips should read as PRIMARY actions, not ghosts */
+.today-actions{display:flex; gap:10px; margin-top:var(--s-3); flex-wrap:wrap}
+.today-actions .chipset{
+  padding:9px 16px; font-size:12px;
+  background:rgba(111,85,32,.06); border-color:rgba(111,85,32,.25); color:var(--gold-deep); font-weight:600;
+}
+.today-actions .chipset:hover{background:rgba(111,85,32,.12); border-color:rgba(111,85,32,.5)}
+.today-actions .chipset.primary{
+  background:#211b12; color:#f6e6c6; border-color:#211b12;
+}
+.today-actions .chipset.primary:hover{background:#2c2415; border-color:#2c2415}
 
 /* ============================
    SIDEBAR (desktop)
@@ -493,7 +513,8 @@ p{margin:0 0 var(--s-3) 0}
 /* ============================
    COMPOSER augmentation: attach + model + reasoning
    ============================ */
-.composer-foot{display:flex; align-items:center; gap:8px; padding:0 4px 4px; flex-wrap:wrap}
+.composer-foot{display:flex; align-items:center; gap:8px; padding:8px 4px 2px; flex-wrap:wrap; row-gap:6px}
+.composer-foot .chipset{flex:none; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .chipset{
   appearance:none; border:1px solid var(--panel-line); background:rgba(255,255,255,.4);
   border-radius:var(--r-pill);
@@ -589,13 +610,18 @@ p{margin:0 0 var(--s-3) 0}
 @media (max-width:640px){
   .topbar{padding:14px 16px}
   .sig{display:none}
-  main{padding:80px 14px 120px}
-  .card{padding:24px 20px}
+  main{padding:80px 14px 132px}
+  .card{padding:26px 22px}
   .msg{max-width:88%}
   h1.display{font-size:clamp(30px, 8.4vw, 36px)}
   .toc .title{font-size:17px}
   .pray-block{font-size:clamp(19px, 5vw, 24px)}
   .today-verse{font-size:clamp(18px, 4.6vw, 22px)}
+  .composer-foot{gap:6px; padding-top:8px}
+  .composer-foot .chipset{font-size:11px; padding:4px 10px; height:30px}
+  .composer-foot .chipset .dot{display:none}
+  .today-meta{grid-template-columns:1fr 1fr; gap:14px; padding:16px 4px}
+  .today-meta .cell{border-left-width:2px}
 }
 
 /* iOS safe-area + keyboard: dock lifts off the bottom bar */
@@ -773,10 +799,10 @@ p{margin:0 0 var(--s-3) 0}
       </div>
       <hr class="rule">
       <p class="dim">Midday. Bring whatever the morning stirred up — a passage, a doubt, a joy — and reason through it with him in Chat.</p>
-      <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap">
+      <div class="today-actions">
+        <a class="chipset primary" href="#" onclick="return false">Ask Augustine</a>
         <a class="chipset" href="#" onclick="return false">Open Book I</a>
         <a class="chipset" href="#" onclick="return false">Pray the Sext</a>
-        <a class="chipset" href="#" onclick="return false">Ask Augustine</a>
       </div>
     </div>
   </section>
