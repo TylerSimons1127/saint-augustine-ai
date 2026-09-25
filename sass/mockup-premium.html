@@ -637,6 +637,68 @@ p{margin:0 0 var(--s-3) 0}
   .today-meta .cell{border-left-width:2px}
 }
 
+/* ============================
+   MOTION — editorial, restrained
+   ============================ */
+@media (prefers-reduced-motion:no-preference){
+
+  /* page transitions: soft directional slide */
+  .page.active{animation:pageIn .34s var(--ease) both}
+  @keyframes pageIn{from{opacity:.001; transform:translateX(14px)} to{opacity:1; transform:none}}
+
+  /* staggered mount inside each page */
+  .page.active .chat-head > *,
+  .page.active .chat-thread .msg,
+  .page.active .card > *{
+    animation:riseIn .48s var(--ease) both;
+  }
+  .page.active .chat-head > *:nth-child(1){animation-delay:.04s}
+  .page.active .chat-head > *:nth-child(2){animation-delay:.10s}
+  .page.active .chat-head > *:nth-child(3){animation-delay:.16s}
+  .page.active .chat-thread .msg:nth-child(1){animation-delay:.22s}
+  .page.active .chat-thread .msg:nth-child(2){animation-delay:.30s}
+  .page.active .chat-thread .msg:nth-child(3){animation-delay:.38s}
+  .page.active .chat-thread .msg:nth-child(n+4){animation-delay:.44s}
+  .page.active .card > *:nth-child(1){animation-delay:.05s}
+  .page.active .card > *:nth-child(2){animation-delay:.11s}
+  .page.active .card > *:nth-child(3){animation-delay:.17s}
+  .page.active .card > *:nth-child(4){animation-delay:.23s}
+  .page.active .card > *:nth-child(5){animation-delay:.29s}
+  .page.active .card > *:nth-child(n+6){animation-delay:.35s}
+  /* TOC items: faster cascade */
+  .page.active .toc li{animation:riseIn .36s var(--ease) both}
+  .page.active .toc li:nth-child(1){animation-delay:.25s}
+  .page.active .toc li:nth-child(2){animation-delay:.30s}
+  .page.active .toc li:nth-child(3){animation-delay:.35s}
+  .page.active .toc li:nth-child(4){animation-delay:.40s}
+  .page.active .toc li:nth-child(5){animation-delay:.45s}
+  .page.active .toc li:nth-child(6){animation-delay:.50s}
+  .page.active .toc li:nth-child(7){animation-delay:.55s}
+  .page.active .toc li:nth-child(8){animation-delay:.60s}
+  .page.active .toc li:nth-child(9){animation-delay:.65s}
+  .page.active .toc li:nth-child(10){animation-delay:.70s}
+
+  @keyframes riseIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+
+  /* subtle parallax on the wallpaper */
+  .stage{will-change:transform; transition:transform .12s linear}
+}
+
+/* composer textarea auto-grow feel */
+.composer textarea{
+  transition:min-height .18s var(--ease);
+}
+
+/* button press spring */
+.send:active{transform:scale(.94)}
+.chipset:active{transform:scale(.97)}
+.office{transition:background .16s ease, padding .16s ease}
+.office:hover{background:rgba(193,150,111,.06); margin:0 -8px; padding:14px 12px; border-radius:8px}
+.toc a{transition:padding .18s var(--ease), background .18s ease; border-radius:8px; margin:0 -8px; padding:14px 12px}
+.toc a:hover{padding-left:18px; background:rgba(193,150,111,.06)}
+.palette-item{transition:background .12s ease, transform .12s ease}
+.palette-item:active{transform:scale(.99)}
+
 /* iOS safe-area + keyboard: dock lifts off the bottom bar */
 .dock{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
 @supports (-webkit-touch-callout:none){
@@ -1023,6 +1085,31 @@ p{margin:0 0 var(--s-3) 0}
       });
     }
   });
+
+  /* ---------- textarea auto-grow ---------- */
+  const ta = document.querySelector('.composer textarea');
+  if (ta) {
+    const auto = () => { ta.style.minHeight = '44px'; ta.style.minHeight = Math.min(ta.scrollHeight, 140) + 'px'; };
+    ta.addEventListener('input', auto);
+    auto();
+  }
+
+  /* ---------- scroll-linked wallpaper parallax ---------- */
+  const stage = document.querySelector('.stage');
+  const main = document.getElementById('main');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (stage && main && !reduced) {
+    let ticking = false;
+    main.addEventListener('scroll', () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = Math.min(main.scrollTop, 800);
+        stage.style.transform = 'translateY(' + (-y * 0.04) + 'px) scale(' + (1 + y * 0.00015) + ')';
+        ticking = false;
+      });
+    }, { passive: true });
+  }
 })();
 </script>
 </body>
