@@ -2553,10 +2553,227 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   background:linear-gradient(to top, var(--bg-2), transparent); opacity:var(--sb-bot-grad,1);
   transition:opacity .3s ease; pointer-events:none;
 }
+/* ══════════════════════════════════════════════════════════════════════
+   v4.4 iOS FOUNDATION — one scroll owner, one safe-area model.
+   The stage owns vertical scroll; fixed chrome reserves named clearances.
+   Message depth/model controls are progressive disclosure, not permanent
+   bottom-stack weight. This block intentionally wins over legacy mobile
+   experiments above while preserving their desktop behavior.
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse){
+  :root{
+    --ios-topbar:48px;
+    --ios-tabbar:64px;
+    --ios-composer:62px;
+    --ios-stage-bottom:calc(var(--ios-tabbar) + var(--ios-composer) + 24px);
+  }
+
+  html,body{
+    width:100%;height:100dvh;max-width:100%;
+    overflow:hidden;overscroll-behavior:none;
+  }
+  body{position:fixed;inset:0}
+
+  .topnav{
+    height:calc(var(--ios-topbar) + env(safe-area-inset-top)) !important;
+    padding-top:env(safe-area-inset-top) !important;
+    background:rgba(251,247,238,.96) !important;
+    border-top:0 !important;
+    box-shadow:0 1px 0 rgba(84,65,31,.12) !important;
+  }
+  .topnav .nav-brand{top:env(safe-area-inset-top) !important}
+  .topnav .icon-btn,.sb-toggle{
+    width:44px !important;height:44px !important;border-radius:13px !important;
+    background:#faf6ed !important;border:1px solid rgba(111,85,32,.18) !important;
+    box-shadow:0 2px 8px rgba(64,49,23,.08) !important;
+  }
+  .sb-toggle{
+    top:calc(2px + env(safe-area-inset-top)) !important;
+    left:calc(6px + env(safe-area-inset-left)) !important;
+  }
+
+  .stage{
+    position:absolute !important;inset:0 !important;
+    overflow-x:hidden !important;overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain;
+    touch-action:pan-y;
+    padding:
+      calc(var(--ios-topbar) + env(safe-area-inset-top) + 14px)
+      16px
+      calc(var(--ios-stage-bottom) + env(safe-area-inset-bottom)) !important;
+    scroll-padding-top:calc(var(--ios-topbar) + env(safe-area-inset-top) + 14px);
+    scroll-padding-bottom:calc(var(--ios-stage-bottom) + env(safe-area-inset-bottom));
+  }
+  .page{width:100%;min-width:0}
+  .daily-page,.pray-page{
+    width:min(var(--content-max),100%) !important;
+    padding:6px 0 28px !important;
+  }
+
+  /* A single scroller prevents the iOS nested-scroll trap on the greeting. */
+  .greet{
+    max-height:none !important;overflow:visible !important;
+    margin:0 auto !important;
+    padding:22px 18px 20px !important;
+    background:rgba(251,247,238,.94) !important;
+    border:1px solid rgba(111,85,32,.16) !important;
+    box-shadow:0 10px 32px rgba(64,49,23,.12) !important;
+  }
+  .greet .eyebrow,.dp-eyebrow{color:var(--accent-deep) !important;font-weight:600}
+  .greet-credit{color:var(--ink-soft) !important}
+  .dp-eyebrow-mini,.ls-l{color:var(--gold-ink) !important;font-weight:600}
+  .dp-link{min-height:44px;padding:11px 2px;margin-top:8px !important}
+  details.ls>summary{min-height:48px}
+
+  /* Compact persistent composer: options expand only when requested. */
+  .dock{
+    left:0 !important;right:0 !important;
+    bottom:calc(var(--ios-tabbar) + env(safe-area-inset-bottom)) !important;
+    min-height:var(--ios-composer);
+    padding:5px 10px 6px !important;
+    gap:0 !important;
+    background:linear-gradient(to top,#f4efe6 0%,rgba(244,239,230,.98) 72%,rgba(244,239,230,0) 100%) !important;
+    transition:bottom var(--mt-fast) var(--ease-out),transform var(--mt-fast) var(--ease-out) !important;
+  }
+  .composer{
+    padding:5px 7px !important;gap:0 !important;border-radius:18px !important;
+    background:#faf6ed !important;
+    border-color:rgba(111,85,32,.20) !important;
+    box-shadow:0 6px 20px rgba(64,49,23,.14),inset 0 1px 0 rgba(255,255,255,.78) !important;
+  }
+  .input-row{min-height:46px !important;gap:4px !important}
+  textarea#prompt{
+    min-height:44px !important;max-height:120px !important;
+    padding:11px 5px !important;color:var(--ink) !important;
+  }
+  textarea#prompt::placeholder{color:#5f594f !important;font-weight:500}
+  .controls-toggle{width:44px !important;height:44px !important}
+  .send{width:44px !important;height:44px !important;opacity:1 !important}
+  .send[disabled]{background:#b8a98c !important;color:#fffdf8 !important;opacity:1 !important}
+
+  .composer .controls{
+    display:flex !important;flex-direction:column;align-items:stretch;
+    max-height:0;opacity:0;visibility:hidden;overflow:hidden;
+    margin:0;gap:6px !important;pointer-events:none;
+    transition:max-height var(--mt-base) var(--ease-out),opacity var(--mt-fast) ease,margin var(--mt-fast) ease;
+  }
+  .composer.controls-open .controls{
+    max-height:106px;opacity:1;visibility:visible;overflow:visible;
+    margin:5px 1px 1px;pointer-events:auto;
+  }
+  .composer .controls .model{
+    max-height:none !important;opacity:1 !important;overflow:visible !important;
+    width:100%;margin:0 !important;
+  }
+  .composer .controls .model-btn{width:100%;max-width:none;height:44px;justify-content:flex-start}
+  .composer .controls .model-btn svg{margin-left:auto}
+  .composer .controls .reasoning{
+    width:100%;height:44px !important;margin:0 !important;padding:3px !important;gap:2px !important;
+  }
+  .composer .controls .reasoning .seg{height:36px !important;font-size:11px;padding:0 4px !important}
+  .composer .controls .reasoning .seg[aria-pressed="true"]{
+    background:#e6dcc8 !important;color:#4d3a12 !important;border:1px solid rgba(111,85,32,.26) !important;
+  }
+  .composer .controls .divider,.composer .controls .hint{display:none !important}
+  .disclaimer{display:none !important}
+
+  /* Content never shows through the actionable composer surface. */
+  .topnav .nav-tabs,body>.nav-tabs{
+    position:fixed !important;left:0 !important;right:0 !important;
+    bottom:0 !important;top:auto !important;margin:0 !important;z-index:70;
+    display:flex !important;justify-content:space-around;align-items:stretch;
+    min-height:calc(var(--ios-tabbar) + env(safe-area-inset-bottom));
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom)) !important;
+    gap:0 !important;border:0 !important;border-top:1px solid rgba(84,65,31,.12) !important;
+    border-radius:0 !important;background:#fbf7ee !important;
+    box-shadow:0 -1px 0 rgba(84,65,31,.12) !important;
+  }
+  .topnav .nav-tab,body>.nav-tabs .nav-tab{
+    flex:1 1 0 !important;min-width:0 !important;height:52px !important;min-height:52px !important;
+    margin:0 !important;padding:2px 4px !important;display:flex !important;
+    flex-direction:column !important;align-items:center;justify-content:center;gap:3px !important;
+    border:0 !important;border-radius:12px;background:transparent !important;
+    box-shadow:none !important;font-size:10px !important;
+  }
+  .topnav .nav-tab svg,body>.nav-tabs .nav-tab svg{width:21px;height:21px;flex:none}
+  .topnav .nav-brand{
+    position:absolute;left:0;right:0;top:env(safe-area-inset-top);bottom:0;
+    display:flex !important;align-items:center;justify-content:center;pointer-events:none;
+  }
+  .topnav .nav-search{display:none !important}
+  .topnav .nav-actions{margin-left:auto}
+  body>.nav-tabs::after,.topnav .nav-tabs::after{bottom:calc(7px + env(safe-area-inset-bottom))}
+
+  /* During keyboard entry, the tab bar yields the thumb zone to the message. */
+  body.keyboard-open .topnav .nav-tabs,body.keyboard-open> .nav-tabs{
+    opacity:0;pointer-events:none;transform:translateY(100%);
+  }
+  body.keyboard-open .dock{
+    bottom:calc(var(--keyboard-offset,0px) + 8px) !important;
+  }
+  body.keyboard-open .stage{
+    padding-bottom:calc(var(--ios-composer) + 28px) !important;
+    scroll-padding-bottom:calc(var(--ios-composer) + 28px);
+  }
+
+  /* Dialogs remain fully reachable on short iPhones. */
+  .modal-scrim{align-items:flex-end;padding:12px 0 0 !important}
+  .beta-modal{
+    width:100%;max-height:calc(100dvh - env(safe-area-inset-top) - 16px);
+    border-radius:24px 24px 0 0;
+    padding:22px 20px calc(28px + env(safe-area-inset-bottom));
+    text-align:left;background:#faf6ed !important;
+  }
+  .beta-modal p{color:#40382c !important}
+  .beta-modal .mk{margin-left:0}
+  .beta-brand{text-align:left;margin-left:0}
+  .settings-sheet{
+    width:calc(100vw - 20px);max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px);
+    background:#faf6ed !important;
+  }
+  .settings-body{padding-bottom:calc(28px + env(safe-area-inset-bottom)) !important}
+  .swatch{height:auto !important;min-height:64px !important}
+  .swatch .nm{margin-top:4px !important;color:var(--ink-soft) !important}
+  .seg-ctl button{min-width:44px;min-height:44px;padding:0 12px}
+}
+
+@media (max-height:480px) and (max-width:900px) and (pointer:coarse){
+  :root{
+    --ios-topbar:44px;
+    --ios-tabbar:56px;
+    --ios-composer:60px;
+    --ios-stage-bottom:calc(var(--ios-tabbar) + var(--ios-composer) + 18px);
+  }
+  .topnav{height:calc(var(--ios-topbar) + env(safe-area-inset-top)) !important}
+  .stage{
+    padding-top:calc(var(--ios-topbar) + env(safe-area-inset-top) + 8px) !important;
+    padding-right:calc(16px + env(safe-area-inset-right)) !important;
+    padding-left:calc(16px + env(safe-area-inset-left)) !important;
+  }
+  .dock{
+    bottom:calc(var(--ios-tabbar) + env(safe-area-inset-bottom)) !important;
+    padding-right:calc(10px + env(safe-area-inset-right)) !important;
+    padding-left:calc(10px + env(safe-area-inset-left)) !important;
+  }
+  .topnav .nav-tab,body>.nav-tabs .nav-tab{height:46px !important;min-height:46px !important}
+  .topnav .nav-tabs,body>.nav-tabs{padding-top:4px !important;padding-bottom:calc(4px + env(safe-area-inset-bottom)) !important}
+  .greet{padding:16px 18px !important}
+  #page-chat.page.on{display:block !important;flex:0 0 auto !important;height:auto !important;min-height:0 !important;padding-bottom:0 !important}
+  .greet-brand{font-size:20px !important;margin-bottom:7px !important}
+  .greet .eyebrow{margin-bottom:8px !important}
+  .greet h1{font-size:20px !important;line-height:1.3 !important;margin-bottom:8px !important}
+  .greet .sub{font-size:12.5px !important;line-height:1.45 !important;margin-top:8px !important}
+  .greet-sugg{margin-top:10px !important}
+}
+
 @media (max-width:480px){
-  .settings-sheet{ width:min(440px,94vw); max-height:88dvh; }
+  .settings-sheet{ width:calc(100vw - 16px); }
   .settings-sheet::before{ content:""; display:block; width:36px; height:4px; border-radius:999px;
     background:var(--border); margin:0 auto 10px; }
+  .greet h1{font-size:clamp(20px,5.5vw,25px) !important}
+  .greet .sub{font-size:13.5px !important;line-height:1.52 !important}
+  .sugg{min-height:44px !important;padding:10px 11px !important}
 }
 </style>
 
@@ -3089,7 +3306,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       <button class="icon-btn" id="attachBtn" title="Attach files (PDF, DOCX, TXT)" aria-label="Attach files">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05 12.5 19.9a5 5 0 0 1-7.07-7.07l8.49-8.49a3 3 0 0 1 4.24 4.24l-8.49 8.49a1 1 0 0 1-1.41-1.41l7.78-7.78"/></svg>
       </button>
-      <textarea id="prompt" rows="1" placeholder="Message St. Augustine…" aria-label="Message St. Augustine" enterkeyhint="send" autocapitalize="sentences" autocomplete="off"></textarea>
+      <textarea id="prompt" rows="1" placeholder="Ask St. Augustine…" aria-label="Message St. Augustine" enterkeyhint="send" autocapitalize="sentences" autocomplete="off"></textarea>
       <!-- (v2.1.2: expand-composer grip removed per user directive — textarea
            auto-grows with typing, so a manual cap-lift control is unnecessary) -->
       <button class="icon-btn controls-toggle" id="controlsToggle" title="Message options" aria-label="Message options (model and depth)" aria-expanded="false">
@@ -4575,17 +4792,27 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(window.matchMedia("(max-width:900px)").matches) sbClose(); }));
 
   /* ---- keep composer above the iOS keyboard (visualViewport) ---- */
-  /* Only needed on touch/mobile. On desktop we must NOT write an inline bottom,
-     or the dock loses its CSS env() bottom and snaps to top:0. */
+  /* Keep positioning in CSS so the normal tab-bar + safe-area offset is never
+     replaced by a stale inline bottom. Browser chrome motion is ignored below
+     80px; only a real keyboard switches the layout into entry mode. */
   const dock=$(".dock");
   if(window.visualViewport && dock && window.matchMedia("(hover:none) and (pointer:coarse)").matches){
     const onVV=()=>{
       const kb = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
-      if(kb>0){ dock.style.bottom = kb + "px"; }       // keyboard open: valid numeric px
-      else { dock.style.bottom = ""; }                  // closed: let CSS env() rule win
+      const keyboardOpen = kb > 80;
+      document.body.classList.toggle("keyboard-open",keyboardOpen);
+      document.documentElement.style.setProperty("--keyboard-offset",(keyboardOpen?kb:0)+"px");
+      if(keyboardOpen){
+        dock.style.setProperty("bottom",(kb+8)+"px","important");
+        composer?.classList.remove("controls-open");
+        controlsToggle?.setAttribute("aria-expanded","false");
+      }else{
+        dock.style.removeProperty("bottom");
+      }
     };
     window.visualViewport.addEventListener("resize", onVV);
     window.visualViewport.addEventListener("scroll", onVV);
+    prompt?.addEventListener("focus",()=>requestAnimationFrame(()=>prompt.scrollIntoView({block:"nearest"})));
     onVV();
   }
 
