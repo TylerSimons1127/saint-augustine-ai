@@ -968,8 +968,9 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 
 /* ---------- Message actions (retry / copy) ---------- */
 .msg .acts{display:flex;gap:8px;margin-top:6px;order:3;flex-basis:100%;padding-left:48px}
-.acts .act{border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
-  font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;cursor:pointer;font-family:var(--body);
+.acts .act{/* v5.0: 44px hit floor — padding 9px 12px (13px icon + gaps + pad = 44) */
+  border:1px solid var(--border);background:var(--panel);color:var(--gold-ink);
+  font-size:12px;font-weight:500;display:inline-flex;align-items:center;gap:6px;padding:9px 12px;border-radius:999px;cursor:pointer;font-family:var(--body);
   transition:background .14s ease,border-color .14s ease}
 .acts .act:hover{background:rgba(163,130,47,0.12);border-color:rgba(163,130,47,0.4)}
 .acts .act svg{width:13px;height:13px}
@@ -1577,7 +1578,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
   .model-btn{width:100%;max-width:none;justify-content:space-between}
   .divider{display:none}
   .reasoning{display:flex;gap:6px}
-  .reasoning .seg{flex:1;height:34px;justify-content:center;font-size:12.5px;padding:0 6px;white-space:nowrap}
+  .reasoning .seg{flex:1;height:44px;justify-content:center;font-size:12.5px;padding:0 6px;white-space:nowrap}
 }
 /* E: scenery + theme pickers — centered modal on phones too (per spec) */
 @media (max-width:480px){
@@ -1615,7 +1616,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
     .model-btn{width:auto;max-width:150px;justify-content:center;padding:0 9px;font-size:11px}
     .model-btn .lab{display:none}
     .reasoning{flex:1;width:auto;min-width:0}
-    .reasoning .seg{height:40px;font-size:12px;padding:0 5px}
+    .reasoning .seg{height:44px;font-size:12px;padding:0 5px}
   /* 3. darken the lesson timeline connector so the sequence is readable */
   .ls:not(:last-child)::before{background:linear-gradient(var(--border),rgba(163,130,47,.55) 60%,transparent)}
   /* 4. nav tabs: more tap room, slightly tighter pill so four fit comfortably */
@@ -1628,7 +1629,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
 @media (max-width:480px){
   .composer{border-radius:18px}
   textarea#prompt{min-height:42px}
-  .reasoning .seg{font-size:11.5px;padding:0 4px;height:40px}
+  .reasoning .seg{font-size:11.5px;padding:0 4px;height:44px}
   /* keep the model-status line clear of the safe-area bottom edge */
   .disclaimer{width:100%;text-align:center;padding:0 4px 3px;line-height:1.45;opacity:.9}
   .dock{row-gap:6px}
@@ -1936,8 +1937,8 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .topnav .icon-btn,.sb-toggle,.icon-btn{height:44px;width:44px;flex:none}
   .sb-item{padding:11px 10px}
   .sugg{padding:11px 13px;font-size:12.5px}
-  .settings-close{width:40px;height:40px;font-size:22px}
-  .tut-btns button{min-height:44px}
+  .settings-close{width:44px;height:44px;font-size:22px}
+  .tut-btns button{min-height:44px;min-width:44px}
   .reasoning{gap:4px}
   .reasoning .seg{height:44px;font-size:12px;padding:0 5px}
 
