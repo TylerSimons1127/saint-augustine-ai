@@ -1050,10 +1050,10 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 /* ---------- Export button (sidebar foot) ---------- */
 .sb-foot{justify-content:space-between;gap:10px}
 .sb-export,.sb-reset{
-  border:1px solid var(--border); background:var(--glass-strong);
+  border:1px solid var(--border); background:var(--panel);
   color:var(--ink-soft); display:inline-flex; align-items:center; gap:7px;
   cursor:pointer; font-size:13px; font-weight:600; line-height:1; white-space:nowrap;
-  padding:9px 12px; border-radius:12px;
+  padding:11px 12px; border-radius:12px; min-height:44px; min-width:44px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
   transition:background .16s ease, color .16s ease, border-color .16s ease, transform .12s ease;
 }
@@ -1539,7 +1539,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:1;font-weight:500}
   .search{width:38px;padding:0;justify-content:center;flex:none}
   .search input{display:none}
   .search.icon-only{width:44px}
-  .icon-btn{padding:0 12px;min-width:40px;height:40px}
+  .icon-btn{padding:0 12px;min-width:44px;height:44px}
   .chip-btn{padding:0 12px;height:40px;justify-content:center;gap:6px}
   .stage{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:calc(200px + env(safe-area-inset-bottom))}
   .controls{gap:8px;flex-wrap:wrap}
@@ -1929,17 +1929,17 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   /* v4.3: disabled send = quiet waiting gold (not flat dark) */
   .send[disabled]{background:linear-gradient(160deg,rgba(163,130,47,.34),rgba(111,85,32,.30)) !important;box-shadow:none;opacity:.75}
   /* v4.0: reasoning row always visible — kebab expands only the model chip */
-  .model-btn{max-width:52vw;font-size:11.5px;height:40px;padding:0 10px}
+  .model-btn{max-width:52vw;font-size:11.5px;height:44px;padding:0 12px}
   /* Touch-target floor: lift every compact control to >=40-44px tall on phones. */
   .sb-new{height:44px}
-  .sb-export,.sb-reset{height:40px}
+  .sb-export,.sb-reset{height:44px}
   .topnav .icon-btn,.sb-toggle,.icon-btn{height:44px;width:44px;flex:none}
   .sb-item{padding:11px 10px}
   .sugg{padding:11px 13px;font-size:12.5px}
   .settings-close{width:40px;height:40px;font-size:22px}
-  .tut-btns button{min-height:42px}
+  .tut-btns button{min-height:44px}
   .reasoning{gap:4px}
-  .reasoning .seg{height:42px;font-size:12px;padding:0 4px}
+  .reasoning .seg{height:44px;font-size:12px;padding:0 5px}
 
   /* E. floating pills rise above the tab bar */
   .to-top{bottom:calc(132px + env(safe-area-inset-bottom)) !important}
@@ -2511,17 +2511,17 @@ html[data-theme="aqua"]{ /* teal aqua, light */
 .seg-ctl{ display:inline-flex; gap:0; background:var(--glass-strong); border:1px solid var(--border); border-radius:999px; padding:3px; }
 .seg-ctl button{ border:0; background:transparent; border-radius:999px; padding:6px 13px; font-size:12.5px; font-family:var(--body); color:var(--ink-soft); cursor:pointer; }
 .seg-ctl button[aria-pressed="true"]{ background:var(--accent-deep); color:#fbf7ee; }
-.seg-ctl button:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--accent-soft); }
-.set-range{ width:100%; accent-color:var(--accent-deep); margin-top:4px; }
+.seg-ctl button:focus-visible{ outline:3px solid var(--gold-deep); outline-offset:2px; box-shadow:0 0 0 3px var(--gold-deep); }
+.set-range{ width:100%; accent-color:var(--accent-deep); margin-top:4px; height:28px; }
 .set-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:7px 0; }
 .set-row .t{ font-size:13px; color:var(--ink-soft); }
 .set-link{ color:var(--accent-deep); text-decoration:none; font-size:13px; cursor:pointer; background:none; border:0; font-family:inherit; padding:10px 12px; display:inline-block; min-height:44px; min-width:44px; }
 .set-link:hover{ text-decoration:underline; }
-.switch{ width:42px; height:24px; border-radius:999px; border:0; background:var(--border); position:relative; cursor:pointer; transition:background .18s ease; flex:none; }
+.switch{ width:48px; height:28px; border-radius:999px; border:0; background:var(--border); position:relative; cursor:pointer; transition:background .18s ease; flex:none; }
 .switch[aria-pressed="true"]{ background:var(--accent-deep); }
-.switch::after{ content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .18s ease; box-shadow:0 1px 3px rgba(0,0,0,.3); }
-.switch[aria-pressed="true"]::after{ transform:translateX(18px); }
-.switch:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--accent-soft); }
+.switch::after{ content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; transition:transform .18s ease; box-shadow:0 1px 3px rgba(0,0,0,.3); }
+.switch[aria-pressed="true"]::after{ transform:translateX(20px); }
+.switch:focus-visible{ outline:3px solid var(--gold-deep); outline-offset:2px; box-shadow:0 0 0 3px var(--gold-deep); }
 .about{ margin-top:auto; padding-top:16px; border-top:1px solid var(--border); text-align:center; }
 .about .mk{ width:38px; height:40px; margin:0 auto 8px; color:var(--accent); display:block; }
 .about h3{ font-family:var(--display); font-weight:400; font-size:16px; margin:0; color:var(--ink); }
@@ -3353,9 +3353,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   <section class="about">
     <img class="mk" src="assets/heart.svg" alt="Sacred Heart" width="38" height="44" />
     <h3>Saint Augustine AI</h3>
-    <p class="ver" id="version">v1.5 · <a href="#" id="whatsNew" style="text-decoration:underline">What's new</a></p>
+    <p class="ver" id="version">v1.5 · <a href="#" id="whatsNew" style="text-decoration:underline;padding:12px 4px" title="What's new — version changelog">What's new</a></p>
     <p>Created by Tyler Simons · Seton Hall Prep</p>
-    <p><a id="ghLink" href="https://github.com/TylerSimons1127/saint-augustine-ai" target="_blank" rel="noopener noreferrer">Source &amp; issues</a></p>
+    <p><a id="ghLink" href="https://github.com/TylerSimons1127/saint-augustine-ai" target="_blank" rel="noopener noreferrer" style="padding:12px 4px" title="View source and report issues on GitHub">Source &amp; issues</a></p>
     <p style="opacity:.7">Soli Deo Gloria</p>
   </section>
   </div>
