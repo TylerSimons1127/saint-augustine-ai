@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 80" fill="none" role="img" aria-label="Sacred Heart of Saint Augustine">
+  <defs>
+    <clipPath id="hb"><path d="M34 66 C34 66 11 51 11 36 C11 27 18 22 24 23 C29 24 32 28 34 32 C36 28 39 24 44 23 C50 22 57 27 57 36 C57 51 34 66 34 66 Z"/></clipPath>
+  </defs>
+
+  <!-- ===== FACETED HEART ===== -->
+  <g clip-path="url(#hb)">
+    <rect x="8" y="20" width="52" height="48" fill="#8a1a26"/>
+    <!-- facets: darker lower-left, lighter upper, maroon right -->
+    <path d="M11 36 L20 50 L34 66 Z" fill="#5e0d15"/>
+    <path d="M14 30 L24 23 L22 42 Z" fill="#a82a38"/>
+    <path d="M57 36 L48 50 L34 66 Z" fill="#6f1019"/>
+    <path d="M54 30 L44 23 L46 42 Z" fill="#9c2230"/>
+    <path d="M24 23 L44 23 L34 41 Z" fill="#7a1420"/>
+    <path d="M22 42 L46 42 L34 56 Z" fill="#931f2b"/>
+    <path d="M11 36 L24 23 L22 42 Z" fill="#7e1622"/>
+    <path d="M57 36 L44 23 L46 42 Z" fill="#841823"/>
+    <path d="M22 42 L34 41 L34 56 Z" fill="#7a1420"/>
+    <path d="M46 42 L34 41 L34 56 Z" fill="#861a24"/>
+    <path d="M20 50 L34 66 L34 56 Z" fill="#6b0f17"/>
+    <path d="M48 50 L34 66 L34 56 Z" fill="#76121c"/>
+  </g>
+  <path d="M34 66 C34 66 11 51 11 36 C11 27 18 22 24 23 C29 24 32 28 34 32 C36 28 39 24 44 23 C50 22 57 27 57 36 C57 51 34 66 34 66 Z" fill="none" stroke="#caa24a" stroke-width="1.6" stroke-linejoin="round" opacity=".5"/>
+
+  <!-- ===== LOW-POLY FLAME ===== -->
+  <g>
+    <path d="M30 31 L34 12 L34 30 Z" fill="#f0982f"/>
+    <path d="M38 31 L34 12 L34 30 Z" fill="#ffce4a"/>
+    <path d="M27 30 L30 19 L33 30 Z" fill="#ffb43a"/>
+    <path d="M41 30 L38 19 L35 30 Z" fill="#ffe07a"/>
+    <path d="M32 29 L34 16 L36 29 Z" fill="#fff0b8"/>
+    <path d="M25 30 L27 22 L30 30 Z" fill="#f4a93a"/>
+    <path d="M43 30 L41 22 L38 30 Z" fill="#ffd968"/>
+  </g>
+
+  <!-- ===== WHITE CROSS (centered) ===== -->
+  <g>
+    <path d="M31 30 L37 30 L37 58 L31 58 Z" fill="#ffffff"/>
+    <path d="M22 39 L46 39 L46 45 L22 45 Z" fill="#ffffff"/>
+    <path d="M34 30 L37 30 L37 58 L34 58 Z" fill="#ececec"/>
+    <path d="M34 39 L46 39 L46 45 L34 45 Z" fill="#ececec"/>
+  </g>
+
+  <!-- ===== DARK-RED PIERCING ARROW (upper-left -> lower-right) ===== -->
+  <g>
+    <line x1="15" y1="21" x2="53" y2="59" stroke="#6f1019" stroke-width="3.6" stroke-linecap="round"/>
+    <line x1="15.6" y1="21.6" x2="52" y2="57" stroke="#9c2433" stroke-width="1" stroke-linecap="round" opacity=".6"/>
+    <!-- fletching at upper-left -->
+    <path d="M15 21 L8 15 L13 19 Z" fill="#5e0d15" stroke="#3f0810" stroke-width=".6" stroke-linejoin="round"/>
+    <path d="M15 21 L7 20 L13 23 Z" fill="#7a1420" stroke="#3f0810" stroke-width=".6" stroke-linejoin="round"/>
+    <path d="M15 21 L9 25 L14 24 Z" fill="#6f1019" stroke="#3f0810" stroke-width=".6" stroke-linejoin="round"/>
+    <!-- arrowhead at lower-right -->
+    <path d="M53 59 L60 62 L54 54 Z" fill="#5e0d15" stroke="#3f0810" stroke-width=".7" stroke-linejoin="round"/>
+    <path d="M53 59 L57 51 L51 56 Z" fill="#7a1420" stroke="#3f0810" stroke-width=".7" stroke-linejoin="round"/>
+  </g>
+</svg>

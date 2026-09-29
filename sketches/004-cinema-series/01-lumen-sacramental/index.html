@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SaintAugustineAI — I · Lumen Sacramental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Hanken+Grotesk:ital,wght@0,300..800;1,300..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a120c; --ink-2:#3b2517; --ink-3:#7c5232;
+  --gold:#b88a53; --gold-2:#cca15c; --cream:#edd5b2; --paper:#fffdf5;
+  --veil:rgba(255,253,245,.08); --veil-2:rgba(255,253,245,.14);
+  --hair:rgba(237,213,178,.22); --hair-2:rgba(237,213,178,.4);
+  --glass:rgba(26,18,12,.38); --glass-2:rgba(26,18,12,.55);
+  --serif:'Fraunces',Georgia,serif; --sans:'Hanken Grotesk',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+  --r-s:10px; --r-m:16px; --r-l:24px;
+  --ease:cubic-bezier(.22,.68,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+html.no-motion *{animation:none!important;transition:none!important}
+body{font-family:var(--sans);background:var(--ink);color:var(--cream);line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(200,160,90,.35);color:var(--paper)}
+
+/* ===== CINEMA LAYER ===== */
+.cinema{position:fixed;inset:0;z-index:-2;overflow:hidden}
+.cinema img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;
+  transition:opacity 2.2s var(--ease)}
+.cinema img.on{opacity:1}
+.cinema::after{content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(120% 90% at 50% 108%, rgba(26,18,12,.55), transparent 55%),
+    linear-gradient(180deg, rgba(26,18,12,.28), rgba(26,18,12,.12) 40%, rgba(26,18,12,.62))}
+.cinema .motes{position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(2px 2px at 12% 22%, rgba(255,250,217,.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 68% 14%, rgba(255,250,217,.4), transparent 60%),
+    radial-gradient(2px 2px at 84% 62%, rgba(255,250,217,.3), transparent 60%),
+    radial-gradient(1.5px 1.5px at 30% 78%, rgba(255,250,217,.35), transparent 60%),
+    radial-gradient(1px 1px at 55% 44%, rgba(255,250,217,.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 8% 66%, rgba(255,250,217,.3), transparent 60%);
+  animation:motes 26s linear infinite}
+@keyframes motes{from{transform:translateY(0)}to{transform:translateY(-140px)}}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:26px;
+  padding:0 30px;height:58px;
+  background:linear-gradient(180deg, rgba(26,18,12,.72), rgba(26,18,12,.28));
+  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  border-bottom:1px solid var(--hair)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:17px;
+  letter-spacing:-.01em;color:var(--paper);white-space:nowrap}
+.brand img{width:22px;height:26px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+.brand em{font-style:normal;color:var(--gold-2);font-weight:500}
+nav .tabs{display:flex;gap:4px;margin-left:8px}
+nav .tabs button{appearance:none;border:0;background:transparent;color:var(--cream);opacity:.72;
+  font:500 13.5px/1 var(--sans);padding:9px 14px;border-radius:999px;cursor:pointer;
+  transition:opacity .2s,background .2s,color .2s;position:relative}
+nav .tabs button:hover{opacity:1;background:var(--veil)}
+nav .tabs button.on{opacity:1;color:var(--paper);background:var(--veil-2)}
+nav .tabs button.on::after{content:"";position:absolute;left:50%;bottom:2px;width:3px;height:3px;
+  border-radius:50%;background:var(--gold-2);transform:translateX(-50%)}
+nav .right{margin-left:auto;display:flex;align-items:center;gap:14px}
+nav .ghost{display:flex;align-items:center;gap:7px;color:var(--cream);opacity:.7;font:500 12.5px/1 var(--sans);
+  background:transparent;border:1px solid var(--hair);padding:7px 13px;border-radius:999px;cursor:pointer;
+  transition:opacity .2s,border-color .2s,background .2s}
+nav .ghost:hover{opacity:1;border-color:var(--hair-2);background:var(--veil)}
+.model-pill{display:flex;align-items:center;gap:8px;font:500 11px/1 var(--mono);letter-spacing:.08em;
+  color:var(--gold-2);border:1px solid var(--hair);border-radius:999px;padding:7px 13px;
+  background:var(--veil);text-transform:uppercase}
+.model-pill i{width:6px;height:6px;border-radius:50%;background:var(--gold-2);
+  animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+
+/* ===== STAGE LAYOUT ===== */
+.stage{min-height:100vh;display:grid;grid-template-columns:78px minmax(0,1fr) 300px;
+  padding-top:58px}
+.rail{position:sticky;top:58px;height:calc(100vh - 58px);display:flex;flex-direction:column;
+  align-items:center;gap:10px;padding:18px 0;border-right:1px solid var(--hair)}
+.rail .dot{width:34px;height:34px;border-radius:50%;border:1px solid var(--hair);display:grid;place-items:center;
+  color:var(--gold-2);font:500 10px/1 var(--mono);cursor:pointer;transition:border-color .2s,background .2s;
+  background:var(--veil)}
+.rail .dot:hover{border-color:var(--hair-2);background:var(--veil-2)}
+.rail .dot.on{border-color:var(--gold);background:rgba(200,160,90,.16);color:var(--paper)}
+.rail .ver{margin-top:auto;writing-mode:vertical-rl;font:500 10px/1 var(--mono);letter-spacing:.14em;
+  color:var(--ink-3);opacity:.8}
+
+/* ===== HERO ===== */
+main{position:relative;padding:0 clamp(24px,5vw,72px)}
+.hero{min-height:calc(100vh - 58px);display:flex;flex-direction:column;justify-content:center;
+  padding:56px 0 140px;position:relative}
+.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.3em;text-transform:uppercase;color:var(--gold-2);
+  margin-bottom:26px;display:flex;align-items:center;gap:14px}
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--gold)}
+.hero h1{font:300 clamp(44px,6.4vw,84px)/1.04 var(--serif);letter-spacing:-.02em;color:var(--paper);
+  max-width:15ch;text-wrap:balance;text-shadow:0 2px 24px rgba(26,18,12,.85),0 1px 3px rgba(26,18,12,.6)}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--gold-2);
+  text-shadow:0 2px 18px rgba(26,18,12,.9),0 0 42px rgba(204,161,92,.28)}
+.hero h1 .word{display:inline-block;overflow:hidden;vertical-align:bottom}
+.hero h1 .word span{display:inline-block;transform:translateY(110%);animation:lift .9s var(--ease) forwards}
+@keyframes lift{to{transform:translateY(0)}}
+.hero .attr{margin:26px 0 0;font:400 15px/1.6 var(--sans);color:rgba(237,213,178,.72);max-width:44ch}
+.hero .attr b{color:var(--cream);font-weight:600}
+.composer-wrap{margin-top:54px;max-width:720px;position:relative}
+.composer{display:flex;flex-direction:column;gap:0;border:1px solid var(--hair-2);border-radius:var(--r-l);
+  background:var(--glass);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
+  box-shadow:inset 0 1px 0 rgba(255,253,245,.12), 0 30px 80px -30px rgba(0,0,0,.7);
+  transition:border-color .25s,box-shadow .25s}
+.composer:focus-within{border-color:rgba(200,160,90,.5);
+  box-shadow:inset 0 1px 0 rgba(255,253,245,.14), 0 34px 90px -28px rgba(0,0,0,.8), 0 0 0 3px rgba(200,160,90,.12)}
+.composer textarea{appearance:none;border:0;outline:none;resize:none;background:transparent;color:var(--paper);
+  font:400 16px/1.6 var(--sans);padding:20px 22px;min-height:88px;caret-color:var(--gold-2)}
+.composer textarea::placeholder{color:rgba(237,213,178,.45)}
+.composer .bar{display:flex;align-items:center;gap:8px;padding:12px 14px;border-top:1px solid var(--hair)}
+.composer .bar .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hair);
+  background:var(--veil);color:var(--cream);font:500 12px/1 var(--sans);padding:7px 12px;border-radius:999px;
+  cursor:pointer;transition:border-color .2s,background .2s,color .2s}
+.composer .bar .chip:hover{border-color:var(--hair-2);background:var(--veil-2);color:var(--paper)}
+.composer .bar .chip.on{border-color:rgba(200,160,90,.55);color:var(--gold-2);background:rgba(200,160,90,.1)}
+.composer .bar .chip svg{width:13px;height:13px}
+.composer .bar .send{margin-left:auto;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;
+  display:grid;place-items:center;color:var(--ink);
+  background:linear-gradient(180deg,var(--gold-2),var(--gold));transition:transform .18s var(--ease),box-shadow .2s}
+.composer .bar .send:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(200,160,90,.4)}
+.composer .bar .send:active{transform:scale(.94)}
+.composer .bar .send svg{width:15px;height:15px}
+.under-hint{margin-top:14px;font:400 12px/1.5 var(--sans);color:rgba(237,213,178,.5);display:flex;gap:16px}
+.under-hint b{color:rgba(237,213,178,.75);font-weight:500}
+
+/* ===== RIGHT ANCHOR: daily ===== */
+.aside{position:sticky;top:58px;height:calc(100vh - 58px);padding:26px 26px 26px 24px;
+  border-left:1px solid var(--hair);display:flex;flex-direction:column;gap:18px;overflow:hidden;
+  background:var(--glass);backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);
+  box-shadow:inset 0 1px 0 rgba(255,253,245,.08)}
+.aside .lab{font:500 10px/1 var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--gold-2);opacity:.85}
+.aside .saint{display:flex;gap:14px;align-items:flex-start}
+.aside .saint img{width:58px;height:58px;object-fit:cover;border-radius:12px;border:1px solid var(--hair);
+  box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.aside .saint .who{font:400 17px/1.25 var(--serif);color:var(--paper)}
+.aside .saint .when{font:400 11.5px/1.4 var(--mono);color:var(--ink-3);opacity:.9;margin-top:3px}
+.aside .quote{font:italic 300 15px/1.65 var(--serif);color:rgba(237,213,178,.85)}
+.aside .quote::before{content:"“";font-size:34px;color:var(--gold);line-height:0;vertical-align:-12px;margin-right:4px}
+.aside .lesson{border:1px solid var(--hair);border-radius:var(--r-m);padding:16px;
+  background:var(--veil);backdrop-filter:blur(8px)}
+.aside .lesson h4{font:500 11px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--gold-2);margin-bottom:10px}
+.aside .lesson .t{font:400 15px/1.4 var(--serif);color:var(--paper);margin-bottom:6px}
+.aside .lesson .m{font:400 12.5px/1.5 var(--sans);color:rgba(237,213,178,.65)}
+.aside .q{margin-top:auto;border-top:1px solid var(--hair);padding-top:16px}
+.aside .q .row{display:flex;justify-content:space-between;font:500 12px/1 var(--mono);color:var(--ink-3)}
+.aside .q .row b{color:var(--gold-2);font-weight:500}
+
+/* ===== CINEMA STRIP (bottom) ===== */
+.strip{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;align-items:center;gap:0;
+  height:44px;border-top:1px solid var(--hair);
+  background:linear-gradient(0deg, rgba(26,18,12,.85), rgba(26,18,12,.45));
+  backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);
+  padding:0 18px;overflow:hidden}
+.strip .lab{font:500 10px/1 var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--gold-2);
+  margin-right:18px;flex:none}
+.strip .track{display:flex;gap:44px;white-space:nowrap;animation:marquee 36s linear infinite}
+.strip .track span{font:400 12.5px/1 var(--mono);color:rgba(237,213,178,.6)}
+.strip .track span b{color:var(--gold-2);font-weight:500}
+.strip .track span::after{content:"·";margin-left:44px;color:var(--ink-3)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ===== TAB SURFACES ===== */
+.page{display:none}
+.page.on{display:block}
+.dp-list{padding:26px 0 120px;max-width:860px}
+.dp-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:8px}
+.dp-head h2{font:300 clamp(30px,4vw,46px)/1.1 var(--serif);color:var(--paper);letter-spacing:-.015em}
+.dp-head .n{font:500 11px/1 var(--mono);color:var(--gold-2);letter-spacing:.2em;text-transform:uppercase}
+.dp-sub{font:400 14px/1.6 var(--sans);color:rgba(237,213,178,.6);margin:0 0 34px;max-width:60ch}
+.dp-card{border:1px solid var(--hair);border-radius:var(--r-l);overflow:hidden;
+  background:var(--glass);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);
+  box-shadow:0 24px 70px -32px rgba(0,0,0,.7);transition:border-color .25s,transform .25s var(--ease)}
+.dp-card:hover{border-color:var(--hair-2);transform:translateY(-2px)}
+.dp-card .in{display:grid;grid-template-columns:190px minmax(0,1fr)}
+.dp-card .img{position:relative;min-height:150px}
+.dp-card .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.dp-card .img::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 55%,var(--glass) 100%)}
+.dp-card .tx{padding:22px 24px}
+.dp-card .k{font:500 10px/1 var(--mono);letter-spacing:.2em;text-transform:uppercase;color:var(--gold-2);margin-bottom:10px}
+.dp-card h3{font:400 21px/1.3 var(--serif);color:var(--paper);margin-bottom:8px}
+.dp-card p{font:400 13.5px/1.6 var(--sans);color:rgba(237,213,178,.68)}
+.dp-card .steps{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+.dp-card .steps i{font:400 11px/1.5 var(--mono);color:var(--ink-3);font-style:normal;opacity:.9}
+.dp-card .steps i b{color:var(--gold-2);font-weight:500}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.rv.in{opacity:1;transform:translateY(0)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .rv{opacity:1;transform:none}
+  .hero h1 .word span{transform:none;animation:none}
+}
+@media (max-width:1100px){
+  .stage{grid-template-columns:64px minmax(0,1fr)}
+  .aside{display:none}
+}
+@media (max-width:760px){
+  .stage{grid-template-columns:minmax(0,1fr);padding-top:58px}
+  .rail{display:none}
+  nav .tabs button{padding:8px 10px;font-size:12px}
+  .hero{padding:40px 0 120px}
+  .hero h1{font-size:clamp(36px,10vw,54px)}
+  .dp-card .in{grid-template-columns:minmax(0,1fr)}
+  .dp-card .img{min-height:120px}
+  .dp-card .img::after{background:linear-gradient(180deg,transparent 40%,var(--glass))}
+  nav .ghost.hide-m{display:none}
+  main{padding:0 20px}
+  .strip .lab{display:none}
+}
+</style>
+</head>
+<body>
+<div class="cinema" aria-hidden="true">
+  <img class="on" src="hero_cathedral.jpg" alt="">
+  <img data-t="scriptorium" src="hero_scriptorium.jpg" alt="">
+  <img data-t="coast" src="hero_coast.jpg" alt="">
+  <img data-t="olive" src="hero_olive.jpg" alt="">
+  <div class="motes"></div>
+</div>
+
+<nav>
+  <div class="brand"><img src="heart.svg" alt="">Saint<em>AugustineAI</em></div>
+  <div class="tabs">
+    <button class="on" data-page="chat">Chat</button>
+    <button data-page="study">Study</button>
+    <button data-page="pray">Pray</button>
+    <button data-page="today">Today</button>
+  </div>
+  <div class="right">
+    <div class="model-pill"><i></i>NEMOTRON 3 ULTRA</div>
+    <button class="ghost hide-m" title="Scenery">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 15-5-5L5 19"/></svg>
+      Scenery
+    </button>
+    <button class="ghost" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.36 0 0 0-1.51 1Z"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="stage">
+  <div class="rail" aria-label="Pages">
+    <button class="dot on" data-page="chat" title="Chat">✠</button>
+    <button class="dot" data-page="study" title="Study">✧</button>
+    <button class="dot" data-page="pray" title="Pray">♥</button>
+    <button class="dot" data-page="today" title="Today">✶</button>
+    <div class="ver">MOCKUP I — LUMEN SACRAMENTAL</div>
+  </div>
+
+  <main>
+    <!-- ======== CHAT ======== -->
+    <section class="page on" id="page-chat">
+      <div class="hero">
+        <div class="eyebrow">A Catholic companion in the Sacred Tradition</div>
+        <h1><span class="word"><span style="animation-delay:.05s">Speak</span></span> <span class="word"><span style="animation-delay:.12s">with</span></span> <span class="word"><span style="animation-delay:.19s">the</span></span> <span class="word"><span style="animation-delay:.26s">Bishop</span></span> <span class="word"><span style="animation-delay:.33s">of</span></span> <span class="word"><span style="animation-delay:.40s"><em>Hippo</em></span></span></h1>
+        <p class="attr">In the voice of <b>St. Augustine</b> — drawing on Scripture, the Catechism, and his own writings. Ask him to explain a passage, console a weary thought, or reason through what weighs on you.</p>
+        <div class="composer-wrap">
+          <div class="composer">
+            <textarea placeholder="Message St. Augustine…" rows="2"></textarea>
+            <div class="bar">
+              <button class="chip" title="Attach file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+              <button class="chip on">Contemplative</button>
+              <button class="chip">Thoughtful</button>
+              <button class="chip">Quick</button>
+              <button class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+            </div>
+          </div>
+          <div class="under-hint"><span><b>Enter</b> to send</span><span><b>⌘K</b> topics</span><span>conversations stay on your device</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== STUDY ======== -->
+    <section class="page" id="page-study">
+      <div class="dp-list">
+        <div class="dp-head"><h2>Lesson of the Day</h2><span class="n">Lesson 22 · of 32</span></div>
+        <p class="dp-sub">A connected deep-dive: topic → his words → the writing behind it. Five steps, every day, all year.</p>
+        <div class="dp-card rv">
+          <div class="in">
+            <div class="img"><img src="micro_goldleaf.jpg" alt=""></div>
+            <div class="tx">
+              <div class="k">Today's topic</div>
+              <h3>Death, Hope, and the Resurrection</h3>
+              <p>Augustine wrote to his people as a bishop who had buried friends. His hope was not a mood — it was a structure, built on the resurrection of the body.</p>
+              <div class="steps"><i><b>01</b> Topic</i><i><b>02</b> Quote</i><i><b>03</b> His words</i><i><b>04</b> Key term</i><i><b>05</b> Writing</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== PRAY ======== -->
+    <section class="page" id="page-pray">
+      <div class="dp-list">
+        <div class="dp-head"><h2>Pray with Augustine</h2><span class="n">Advent · Day 4</span></div>
+        <p class="dp-sub">He leads, you answer. Every prayer is spoken aloud in his voice, then offered to you.</p>
+        <div class="dp-card rv">
+          <div class="in">
+            <div class="img"><img src="micro_candle.jpg" alt=""></div>
+            <div class="tx">
+              <div class="k">Featured prayer</div>
+              <h3>Prayer to the Holy Spirit</h3>
+              <p>"Breathe in me, O Holy Spirit, that my thoughts may all be holy; act in me, O Holy Spirit, that my works, too, may be holy…"</p>
+              <div class="steps"><i><b>Lead me</b> in prayer</i><i><b>Teach me</b> to pray</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======== TODAY ======== -->
+    <section class="page" id="page-today">
+      <div class="dp-list">
+        <div class="dp-head"><h2>Today · Monday, September 8</h2><span class="n">The Nativity of the BVM</span></div>
+        <p class="dp-sub">The saint the Church remembers today, the readings she gives, and the five questions that test what stays.</p>
+        <div class="dp-card rv">
+          <div class="in">
+            <div class="img"><img src="hero_cathedral.jpg" alt=""></div>
+            <div class="tx">
+              <div class="k">Saint of the Day</div>
+              <h3>The Nativity of the Blessed Virgin Mary</h3>
+              <p>Nine months after the Annunciation, the Church keeps the birthday of her through whom the Word took flesh. The oldest Marian feast in the Roman calendar.</p>
+              <div class="steps"><i><b>Readings</b> Mi 5:1-4 · Mt 1:1-16</i><i><b>Quiz</b> 5 questions · from today's lesson</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="aside" aria-label="Today's anchors">
+    <div class="lab">Anchored today</div>
+    <div class="saint">
+      <img src="hero_scriptorium.jpg" alt="">
+      <div>
+        <div class="who">St. Peter Claver</div>
+        <div class="when">SEP 9 · MEMORIAL</div>
+      </div>
+    </div>
+    <div class="quote">You have made us for Yourself, O Lord, and our heart is restless until it rests in You.</div>
+    <div class="lesson">
+      <h4>Lesson 22 · of 32</h4>
+      <div class="t">Death, Hope, and the Resurrection</div>
+      <div class="m">5 paragraphs · 5 questions · answers in the text</div>
+    </div>
+    <div class="q">
+      <div class="row"><span>QUIZ</span><b>2 / 5 ANSWERED</b></div>
+    </div>
+  </aside>
+</div>
+
+<div class="strip" aria-hidden="true">
+  <div class="lab">Today</div>
+  <div class="track">
+    <span><b>LESSON 22</b> Death, Hope, and the Resurrection</span>
+    <span><b>SAINT</b> Peter Claver · memorial</span>
+    <span><b>READINGS</b> 1 Cor 2:10b-16 · Ps 119 · Lk 4:31-37</span>
+    <span><b>QUIZ</b> 2 of 5 answered</span>
+    <span><b>PRAYER</b> Prayer to the Holy Spirit</span>
+    <span><b>LESSON 22</b> Death, Hope, and the Resurrection</span>
+    <span><b>SAINT</b> Peter Claver · memorial</span>
+    <span><b>READINGS</b> 1 Cor 2:10b-16 · Ps 119 · Lk 4:31-37</span>
+    <span><b>QUIZ</b> 2 of 5 answered</span>
+    <span><b>PRAYER</b> Prayer to the Holy Spirit</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(RM) document.documentElement.classList.add("no-motion");
+
+  /* tabs */
+  const go = p => {
+    document.querySelectorAll("nav .tabs button, .rail .dot").forEach(b => b.classList.toggle("on", b.dataset.page===p));
+    document.querySelectorAll(".page").forEach(s => s.classList.toggle("on", s.id==="page-"+p));
+    if(!RM){
+      const want = document.querySelector(`.cinema img[data-t="${SCENE[p]||"cathedral"}"]`) || document.querySelector(".cinema img");
+      document.querySelectorAll(".cinema img").forEach(i => i.classList.toggle("on", i===want));
+    }
+  };
+  const SCENE = {chat:"cathedral", study:"scriptorium", pray:"coast", today:"olive"};
+  document.querySelectorAll("nav .tabs button, .rail .dot").forEach(b => b.addEventListener("click",()=>go(b.dataset.page)));
+
+  /* depth chips */
+  document.querySelectorAll(".composer .bar .chip").forEach(c => c.addEventListener("click",e => {
+    if(c.querySelector("svg")) return;
+    document.querySelectorAll(".composer .bar .chip").forEach(x => x.classList.remove("on"));
+    c.classList.add("on");
+  }));
+
+  /* word-lift entrance already CSS-driven; reveal cards on tab open */
+  const io = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} }), {threshold:.15});
+  document.querySelectorAll(".rv").forEach(el => io.observe(el));
+
+  /* cinema cross-fade drift: slight scale so stills feel alive */
+  if(!RM){
+    const on = document.querySelector(".cinema img.on");
+    if(on) on.animate([{transform:"scale(1)"},{transform:"scale(1.06)"}], {duration:24000, iterations:Infinity, direction:"alternate", easing:"ease-in-out", composite:"replace"});
+  }
+})();
+</script>
+</body>
+</html>
