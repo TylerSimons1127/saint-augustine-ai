@@ -5364,6 +5364,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         // graceful fallback when the live fetch is unavailable, so the card is never empty.
         const SAINT_CONN = {
           "St. Augustine of Hippo": "He is the reason we are here. Converted in a Milan garden in 386, he became the greatest Latin Father of the West — teaching on grace, the Trinity, and the restless heart that finds no rest but in God.",
+          "St. Jerome": "Franciscan Media preserves Augustine's direct praise of Jerome: ‘What Jerome is ignorant of, no mortal has ever known.’ That historic bond is rooted in Jerome's scriptural learning.",
           "St. Monica": "Augustine called her the faithful one whose prayers wrested him from his wandering and gave the world a bishop.",
           "St. Thérèse of Lisieux": "Thérèse called Augustine her 'brother in the faith'; both wrote of restless hearts and the voyage home to God.",
           "St. Mary Magdalene": "Augustine called her the figure of the Church herself — forgiven much, and so loving much.",
@@ -5375,6 +5376,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               saintPortrait=$('#saintPortrait'), saintLink=$('#saintLink'),
               saintAsk=$('#saintAsk'), saintAskLabel=$('#saintAskLabel'),
               saintCard=$('#saintCard');
+        function saintLocalDay(){
+          const d=new Date();
+          return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+        }
         function applySaint(d){
           if(!d || !d.name) return;
           if(saintName) saintName.textContent=d.name.replace(/^Saint\s+/i,"") || d.name;
@@ -5387,7 +5392,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(saintConn && saintConnWrap){
             const displayName=d.name.replace(/^Saint\s+/i,"");
             saintConn.textContent=conn || `A saint-specific reflection for ${displayName} is unavailable right now.`;
-            saintConnWrap.dataset.connectionState=conn ? (d.conn ? "generated" : "curated") : "unavailable";
+            const source=d.connectionSource || (d.conn ? "ai-generated" : conn ? "curated-fallback" : "unavailable");
+            saintConnWrap.dataset.connectionState=source === "source-grounded-fallback" || source === "curated-fallback" ? "fallback" : source === "ai-generated" ? "generated" : source;
             saintConnWrap.hidden=false;
           }
           // Portrait
@@ -5399,16 +5405,27 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(saintLink && d.link) saintLink.href=d.link;
           if(saintAskLabel) saintAskLabel.textContent=`Ask Augustine about ${d.name.replace(/^Saint\s+/i,"")}`;
           if(saintAsk) saintAsk.disabled=false;
-          if(saintCard) saintCard.dataset.loaded="1";
+          if(saintCard){
+            saintCard.dataset.loaded="1";
+            saintCard.dataset.loadedDay=saintLocalDay();
+            delete saintCard.dataset.loading;
+          }
         }
         function loadSaint(){
-          if(!saintCard || saintCard.dataset.loaded) return;
+          if(!saintCard || saintCard.dataset.loading==="1") return;
+          const today=saintLocalDay();
+          if(saintCard.dataset.loaded && saintCard.dataset.loadedDay===today) return;
+          delete saintCard.dataset.loaded;
+          saintCard.dataset.loading="1";
           if(saintBio) saintBio.innerHTML='<span class="saint-skel" style="display:block;height:12px;width:92%;margin:0 0 9px"></span><span class="saint-skel" style="display:block;height:12px;width:78%;margin:0 0 9px"></span><span class="saint-skel" style="display:block;height:12px;width:84%"></span>';
-          fetch(API+"/api/saint",{headers:{"Accept":"application/json"}}).then(r=>{
+          fetch(API+"/api/saint",{headers:{"Accept":"application/json"},cache:"no-store"}).then(r=>{
             if(!r.ok) throw new Error("saint "+r.status);
             return r.json();
-          }).then(applySaint).catch(()=>{
-            // Total failure: quiet default + a retry affordance (Render cold-starts happen)
+          }).then(d=>{
+            if(!d || !d.name) throw new Error("invalid saint response");
+            applySaint(d);
+          }).catch(()=>{
+            if(saintCard) delete saintCard.dataset.loading;
             if(saintBio) saintBio.innerHTML='The saint of the day is waiting on Franciscan Media. Open the link below to meet them. <button class="dp-cta dp-cta-ghost" id="saintRetry" style="margin-top:10px;display:inline-block">Try again</button>';
             if(saintConn && saintConnWrap){
               saintConn.textContent="Today’s saint-specific reflection could not load. Please try again after reconnecting.";
@@ -5420,6 +5437,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(sr) sr.addEventListener("click",()=>{ if(saintCard) delete saintCard.dataset.loaded; loadSaint(); });
           });
         }
+
+        function refreshSaintOnNewDay(){
+          if(document.hidden || !saintCard || !saintCard.dataset.loadedDay) return;
+          if(saintCard.dataset.loadedDay!==saintLocalDay()) loadSaint();
+        }
+        document.addEventListener("visibilitychange",refreshSaintOnNewDay);
+        window.addEventListener("focus",refreshSaintOnNewDay);
 
         /* ---- Lesson of the Day (one topic, walked through quote → excerpt → vocabulary → a named writing) ---- */
                 const LESSON = window.LESSON;   // loaded from lessons.js (F73: cached separately)

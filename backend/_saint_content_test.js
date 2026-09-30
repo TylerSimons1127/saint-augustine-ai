@@ -45,6 +45,9 @@ require("./server.js");
     const prompt = req.messages.map((m) => m.content).join("\n");
     assert.ok(prompt.includes("FULL_STORY_END_MARKER"), "both generations must receive the complete story, including its final paragraph");
   }
+  assert.ok(requests[0].messages[0].content.includes("160-210 words"), "summary prompt should target about half of the current 409-word story");
+  const summaryWords = saint.bio.trim().split(/\s+/).filter(Boolean).length;
+  assert.ok(summaryWords <= 210, `summary should be at most 210 words, got ${summaryWords}`);
   assert.ok(requests[1].messages[0].content.includes("name-swapped"), "connection prompt must forbid generic name-swapped copy");
   console.log("PASS: full-story summary + saint-specific Augustine reflection");
   process.exit(0);

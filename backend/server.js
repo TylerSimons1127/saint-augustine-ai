@@ -741,19 +741,21 @@ async function getSaint() {
 
     if (!name) throw new Error("parsed empty saint name");
 
+    const storyForContent = fullStory || excerpt || "";
     const [bio, conn] = await Promise.all([
-      fullStory ? getSaintSummary(name, fullStory) : null,
-      fullStory ? getSaintConn(name, fullStory) : null,
+      storyForContent ? getSaintSummary(name, storyForContent) : null,
+      storyForContent ? getSaintConn(name, storyForContent) : null,
     ]);
 
     return {
       name,
       date,
-      excerpt: excerpt || (bio || fullStory || "").slice(0, 320),
-      bio: bio || fullStory || excerpt,
+      excerpt: excerpt || (bio || storyForContent || "").slice(0, 320),
+      bio: compactSaintSummary(bio || storyForContent || excerpt),
       image,
       link: url,
       conn,
+      connectionSource: saintConnSource.get(name.toLowerCase().trim()) || (conn ? "source-grounded-fallback" : "unavailable"),
       source: "Franciscan Media",
     };
   } catch (e) {
@@ -763,22 +765,71 @@ async function getSaint() {
   }
 }
 
-/* ---- v4.4: per-saint Augustine connection, generated once + cached ----
- * Grounded STRICTLY in the saint's own bio so every saint gets their own
- * reason, never the same line twice. Augustine writes it in first person. */
-const saintConnCache = new Map();      // saintName -> conn (persists for process life)
+/* ---- Per-saint summary and Augustine connection, keyed to today's saint ---- */
+const saintConnCache = new Map();      // saintName -> connection (process cache)
+const saintConnSource = new Map();     // saintName -> ai-generated | source-grounded-fallback
 const saintSummaryCache = new Map();   // saintName -> concise summary
+function compactSaintSummary(text, maxWords = 210) {
+  const normalized = cleanHtml(text || "").replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  const sentences = normalized.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [normalized];
+  const chosen = [];
+  let count = 0;
+  for (const sentence of sentences) {
+    const words = sentence.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) continue;
+    if (count + words.length > maxWords) {
+      if (!chosen.length) chosen.push(words.slice(0, maxWords).join(" "));
+      break;
+    }
+    chosen.push(sentence.trim());
+    count += words.length;
+    if (count >= 160 && chosen.length >= 2) break;
+  }
+  const result = chosen.join(" ").trim();
+  if (result.split(/\s+/).filter(Boolean).length >= 80) return result;
+  return normalized.split(/\s+/).filter(Boolean).slice(0, maxWords).join(" ");
+}
+function saintSentences(text) {
+  return (cleanHtml(text || "").match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [])
+    .map((sentence) => sentence.trim()).filter(Boolean);
+}
+function buildSaintConnectionFallback(name, story) {
+  const displayName = String(name || "today's saint").replace(/^(?:Saint|St\.)\s+/i, "");
+  const sentences = saintSentences(story);
+  const sourceText = cleanHtml(story || "");
+  const mention = sourceText.toLowerCase().includes(displayName.toLowerCase())
+    ? sentences.find((sentence) => /Augustine/i.test(sentence)) : null;
+  if (mention) {
+    const quote = mention.match(/[“\"']([^”\"']{15,180})[”\"']/);
+    if (quote) return `The story preserves Augustine’s direct praise of ${displayName}: “${quote[1]}” Their bond is historical, not a generic comparison—Augustine himself recognized ${displayName}’s learning.`;
+    return `The biography records Augustine’s own connection to ${displayName}: ${mention.slice(0, 210)} This is a direct historical link, not a name-swapped comparison.`.slice(0, 320);
+  }
+  const themes = [
+    { match: /scripture|bible|biblical|translation|vulgate/i, augustine: "I devoted my life to studying Scripture", bond: "service to the Word" },
+    { match: /conversion|converted|baptiz|confession/i, augustine: "I know how grace can redirect a searching life", bond: "conversion and grace" },
+    { match: /bishop|pastor|preach|church|shepherd/i, augustine: "I served the Church as bishop of Hippo", bond: "pastoral service" },
+    { match: /monk|monastic|prayer|hermit|community/i, augustine: "I shaped my life around prayer and Christian community", bond: "prayer and common life" },
+    { match: /poor|charit|care|served|orphan|sick|helped/i, augustine: "I urged Christians to care for one another as one body", bond: "care for the neighbor" },
+    { match: /wrote|writing|book|letter|teach|scholar|study/i, augustine: "I wrote and taught to serve the Church", bond: "teaching the faith" },
+  ];
+  const theme = themes.find((item) => item.match.test(story || "")) ||
+    { match: /./, augustine: "I searched for truth and the rest found in God", bond: "the search for God" };
+  const fact = sentences.find((sentence) => theme.match.test(sentence) && sentence.length > 35) || sentences.find((sentence) => sentence.length > 35) || "The full story of this saint points toward Christ.";
+  const shortFact = fact.length > 135 ? fact.slice(0, 132).replace(/\s+\S*$/, "") + "…" : fact;
+  return `${theme.augustine}; ${displayName} gives ${theme.bond} a distinct form: “${shortFact}” Their lives meet in this particular witness, not in a claimed meeting.`.slice(0, 320);
+}
 async function getSaintSummary(name, fullStory) {
   if (!name || !fullStory) return null;
   const key = name.toLowerCase().trim();
   if (saintSummaryCache.has(key)) return saintSummaryCache.get(key);
   const sys = "Write a concise, accurate Saint of the Day biography summary from the COMPLETE source story supplied. " +
     "Preserve the saint's distinctive historical facts, vocation, important actions, and legacy. Do not invent details or " +
-    "reduce the result to the opening sentences. Write 4-6 clear sentences, about 70-110 words, in accessible language. " +
+    "summarize the full story, not just the opening sentences. Write 3-5 clear sentences in 160-210 words, in accessible language. " +
     "Return only the summary, with no heading or commentary.";
-  const summary = await generateSaintText(sys, `Saint: ${name}\nComplete source story:\n${fullStory}`, 240, 800);
-  if (summary) saintSummaryCache.set(key, summary);
-  return summary;
+  const summary = await generateSaintText(sys, `Saint: ${name}\nComplete source story:\n${fullStory}`, 320, 1400);
+  if (summary) saintSummaryCache.set(key, compactSaintSummary(summary));
+  return summary ? compactSaintSummary(summary) : null;
 }
 async function generateSaintText(sys, userText, maxTokens, maxChars) {
   const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);
@@ -804,25 +855,27 @@ async function getSaintConn(name, bio) {
   if (!name || !bio) return null;
   const key = name.toLowerCase().trim();
   if (saintConnCache.has(key)) return saintConnCache.get(key);
-  const sys = "You are St. Augustine of Hippo, Doctor of the Church, writing in the first person. " +
-    "A companion app shows a short line under each day's saint explaining your bond with them. " +
-    "Write the line for today's saint. Rules: exactly 2 or 3 sentences. First person, as Augustine ('I', 'me', 'my'). " +
-    "Ground it ONLY in facts from the saint's full life story given to you, and in accurate, well-known facts about Augustine. " +
-    "Choose one concrete shared theme or a meaningful contrast specific to THIS saint (for example, a particular conversion, " +
-    "work, teaching, trial, or act of service). Do not imply they met unless the source says so. Never use a name-swapped " +
-    "'Like Augustine, they...' template or generic filler. You may quote your own Confessions once if it fits naturally. " +
-    "No greeting, no heading, no em-dash signature — just the sentences. 320 characters max. Respond with the line only.";
+  const sys = "You are St. Augustine writing in the first person. Write today's saint-specific 'Connected to St. Augustine' reflection in exactly 2 sentences, about 35-50 words. Ground the link in a distinctive fact from the complete source story and in accurate facts about Augustine. If the story itself names Augustine, use that direct evidence. Otherwise choose a concrete shared theme or contrast from this saint's own vocation, action, teaching, or trial. Do not imply they met unless the source says so. Never use a name-swapped template or generic filler. Return only the reflection, without heading or greeting.";
   // try the fast models first, then the big one — 3 attempts, 20s each.
   // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
   // ceiling — a non-stream completion of that class regularly exceeds it.)
   const line = await generateSaintText(sys,
-    `Saint: ${name}\nComplete source story: ${bio}\n\nWrite the 2-3 sentence "Connected to St. Augustine" reflection for this saint.`,
-    220, 500);
+    `Saint: ${name}\nComplete source story: ${bio}\n\nWrite the 2-sentence "Connected to St. Augustine" reflection for this saint.`,
+    160, 500);
   if (line && line.length >= 40) {
-    saintConnCache.set(key, line);
-    return line;
+    const cut = line.slice(0, 317);
+    const polished = line.length <= 320 ? line : `${cut.slice(0, cut.lastIndexOf(" "))}…`;
+    saintConnCache.set(key, polished);
+    saintConnSource.set(key, "ai-generated");
+    return polished;
   }
-  return null;   // caller uses a saint-specific fallback or omits the section
+  const fallback = buildSaintConnectionFallback(name, bio);
+  if (fallback) {
+    saintConnCache.set(key, fallback);
+    saintConnSource.set(key, "source-grounded-fallback");
+    return fallback;
+  }
+  return null;
 }
 // Evergreen offline rotation (name + bio + a "connected to Augustine" line).
 const FALLBACK_SAINTS = [
@@ -837,7 +890,7 @@ const FALLBACK_SAINTS = [
 function curatedSaint() {
   const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
   const s = FALLBACK_SAINTS[doy % FALLBACK_SAINTS.length];
-  return { name: s.name, date: s.date, excerpt: s.bio.slice(0, 320), bio: s.bio, image: "", link: "https://www.franciscanmedia.org/saint-of-the-day/", conn: s.conn, source: "from the tradition" };
+  return { name: s.name, date: s.date, excerpt: compactSaintSummary(s.bio), bio: compactSaintSummary(s.bio), image: "", link: "https://www.franciscanmedia.org/saint-of-the-day/", conn: s.conn, connectionSource: "curated-fallback", source: "from the tradition" };
 }
 
 const server = http.createServer(async (req, res) => {
