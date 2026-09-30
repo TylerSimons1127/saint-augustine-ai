@@ -2330,9 +2330,6 @@ button,.dp-cta,.nav-tab,.icon-btn,.sugg,.quiz-opt,.pray-chip{
              box-shadow var(--mt-micro) var(--ease-out);
   touch-action:manipulation;
 }
-@media (hover:none){
-  :active{transform:scale(.98)}
-}
 
 /* Message mount: stage rise (vars already engineered) */
 .msg{animation:msgIn .38s var(--ease-out) both}
@@ -2651,6 +2648,44 @@ document.addEventListener("visibilitychange",()=>{
 /* register the offline-shell service worker (PWA) */
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script>
+<style id="mobile-native-scroll-fix">
+/* Mobile scroll recovery: restore the browser's native document scroller.
+   A locked 100dvh root + absolute overflow-scrolling stage suppresses iOS
+   elastic scroll, causes toolbar-height reflow, and exposes the white canvas. */
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse){
+  html{
+    height:auto !important;min-height:100% !important;
+    overflow-x:hidden !important;overflow-y:auto !important;
+    overscroll-behavior-y:auto !important;background-color:var(--bg) !important;
+  }
+  body{
+    position:static !important;height:auto !important;
+    min-height:100vh !important;min-height:100svh !important;
+    overflow:visible !important;background-color:var(--bg) !important;
+  }
+  .stage{
+    position:relative !important;top:auto !important;right:auto !important;
+    bottom:auto !important;left:0 !important;width:100% !important;height:auto !important;
+    min-height:100vh !important;min-height:100svh !important;
+    overflow:visible !important;overscroll-behavior:auto !important;
+  }
+  #page-chat:has(#greet:not([hidden])){
+    min-height:calc(100vh - 216px) !important;
+    min-height:calc(100svh - 216px) !important;
+  }
+  .greet{max-height:none !important;overflow:visible !important;overscroll-behavior:auto !important}
+}
+/* Remove scale-based press effects on touch: feedback must not make the UI
+   appear to contract while a person is trying to tap or scroll. */
+@media (hover:none) and (pointer:coarse){
+  .sugg:active,.msg .acts .act:active,.lesson-link:active,.confirm-btns button:active,
+  .send:not(:disabled):active,.topnav .nav-tab:active,body>.nav-tabs .nav-tab:active,
+  .quote-act:active,.dp-card:active,.ts-cell:active,.tomorrow-teaser:active,
+  .quiz-opt:active,.pray-chip:active,.dp-link-btn:active,.daily-cta:active{
+    transform:none !important;
+  }
+}
+</style>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -3411,6 +3446,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 
   let stage=$("#stage"), greet=$("#greet"), thread=$("#thread");
+  // Desktop keeps .stage as its scroll container; phones use native document scroll.
+  const usesDocumentScroll=()=>window.matchMedia("(max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse)").matches;
+  const readScrollTop=()=>usesDocumentScroll()?window.scrollY:stage.scrollTop;
+  const readScrollHeight=()=>usesDocumentScroll()?Math.max(document.documentElement.scrollHeight,document.body.scrollHeight):stage.scrollHeight;
+  const readScrollViewport=()=>usesDocumentScroll()?window.innerHeight:stage.clientHeight;
+  const writeScrollTop=(top,behavior="auto")=>{
+    if(usesDocumentScroll()) window.scrollTo({top,behavior});
+    else stage.scrollTo({top,behavior});
+  };
   // ---- three pages (chat/daily/prayer), each with its own thread + history + active session ----
   const PAGE_ELS = { chat:{wrap:$("#page-chat"), threadEl:$("#thread")}, study:{wrap:$("#page-study"), threadEl:$("#threadStudy")}, today:{wrap:$("#page-today"), threadEl:$("#threadDaily")}, prayer:{wrap:$("#page-prayer"), threadEl:$("#threadPrayer")} };
   let PAGE = "chat";
@@ -3421,14 +3465,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
   function setPage(p){
     if(p===PAGE) return;
+    const previousPage=PAGE;
+    if(PAGE_SCROLL[previousPage]!==undefined) PAGE_SCROLL[previousPage]=readScrollTop();
     PAGE_HIST[PAGE]=history.slice();
     PAGE_ACTIVE[PAGE]=activeId;
     PAGE=p;
     history=PAGE_HIST[p]; activeId=PAGE_ACTIVE[p];
     thread=PAGE_ELS[p].threadEl;
     greet = (p==="chat") ? $("#greet") : null;
-    // save the outgoing page's scroll so returning restores your place
-    if(stage && PAGE && PAGE_SCROLL[PAGE]!==undefined) PAGE_SCROLL[PAGE]=stage.scrollTop;
+    // The outgoing page was saved before changing PAGE above.
     ["chat","study","today","prayer"].forEach(k=>{ if(PAGE_ELS[k].wrap){ PAGE_ELS[k].wrap.classList.toggle("on", k===p); if(k!==p){ PAGE_ELS[k].wrap.style.transform=""; PAGE_ELS[k].wrap.style.opacity=""; } } });
     // directional slide: motion follows travel direction (never a blank/white frame)
     {
@@ -3454,7 +3499,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     if(activeId){ loadSession(activeId); }
     else { thread.innerHTML=""; if(greet) greet.hidden=false; }
     // restore the incoming page's saved scroll (top for first visit)
-    requestAnimationFrame(()=>{ if(stage) stage.scrollTop = PAGE_SCROLL[p]!=null ? PAGE_SCROLL[p] : 0; });
+    requestAnimationFrame(()=>writeScrollTop(PAGE_SCROLL[p]!=null ? PAGE_SCROLL[p] : 0));
     // keep the URL hash in sync so refresh/deep-link/share works
     if((" #"+p)!==(" "+location.hash) && !RG_ROUTING){ location.hash = p; }
   }
@@ -3680,7 +3725,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function clearThreadState(){
       if(thread) thread.innerHTML=""; if(thread) thread.hidden=true; if(greet) greet.hidden=false;
       prompt.value=""; prompt.style.height="auto"; files.length=0; history.length=0; renderFiles(); syncSend();
-      stage.scrollTop=0;
+      writeScrollTop(0);
     }
   function loadSession(id){
       const s=sessions.find(x=>x.id===id); if(!s) return;
@@ -3691,7 +3736,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       setActive(id);
       if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
       // land on the latest message, like ChatGPT/Claude — not the top of a long thread
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{ stage.scrollTop=stage.scrollHeight; }));
+      requestAnimationFrame(()=>requestAnimationFrame(()=>writeScrollTop(readScrollHeight())));
     }
     function recordSession(firstMsg, assistantReply){
       if(!history.length) return;
@@ -4360,7 +4405,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       send.onclick=null;
       if(acc && !aborted){ addRetry(loading, messages, userMsg); }
       syncSend();
-      stage.scrollTop=stage.scrollHeight;
+      writeScrollTop(readScrollHeight());
     }
   }
   /* v4.1 — Continue affordance for length-truncated answers: the half
@@ -4523,7 +4568,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       history.push({role:"assistant",content:"[error] "+msg}); recordSession(userMsg, msg); addRetry(loading, messages, userMsg);
     }finally{
       send.classList.remove("stop"); send.disabled=(prompt.value.trim()===""&&files.length===0); send.classList.toggle("ready", !(prompt.value.trim()===""&&files.length===0));
-      send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'; send.onclick=null; syncSend(); stage.scrollTop=stage.scrollHeight;
+      send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'; send.onclick=null; syncSend(); writeScrollTop(readScrollHeight());
     }
   }
 
@@ -4609,17 +4654,39 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(window.matchMedia("(max-width:900px)").matches) sbClose(); }));
 
   /* ---- keep composer above the iOS keyboard (visualViewport) ---- */
-  /* Only needed on touch/mobile. On desktop we must NOT write an inline bottom,
-     or the dock loses its CSS env() bottom and snaps to top:0. */
-  const dock=$(".dock");
-  if(window.visualViewport && dock && window.matchMedia("(hover:none) and (pointer:coarse)").matches){
+  /* Small visual-viewport changes are Safari's browser chrome, not a keyboard.
+     The mobile CSS has !important on dock.bottom, so keyboard placement must
+     use the inline important priority and be fully removed when it closes. */
+  const mobileDock=$(".dock"), mobileVisualViewport=window.visualViewport;
+  const mobileNavTabs=$(".nav-tabs"), mobileControlsToggle=$("#controlsToggle"), mobileComposer=$(".composer");
+  if(mobileVisualViewport && mobileDock && window.matchMedia("(hover:none) and (pointer:coarse)").matches){
     const onVV=()=>{
-      const kb = Math.max(0, window.innerHeight - window.visualViewport.height - window.visualViewport.offsetTop);
-      if(kb>0){ dock.style.bottom = kb + "px"; }       // keyboard open: valid numeric px
-      else { dock.style.bottom = ""; }                  // closed: let CSS env() rule win
+      const kb=Math.max(0,Math.round(window.innerHeight-mobileVisualViewport.height-mobileVisualViewport.offsetTop));
+      const keyboardOpen=kb>80;
+      if(keyboardOpen){
+        mobileDock.style.setProperty("bottom",(kb+8)+"px","important");
+        if(mobileNavTabs && getComputedStyle(mobileNavTabs).position==="fixed"){
+          mobileNavTabs.style.setProperty("opacity","0","important");
+          mobileNavTabs.style.setProperty("visibility","hidden","important");
+          mobileNavTabs.style.setProperty("pointer-events","none","important");
+          mobileNavTabs.style.setProperty("transform","translateY(100%)","important");
+        }
+        if(mobileComposer?.classList.contains("controls-open")){
+          mobileComposer.classList.remove("controls-open");
+          mobileControlsToggle?.setAttribute("aria-expanded","false");
+        }
+      } else {
+        mobileDock.style.removeProperty("bottom");
+        if(mobileNavTabs){
+          mobileNavTabs.style.removeProperty("opacity");
+          mobileNavTabs.style.removeProperty("visibility");
+          mobileNavTabs.style.removeProperty("pointer-events");
+          mobileNavTabs.style.removeProperty("transform");
+        }
+      }
     };
-    window.visualViewport.addEventListener("resize", onVV);
-    window.visualViewport.addEventListener("scroll", onVV);
+    mobileVisualViewport.addEventListener("resize",onVV);
+    mobileVisualViewport.addEventListener("scroll",onVV);
     onVV();
   }
 
@@ -4681,19 +4748,20 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   /* ---- J: auto-scroll to latest (v2.1.1: jump-latest pill removed per user
      directive — smart scroll stays: lands you at the newest message only when
      you're already near the bottom, never yanks you mid-read) ---- */
-  function nearBottom(){ return stage.scrollHeight - stage.scrollTop - stage.clientHeight < 80; }
-  function maybeScroll(){ if(nearBottom()) stage.scrollTop=stage.scrollHeight; }
+  function nearBottom(){ return readScrollHeight() - readScrollTop() - readScrollViewport() < 80; }
+  function maybeScroll(){ if(nearBottom()) writeScrollTop(readScrollHeight()); }
 
   /* ---- B27: back-to-top pill on the daily pages (not Chat — that's jump-latest's job) ---- */
   const toTop=$("#toTop");
   function updateToTop(){
     if(!toTop) return;
-    const deep = stage.scrollTop > 320;
+    const deep = readScrollTop() > 320;
     const daily = PAGE==="study" || PAGE==="today" || PAGE==="prayer";
     toTop.classList.toggle("show", deep && daily);
   }
   if(stage) stage.addEventListener("scroll", updateToTop, {passive:true});
-  if(toTop) toTop.addEventListener("click",()=>{ stage.scrollTo({top:0,behavior:"smooth"}); });
+  window.addEventListener("scroll", updateToTop, {passive:true});
+  if(toTop) toTop.addEventListener("click",()=>{ writeScrollTop(0,"smooth"); });
   updateToTop();
 
   /* ---- mobile: DRAG-FOLLOW swipe (Telegram/Instagram feel) — the page tracks
