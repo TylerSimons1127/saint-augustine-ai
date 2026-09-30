@@ -710,25 +710,29 @@ async function getSaint() {
     const dateM = datePos > 0 ? html.slice(datePos).match(/>\s*([A-Z][a-z]+ \d{1,2})\s*</) : null;
     const date = dateM ? dateM[1].trim() : "";
 
-    // Pull the fuller biography from the detail page.
-    let bio = "";
+    // Keep the complete story text for generation; never summarize a short
+    // teaser by accident. The source text stays transient in memory.
+    let fullStory = "";
     try {
       const det = await fetchWithTimeout(url + "/", { headers: SAINT_UA }, 9000);
       if (det.ok) {
         const dh = await det.text();
-        const storyH = dh.match(/<h[34][^>]*>([^<]*?)(?:&#8217;|')s Story<\/h[34]>/i);
+        const storyH = dh.match(/<h([34])[^>]*>([^<]*?)(?:&#8217;|&#x2019;|['’])s Story<\/h[34]>/i);
         if (storyH) {
           const start = dh.indexOf(storyH[0]) + storyH[0].length;
-          let end = dh.indexOf("<h4", start);
-          if (end < 0) end = dh.indexOf("<blockquote", start);
-          const seg = dh.slice(start, end > 0 ? end : start + 6000);
+          let end = dh.length;
+          const nextHeading = /<h([1-6])\b[^>]*>/gi;
+          nextHeading.lastIndex = start;
+          let heading;
+          while ((heading = nextHeading.exec(dh))) {
+            if (Number(heading[1]) <= Number(storyH[1])) { end = heading.index; break; }
+          }
+          if (end - start > 16000) end = start + 16000;
+          const seg = dh.slice(start, end);
           const ps = [...seg.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)]
             .map((m) => cleanHtml(m[1]))
-            .filter((t) => t.length > 40);
-          bio = ps.slice(0, 3).join(" ").slice(0, 520);
-          // v4.3: never end a bio mid-sentence — cut at the last sentence end
-          const lastDot = bio.lastIndexOf(". ");
-          if (lastDot > 200) bio = bio.slice(0, lastDot + 1);
+            .filter((t) => t.length > 40 && !/^(read more|share this|subscribe)/i.test(t));
+          fullStory = ps.join(" ").slice(0, 10000);
         }
       }
     } catch (_) {
@@ -737,18 +741,16 @@ async function getSaint() {
 
     if (!name) throw new Error("parsed empty saint name");
 
-    // v4.4 — "Connected to St. Augustine": a real, per-saint line (not the
-    // generic every-day string). Generated ONCE per saint from their actual
-    // bio, in Augustine's first person, 2-3 sentences. Cached forever (saints
-    // recur yearly, so one generation serves every future year). On any
-    // failure we fall through with no conn — the frontend keeps its fallback.
-    let conn = await getSaintConn(name, bio || excerpt);
+    const [bio, conn] = await Promise.all([
+      fullStory ? getSaintSummary(name, fullStory) : null,
+      fullStory ? getSaintConn(name, fullStory) : null,
+    ]);
 
     return {
       name,
       date,
-      excerpt: excerpt || bio.slice(0, 320),
-      bio: bio || excerpt,
+      excerpt: excerpt || (bio || fullStory || "").slice(0, 320),
+      bio: bio || fullStory || excerpt,
       image,
       link: url,
       conn,
@@ -765,6 +767,39 @@ async function getSaint() {
  * Grounded STRICTLY in the saint's own bio so every saint gets their own
  * reason, never the same line twice. Augustine writes it in first person. */
 const saintConnCache = new Map();      // saintName -> conn (persists for process life)
+const saintSummaryCache = new Map();   // saintName -> concise summary
+async function getSaintSummary(name, fullStory) {
+  if (!name || !fullStory) return null;
+  const key = name.toLowerCase().trim();
+  if (saintSummaryCache.has(key)) return saintSummaryCache.get(key);
+  const sys = "Write a concise, accurate Saint of the Day biography summary from the COMPLETE source story supplied. " +
+    "Preserve the saint's distinctive historical facts, vocation, important actions, and legacy. Do not invent details or " +
+    "reduce the result to the opening sentences. Write 4-6 clear sentences, about 70-110 words, in accessible language. " +
+    "Return only the summary, with no heading or commentary.";
+  const summary = await generateSaintText(sys, `Saint: ${name}\nComplete source story:\n${fullStory}`, 240, 800);
+  if (summary) saintSummaryCache.set(key, summary);
+  return summary;
+}
+async function generateSaintText(sys, userText, maxTokens, maxChars) {
+  const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);
+  for (const model of models) {
+    try {
+      const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
+        body: JSON.stringify({ model, max_tokens: maxTokens, temperature: 0.35, stream: false,
+          messages: [{ role: "system", content: sys }, { role: "user", content: userText }] }),
+      }, 20000);
+      if (!res.ok) continue;
+      const j = await res.json();
+      let text = (j.choices?.[0]?.message?.content || "").trim();
+      text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
+        .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
+      if (text.length >= 80 && text.length <= maxChars) return text;
+    } catch (_) { /* try next model */ }
+  }
+  return null;
+}
 async function getSaintConn(name, bio) {
   if (!name || !bio) return null;
   const key = name.toLowerCase().trim();
@@ -772,44 +807,22 @@ async function getSaintConn(name, bio) {
   const sys = "You are St. Augustine of Hippo, Doctor of the Church, writing in the first person. " +
     "A companion app shows a short line under each day's saint explaining your bond with them. " +
     "Write the line for today's saint. Rules: exactly 2 or 3 sentences. First person, as Augustine ('I', 'me', 'my'). " +
-    "Ground it ONLY in facts from the saint's life given to you — name what you share with THIS saint specifically " +
-    "(their trials, their writings, their charity, their conversion, their Marian devotion, their martyrdom — whatever " +
-    "is actually true of them). Never generic filler. You may quote your own Confessions once if it fits naturally. " +
+    "Ground it ONLY in facts from the saint's full life story given to you, and in accurate, well-known facts about Augustine. " +
+    "Choose one concrete shared theme or a meaningful contrast specific to THIS saint (for example, a particular conversion, " +
+    "work, teaching, trial, or act of service). Do not imply they met unless the source says so. Never use a name-swapped " +
+    "'Like Augustine, they...' template or generic filler. You may quote your own Confessions once if it fits naturally. " +
     "No greeting, no heading, no em-dash signature — just the sentences. 320 characters max. Respond with the line only.";
   // try the fast models first, then the big one — 3 attempts, 20s each.
   // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
   // ceiling — a non-stream completion of that class regularly exceeds it.)
-  const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);
-  for (const model of models) {
-    try {
-      const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
-        body: JSON.stringify({
-          model,
-          max_tokens: 220,
-          temperature: 0.5,
-          stream: false,
-          messages: [
-            { role: "system", content: sys },
-            { role: "user", content: `Saint: ${name}\nTheir life: ${bio.slice(0, 1400)}\n\nWrite the 2-3 sentence "connected to Augustine" line for this saint.` },
-          ],
-        }),
-      }, 20000);
-      if (!res.ok) continue;
-      const j = await res.json();
-      let line = (j.choices?.[0]?.message?.content || "").trim();
-      // some reasoning models put the reply in reasoning — take content only, strip wrappers
-      line = line.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
-                 .replace(/^(here( is|'s)[^:]*:\s*)/i, "")
-                 .replace(/^(connected( to st\.? augustine)?[^:]*:\s*)/i, "")
-                 .replace(/\s+/g, " ").trim();
-      if (!line || line.length < 40 || line.length > 500) continue;
-      saintConnCache.set(key, line);
-      return line;
-    } catch (_) { /* try next model */ }
+  const line = await generateSaintText(sys,
+    `Saint: ${name}\nComplete source story: ${bio}\n\nWrite the 2-3 sentence "Connected to St. Augustine" reflection for this saint.`,
+    220, 500);
+  if (line && line.length >= 40) {
+    saintConnCache.set(key, line);
+    return line;
   }
-  return null;   // frontend keeps its curated/general fallback
+  return null;   // caller uses a saint-specific fallback or omits the section
 }
 // Evergreen offline rotation (name + bio + a "connected to Augustine" line).
 const FALLBACK_SAINTS = [
@@ -898,5 +911,5 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 
 // Export internals for unit tests only (no effect on normal runtime).
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, sanitize };
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, sanitize };
 }
