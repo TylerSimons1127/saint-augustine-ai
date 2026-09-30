@@ -2649,25 +2649,24 @@ document.addEventListener("visibilitychange",()=>{
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script>
 <style id="mobile-native-scroll-fix">
-/* Mobile scroll recovery: restore the browser's native document scroller.
-   A locked 100dvh root + absolute overflow-scrolling stage suppresses iOS
-   elastic scroll, causes toolbar-height reflow, and exposes the white canvas. */
+/* Mobile scroll recovery: use the native document scroller and reserve horizontal
+   edge gestures for Safari's own navigation. Suppress only vertical overscroll bounce. */
 @media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse){
   html{
     height:auto !important;min-height:100% !important;
     overflow-x:hidden !important;overflow-y:auto !important;
-    overscroll-behavior-y:auto !important;background-color:var(--bg) !important;
+    overscroll-behavior-y:none !important;background-color:var(--bg) !important;
   }
   body{
     position:static !important;height:auto !important;
     min-height:100vh !important;min-height:100svh !important;
-    overflow:visible !important;background-color:var(--bg) !important;
+    overflow:visible !important;overscroll-behavior-y:none !important;background-color:var(--bg) !important;
   }
   .stage{
     position:relative !important;top:auto !important;right:auto !important;
     bottom:auto !important;left:0 !important;width:100% !important;height:auto !important;
     min-height:100vh !important;min-height:100svh !important;
-    overflow:visible !important;overscroll-behavior:auto !important;
+    overflow:visible !important;overscroll-behavior-y:none !important;
   }
   #page-chat:has(#greet:not([hidden])){
     min-height:calc(100vh - 216px) !important;
@@ -4764,67 +4763,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   if(toTop) toTop.addEventListener("click",()=>{ writeScrollTop(0,"smooth"); });
   updateToTop();
 
-  /* ---- mobile: DRAG-FOLLOW swipe (Telegram/Instagram feel) — the page tracks
-        the finger, then springs to the next tab on release. Falls back to the
-        plain setPage when reduced-motion is on. ---- */
-  (function swipeTabs(){
-    const order=NAV_ORDER;
-    if(window.matchMedia("(prefers-reduced-motion:reduce)").matches){
-      // reduced motion: keep the old decisive-edge-swipe behavior
-      let x0=null,y0=null,t0=0;
-      document.addEventListener("touchstart",e=>{ if(e.touches.length!==1){x0=null;return;} x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now(); },{passive:true});
-      document.addEventListener("touchend",e=>{
-        if(x0==null) return;
-        const dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0, dt=Date.now()-t0;
-        const startX=x0; x0=null;
-        if(dt>450 || Math.abs(dx)<90 || Math.abs(dy)>50) return;
-        if(Math.min(startX, window.innerWidth-startX)>28) return;
-        const i=order.indexOf(PAGE); if(i<0) return;
-        const next = dx<0 ? order[i+1] : order[i-1];
-        if(next) setPage(next);
-      },{passive:true});
-      return;
-    }
-    let x0=null,y0=null,t0=0,dragging=false,tracked=null;
-    const THRESH=70;              // px of follow before release commits
-    document.addEventListener("touchstart",e=>{
-      if(e.touches.length!==1){x0=null;return;}
-      x0=e.touches[0].clientX; y0=e.touches[0].clientY; t0=Date.now(); dragging=false; tracked=null;
-    },{passive:true});
-    document.addEventListener("touchmove",e=>{
-      if(x0==null) return;
-      const dx=e.touches[0].clientX-x0, dy=e.touches[0].clientY-y0;
-      if(!dragging){
-        // lock intent after 12px: horizontal wins only if clearly horizontal
-        if(Math.abs(dx)>12 && Math.abs(dx)>Math.abs(dy)*1.4){
-          if(Math.min(x0, window.innerWidth-x0)>40) { x0=null; return; }  // mid-screen drag = scroll, not swipe
-          dragging=true;
-          tracked=PAGE_ELS[PAGE] && PAGE_ELS[PAGE].wrap;
-          if(tracked) tracked.style.transition="none";
-        } else if(Math.abs(dy)>12){ x0=null; return; }   // vertical = scroll
-        else return;
-      }
-      if(dragging && tracked){
-        tracked.style.transform="translateX("+(dx*0.42)+"px)";
-        tracked.style.opacity=String(Math.max(.55, 1-Math.abs(dx)/900));
-      }
-    },{passive:true});
-    document.addEventListener("touchend",e=>{
-      if(x0==null){ reset(); return; }
-      const dx=e.changedTouches[0].clientX-x0, dt=Date.now()-t0;
-      if(dragging && tracked){
-        const fling = dt<260 && Math.abs(dx)>40;
-        const commit = fling || Math.abs(dx)>THRESH;
-        const i=order.indexOf(PAGE);
-        const next = commit ? (dx<0 ? order[i+1] : order[i-1]) : null;
-        tracked.style.transition="transform .32s cubic-bezier(.32,.72,.28,1), opacity .28s ease";
-        tracked.style.transform=""; tracked.style.opacity="";
-        if(next) setPage(next);
-      }
-      reset();
-      function reset(){ dragging=false; tracked=null; x0=null; }
-    },{passive:true});
-  })();
+
 
   /* ---- COMMAND PALETTE (Cmd/Ctrl+K) ---- */
   const paletteScrim=$("#paletteScrim"), paletteInput=$("#paletteInput"), paletteList=$("#paletteList");
