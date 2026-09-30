@@ -2999,7 +2999,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <div class="saint-text">
               <p class="saint-date" id="saintDate"></p>
               <p class="dp-reading" id="saintBio"><span class="skel" style="display:block;height:13px;width:92%;margin:6px 0"></span><span class="skel" style="display:block;height:13px;width:70%;margin:6px 0"></span></p>
-              <p class="dp-reading" id="saintConnWrap" hidden><span class="rl">Connected to St. Augustine</span><span id="saintConn"></span></p>
+              <p class="dp-reading" id="saintConnWrap" role="status" aria-live="polite" data-connection-state="loading"><span class="rl">Connected to St. Augustine</span><span id="saintConn">Preparing today’s saint-specific reflection…</span></p>
             </div>
           </div>
           <div class="saint-actions">
@@ -5380,12 +5380,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(saintName) saintName.textContent=d.name.replace(/^Saint\s+/i,"") || d.name;
           if(saintDate) saintDate.textContent=d.date || "";
           if(saintBio)  saintBio.textContent=d.bio || d.excerpt || "A holy man or woman the Church remembers today, whose life points to Christ.";
-          // Never substitute a name-swapped generic reflection. Show only a
-          // grounded generated line or a saint-specific curated fallback.
-          const conn = d.conn || SAINT_CONN[d.name] || SAINT_CONN[d.name.replace(/^Saint\s+/i,"St. ")] || "";
+          // Prefer the fresh, source-grounded reflection returned for today's saint;
+          // use only a matching curated line offline, never a generic name swap.
+          const saintKey = d.name.replace(/^Saint\s+/i,"St. ");
+          const conn = d.conn || SAINT_CONN[d.name] || SAINT_CONN[saintKey] || "";
           if(saintConn && saintConnWrap){
-            saintConn.textContent=conn;
-            saintConnWrap.hidden=!conn;
+            const displayName=d.name.replace(/^Saint\s+/i,"");
+            saintConn.textContent=conn || `A saint-specific reflection for ${displayName} is unavailable right now.`;
+            saintConnWrap.dataset.connectionState=conn ? (d.conn ? "generated" : "curated") : "unavailable";
+            saintConnWrap.hidden=false;
           }
           // Portrait
           if(saintPortrait){
@@ -5407,7 +5410,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           }).then(applySaint).catch(()=>{
             // Total failure: quiet default + a retry affordance (Render cold-starts happen)
             if(saintBio) saintBio.innerHTML='The saint of the day is waiting on Franciscan Media. Open the link below to meet them. <button class="dp-cta dp-cta-ghost" id="saintRetry" style="margin-top:10px;display:inline-block">Try again</button>';
-            if(saintConnWrap) saintConnWrap.hidden=true;
+            if(saintConn && saintConnWrap){
+              saintConn.textContent="Today’s saint-specific reflection could not load. Please try again after reconnecting.";
+              saintConnWrap.dataset.connectionState="error";
+              saintConnWrap.hidden=false;
+            }
             if(saintAsk) saintAsk.disabled=false;
             const sr=document.getElementById("saintRetry");
             if(sr) sr.addEventListener("click",()=>{ if(saintCard) delete saintCard.dataset.loaded; loadSaint(); });
