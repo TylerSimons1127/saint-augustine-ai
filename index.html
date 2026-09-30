@@ -600,7 +600,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 }
 /* page views */
 .page{display:none}
-.page.on{display:flex;flex-direction:column;align-items:center;flex:1;width:100%;min-height:100%}
+.page.on{display:flex;flex-direction:column;align-items:center;width:100%;min-height:100vh;background:var(--bg);margin:0 auto}
 /* v2.1 TRULY-FLOATING GREET — the greet must center in the VISUAL WINDOW
    (viewport minus topnav minus dock), not the stage's content box (which is
    shrunk by the 240px dock scroll-padding). Old math: page box = vh-300px,
@@ -2570,9 +2570,12 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
 
   html,body{
     width:100%;height:100dvh;max-width:100%;
-    overflow:hidden;overscroll-behavior:none;
+    overflow-x:hidden;
+    overscroll-behavior:auto;     /* native elastic iOS scroll — no white-border flash */
+    -webkit-text-size-adjust:100%;
+    background:var(--bg);
   }
-  body{position:fixed;inset:0}
+  body{margin:0;position:static;background:var(--bg);min-height:100vh}
 
   .topnav{
     height:calc(var(--ios-topbar) + env(safe-area-inset-top)) !important;
@@ -2593,17 +2596,15 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
   }
 
   .stage{
-    position:absolute !important;inset:0 !important;
-    overflow-x:hidden !important;overflow-y:auto !important;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-y:contain;
+    position:relative !important;
+    overflow-x:hidden !important;overflow-y:visible !important;
+    -webkit-overflow-scrolling:auto;
+    overscroll-behavior:auto;
     touch-action:pan-y;
     padding:
       calc(var(--ios-topbar) + env(safe-area-inset-top) + 14px)
       16px
       calc(var(--ios-stage-bottom) + env(safe-area-inset-bottom)) !important;
-    scroll-padding-top:calc(var(--ios-topbar) + env(safe-area-inset-top) + 14px);
-    scroll-padding-bottom:calc(var(--ios-stage-bottom) + env(safe-area-inset-bottom));
   }
   .page{width:100%;min-width:0}
   .daily-page,.pray-page{
