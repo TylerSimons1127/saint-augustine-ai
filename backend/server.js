@@ -843,7 +843,8 @@ async function generateSaintText(sys, userText, maxTokens, maxChars) {
       }, 20000);
       if (!res.ok) continue;
       const j = await res.json();
-      let text = (j.choices?.[0]?.message?.content || "").trim();
+      const msg = j.choices?.[0]?.message || {};
+      let text = (typeof msg.content === "string" && msg.content.trim() ? msg.content : typeof msg.reasoning_content === "string" ? msg.reasoning_content : msg.reasoning || "").trim();
       text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
         .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
       if (text.length >= 80 && text.length <= maxChars) return text;
@@ -855,7 +856,7 @@ async function getSaintConn(name, bio) {
   if (!name || !bio) return null;
   const key = name.toLowerCase().trim();
   if (saintConnCache.has(key)) return saintConnCache.get(key);
-  const sys = "You are St. Augustine writing in the first person. Write today's saint-specific 'Connected to St. Augustine' reflection in exactly 2 sentences, about 35-50 words. Ground the link in a distinctive fact from the complete source story and in accurate facts about Augustine. If the story itself names Augustine, use that direct evidence. Otherwise choose a concrete shared theme or contrast from this saint's own vocation, action, teaching, or trial. Do not imply they met unless the source says so. Never use a name-swapped template or generic filler. Return only the reflection, without heading or greeting.";
+  const sys = "You are St. Augustine writing in the first person. Write today's saint-specific 'Connected to St. Augustine' reflection in exactly 2 sentences, about 35-50 words. Ground the link in a distinctive fact from the complete source story and in accurate facts about Augustine. If the story itself names Augustine, use that direct evidence. Otherwise choose a concrete shared theme or contrast from this saint's own vocation, action, teaching, or trial. Do not imply they met unless the source says so. Never use a name-swapped template or generic filler. Return only the reflection, without heading, greeting, plan, or explanation.";
   // try the fast models first, then the big one — 3 attempts, 20s each.
   // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
   // ceiling — a non-stream completion of that class regularly exceeds it.)
@@ -964,5 +965,5 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 
 // Export internals for unit tests only (no effect on normal runtime).
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, sanitize };
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, compactSaintSummary, buildSaintConnectionFallback, sanitize };
 }
