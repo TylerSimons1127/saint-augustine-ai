@@ -2723,6 +2723,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   textarea#prompt::-webkit-scrollbar{display:none}
   .dp-card,.lesson-card,.thread,.daily-page{min-width:0;max-width:100%}
   .dp-card p,.lesson-flow,.lesson-flow p,.thread-inner{overflow-wrap:anywhere}
+  .dp-thread>.phead{
+    text-align:left !important;padding:14px 16px !important;border-radius:16px;
+    background:rgba(251,247,238,.82);border:1px solid rgba(255,255,255,.62);
+    box-shadow:0 8px 24px rgba(42,34,22,.12),inset 0 1px 0 rgba(255,255,255,.72);
+    backdrop-filter:blur(14px) saturate(135%);-webkit-backdrop-filter:blur(14px) saturate(135%);
+  }
+  .dp-thread .phead h3{font-size:20px !important;margin-bottom:5px !important}
+  .dp-thread .phead p{font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
   #page-chat:has(#greet:not([hidden])){
     min-height:calc(100vh - 216px) !important;
     min-height:calc(100svh - 216px) !important;
@@ -3537,9 +3545,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const NAV_ORDER = ["chat","study","prayer","today"];
   const PAGE_HIST = { chat:[], study:[], today:[], prayer:[] };
   const PAGE_ACTIVE = { chat:null, study:null, today:null, prayer:null };
+  const syncComposerPlaceholder=(page)=>{
+    const full={chat:"Message St. Augustine…",study:"Ask about this lesson…",prayer:"Turn a worry into prayer…",today:"Ask the readings…"};
+    const compact={chat:"Message…",study:"Ask a question…",prayer:"Share a prayer…",today:"Ask about today…"};
+    const ta=$("#prompt");
+    if(!ta || !full[page]) return;
+    ta.placeholder=window.matchMedia("(max-width:380px)").matches?compact[page]:full[page];
+    ta.setAttribute("aria-label",full[page].replace(/…$/,""));
+  };
   function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
   function setPage(p){
-    if(p===PAGE) return;
+    if(p===PAGE){ syncComposerPlaceholder(p); return; }
     if(messageShareMode) setMessageShareMode(false);
     const previousPage=PAGE;
     if(PAGE_SCROLL[previousPage]!==undefined) PAGE_SCROLL[previousPage]=readScrollTop();
@@ -3566,10 +3582,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     $$(".nav-tab").forEach(b=>{ const on=b.dataset.page===p; b.classList.toggle("on",on); b.setAttribute("aria-selected", on?"true":"false"); b.setAttribute("aria-current", on?"page":null); });
     /* v2.0.1: contextual composer placeholder — the bar says what it does
        in THIS tab, killing the "two inputs?" confusion on Pray/Study/Today */
-    {
-      const ph = { chat:"Message St. Augustine…", study:"Ask about this lesson…", prayer:"Turn a worry into prayer…", today:"Ask the readings…" };
-      const ta=$("#prompt"); if(ta && ph[p]){ ta.placeholder=ph[p]; ta.setAttribute("aria-label", ph[p].replace(/…$/,"")); }
-    }
+    syncComposerPlaceholder(p);
     if(typeof updateToTop==="function") updateToTop();
     renderSessions();
     try{ window.dispatchEvent(new Event("pagechange")); }catch(e){}   // drives the sliding tab indicator
@@ -3580,6 +3593,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     // keep the URL hash in sync so refresh/deep-link/share works
     if((" #"+p)!==(" "+location.hash) && !RG_ROUTING){ location.hash = p; }
   }
+  syncComposerPlaceholder(PAGE);
+  window.addEventListener("resize",()=>syncComposerPlaceholder(PAGE),{passive:true});
   // per-page scroll memory
   var PAGE_SCROLL = { chat:null, study:null, today:null, prayer:null };
   var PAGE_LAST = null;   // for directional page slides
