@@ -3823,14 +3823,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     if(messageShareMode) send.disabled=true; else if(typeof syncSend==="function") syncSend();
     refreshMessageShareCount();
     if(messageShareMode&&threadShareTools&&window.matchMedia("(max-width:600px)").matches){
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        const lastMessage=thread&&thread.lastElementChild;
-        if(!lastMessage) return;
-        const messageBottom=lastMessage.getBoundingClientRect().bottom;
-        const actionsTop=threadShareTools.getBoundingClientRect().top;
-        const overlap=messageBottom-(actionsTop-12);
-        if(overlap>0) writeScrollTop(window.scrollY+overlap,"smooth");
-      }));
+      requestAnimationFrame(()=>requestAnimationFrame(()=>writeScrollTop(readScrollHeight(),"auto")));
     }
   }
   if(threadShareStart) threadShareStart.addEventListener("click",()=>{
