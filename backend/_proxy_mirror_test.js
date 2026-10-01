@@ -1,6 +1,4 @@
-// Unit test: proxyStream mirrors a SHORT reasoning-only upstream (below the
-// MIRROR_THRESHOLD) into a final {text} event at stream end. Proves the
-// fallback end-of-stream path emits visible text even for tiny answers.
+// Unit test: proxyStream never exposes reasoning-only upstream data to clients.
 const http = require("http");
 const { proxyStream } = require("./server.js");
 
@@ -26,12 +24,13 @@ stub.listen(0, async () => {
   };
   await proxyStream(upstream, fakeRes);
   const textEvents = (captured.match(/"text":/g) || []).length;
-  const hasReasonNull = captured.includes('"reasoning":null');
+  const hasReasoning = captured.includes('"reasoning"');
   const hasFinalEmpty = /data: \{\}\s*\n/.test(captured);
-  const ok = textEvents >= 1 && hasReasonNull && hasFinalEmpty;
+  const hasSafeRetry = captured.includes("I couldn’t form a reply this time. Please try again.");
+  const ok = textEvents === 1 && !hasReasoning && hasSafeRetry && hasFinalEmpty;
   console.log("captured_len:", captured.length);
-  console.log("text_events:", textEvents, "| reason_null:", hasReasonNull, "| final_{}:", hasFinalEmpty);
-  console.log("=>", ok ? "PASS: short reasoning mirrored to visible text" : "FAIL");
+  console.log("text_events:", textEvents, "| reasoning_hidden:", !hasReasoning, "| safe_retry:", hasSafeRetry, "| final_{}:", hasFinalEmpty);
+  console.log("=>", ok ? "PASS: reasoning stays private" : "FAIL");
   stub.close();
   process.exit(ok ? 0 : 1);
 });

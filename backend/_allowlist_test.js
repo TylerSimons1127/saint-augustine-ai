@@ -39,16 +39,17 @@ async function postModel(m) {
   const bad = await postModel("openai/gpt-4o");
   const badReached = upstreamCalls > before;
 
-  // 2) curated free model -> stub streams it (200, has reasoning)
+  // 2) curated free model -> stub streams reasoning-only deltas; those remain private.
   const good = await postModel("nvidia/nemotron-3-ultra-550b-a55b:free");
   const dec = new TextDecoder();
   let goodBody = "";
   for await (const c of good.body) goodBody += dec.decode(c, { stream: true });
 
   const badOk = bad.status === 400 && !badReached;
-  const goodOk = good.status === 200 && goodBody.includes("Grace is the life");
+  const goodOk = good.status === 200 && !goodBody.includes("Grace is the life") &&
+    !goodBody.includes('"reasoning"') && goodBody.includes("I couldn’t form a reply this time.");
   console.log("bad_status:", bad.status, "| bad_reached_upstream:", badReached);
   console.log("good_status:", good.status);
-  console.log(badOk && goodOk ? "PASS (allowlist enforced; no upstream call for bad model)" : "FAIL");
+  console.log(badOk && goodOk ? "PASS (allowlist enforced; reasoning remains private)" : "FAIL");
   process.exit(badOk && goodOk ? 0 : 1);
 })();

@@ -755,7 +755,7 @@ const saintConnCache = new Map();      // saintName -> connection (process cache
 const saintConnSource = new Map();     // saintName -> ai-generated | source-grounded-fallback
 const saintSummaryCache = new Map();   // saintName -> concise summary
 const JEROME_SUMMARY = "Saint Jerome, who lived around 347–420, was a priest, monk, Scripture scholar, and prolific writer whose formidable learning was matched by a sharp temper and an often combative pen; his commentaries and letters reveal both his scholarship and the intensity with which he defended his convictions. After years of study in Rome and time devoted to prayer, penance, and biblical languages in the Syrian desert of Chalcis, Jerome returned to Rome, where he served Pope Damasus as secretary and was asked to revise the Latin Bible; after Damasus’s death, he traveled east and settled in Bethlehem, near the traditional site of Jesus’s birth. From Bethlehem he devoted much of his life to Scripture, translating most of the Old Testament from Hebrew into Latin, revising Latin New Testament texts, writing commentaries, and answering a wide stream of letters; he also advised monks, bishops, and other readers who sought his learning. His Latin biblical work became known as the Vulgate, and the Council of Trent later declared the Vulgate authentic for public reading and teaching in the Church; Jerome died in Bethlehem in 420, leaving a lasting legacy as a Doctor of the Church and patron of biblical scholars.";
-const JEROME_AUGUSTINE_LINK = "In Letter 166, I sought Jerome’s help with a difficult question and wished I could speak with him daily; our surviving correspondence shows a real friendship grounded in Scripture and learning.";
+const JEROME_AUGUSTINE_LINK = "In Letter 166, I, Augustine, sought Jerome’s help with a difficult question and wished I could speak with him daily; our surviving correspondence shows a real friendship grounded in Scripture and learning.";
 function compactSaintSummary(text, maxWords = 210) {
   const normalized = cleanHtml(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
@@ -776,6 +776,23 @@ function compactSaintSummary(text, maxWords = 210) {
   const result = chosen.join(" ").trim();
   if (result.split(/\s+/).filter(Boolean).length >= 80) return result;
   return normalized.split(/\s+/).filter(Boolean).slice(0, maxWords).join(" ");
+}
+// Models occasionally return their private planning as ordinary `content`
+// despite a summary-only prompt. Reject that output before it reaches /api/saint.
+function isSaintSummaryOutput(text) {
+  const value = cleanHtml(text || "").replace(/\s+/g, " ").trim();
+  if (!value) return false;
+  const sentences = saintSentences(value);
+  const words = value.split(/\s+/).filter(Boolean).length;
+  const planningPatterns = [
+    /^the user wants\b/i,
+    /\b(?:let me|i need to|i should|i must|i will|i'll|i have to|i can now)\s+(?:analy[sz]e|craft|write|summari[sz]e|identify|review|ensure|preserve|cover|include|provide|produce|create)\b/i,
+    /\b(?:key facts|source story|word count|sentence count|no heading or commentary|just the summary|accessible language)\b/i,
+    /\b(?:here(?:'s| is) (?:my|the) (?:analysis|reasoning|plan)|analysis:|reasoning:|summary plan:)\b/i,
+    /^\s*(?:[-*•]|\d+[.)])\s/m,
+  ];
+  return words >= 80 && sentences.length >= 3 && sentences.length <= 5 &&
+    !planningPatterns.some((pattern) => pattern.test(value));
 }
 function saintSentences(text) {
   return (cleanHtml(text || "").match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [])
@@ -822,8 +839,19 @@ async function getSaintSummary(name, fullStory) {
     "summarize the full story, not just the opening sentences. Write 3-5 clear sentences in 160-210 words, in accessible language. " +
     "Return only the summary, with no heading or commentary.";
   const summary = await generateSaintText(sys, `Saint: ${name}\nComplete source story:\n${fullStory}`, 320, 1400);
-  if (summary) saintSummaryCache.set(key, compactSaintSummary(summary));
-  return summary ? compactSaintSummary(summary) : null;
+  if (summary && isSaintSummaryOutput(summary)) {
+    const polished = compactSaintSummary(summary);
+    saintSummaryCache.set(key, polished);
+    return polished;
+  }
+  // Use only the source biography when a model emits planning, malformed text,
+  // or a fragment too short to be a useful summary. This applies every date.
+  const sourceSummary = compactSaintSummary(fullStory);
+  if (sourceSummary && isSaintSummaryOutput(sourceSummary)) {
+    saintSummaryCache.set(key, sourceSummary);
+    return sourceSummary;
+  }
+  return null;
 }
 async function generateSaintText(sys, userText, maxTokens, maxChars) {
   const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);

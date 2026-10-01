@@ -3,7 +3,7 @@ const assert = require("assert");
 const nativeFetch = global.fetch;
 const requests = [];
 const longBio = Array.from({ length: 5 }, (_, i) =>
-  `<p>Historical detail ${i + 1}: ${i === 4 ? "FULL_STORY_END_MARKER: she founded a school for orphaned children." : "she served her community through prayer, teaching, and practical care."}</p>`
+  `<p>${i === 0 ? "Saint Testa entered a religious community and devoted her life to prayer and service, forming a steady vocation of quiet generosity." : i === 1 ? "She taught children and cared for families who had little support, giving practical help to people in her neighborhood." : i === 2 ? "Her daily work was shaped by a deep trust in God and a commitment to ordinary acts of charity, patience, and humility." : i === 3 ? "People remembered her gentle presence and the care she showed to those around her, especially those who were often overlooked." : "FULL_STORY_END_MARKER: she founded a school for orphaned children and helped create lasting opportunities for their education."}</p>`
 ).join("");
 const listing = `<a class="elementor-post__thumbnail__link" href="https://www.franciscanmedia.org/saint-of-the-day/test-saint/"><img src="https://example.test/saint.jpg"></a><div class="elementor-post__title"><a href="https://www.franciscanmedia.org/saint-of-the-day/test-saint/">St. Testa</a></div><div class="elementor-post__excerpt"><p>A short teaser that must not become the summary.</p></div><div class="elementor-post-date">May 1</div>`;
 const detail = `<h3>Testa’s Story</h3>${longBio}<h2>Reflection</h2><p>Not part of the biography.</p>`;
@@ -19,7 +19,7 @@ global.fetch = async (url, opts = {}) => {
     requests.push(body);
     const isSummary = body.messages[0].content.includes("COMPLETE source story");
     const content = isSummary
-      ? "St. Testa served her community through teaching and care. She founded a school for orphaned children, a defining work of her life. Her vocation joined practical service with prayer. Her legacy continued through the people she formed."
+      ? "The user wants a concise biography summary of Saint Testa based on the provided source story. I need to write 3-5 clear sentences, 160-210 words, in accessible language. Let me analyze the source story for key facts: she entered a religious community, taught children, and founded a school. I need to craft a polished summary now."
       : "I recognize in your care for the forgotten a call to serve Christ in each neighbor. Your school for orphaned children gives that shared love a distinct and lasting form.";
     return new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status: 200, headers: { "content-type": "application/json" } });
   }
@@ -38,6 +38,7 @@ require("./server.js");
   const saint = await response.json();
   assert.strictEqual(saint.name, "St. Testa");
   assert.ok(saint.bio.includes("founded a school for orphaned children"), "AI summary should include a defining fact from the full story");
+  assert.ok(!/the user wants|let me analyze|i need to write/i.test(saint.bio), "model planning text must never be returned as the saint summary");
   assert.ok(!saint.bio.includes("short teaser"), "AI summary must replace the card excerpt");
   assert.ok(saint.conn.includes("school for orphaned children"), "Augustine reflection should use a saint-specific fact");
   assert.strictEqual(requests.length, 2, "expect separate summary and connection generations");
@@ -47,7 +48,7 @@ require("./server.js");
   }
   assert.ok(requests[0].messages[0].content.includes("160-210 words"), "summary prompt should target about half of the current 409-word story");
   const summaryWords = saint.bio.trim().split(/\s+/).filter(Boolean).length;
-  assert.ok(summaryWords <= 210, `summary should be at most 210 words, got ${summaryWords}`);
+  assert.ok(summaryWords >= 80 && summaryWords <= 210, `summary should be a substantive source-based biography of at most 210 words, got ${summaryWords}`);
   assert.ok(requests[1].messages[0].content.includes("name-swapped"), "connection prompt must forbid generic name-swapped copy");
   console.log("PASS: full-story summary + saint-specific Augustine reflection");
   process.exit(0);
