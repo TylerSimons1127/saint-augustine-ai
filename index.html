@@ -2732,7 +2732,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   .dp-thread .phead h3{font-size:20px !important;margin-bottom:5px !important}
   .dp-thread .phead p{font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
   .settings-sheet{width:min(440px,calc(100vw - 20px));max-width:calc(100vw - 20px)}
-  .settings-body{box-sizing:border-box;min-width:0;max-width:100%;overflow-x:hidden}
+  .settings-body{box-sizing:border-box;min-width:0;max-width:100%;overflow-x:clip !important}
   .settings-head,.settings-body>.set-sec,.settings-body>.about,.set-row{min-width:0;max-width:100%}
   .settings-body .seg-ctl{max-width:100%;flex-wrap:wrap}
   #page-chat:has(#greet:not([hidden])){
@@ -2747,6 +2747,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   .ts-l{font-size:9px;letter-spacing:.045em}
   .composer .input-row{gap:4px !important}
   .composer .controls-toggle{width:36px}
+}
+@media (max-width:480px){
+  .settings-body .set-row:has(.seg-ctl){align-items:stretch;flex-direction:column;gap:7px}
+  .settings-body .set-row:has(.seg-ctl) .seg-ctl{display:flex;width:100%;justify-content:stretch}
+  .settings-body .set-row:has(.seg-ctl) .seg-ctl button{flex:1 1 0;min-width:0;padding:6px 5px;font-size:11px;white-space:nowrap}
+  .settings-sheet *::-webkit-scrollbar:horizontal{display:none;height:0}
 }
 /* Remove scale-based press effects on touch: feedback must not make the UI
    appear to contract while a person is trying to tap or scroll. */
