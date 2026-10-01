@@ -292,7 +292,7 @@ a{color:inherit}
     left:calc(10px + env(safe-area-inset-left));
     align-items:center;justify-content:center;width:42px;height:42px;
     background:rgba(255,252,245,.56);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
-    border:1px solid rgba(255,255,255,.55);border-radius:999px;
+    border:1px solid rgba(255,255,255,.55);border-radius:13px;
     backdrop-filter:blur(16px) saturate(150%);-webkit-backdrop-filter:blur(16px) saturate(150%);
     box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);color:var(--ink-soft);
   }
@@ -1423,8 +1423,6 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
 .ts-n{font-family:var(--display);font-weight:500;font-size:21px;line-height:1;color:var(--ink)}
 .ts-n .ts-d{font-size:12px;color:var(--muted);font-weight:400;margin-left:2px}
 .ts-l{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-.ts-bar{height:4px;border-radius:999px;background:var(--border);overflow:hidden;margin-top:7px;width:100%;flex:none}
-.ts-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(to right,var(--accent),var(--accent-deep));transition:width .6s cubic-bezier(.32,.72,.28,1)}
 @media (max-width:640px){ .today-strip{grid-template-columns:1fr 1fr} .ts-cell.quiz{display:none} }
 @media (max-width:480px){ .today-strip{grid-template-columns:1fr} .ts-cell.quiz{display:flex} }
 
@@ -1874,7 +1872,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
     position:absolute;
     bottom:calc(4px + env(safe-area-inset-bottom));
     left:0;
-    width:56px;height:3px;
+   width:var(--tab-indicator-width,var(--tab-indicator-base-width,56px));height:3px;
     border-radius:999px 999px 0 0;
     background:var(--accent-deep);
     transform:translateX(var(--tab-i-x,0px));
@@ -1907,7 +1905,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .topnav .nav-brand em{font-style:normal;color:var(--accent-deep)}
   .topnav .nav-actions{flex:none;display:flex;gap:2px}
   .topnav .nav-search{display:none}      /* search lives in sidebar drawer */
-  .sb-toggle{width:42px;height:42px;flex:none}
+  .sb-toggle{width:42px;height:42px;flex:none;border-radius:13px}
   .topnav .icon-btn{width:42px;height:42px;flex:none;
     background:rgba(255,252,245,.56);backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
     border:1px solid rgba(255,255,255,.55);border-radius:13px}
@@ -1980,8 +1978,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .ts-n{font-size:21px !important;line-height:1 !important;font-weight:600;font-family:var(--display);font-variant-numeric:tabular-nums}
   .ts-l{font-size:10.5px !important;letter-spacing:.09em !important;margin-top:3px !important}
   .ts-l{font-size:9.5px !important;letter-spacing:.07em !important}
-  .ts-bar{height:5px !important;width:82% !important;border-radius:999px;margin-top:4px;background:rgba(93,66,34,.22);box-shadow:inset 0 0 0 1px rgba(93,66,34,.12)}
-  .ts-bar i{border-radius:999px;background:var(--accent-deep);box-shadow:0 1px 3px rgba(93,66,34,.35)}
 
   /* H. PAGE HEADS + CARDS + targets (kept from v1.6) */
   .dp-head h2{font-size:20px !important;margin:2px 0 6px !important;font-weight:400}
@@ -2106,7 +2102,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   }
 
   /* 5. Tab indicator: crisp 3px gold pill (not a block), slightly wider */
-  body>.nav-tabs::after,.topnav .nav-tabs::after{width:44px;height:3px;border-radius:999px}
+  body>.nav-tabs::after,.topnav .nav-tabs::after{--tab-indicator-base-width:44px;width:var(--tab-indicator-width,var(--tab-indicator-base-width));height:3px;border-radius:999px}
 }
 
 /* small phones (restored) */
@@ -2149,7 +2145,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .dp-card:active{box-shadow:var(--shadow), inset 0 0 0 1px rgba(157,116,64,.14)}
 
   /* 3. Gradient gold progress + thicker track */
-  .ts-bar i{background:linear-gradient(90deg,var(--accent),var(--accent-deep)) !important}
 
   /* 4. Section labels in brand gold (not flat black caps) */
   .dp-reading .rl{color:var(--gold-ink) !important}
@@ -2292,6 +2287,17 @@ body>.topnav,body>.topnav.topnav{
     background:linear-gradient(rgba(255,252,245,.56), rgba(255,252,245,.44)) !important;
     backdrop-filter:blur(18px) saturate(140%) !important;
     -webkit-backdrop-filter:blur(18px) saturate(140%) !important;
+  .reasoning{height:auto;min-height:48px;box-sizing:border-box;align-items:center;padding:4px}
+  .reasoning::before{
+    content:"";position:absolute;z-index:0;top:4px;bottom:4px;
+    left:0;width:var(--lg-w,calc((100% - 16px)/3));transform:translateX(var(--lg-x,5px));
+    border:1px solid rgba(255,255,255,.35);border-radius:999px;background:var(--accent-deep);
+    box-shadow:0 3px 12px -2px rgba(93,66,34,.35),inset 0 1px 0 rgba(255,255,255,.7);
+    transition:transform .32s cubic-bezier(.32,.72,.22,1);will-change:transform;
+    pointer-events:none;
+  }
+  .reasoning .seg[aria-pressed="true"]{background:transparent!important;border-color:transparent!important;box-shadow:none!important;color:#fbf7ee!important}
+  @media (prefers-reduced-motion:reduce){.reasoning::before{transition:none}}
   }
   .sb-toggle{
     background:rgba(255,252,245,.56);
@@ -2311,6 +2317,7 @@ body>.topnav,body>.topnav.topnav{
              box-shadow var(--mt-fast) var(--ease-out),
              border-color var(--mt-fast) var(--ease-out);
 }
+    border-radius:13px;
 @media (hover:hover){
   .dp-card:hover,.ts-cell:hover,.lesson-link:hover{
     transform:translateY(-1px);
@@ -2624,17 +2631,16 @@ document.addEventListener("visibilitychange",()=>{
     }
     syncTabIndicator();
   }
-  /* A2: sliding gold indicator — --tab-i-x = center of the active tab minus
-     half pill, measured RELATIVE to the tabs container (not the viewport).
-     The old code used tab.left/viewport coords, so the pill drifted on every
-     resize or docked layout change. v4.6.2: fixed with tabsRect. */
+  /* A2: center the sliding indicator under the active tab icon, measured
+     relative to the tab bar so docked layouts and resizes stay aligned. */
   function syncTabIndicator(){
     var tabs=document.querySelector('.nav-tabs'); if(!tabs) return;
     var active=tabs.querySelector('.nav-tab.on'); if(!active) return;
-    var tabsRect=tabs.getBoundingClientRect();   // container origin
-    var r=active.getBoundingClientRect();       // tabbox in viewport coords
-    // pill width = 56px (CSS); left = tab center relative to container minus half pill.
-    var x=(r.left - tabsRect.left) + (r.width/2) - 28;
+    var icon=active.querySelector('.nav-tab-icon')||active;
+    var tabsRect=tabs.getBoundingClientRect(), r=icon.getBoundingClientRect();
+    var width=parseFloat(getComputedStyle(tabs).getPropertyValue('--tab-indicator-base-width'))||56;
+    tabs.style.setProperty('--tab-indicator-width',width+'px');
+    var x=(r.left-tabsRect.left-tabs.clientLeft)+(r.width/2)-(width/2);
     tabs.style.setProperty('--tab-i-x', Math.max(0,x) + 'px');
   }
   window.addEventListener('pagechange', syncTabIndicator);
@@ -2805,7 +2811,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 </aside>
 
 <button class="sb-toggle" id="sbToggle" aria-label="Conversations" title="Conversations">
-  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 5H7"/><path d="M17 9H7"/></svg>
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4.5h10a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-4.7L8 20v-2.5H7a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3Z"/><path d="M8 9h8M8 13h5"/></svg>
 </button>
 
 
@@ -3008,7 +3014,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           </div>
           <div class="ts-cell lessons" id="lessonsCell" title="Lessons read">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#ic-book-open"/></svg>
-            <div class="ts-meta"><span class="ts-n" id="lessonsReadN">0<span class="ts-d">/32</span></span><span class="ts-l">lessons read</span><div class="ts-bar"><i id="lessonsReadBar"></i></div></div>
+            <div class="ts-meta"><span class="ts-n" id="lessonsReadN">0<span class="ts-d">/32</span></span><span class="ts-l">lessons read</span></div>
           </div>
           <div class="ts-cell quiz" id="quizCell" title="Quizzes completed">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#ic-check-circle"/></svg>
@@ -5616,9 +5622,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         function refreshTodayStrip(){
           updateStreak();
           const s=readSet();
-          const lr=$('#lessonsReadN'), lb=$('#lessonsReadBar'), qd=$('#quizDoneN');
+          const lr=$('#lessonsReadN'), qd=$('#quizDoneN');
           if(lr) lr.innerHTML=s.size+'<span class="ts-d">/'+LESSON.length+'</span>';
-          if(lb) lb.style.width=Math.round(s.size/LESSON.length*100)+"%";
           if(qd) qd.textContent=countQuizzesDone();
         }
         // hook: refresh the strip whenever a quiz completes
