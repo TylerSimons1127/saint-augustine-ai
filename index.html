@@ -701,7 +701,7 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
 .topic-summary{font-size:14px;line-height:1.62;color:var(--ink);margin:0 0 14px;white-space:pre-wrap}
 .lesson-flow{margin:4px 0 2px;padding:0 0 0 4px}
 .ls{position:relative;display:flex;gap:14px;padding:14px 0}
-.ls:not(:last-child)::before{content:"";position:absolute;left:14px;top:24px;bottom:0;width:2px;background:linear-gradient(var(--border-light),rgba(var(--accent-rgb),.32) 60%,transparent)}
+.ls:not(:last-child)::before{content:"";position:absolute;left:16px;top:20px;bottom:0;width:1px;background:linear-gradient(var(--border-light),rgba(var(--accent-rgb),.32) 60%,transparent)}
 .ls-n{flex:none;width:30px;height:30px;border-radius:999px;display:grid;place-items:center;
   background:var(--accent-deep);color:#fbf7ee;font-size:13px;font-weight:700;
   box-shadow:0 3px 10px rgba(93,66,34,.28);z-index:1}
@@ -733,12 +733,19 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 .topic-note{font-size:13px;line-height:1.55;color:var(--ink-soft);margin:4px 0 0;max-width:52ch}
 .topic-topic{font-size:15px;line-height:1.55;color:var(--ink);margin:0;font-style:italic}
 .lesson-flow{position:relative}
-.ls-n[data-step]{width:26px;height:26px;font-size:12px;font-weight:600;
-  background:var(--glass-strong);color:var(--accent-deep);border:1px solid rgba(var(--accent-rgb),.35);box-shadow:none}
-.ls-n[data-step].done{background:rgba(var(--accent-rgb),.16);border-color:rgba(var(--accent-rgb),.45);color:var(--accent-deep)}
+.ls-n[data-step]{width:10px;height:10px;margin:0 8px;border-radius:50%;font-size:0;background:var(--glass-strong);color:transparent;border:1px solid rgba(var(--accent-rgb),.48);box-shadow:none}
+.ls-n[data-step].done{background:var(--accent-deep);border-color:var(--accent-deep)}
 .ls .topic-vocab .rl2{display:block;font-size:14px;line-height:1.62;color:var(--ink);font-style:italic;padding:10px 12px;border-radius:10px;background:var(--accent-soft);border:1px solid rgba(var(--accent-rgb),.22)}
+.lesson-citation{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--muted);margin:7px 0 0}
+.lesson-source-note{font-size:12.5px;line-height:1.55;color:var(--ink-soft);margin:7px 0 0}
+.lesson-source{display:inline-flex;align-items:center;gap:6px;margin:12px 0 4px;color:var(--gold-ink);font-size:12px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.lesson-continuation{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
+.lesson-continuation summary{cursor:pointer;color:var(--gold-ink);font-size:12px;font-weight:600;min-height:40px;display:flex;align-items:center}
+.lesson-continuation summary:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px}
+.lesson-continuation .topic-excerpt{padding-top:8px}
 .lesson-top .dp-eyebrow-mini{margin:0 0 4px}
 .lesson-top .topic-name{margin:0 0 2px}
+#lessonQuote{font-style:normal}
 @media (max-width:480px){
   .lesson-top{flex-direction:column}
   .lesson-top .daily-shuf{align-self:flex-start}
@@ -1316,6 +1323,11 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
 .daily-shuf.icon{padding:0;width:38px;height:38px;display:grid;place-items:center;justify-content:center}
 .daily-shuf.icon svg{width:16px;height:16px}
 .lesson-browser{width:min(640px,94vw);max-height:84dvh;display:flex;flex-direction:column}
+.lesson-browser-sub{font-size:13px;line-height:1.5;color:var(--ink-soft);text-align:center;margin:0 0 16px}
+.lesson-search-label{font-size:12px;font-weight:600;color:var(--ink-soft);margin:0 0 6px}
+.lesson-search{width:100%;min-height:44px;border:1px solid var(--border);border-radius:12px;background:var(--glass-strong);padding:0 14px;color:var(--ink);font:inherit;font-size:16px}
+.lesson-search:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px}
+.lesson-results{min-height:18px;margin:8px 0;font-family:var(--mono);font-size:10.5px;color:var(--muted)}
 .lesson-browser-grid{
   display:grid;grid-template-columns:repeat(2,1fr);gap:8px;overflow-y:auto;overscroll-behavior:contain;
   padding:2px 2px 8px;margin:0 -2px;
@@ -1326,11 +1338,13 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
   transition:transform .15s ease, border-color .15s ease;
 }
 .lb-item:hover{border-color:var(--accent);transform:translateY(-1px)}
+.lb-item:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px}
 .lb-item .lb-n{font-family:var(--mono);font-size:10px;color:var(--muted);flex:none;width:22px}
 .lb-item .lb-t{font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.25}
 .lb-item.read::after{content:"✓";margin-left:auto;color:var(--ok);font-size:12px;font-weight:700;flex:none}
 .lb-item.today{border-color:var(--accent);background:var(--accent-soft)}
 .lb-item.today .lb-t{color:var(--gold-ink)}
+.lb-item.selected{box-shadow:inset 0 0 0 1px var(--gold-ink);background:var(--panel)}
 .glossary-list{overflow-y:auto;overscroll-behavior:contain;display:grid;gap:10px;padding:2px 2px 8px}
 .gl-item{padding:10px 12px;border-radius:var(--r-s);border:1px solid var(--border);background:var(--glass-strong)}
 .gl-item .gl-term{font-family:var(--display);font-size:15px;color:var(--ink);margin:0 0 3px}
@@ -1371,11 +1385,12 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
 
 
 /* study head actions */
-.dp-head-actions{display:flex;gap:8px;margin-top:10px}.dp-link-btn{
+.dp-head-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.dp-link-btn{
   font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink);
-  background:var(--card);border:1px solid var(--border);padding:7px 13px;border-radius:999px;cursor:pointer;
+  background:var(--card);border:1px solid var(--border);min-height:40px;padding:0 14px;border-radius:999px;cursor:pointer;
   transition:background .15s ease,transform .15s ease;
 }
+@media (pointer:coarse){.dp-link-btn{min-height:44px}}
 .dp-link-btn:hover{background:var(--panel);transform:translateY(-1px)}
 .dp-link-btn:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px;box-shadow:none}
 
@@ -2858,8 +2873,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         <div class="dp-head">
           <p class="dp-eyebrow">Lectio · Study · Understanding</p>
           <h2>Study</h2>
-          <p>Let St. Augustine teach you by word and by topic — a quote to carry, and a theme drawn from his own writings.</p>
+          <p>Follow one topic all the way through: Augustine’s words, a passage to read, a key term, and the writing behind it.</p>
           <div class="dp-head-actions">
+            <button class="dp-link-btn" id="lessonBrowse" type="button">Choose a topic</button>
+            <button class="dp-link-btn" id="lessonReturnToday" type="button" hidden>Return to today’s lesson</button>
             <button class="daily-shuf" id="glossaryBtn" title="Glossary of 32 terms" aria-label="Open glossary"><span>Glossary</span></button>
           </div>
         </div>
@@ -2870,7 +2887,6 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <div class="lesson-heading">
               <span class="dp-eyebrow-mini" id="lessonKicker">Lesson of the Day</span>
               <h4 class="topic-name" id="lessonName"></h4>
-              <p class="topic-note" id="lessonNote"></p>
             </div>
             <div class="lesson-nav">
               <button class="daily-shuf icon" id="lessonPrev" title="Previous lesson" aria-label="Previous lesson">
@@ -2882,16 +2898,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               <button class="daily-shuf icon" id="lessonNext" title="Next lesson" aria-label="Next lesson">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
               </button>
-              <button class="daily-shuf icon" id="lessonBrowse" title="Browse all lessons" aria-label="Browse all lessons">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-              </button>
             </div>
           </div>
           <div class="lesson-flow" id="lessonFlow">
             <details class="ls" data-step="1" open>
               <summary>
-                <span class="ls-n" data-step="1">1</span>
-                <span class="ls-l">Today's Topic</span>
+                <span class="ls-n" data-step="1" aria-hidden="true"></span>
+                <span class="ls-l">The topic</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
@@ -2900,13 +2913,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             </details>
             <details class="ls" data-step="2">
               <summary>
-                <span class="ls-n" data-step="2">2</span>
-                <span class="ls-l">A word he said</span>
+                <span class="ls-n" data-step="2" aria-hidden="true"></span>
+                <span class="ls-l">A line to carry</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
                 <div class="quote-wrap">
                   <p class="topic-quote" id="lessonQuote"></p>
+                  <p class="lesson-citation" id="lessonQuoteSource"></p>
+                  <p class="lesson-citation" id="lessonRelatedScripture" hidden></p>
                   <div class="quote-actions">
                     <button class="quote-act" id="quoteCopy" title="Copy quote" aria-label="Copy quote">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg><span>Copy</span>
@@ -2920,18 +2935,23 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             </details>
             <details class="ls" data-step="3">
               <summary>
-                <span class="ls-n" data-step="3">3</span>
-                <span class="ls-l">In his own words</span>
+                <span class="ls-n" data-step="3" aria-hidden="true"></span>
+                <span class="ls-l" id="lessonPassageLabel">Read a passage</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
                 <div class="topic-excerpt" id="lessonExcerpt"></div>
+                <a class="lesson-source" id="lessonPrimarySource" hidden target="_blank" rel="noopener noreferrer">Read the primary text <span aria-hidden="true">↗</span></a>
+                <details class="lesson-continuation" id="lessonContinuation" hidden>
+                  <summary>Continue reading the lesson</summary>
+                  <div class="topic-excerpt" id="lessonContinuationBody"></div>
+                </details>
               </div>
             </details>
             <details class="ls" data-step="4">
               <summary>
-                <span class="ls-n" data-step="4">4</span>
-                <span class="ls-l">The key term</span>
+                <span class="ls-n" data-step="4" aria-hidden="true"></span>
+                <span class="ls-l">A word to know</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
@@ -2940,12 +2960,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             </details>
             <details class="ls" data-step="5">
               <summary>
-                <span class="ls-n" data-step="5">5</span>
+                <span class="ls-n" data-step="5" aria-hidden="true"></span>
                 <span class="ls-l" id="lessonWritingLabel">The writing behind it</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
                 <p class="topic-summary" id="lessonSummary"></p>
+                <p class="lesson-source-note" id="lessonNote"></p>
               </div>
             </details>
           </div>
@@ -2966,7 +2987,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
              is just a pointer now; this is where you actually take it -->
         <section class="dp-card" aria-label="Daily Quiz" id="sec-quiz-study">
           <div class="dp-card-head">
-            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg>Daily Quiz</h3>
+            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg><span id="quizHeading">Daily Quiz</span></h3>
             <span class="dp-mini-tag" id="quizProgress">Question 1 of 5</span>
           </div>
           <p class="quiz-q" id="quizQ"></p>
@@ -2990,7 +3011,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         </section>
 
         <section class="dp-thread">
-          <div class="phead"><h3>Reflect together</h3><p>Ask St. Augustine to go deeper on today's topic with you.</p></div>
+          <div class="phead"><h3>Reflect together</h3><p id="studyReflectIntro">Ask St. Augustine to go deeper on today's topic with you.</p></div>
           <div class="thread-inner" id="threadStudy" aria-live="polite"></div>
         </section>
       </div>
@@ -3246,9 +3267,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 <!-- LESSON BROWSER + GLOSSARY -->
 <div class="modal-scrim" id="lessonBrowserScrim" aria-hidden="true">
   <div class="beta-modal lesson-browser" role="dialog" aria-modal="true" aria-labelledby="lessonBrowserTitle">
-    <span class="tag">Curriculum</span>
-    <h2 id="lessonBrowserTitle">The Lesson Bank</h2>
-    <p style="text-align:center;font-size:12.5px;color:var(--muted);margin:0 0 14px" id="lessonBrowserSub">32 lessons · one for each day · tap any to read</p>
+    <span class="tag">32-part curriculum</span>
+    <h2 id="lessonBrowserTitle">Choose a topic</h2>
+    <p class="lesson-browser-sub" id="lessonBrowserSub">Choose any topic to open its connected reading path.</p>
+    <label class="lesson-search-label" for="lessonSearch">Find a lesson</label>
+    <input class="lesson-search" id="lessonSearch" type="search" placeholder="Search topics…" autocomplete="off" />
+    <p class="lesson-results" id="lessonResults" aria-live="polite"></p>
     <div class="lesson-browser-grid" id="lessonBrowserGrid"></div>
     <button class="agree" id="lessonBrowserClose" style="margin-top:16px">Close</button>
   </div>
@@ -4803,7 +4827,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       icon:"book",
       label:t.name,
       hint:(i+1)+" of "+(LESSON?LESSON.length:0),
-      run:()=>{ setPage("study"); setTimeout(()=>{ if(typeof renderLesson==="function") renderLesson(i); },40); }
+      run:()=>{ setPage("study"); setTimeout(()=>{ if(typeof renderLesson==="function") renderLesson(i,"selected"); },40); }
     }));
   }
   function paletteSessionItems(){
@@ -5469,49 +5493,85 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         window.addEventListener("focus",refreshSaintOnNewDay);
 
         /* ---- Lesson of the Day (one topic, walked through quote → excerpt → vocabulary → a named writing) ---- */
-                const LESSON = window.LESSON;   // loaded from lessons.js (F73: cached separately)
+        const LESSON = window.LESSON;   // loaded from lessons.js (F73: cached separately)
         const lessonKicker=$('#lessonKicker'), lessonName=$('#lessonName'), lessonNote=$('#lessonNote'),
-              lessonQuote=$('#lessonQuote'), lessonTopic=$('#lessonTopic'),
-              lessonExcerpt=$('#lessonExcerpt'), lessonVocab=$('#lessonVocab'),
-              lessonSummary=$('#lessonSummary'), lessonLabel=$('#lessonWritingLabel'),
-              lessonShuf=$('#lessonShuf'), lessonAsk=$('#lessonAsk');
-        let lessonIdx=-1;
+              lessonQuote=$('#lessonQuote'), lessonQuoteSource=$('#lessonQuoteSource'), lessonRelatedScripture=$('#lessonRelatedScripture'), lessonTopic=$('#lessonTopic'),
+              lessonExcerpt=$('#lessonExcerpt'), lessonVocab=$('#lessonVocab'), lessonPrimarySource=$('#lessonPrimarySource'),
+              lessonContinuation=$('#lessonContinuation'), lessonContinuationBody=$('#lessonContinuationBody'),
+              lessonPassageLabel=$('#lessonPassageLabel'), lessonSummary=$('#lessonSummary'), lessonLabel=$('#lessonWritingLabel'),
+              lessonRegion=$('.dp-card.lesson'), lessonShuf=$('#lessonShuf'), lessonAsk=$('#lessonAsk'), lessonReturnToday=$('#lessonReturnToday'), tomorrowTeaser=$('#tomorrowTeaser'), studyReflectIntro=$('#studyReflectIntro');
+        let lessonIdx=-1, lessonMode="daily", lessonObserver=null, lessonReadTimer=null, qActiveTopic=-1, studyQuizReady=false;
+        const READ_KEY="saugustine_lessons_read_v1";
+        function readSet(){ try{const r=localStorage.getItem(READ_KEY); return r?new Set(JSON.parse(r)):new Set();}catch(e){return new Set();} }
+        function markRead(i){ try{const s=readSet(); s.add(i%LESSON.length); localStorage.setItem(READ_KEY,JSON.stringify([...s]));}catch(e){} updateLessonProgress(); if(typeof refreshTodayStrip==="function") refreshTodayStrip(); }
         function lessonForDate(){
           const now=new Date(); const start=new Date(now.getFullYear(),0,0);
           const d=Math.floor((now-start)/86400000); return d % LESSON.length;
         }
-        function renderLesson(i){
-          const t=LESSON[i % LESSON.length];
-          if(lessonKicker) lessonKicker.textContent="Lesson of the Day · "+(i % LESSON.length + 1)+" of "+LESSON.length;
+        function renderLesson(i,mode){
+          const idx=((i%LESSON.length)+LESSON.length)%LESSON.length;
+          const t=LESSON[idx];
+          if(mode) lessonMode=mode;
+          if(lessonReadTimer){ clearTimeout(lessonReadTimer); lessonReadTimer=null; }
+          const topicMode=lessonMode==="selected";
+          if(lessonRegion) lessonRegion.setAttribute("aria-label",topicMode?"Selected Topic: "+t.name:"Lesson of the Day");
+          if(lessonKicker) lessonKicker.textContent=(topicMode?"Selected Topic":"Lesson of the Day")+" · "+(idx+1)+" of "+LESSON.length;
           if(lessonName) lessonName.textContent=t.name;
           if(lessonNote) lessonNote.textContent=t.writingNote||"";
           if(lessonTopic) lessonTopic.textContent=t.topic||t.name;
-          if(lessonQuote) lessonQuote.textContent=t.quote;
-          if(lessonExcerpt){
-            const paras=(t.excerpt||[]);
-            lessonExcerpt.innerHTML=paras.map((p,pi)=>"<p data-pi=\""+pi+"\"><span class=\"pdrop\">"+p.charAt(0)+"</span>"+p.slice(1)+"</p>").join("");
-            // per-paragraph ask: click (or Enter) opens Chat with this paragraph as context (B22)
-            $$("#lessonExcerpt > p").forEach(p=>{
-              p.tabIndex=0; p.classList.add("askable");
-              const go=()=>{ const full=paras[+p.dataset.pi]||""; pageChat("You wrote: \""+full+"\" — help me sit with this passage. What does it mean for how I live today?","study"); };
-              p.addEventListener("click",go);
-              p.addEventListener("keydown",ev=>{ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); go(); } });
-            });
+          if(lessonQuote) lessonQuote.textContent="“"+(t.primaryQuote||t.quote||"")+"”";
+          if(lessonQuoteSource) lessonQuoteSource.textContent=t.primaryQuoteSource||t.writing||"";
+          if(lessonRelatedScripture){
+            const related=Boolean(t.relatedScripture&&t.relatedText);
+            lessonRelatedScripture.hidden=!related;
+            lessonRelatedScripture.textContent=related?"Scripture alongside this reading · "+t.relatedScripture+" — “"+t.relatedText+"”":"";
           }
-          if(lessonVocab) lessonVocab.textContent=t.vocab;
-          if(lessonLabel) lessonLabel.textContent="The writing behind it — "+t.writing;
-          if(lessonSummary) lessonSummary.textContent=t.summary;
-          lessonIdx=i;
+          if(lessonPassageLabel) lessonPassageLabel.textContent=t.primaryExcerpt?"A passage from Augustine":"A passage on this topic";
+          if(lessonExcerpt){
+            const primary=t.primaryExcerpt;
+            const paras=(t.excerpt||[]);
+            const lead=primary||paras[0]||"";
+            lessonExcerpt.innerHTML=lead?"<p>"+esc(lead)+"</p>":"";
+            const extra=primary?paras:paras.slice(1);
+            if(lessonContinuation && lessonContinuationBody){
+              lessonContinuationBody.innerHTML=extra.map(p=>"<p>"+esc(p)+"</p>").join("");
+              lessonContinuation.hidden=!extra.length;
+              lessonContinuation.open=false;
+            }
+            [lessonExcerpt,lessonContinuationBody].filter(Boolean).forEach(container=>$$('p',container).forEach(p=>{
+              p.tabIndex=0; p.classList.add("askable");
+              const ask=()=>pageChat("Help me understand this passage about "+t.name+": “"+p.textContent+"” What does it mean, and how does it connect to "+(t.writing||"Augustine’s writings")+"?","study");
+              p.addEventListener("click",ask);
+              p.addEventListener("keydown",ev=>{ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); ask(); } });
+            }));
+          }
+          if(lessonPrimarySource){
+            lessonPrimarySource.hidden=!(t.primaryUrl&&t.primaryExcerpt);
+            if(t.primaryUrl) lessonPrimarySource.href=t.primaryUrl;
+          }
+          if(lessonVocab) lessonVocab.textContent=t.vocab||"";
+          if(lessonLabel) lessonLabel.textContent="The writing — "+(t.writing||"Source");
+          if(lessonSummary) lessonSummary.textContent=t.summary||"";
+          if(lessonReturnToday) lessonReturnToday.hidden=!topicMode;
+          if(tomorrowTeaser) tomorrowTeaser.hidden=topicMode;
+          if(lessonAsk) lessonAsk.textContent=topicMode?"Explore this topic with Augustine →":"Walk through today’s lesson with Augustine →";
+          if(studyReflectIntro) studyReflectIntro.textContent=topicMode?"Bring this passage on "+t.name+" to St. Augustine for a shared reflection.":"Reflect with St. Augustine on today’s topic and its reading.";
+          lessonIdx=idx;
+          if(studyQuizReady && qActiveTopic!==idx) selectQuizTopic(idx);
           if(window.__lessonSteps) window.__lessonSteps.reset();
           updateLessonProgress();
+          if(lessonObserver){
+            const focus=lessonExcerpt||document.querySelector(".dp-card.lesson");
+            if(focus){ lessonObserver.unobserve(focus); lessonObserver.observe(focus); }
+          }
         }
-        renderLesson(lessonForDate());
-        /* v3.6 — lesson steps are collapsible: one open at a time, step 1 first */
+        renderLesson(lessonForDate(),"daily");
+        /* Keep the five connected lesson elements readable in one continuous path. */
         (function lessonSteps(){
           const steps=$$('.ls');
           if(!steps.length) return;
-          steps.forEach(d=>d.addEventListener("toggle",()=>{ if(d.open) steps.forEach(o=>{ if(o!==d) o.open=false; }); }));
-          window.__lessonSteps={ reset(){ steps.forEach((d,idx)=>d.open=idx===0); } };
+          window.__lessonSteps={ reset(){ steps.forEach(d=>d.open=true); } };
+          window.__lessonSteps.reset();
         })();
         // tomorrow's lesson teaser (closes the daily loop)
         (function tomorrowTeaser(){
@@ -5520,31 +5580,33 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           el.textContent=t.name;
         })();
         if(lessonShuf) lessonShuf.addEventListener("click",()=>{
-          let i=Math.floor(Math.random()*LESSON.length); if(i===lessonIdx) i=(i+1)%LESSON.length; renderLesson(i);
+          let i=Math.floor(Math.random()*LESSON.length); if(i===lessonIdx) i=(i+1)%LESSON.length; renderLesson(i,"selected");
         });
-        /* linear path through the curriculum + browser + read-state */
-        const READ_KEY="saugustine_lessons_read_v1";
-        function readSet(){ try{const r=localStorage.getItem(READ_KEY); return r?new Set(JSON.parse(r)):new Set();}catch(e){return new Set();} }
-        function markRead(i){ try{const s=readSet(); s.add(i%LESSON.length); localStorage.setItem(READ_KEY,JSON.stringify([...s]));}catch(e){} updateLessonProgress(); if(typeof refreshTodayStrip==="function") refreshTodayStrip(); }
         const lessonPrev=$('#lessonPrev'), lessonNext=$('#lessonNext'), lessonBrowse=$('#lessonBrowse');
-        if(lessonPrev) lessonPrev.addEventListener("click",()=>renderLesson((lessonIdx-1+LESSON.length)%LESSON.length));
-        if(lessonNext) lessonNext.addEventListener("click",()=>renderLesson((lessonIdx+1)%LESSON.length));
-        // completion ring on the kicker: "12 of 32 · 7 read"
+        if(lessonPrev) lessonPrev.addEventListener("click",()=>renderLesson((lessonIdx-1+LESSON.length)%LESSON.length,lessonMode));
+        if(lessonNext) lessonNext.addEventListener("click",()=>renderLesson((lessonIdx+1)%LESSON.length,lessonMode));
+        if(lessonReturnToday) lessonReturnToday.addEventListener("click",()=>renderLesson(lessonForDate(),"daily"));
+        // completion indicator preserves the distinction between the daily lesson and a chosen topic.
         function updateLessonProgress(){
-          const s=readSet(); if(lessonKicker && s.size) lessonKicker.textContent="Lesson of the Day · "+(lessonIdx%LESSON.length+1)+" of "+LESSON.length+" · "+s.size+" read";
+          const s=readSet();
+          if(lessonKicker) lessonKicker.textContent=(lessonMode==="selected"?"Selected Topic":"Lesson of the Day")+" · "+(lessonIdx%LESSON.length+1)+" of "+LESSON.length+(s.size?" · "+s.size+" read":"");
         }
-        // browser
-        const lbScrim=$('#lessonBrowserScrim'), lbGrid=$('#lessonBrowserGrid'), lbClose=$('#lessonBrowserClose'), lbSub=$('#lessonBrowserSub');
-        function renderLessonBrowser(){
-          const s=readSet(), today=lessonForDate();
-          lbGrid.innerHTML=LESSON.map((t,i)=>'<button class="lb-item'+(i===today?' today':'')+(s.has(i)?' read':'')+'" data-i="'+i+'"><span class="lb-n">'+(i+1)+'</span><span class="lb-t">'+esc(t.name)+'</span></button>').join("");
-          lbSub.textContent=LESSON.length+" lessons · one for each day · "+s.size+" read";
+        // Searchable topic browser. Selecting a topic opens the same complete connected path.
+        const lbScrim=$('#lessonBrowserScrim'), lbGrid=$('#lessonBrowserGrid'), lbClose=$('#lessonBrowserClose'), lbSub=$('#lessonBrowserSub'), lbSearch=$('#lessonSearch'), lbResults=$('#lessonResults');
+        function renderLessonBrowser(query){
+          const s=readSet(), today=lessonForDate(), q=(query||"").trim().toLocaleLowerCase();
+          const items=LESSON.map((t,i)=>({t,i})).filter(x=>!q||x.t.name.toLocaleLowerCase().includes(q)||String(x.t.topic||"").toLocaleLowerCase().includes(q)||String(x.t.vocab||"").toLocaleLowerCase().includes(q));
+          lbGrid.innerHTML=items.map(({t,i})=>'<button class="lb-item'+(i===today?' today':'')+(i===lessonIdx&&lessonMode==="selected"?' selected':'')+(s.has(i)?' read':'')+'" data-i="'+i+'"'+(i===lessonIdx&&lessonMode==="selected"?' aria-current="true"':'')+'><span class="lb-n">'+String(i+1).padStart(2,"0")+'</span><span class="lb-t">'+esc(t.name)+'</span></button>').join("")||'<p class="palette-empty">No topics match that search.</p>';
+          lbSub.textContent="Choose a topic to read its quote, passage, key term, and source summary.";
+          if(lbResults) lbResults.textContent=items.length+" of "+LESSON.length+" topics"+(s.size?" · "+s.size+" read":"");
           $$(".lb-item",lbGrid).forEach(el=>el.addEventListener("click",()=>{
-            renderLesson(+el.dataset.i); lbScrim.classList.remove("show"); lbScrim.setAttribute("aria-hidden","true");
+            renderLesson(+el.dataset.i,"selected"); lbScrim.classList.remove("show"); lbScrim.setAttribute("aria-hidden","true");
+            if(lessonBrowse) lessonBrowse.focus({preventScroll:true});
           }));
         }
-        if(lessonBrowse) lessonBrowse.addEventListener("click",()=>{ renderLessonBrowser(); lbScrim.classList.add("show"); lbScrim.setAttribute("aria-hidden","false"); });
-        if(lbClose) lbClose.addEventListener("click",()=>{ lbScrim.classList.remove("show"); lbScrim.setAttribute("aria-hidden","true"); });
+        if(lessonBrowse) lessonBrowse.addEventListener("click",()=>{ if(lbSearch) lbSearch.value=""; renderLessonBrowser(""); lbScrim.classList.add("show"); lbScrim.setAttribute("aria-hidden","false"); setTimeout(()=>lbSearch&&lbSearch.focus(),30); });
+        if(lbSearch) lbSearch.addEventListener("input",()=>renderLessonBrowser(lbSearch.value));
+        if(lbClose) lbClose.addEventListener("click",()=>{ lbScrim.classList.remove("show"); lbScrim.setAttribute("aria-hidden","true"); if(lessonBrowse) lessonBrowse.focus({preventScroll:true}); });
         if(lbScrim) lbScrim.addEventListener("click",e=>{ if(e.target===lbScrim){ lbScrim.classList.remove("show"); lbScrim.setAttribute("aria-hidden","true"); } });
         // glossary
         const glScrim=$('#glossaryScrim'), glList=$('#glossaryList'), glClose=$('#glossaryClose'), glSearch=$('#glossarySearch');
@@ -5561,34 +5623,42 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         if(glScrim) glScrim.addEventListener("click",e=>{ if(e.target===glScrim){ glScrim.classList.remove("show"); glScrim.setAttribute("aria-hidden","true"); } });
         if(lessonAsk) lessonAsk.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
-          const paras=(t.excerpt||[]).join(" ");
-          pageChat("As St. Augustine, teach me today's lesson step by step. Today's topic is "+t.name+". You once wrote: "+t.quote+" Walk me through the meaning of it, drawing on your own writing, "+t.writing+", and help me apply it to my life today.", "study");
+          const quote=t.primaryQuote||t.quote||"";
+          const source=t.primaryQuoteSource||t.writing||"Augustine’s writings";
+          const label=lessonMode==="selected"?"the topic":"today’s lesson";
+          pageChat("As St. Augustine, walk with me through "+label+", “"+t.name+".” The line we are carrying is: “"+quote+"” ("+source+"). Explain it in context, draw on "+t.writing+", and help me reflect on its meaning today.","study");
         });
-        // mark lesson read when the excerpt is substantially viewed (60% in viewport for 1s)
+        /* mark each lesson read after its full connected card remains substantially visible */
         (function trackLessonRead(){
-          const card=document.querySelector(".dp-card.lesson");
-          if(!card || !("IntersectionObserver" in window)) return;
-          let seen=false, t0=null;
-          const io=new IntersectionObserver(es=>{
-            es.forEach(en=>{
-              if(en.isIntersecting && en.intersectionRatio>=0.6){ if(!t0) t0=Date.now(); 
-                if(!seen && Date.now()-t0>1000){ seen=true; markRead(lessonIdx); io.disconnect(); }
-              } else t0=null;
+          const focus=lessonExcerpt||document.querySelector(".dp-card.lesson");
+          if(!focus || !("IntersectionObserver" in window)) return;
+          lessonObserver=new IntersectionObserver(entries=>{
+            entries.forEach(entry=>{
+              if(lessonReadTimer){ clearTimeout(lessonReadTimer); lessonReadTimer=null; }
+              if(entry.isIntersecting && entry.intersectionRatio>=0.6){
+                const candidate=lessonIdx;
+                if(!readSet().has(candidate)) lessonReadTimer=setTimeout(()=>{
+                  const r=focus.getBoundingClientRect();
+                  const visibleH=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0));
+                  if(candidate===lessonIdx && visibleH/Math.max(1,r.height)>=0.6) markRead(candidate);
+                  lessonReadTimer=null;
+                },1000);
+              }
             });
           },{threshold:[0,0.6]});
-          io.observe(card);
+          lessonObserver.observe(focus);
         })();
 
         /* copy + share the quote (Web Share API with clipboard fallback) */
         const quoteCopy=$('#quoteCopy'), quoteShare=$('#quoteShare');
         if(quoteCopy) quoteCopy.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
-          const txt="\u201C"+t.quote+"\u201D — St. Augustine";
+          const txt="\u201C"+(t.primaryQuote||t.quote||"")+"\u201D — St. Augustine";
           (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>showToast("Quote copied ✓")).catch(()=>showToast("Copy failed"));
         });
         if(quoteShare) quoteShare.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
-          const txt="\u201C"+t.quote+"\u201D — St. Augustine ("+t.writing+")";
+          const txt="\u201C"+(t.primaryQuote||t.quote||"")+"\u201D — St. Augustine ("+(t.primaryQuoteSource||t.writing)+")";
           const data={title:"Saint Augustine AI — "+t.name, text:txt, url:location.origin+location.pathname+"#study"};
           if(navigator.share){ navigator.share(data).catch(()=>{}); }
           else { (navigator.clipboard?navigator.clipboard.writeText(txt+" "+data.url):Promise.reject()).then(()=>showToast("Copied link + quote ✓")).catch(()=>showToast("Share failed")); }
@@ -5646,30 +5716,37 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         }
         /* in-progress save: refresh mid-quiz keeps your place and score */
         function saveProgress(){
-          try{localStorage.setItem(quizKey(qActiveTopic)+"_prog",JSON.stringify({q:qIdx,s:qScore,a:qAnswered?1:0}));}catch(e){}
+          try{localStorage.setItem(quizKey(qActiveTopic)+"_prog",JSON.stringify({q:qIdx,s:qScore,a:qAnswered?1:0,p:qPicked}));}catch(e){}
         }
         function loadProgress(idx){
           try{const r=localStorage.getItem(quizKey(idx)+"_prog"); return r?JSON.parse(r):null;}catch(e){return null;}
         }
         function clearProgress(idx){ try{localStorage.removeItem(quizKey(idx)+"_prog");}catch(e){} }
+        function clearResult(idx){ try{localStorage.removeItem(quizKey(idx));}catch(e){} }
         function loadResult(idx){
           try{const r=localStorage.getItem(quizKey(idx)); return r?JSON.parse(r):null;}catch(e){return null;}
         }
         const learnTag=document.getElementById('learnTag'),
               learnTitle=document.getElementById('learnTitle'),
+              quizHeading=document.getElementById('quizHeading'),quizRegion=document.getElementById('sec-quiz-study'),
               quizProgress=document.getElementById('quizProgress'),quizQ=document.getElementById('quizQ'),
               quizOpts=document.getElementById('quizOpts'),quizNote=document.getElementById('quizNote'),
               quizNext=document.getElementById('quizNext'),quizDone=document.getElementById('quizDone'),
               quizScore=document.getElementById('quizScore'),quizPraise=document.getElementById('quizPraise'),
               quizRetry=document.getElementById('quizRetry'),quizAsk=document.getElementById('quizAsk');
-        let qIdx=0,qScore=0,qAnswered=false,qActiveTopic=-1;
+        let qIdx=0,qScore=0,qAnswered=false,qPicked=-1;
         function renderLearn(){
-          const t=LESSON[qActiveTopic>=0?qActiveTopic:todayLessonIdx()];
+          const t=LESSON[todayLessonIdx()];
           if(learnTag) learnTag.textContent="Lesson of the day";
           if(learnTitle) learnTitle.textContent=t.name;
         }
         function renderQuiz(){
-          const topic=LESSON[qActiveTopic].questions,q=topic[qIdx];
+          const lesson=LESSON[qActiveTopic],topic=lesson.questions||[];
+          if(!topic.length) return;
+          if(qIdx>=topic.length) qIdx=0;
+          const q=topic[qIdx];
+          if(quizHeading) quizHeading.textContent=qActiveTopic===todayLessonIdx()?"Daily Quiz":"Quiz · "+lesson.name;
+          if(quizRegion) quizRegion.setAttribute("aria-label",qActiveTopic===todayLessonIdx()?"Daily Quiz":"Quiz for "+lesson.name);
           if(quizProgress) quizProgress.textContent="Question "+(qIdx+1)+" of "+topic.length;
           if(quizQ) quizQ.textContent=q.q;
           if(quizOpts){
@@ -5679,30 +5756,36 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               b.className="quiz-opt";
               b.textContent=o;
               b.setAttribute("role","radio");
+              b.setAttribute("aria-checked",qAnswered&&qPicked===i?"true":"false");
+              if(qAnswered){
+                b.classList.add("disabled"); b.disabled=true;
+                if(i===q.ans) b.classList.add("correct");
+                if(i===qPicked&&qPicked!==q.ans) b.classList.add("wrong","settle");
+              }
               b.addEventListener("click",()=>answer(i,b));
               quizOpts.appendChild(b);
             });
           }
-          if(quizNote) quizNote.hidden=true;
-          if(quizNext){ quizNext.hidden=false; quizNext.textContent=(qIdx===topic.length-1)?"See results \u2192":"Next \u2192"; }
+          if(quizNote){ quizNote.textContent=qAnswered?q.note:""; quizNote.hidden=!qAnswered; }
+          if(quizNext){ quizNext.hidden=false; quizNext.textContent=(qIdx===topic.length-1)?"See results →":"Next →"; }
           if(quizDone) quizDone.hidden=true;
-          qAnswered=false;
         }
         function answer(i,b){
           if(qAnswered) return;
           qAnswered=true;
+          qPicked=i;
           // gentle haptic on mobile (10ms tick; ignored elsewhere)
           if(navigator.vibrate) try{ navigator.vibrate(10); }catch(e){}
           const topic=LESSON[qActiveTopic].questions,q=topic[qIdx];
           const opts=quizOpts.querySelectorAll(".quiz-opt");
-          opts.forEach((o,j)=>{o.classList.add("disabled"); if(j===q.ans) o.classList.add("correct");});
+          opts.forEach((o,j)=>{o.classList.add("disabled");o.disabled=true;o.setAttribute("aria-checked",j===i?"true":"false");if(j===q.ans)o.classList.add("correct");});
           if(i===q.ans){ qScore++; b.classList.add("sweep"); } else { b.classList.add("wrong","settle"); }
           if(quizNote){ quizNote.textContent=q.note; quizNote.hidden=false; }
           saveProgress();
         }
         function nextQ(){
           const topic=LESSON[qActiveTopic].questions;
-          if(qIdx<topic.length-1){ qIdx++; renderQuiz(); saveProgress(); }
+          if(qIdx<topic.length-1){ qIdx++;qAnswered=false;qPicked=-1;renderQuiz();saveProgress(); }
           else showResult();
         }
         function showResult(){
@@ -5736,9 +5819,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           else praise="Return to the lesson and try again \u2014 every saint began as a student.";
           if(quizPraise) quizPraise.textContent=praise;
           if(quizOpts) quizOpts.innerHTML="";
+          if(quizNote){ quizNote.textContent="";quizNote.hidden=true; }
           if(quizNext) quizNext.hidden=true;
         }
-        function retryQuiz(){ qIdx=0;qScore=0; clearProgress(qActiveTopic); renderQuiz(); }
+        function retryQuiz(){ qIdx=0;qScore=0;qAnswered=false;qPicked=-1;clearProgress(qActiveTopic);clearResult(qActiveTopic);renderQuiz(); }
         /* 7-day quiz sparkline: gold bars from stored results (C42) */
         function renderSparkline(){
           const el=$("#quizSpark"); if(!el) return;
@@ -5758,16 +5842,28 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             return '<span class="spk'+(x.today?" today":(x.pct==null?" none":""))+'" data-v="'+(x.v||"·")+'" style="height:'+h+'px" title="'+(x.v||"—")+'"></span>';
           }).join("")+'<span class="quiz-spark-cap" style="align-self:center">last 7 days</span>';
         }
-        function startQuiz(){
-          qActiveTopic=todayLessonIdx();
-          const saved=loadResult(qActiveTopic);
-          renderLearn();
-          if(saved && saved.completed){ qScore=saved.score; showSavedResult(saved); }
-          else {
-            const prog=loadProgress(qActiveTopic);
-            if(prog && prog.q>0){ qIdx=prog.q; qScore=prog.s; renderQuiz(); }  // resume mid-quiz
-            else { qIdx=0;qScore=0; renderQuiz(); }
+        function selectQuizTopic(idx){
+          const target=((idx%LESSON.length)+LESSON.length)%LESSON.length;
+          qActiveTopic=target;
+          qIdx=0;qScore=0;qAnswered=false;qPicked=-1;
+          if(quizHeading) quizHeading.textContent=target===todayLessonIdx()?"Daily Quiz":"Quiz · "+LESSON[target].name;
+          if(quizRegion) quizRegion.setAttribute("aria-label",target===todayLessonIdx()?"Daily Quiz":"Quiz for "+LESSON[target].name);
+          const saved=loadResult(target);
+          if(saved&&saved.completed){ qScore=saved.score; showSavedResult(saved); return; }
+          const prog=loadProgress(target);
+          if(prog){
+            const total=LESSON[target].questions.length;
+            qIdx=Math.max(0,Math.min(total-1,Number.isFinite(prog.q)?prog.q:0));
+            qScore=Number.isFinite(prog.s)?prog.s:0;
+            qAnswered=Boolean(prog.a);
+            qPicked=Number.isInteger(prog.p)&&prog.p>=0?prog.p:-1;
           }
+          renderQuiz();
+        }
+        function startQuiz(idx){
+          studyQuizReady=true;
+          selectQuizTopic(Number.isInteger(idx)?idx:todayLessonIdx());
+          renderLearn();
         }
         function scheduleMidnightRefresh(){
           const now=new Date();
@@ -5776,11 +5872,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           setTimeout(()=>{ startQuiz(); scheduleMidnightRefresh(); }, ms+1000);
         }
         const learnGo=document.getElementById('learnGo');
-        if(learnGo) learnGo.addEventListener("click",()=>{
-          const idx=qActiveTopic>=0?qActiveTopic:todayLessonIdx();
-          renderLesson(idx);   // load that exact lesson into Study
-          setPage("study");
-        });
+        if(learnGo) learnGo.addEventListener("click",()=>{ const idx=todayLessonIdx(); renderLesson(idx,"daily"); setPage("study"); });
         if(quizNext) quizNext.addEventListener("click",nextQ);
         if(quizRetry) quizRetry.addEventListener("click",retryQuiz);
         if(quizAsk) quizAsk.addEventListener("click",()=>{
@@ -5843,6 +5935,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         /* v4.5: Today's quiz pointer → the expanded quiz on Study */
         const quizGo=document.getElementById('quizGo');
         if(quizGo) quizGo.addEventListener("click",()=>{
+          renderLesson(todayLessonIdx(),"daily");
           setPage("study");
           setTimeout(()=>{ const q=document.getElementById("sec-quiz-study"); if(q) q.scrollIntoView({behavior:"smooth",block:"start"}); },120);
         });
