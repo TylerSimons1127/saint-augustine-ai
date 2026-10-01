@@ -755,7 +755,7 @@ const saintConnCache = new Map();      // saintName -> connection (process cache
 const saintConnSource = new Map();     // saintName -> ai-generated | source-grounded-fallback
 const saintSummaryCache = new Map();   // saintName -> concise summary
 const JEROME_SUMMARY = "Saint Jerome, who lived around 347–420, was a priest, monk, Scripture scholar, and prolific writer whose formidable learning was matched by a sharp temper and an often combative pen; his commentaries and letters reveal both his scholarship and the intensity with which he defended his convictions. After years of study in Rome and time devoted to prayer, penance, and biblical languages in the Syrian desert of Chalcis, Jerome returned to Rome, where he served Pope Damasus as secretary and was asked to revise the Latin Bible; after Damasus’s death, he traveled east and settled in Bethlehem, near the traditional site of Jesus’s birth. From Bethlehem he devoted much of his life to Scripture, translating most of the Old Testament from Hebrew into Latin, revising Latin New Testament texts, writing commentaries, and answering a wide stream of letters; he also advised monks, bishops, and other readers who sought his learning. His Latin biblical work became known as the Vulgate, and the Council of Trent later declared the Vulgate authentic for public reading and teaching in the Church; Jerome died in Bethlehem in 420, leaving a lasting legacy as a Doctor of the Church and patron of biblical scholars.";
-const JEROME_AUGUSTINE_LINK = "In Letter 166, I, Augustine, sought Jerome’s help with a difficult question and wished I could speak with him daily; our surviving correspondence shows a real friendship grounded in Scripture and learning.";
+const JEROME_AUGUSTINE_LINK = "In Letter 166, Augustine turned to Jerome for help with a difficult question and wrote of his longing to speak with him each day. Their surviving correspondence reveals a friendship sustained by Scripture, learning, and a shared search for truth.";
 function compactSaintSummary(text, maxWords = 210) {
   const normalized = cleanHtml(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
@@ -798,6 +798,32 @@ function saintSentences(text) {
   return (cleanHtml(text || "").match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [])
     .map((sentence) => sentence.trim()).filter(Boolean);
 }
+function isSaintConnectionOutput(text, name, bio) {
+  const value = cleanHtml(text || "").replace(/\s+/g, " ").trim();
+  const words = value.split(/\s+/).filter(Boolean).length;
+  const sentences = saintSentences(value);
+  const normalize = (text) => String(text || "").normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+  const normalizedValue = normalize(value);
+  const normalizedBio = normalize(bio);
+  const nameParts = normalize(String(name || "").replace(/^(?:Saint|St\.?)\s+/i, "")).match(/[a-z0-9]+/g) || [];
+  const outputWords = new Set(normalizedValue.match(/[a-z0-9]+/g) || []);
+  const namesSaint = nameParts.some((part) => part.length > 2 && outputWords.has(part));
+  const sourceWords = new Set(normalizedBio.match(/[a-z]{5,}/g) || []);
+  const genericWords = new Set("about after again among augustine because become being bring called church could daily faith first from given grace have heart holy into later life lived made many most never only other over saint same story than that their them there these they thing those through time under until upon where which while with would years".split(" "));
+  const sourceMatches = new Set((normalizedValue.match(/[a-z]{5,}/g) || []).filter((word) => sourceWords.has(word) && !genericWords.has(word)));
+  const planningPatterns = [
+    /\b(?:let me|i need to|i should|i will|i'll|the user|the prompt|here is my|reasoning:|analysis:)\b/i,
+    /\b(?:name-swapped|generic filler|complete source story|two sentences|35-50 words)\b/i,
+  ];
+  const directLinkClaim = /\b(?:met|friendship|correspondence|letters?|wrote to|written to|exchanged letters|sought.{0,35}(?:counsel|help|advice))\b/i;
+  const sourceDocumentsLink = saintSentences(bio).some((sentence) => /\bAugustine\b/i.test(sentence) && directLinkClaim.test(sentence));
+  return words >= 30 && words <= 75 && sentences.length >= 2 && sentences.length <= 3 &&
+    !/\b(?:I|I'm|I've|my|we|our|you|your)\b/.test(value) &&
+    namesSaint && sourceMatches.size >= 2 &&
+    (sourceDocumentsLink || !directLinkClaim.test(value)) &&
+    !/\b(?:their lives meet|meaningful witness|distinct witness|thoughtful lens on the saint)\b/i.test(value) &&
+    !planningPatterns.some((pattern) => pattern.test(value));
+}
 function buildSaintConnectionFallback(name, story) {
   const displayName = String(name || "today's saint").replace(/^(?:Saint|St\.)\s+/i, "");
   if (/\bjerome\b/i.test(displayName)) {
@@ -809,22 +835,26 @@ function buildSaintConnectionFallback(name, story) {
     ? sentences.find((sentence) => /Augustine/i.test(sentence)) : null;
   if (mention) {
     const quote = mention.match(/[“\"']([^”\"']{15,180})[”\"']/);
-    if (quote) return `The story preserves Augustine’s direct praise of ${displayName}: “${quote[1]}” Their bond is historical, not a generic comparison—Augustine himself recognized ${displayName}’s learning.`;
-    return `The biography records Augustine’s own connection to ${displayName}: ${mention.slice(0, 210)} This is a direct historical link, not a name-swapped comparison.`.slice(0, 320);
+    if (quote) return `Augustine’s own words make this connection especially clear: “${quote[1]}” The biography preserves a direct exchange between him and ${displayName}, rooted in their shared devotion to Scripture and learning.`;
+    return `The biography records a direct historical connection between Augustine and ${displayName}: ${mention.slice(0, 220)}`.slice(0, 320);
   }
   const themes = [
-    { match: /scripture|bible|biblical|translation|vulgate/i, augustine: "I devoted my life to studying Scripture", bond: "service to the Word" },
-    { match: /conversion|converted|baptiz|confession/i, augustine: "I know how grace can redirect a searching life", bond: "conversion and grace" },
-    { match: /bishop|pastor|preach|church|shepherd/i, augustine: "I served the Church as bishop of Hippo", bond: "pastoral service" },
-    { match: /monk|monastic|prayer|hermit|community/i, augustine: "I shaped my life around prayer and Christian community", bond: "prayer and common life" },
-    { match: /poor|charit|care|served|orphan|sick|helped/i, augustine: "I urged Christians to care for one another as one body", bond: "care for the neighbor" },
-    { match: /wrote|writing|book|letter|teach|scholar|study/i, augustine: "I wrote and taught to serve the Church", bond: "teaching the faith" },
+    { match: /scripture|bible|biblical|translation|vulgate/i, bond: "the patient study of Scripture" },
+    { match: /conversion|converted|baptiz|confession/i, bond: "conversion and the work of grace" },
+    { match: /bishop|pastor|preach|church|shepherd/i, bond: "pastoral care for the Church" },
+    { match: /monk|monastic|prayer|hermit|community/i, bond: "prayer and life in Christian community" },
+    { match: /poor|charit|care|served|orphan|sick|helped/i, bond: "care for the neighbor" },
+    { match: /wrote|writing|book|letter|teach|scholar|study/i, bond: "teaching and handing on the faith" },
   ];
   const theme = themes.find((item) => item.match.test(story || "")) ||
-    { match: /./, augustine: "I searched for truth and the rest found in God", bond: "the search for God" };
+    { match: /./, bond: "the search for truth and rest in God" };
   const fact = sentences.find((sentence) => theme.match.test(sentence) && sentence.length > 35) || sentences.find((sentence) => sentence.length > 35) || "The full story of this saint points toward Christ.";
-  const shortFact = fact.length > 135 ? fact.slice(0, 132).replace(/\s+\S*$/, "") + "…" : fact;
-  return `${theme.augustine}; ${displayName} gives ${theme.bond} a distinct form: “${shortFact}” Their lives meet in this particular witness, not in a claimed meeting.`.slice(0, 320);
+  const shortFact = fact.length > 170 ? fact.slice(0, 167).replace(/\s+\S*$/, "") + "…" : fact;
+  const reflection = `Augustine’s writings illuminate ${theme.bond}. The story of ${displayName} gives this theme a human form: ${shortFact}`;
+  if (reflection.length <= 320) return reflection;
+  const available = Math.max(40, 320 - reflection.length + shortFact.length - 1);
+  const conciseFact = shortFact.slice(0, available - 1).replace(/\s+\S*$/, "") + "…";
+  return `Augustine’s writings illuminate ${theme.bond}. The story of ${displayName} gives this theme a human form: ${conciseFact}`;
 }
 async function getSaintSummary(name, fullStory) {
   if (!name || !fullStory) return null;
@@ -889,14 +919,14 @@ async function getSaintConn(name, bio) {
     saintConnSource.set(key, "source-grounded-fallback");
     return JEROME_AUGUSTINE_LINK;
   }
-  const sys = "You are St. Augustine writing in the first person. Write today's saint-specific 'Connected to St. Augustine' reflection in exactly 2 sentences, about 35-50 words. Ground the link in a distinctive fact from the complete source story and in accurate facts about Augustine. If the story itself names Augustine, use that direct evidence. Otherwise choose a concrete shared theme or contrast from this saint's own vocation, action, teaching, or trial. Do not imply they met unless the source says so. Never use a name-swapped template or generic filler. Return only the reflection, without heading, greeting, plan, or explanation.";
+  const sys = "Write a thoughtful, polished editorial reflection for the Saint of the Day panel, in third person (do not impersonate Augustine). Use exactly 2 sentences, about 35-55 words. Ground one sentence in a distinctive, verifiable fact from the supplied biography; connect it to a specific, accurate Augustinian theme or writing only when the connection is meaningful. Prefer an actual historical link when the source documents one. Otherwise present a careful affinity, never imply the saints met or shared a direct relationship. Avoid generic praise and reusable templates. Return only the reflection, with no heading or commentary.";
   // try the fast models first, then the big one — 3 attempts, 20s each.
   // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
   // ceiling — a non-stream completion of that class regularly exceeds it.)
   const line = await generateSaintText(sys,
     `Saint: ${name}\nComplete source story: ${bio}\n\nWrite the 2-sentence "Connected to St. Augustine" reflection for this saint.`,
-    160, 500);
-  if (line && line.length >= 40) {
+    160, 500, (output) => isSaintConnectionOutput(output, name, bio));
+  if (line && isSaintConnectionOutput(line, name, bio)) {
     const cut = line.slice(0, 317);
     const polished = line.length <= 320 ? line : `${cut.slice(0, cut.lastIndexOf(" "))}…`;
     saintConnCache.set(key, polished);
@@ -1002,5 +1032,5 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 
 // Export internals for unit tests only (no effect on normal runtime).
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, compactSaintSummary, buildSaintConnectionFallback, sanitize };
+  module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, compactSaintSummary, buildSaintConnectionFallback, isSaintConnectionOutput, sanitize };
 }

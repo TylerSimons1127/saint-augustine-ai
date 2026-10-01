@@ -736,7 +736,8 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 .ls-n[data-step].done{background:var(--accent-deep);border-color:var(--accent-deep)}
 .ls .topic-vocab .rl2{display:block;font-size:14px;line-height:1.62;color:var(--ink);font-style:italic;padding:10px 12px;border-radius:10px;background:var(--accent-soft);border:1px solid rgba(var(--accent-rgb),.22)}
 .lesson-citation{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--muted);margin:7px 0 0}
-.lesson-source-note{font-size:12.5px;line-height:1.55;color:var(--ink-soft);margin:7px 0 0}
+.lesson-context{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--border)}
+.lesson-context-title{font-family:var(--mono);font-size:10.5px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
 .lesson-source{display:inline-flex;align-items:center;gap:6px;margin:12px 0 4px;color:var(--gold-ink);font-size:12px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .lesson-continuation{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
 .lesson-continuation summary{cursor:pointer;color:var(--gold-ink);font-size:12px;font-weight:600;min-height:40px;display:flex;align-items:center}
@@ -2930,16 +2931,20 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <details class="ls" data-step="3">
               <summary>
                 <span class="ls-n" data-step="3" aria-hidden="true"></span>
-                <span class="ls-l" id="lessonPassageLabel">Read a passage</span>
+                <span class="ls-l" id="lessonPassageLabel">Read the passage & its context</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
                 <div class="topic-excerpt" id="lessonExcerpt"></div>
-                <a class="lesson-source" id="lessonPrimarySource" hidden target="_blank" rel="noopener noreferrer">Read the primary text <span aria-hidden="true">↗</span></a>
                 <details class="lesson-continuation" id="lessonContinuation" hidden>
                   <summary>Continue reading the lesson</summary>
                   <div class="topic-excerpt" id="lessonContinuationBody"></div>
                 </details>
+                <div class="lesson-context">
+                  <p class="lesson-context-title" id="lessonWritingLabel">A closer reading</p>
+                  <p class="topic-summary" id="lessonSummary"></p>
+                </div>
+                <a class="lesson-source" id="lessonPrimarySource" hidden target="_blank" rel="noopener noreferrer">Read the primary text <span aria-hidden="true">↗</span></a>
               </div>
             </details>
             <details class="ls" data-step="4">
@@ -2950,17 +2955,6 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               </summary>
               <div class="ls-b">
                 <div class="topic-vocab"><span class="rl2" id="lessonVocab"></span></div>
-              </div>
-            </details>
-            <details class="ls" data-step="5">
-              <summary>
-                <span class="ls-n" data-step="5" aria-hidden="true"></span>
-                <span class="ls-l" id="lessonWritingLabel">The writing behind it</span>
-                <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-              </summary>
-              <div class="ls-b">
-                <p class="topic-summary" id="lessonSummary"></p>
-                <p class="lesson-source-note" id="lessonNote"></p>
               </div>
             </details>
           </div>
@@ -5483,7 +5477,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
         /* ---- Lesson of the Day (one topic, walked through quote → excerpt → vocabulary → a named writing) ---- */
         const LESSON = window.LESSON;   // loaded from lessons.js (F73: cached separately)
-        const lessonKicker=$('#lessonKicker'), lessonName=$('#lessonName'), lessonNote=$('#lessonNote'),
+        const lessonKicker=$('#lessonKicker'), lessonName=$('#lessonName'),
               lessonQuote=$('#lessonQuote'), lessonQuoteSource=$('#lessonQuoteSource'), lessonRelatedScripture=$('#lessonRelatedScripture'), lessonTopic=$('#lessonTopic'),
               lessonExcerpt=$('#lessonExcerpt'), lessonVocab=$('#lessonVocab'), lessonPrimarySource=$('#lessonPrimarySource'),
               lessonContinuation=$('#lessonContinuation'), lessonContinuationBody=$('#lessonContinuationBody'),
@@ -5512,7 +5506,6 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           }
           if(lessonKicker) lessonKicker.textContent=(topicMode?"Selected Topic":"Lesson of the Day")+" · "+(idx+1)+" of "+LESSON.length;
           if(lessonName) lessonName.textContent=t.name;
-          if(lessonNote) lessonNote.textContent=t.writingNote||"";
           if(lessonTopic) lessonTopic.textContent=t.topic||t.name;
           const quoteText=String(t.primaryQuote||t.quote||"").trim();
           const quoteLine=(quoteText.match(/^[\s\S]*?[.!?](?=\s|$)/)||[quoteText])[0].trim();
@@ -5523,7 +5516,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             lessonRelatedScripture.hidden=!related;
             lessonRelatedScripture.textContent=related?"Scripture alongside this reading · "+t.relatedScripture+" — “"+t.relatedText+"”":"";
           }
-          if(lessonPassageLabel) lessonPassageLabel.textContent=t.primaryExcerpt?"Read Augustine’s passage":"Read the topic passage";
+          if(lessonPassageLabel) lessonPassageLabel.textContent=t.primaryExcerpt?"Read the passage & its source":"Explore the topic & its source";
           if(lessonExcerpt){
             const primary=t.primaryExcerpt;
             const paras=(t.excerpt||[]);
@@ -5547,7 +5540,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(t.primaryUrl) lessonPrimarySource.href=t.primaryUrl;
           }
           if(lessonVocab) lessonVocab.textContent=t.vocab||"";
-          if(lessonLabel) lessonLabel.textContent="The writing behind it · "+(t.writing||"Source");
+          if(lessonLabel) lessonLabel.textContent="A closer reading";
           if(lessonSummary) lessonSummary.textContent=t.summary||"";
           if(lessonReturnToday) lessonReturnToday.hidden=!topicMode;
           if(tomorrowTeaser) tomorrowTeaser.hidden=topicMode;

@@ -20,7 +20,7 @@ global.fetch = async (url, opts = {}) => {
     const isSummary = body.messages[0].content.includes("COMPLETE source story");
     const content = isSummary
       ? "The user wants a concise biography summary of Saint Testa based on the provided source story. I need to write 3-5 clear sentences, 160-210 words, in accessible language. Let me analyze the source story for key facts: she entered a religious community, taught children, and founded a school. I need to craft a polished summary now."
-      : "I recognize in your care for the forgotten a call to serve Christ in each neighbor. Your school for orphaned children gives that shared love a distinct and lasting form.";
+      : "Testa’s care for her neighbors reflects Augustine’s account of charity as love made practical. Her school for orphaned children gave that concern lasting form, extending education to children who might otherwise have been left without it.";
     return new Response(JSON.stringify({ choices: [{ message: { content } }] }), { status: 200, headers: { "content-type": "application/json" } });
   }
   return nativeFetch(url, opts);
@@ -51,7 +51,8 @@ require("./server.js");
   assert.ok(requests[0].messages[0].content.includes("160-210 words"), "summary prompt should target about half of the current 409-word story");
   const summaryWords = saint.bio.trim().split(/\s+/).filter(Boolean).length;
   assert.ok(summaryWords >= 80 && summaryWords <= 210, `summary should be a substantive source-based biography of at most 210 words, got ${summaryWords}`);
-  assert.ok(requests[1].messages[0].content.includes("name-swapped"), "connection prompt must forbid generic name-swapped copy");
+  assert.ok(requests[1].messages[0].content.includes("third person"), "connection prompt must use an editorial third-person voice");
+  assert.ok(requests[1].messages[0].content.includes("never imply the saints met"), "connection prompt must prohibit unsupported historical relationships");
   console.log("PASS: full-story summary + saint-specific Augustine reflection");
   process.exit(0);
 })().catch((err) => { console.error(err); process.exit(1); });
