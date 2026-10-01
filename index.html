@@ -3661,6 +3661,18 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const threadShareTools=$("#threadShareTools"), threadShareStart=$("#threadShareStart"), threadShareHint=$("#threadShareHint"), threadShareSelected=$("#threadShareSelected"), threadShareCancel=$("#threadShareCancel");
   let pastedTextSample="", pastedTextSignal=false, messageShareMode=false;
   const selectedMessageIndexes=new Set();
+  const threadShareToolsHome=threadShareTools&&threadShareTools.parentNode;
+  const threadShareToolsNext=threadShareTools&&threadShareTools.nextSibling;
+  function syncThreadShareToolsPlacement(){
+    if(!threadShareTools||!threadShareToolsHome) return;
+    const shouldDock=messageShareMode&&window.matchMedia("(max-width:600px)").matches;
+    if(shouldDock&&threadShareTools.parentNode!==document.body) document.body.appendChild(threadShareTools);
+    else if(!shouldDock&&threadShareTools.parentNode!==threadShareToolsHome){
+      const before=threadShareToolsNext&&threadShareToolsNext.parentNode===threadShareToolsHome?threadShareToolsNext:null;
+      threadShareToolsHome.insertBefore(threadShareTools,before);
+    }
+  }
+  window.addEventListener("resize",syncThreadShareToolsPlacement);
   const fileInput=$("#fileInput"), attachBtn=$("#attachBtn"), attachRow=$("#attachRow");
   const controlsToggle=$("#controlsToggle");
   if(controlsToggle){
@@ -3766,6 +3778,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     messageShareMode=!!enabled;
     selectedMessageIndexes.clear();
     if(thread) thread.classList.toggle("share-selecting",messageShareMode);
+    syncThreadShareToolsPlacement();
     if(threadShareTools){
       threadShareTools.hidden=PAGE!=="chat"||!thread||thread.hidden;
       if(threadShareStart) threadShareStart.hidden=messageShareMode;
