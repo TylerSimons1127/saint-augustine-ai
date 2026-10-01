@@ -1474,8 +1474,6 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
 .ts-n{font-family:var(--display);font-weight:500;font-size:21px;line-height:1;color:var(--ink)}
 .ts-n .ts-d{font-size:12px;color:var(--muted);font-weight:400;margin-left:2px}
 .ts-l{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-@media (max-width:640px){ .today-strip{grid-template-columns:1fr 1fr} .ts-cell.quiz{display:none} }
-@media (max-width:480px){ .today-strip{grid-template-columns:1fr} .ts-cell.quiz{display:flex} }
 
 /* Tomorrow's lesson teaser */
 .tomorrow-teaser{
@@ -1596,9 +1594,6 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
   .topnav .nav-tabs{margin-left:52px;margin-right:auto}
 }
 @media (max-width:768px){
-  /* credit chip sits just above the full-width dock on phones */
-  }
-@media (max-width:768px){
   /* rail offset so it clears the fixed sidebar toggle (44px at left:12px) */
   .rail{
     gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px calc(10px + env(safe-area-inset-top));
@@ -1613,7 +1608,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
   .search.icon-only{width:44px}
   .icon-btn{padding:0 12px;min-width:40px;height:40px}
   .chip-btn{padding:0 12px;height:40px;justify-content:center;gap:6px}
-  .stage{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+  .stage{padding-top:calc(64px + env(safe-area-inset-top))}
   .controls{gap:8px;flex-wrap:wrap}
   .hint{display:none}
   .bubble{max-width:90%}
@@ -1671,7 +1666,7 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
 /* F: short landscape phones — protect the dock from the rail */
 @media (max-height:480px) and (max-width:900px){
   .rail{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:calc(6px + env(safe-area-inset-top))}
-  .stage{padding-top:calc(64px + env(safe-area-inset-top));padding-bottom:calc(200px + env(safe-area-inset-bottom))}
+  .stage{padding-top:calc(64px + env(safe-area-inset-top))}
   .greet h1{font-size:20px}
   .dock{gap:6px}
   .composer{padding:8px 12px 7px}
@@ -1748,7 +1743,6 @@ textarea#prompt::placeholder{color:var(--ink-soft);opacity:.95}
   .greet .eyebrow{display:block;margin-bottom:12px;font-size:9.5px;letter-spacing:.14em}
   .greet h1{font-size:clamp(19px,5vw,26px);line-height:1.32;max-width:24ch}
   .greet .sub{display:block;margin:14px auto 0;max-width:40ch;color:var(--ink-soft);font-size:14px;line-height:1.55;text-shadow:0 1px 8px rgba(250,247,240,0.75)}
-  .stage{padding-bottom:calc(118px + env(safe-area-inset-bottom))}
 }
 
 /* ---------- Beta consent modal ---------- */
@@ -1966,7 +1960,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .stage{
     padding-top:calc(54px + env(safe-area-inset-top)) !important;
     padding-left:16px !important;padding-right:16px !important;
-    padding-bottom:calc(210px + env(safe-area-inset-bottom)) !important;
   }
 
   /* D. COMPOSER DOCK → sits ABOVE the tab bar; one row; keyboard-safe */
@@ -2023,7 +2016,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
   .greet h1{font-size:clamp(21px,5.6vw,27px) !important;line-height:1.34 !important;max-width:26ch !important;text-shadow:0 1px 2px rgba(251,247,238,.55), 0 0 24px rgba(251,247,238,.5)}
 
   /* G. TODAY STRIP compact row (kept, progress bar visible) */
-  .today-strip{grid-template-columns:repeat(3,1fr) !important;gap:8px !important;margin-bottom:12px !important}
+  .today-strip{gap:8px !important;margin-bottom:12px !important}
   .ts-cell{display:flex !important;flex-direction:row;align-items:center;justify-content:center;gap:9px !important;padding:12px 10px !important;border-radius:15px;min-height:0}
   .ts-cell svg{width:18px;height:18px;flex:none;color:var(--gold-ink)}
   .ts-meta{flex-direction:column !important;gap:1px !important;align-items:flex-start !important}
@@ -2698,8 +2691,8 @@ document.addEventListener("visibilitychange",()=>{
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator.serviceWorker.register("sw.js").catch(()=>{}); }); }
 </script>
 <style id="mobile-native-scroll-fix">
-/* Mobile scroll recovery: use the native document scroller and reserve horizontal
-   edge gestures for Safari's own navigation. Suppress only vertical overscroll bounce. */
+/* Mobile layout finish: use the native document scroller, keep every page reachable
+   above the fixed controls, and protect horizontal edge gestures for Safari. */
 @media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse){
   html{
     height:auto !important;min-height:100% !important;
@@ -2715,13 +2708,33 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     position:relative !important;top:auto !important;right:auto !important;
     bottom:auto !important;left:0 !important;width:100% !important;height:auto !important;
     min-height:100vh !important;min-height:100svh !important;
+    padding-bottom:var(--mobile-scroll-clearance, 210px) !important;
     overflow:visible !important;overscroll-behavior-y:none !important;
   }
+  /* Fixed phone chrome covers the composer and tab bar. Reserve its measured
+     footprint after the content so the final card can scroll fully clear. */
+  .daily-page{padding-bottom:16px !important}
+  .thread{padding-bottom:16px !important}
+  .today-strip{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px !important}
+  .ts-cell{min-width:0;justify-content:flex-start;padding:12px 10px !important}
+  .ts-cell.quiz{display:flex !important;grid-column:1 / -1}
+  .ts-l{font-size:9.5px;letter-spacing:.06em}
+  textarea#prompt{scrollbar-width:none;-ms-overflow-style:none}
+  textarea#prompt::-webkit-scrollbar{display:none}
+  .dp-card,.lesson-card,.thread,.daily-page{min-width:0;max-width:100%}
+  .dp-card p,.lesson-flow,.lesson-flow p,.thread-inner{overflow-wrap:anywhere}
   #page-chat:has(#greet:not([hidden])){
     min-height:calc(100vh - 216px) !important;
     min-height:calc(100svh - 216px) !important;
   }
   .greet{max-height:none !important;overflow:visible !important;overscroll-behavior:auto !important}
+}
+@media (max-width:360px){
+  .ts-cell{gap:8px !important;padding:10px 9px !important}
+  .ts-cell svg{width:17px;height:17px}
+  .ts-l{font-size:9px;letter-spacing:.045em}
+  .composer .input-row{gap:4px !important}
+  .composer .controls-toggle{width:36px}
 }
 /* Remove scale-based press effects on touch: feedback must not make the UI
    appear to contract while a person is trying to tap or scroll. */
@@ -4907,6 +4920,34 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     mobileVisualViewport.addEventListener("resize",onVV);
     mobileVisualViewport.addEventListener("scroll",onVV);
     onVV();
+  }
+  /* Keep the document's final content clear of the fixed phone dock. Measuring
+     the dock captures expanded model controls and attachment/paste notices too. */
+  const syncMobileScrollClearance=()=>{
+    if(!mobileDock || !usesDocumentScroll()){
+      document.documentElement.style.removeProperty("--mobile-scroll-clearance");
+      return;
+    }
+    const dockTop=mobileDock.getBoundingClientRect().top;
+    const visibleBottom=mobileVisualViewport
+      ? Math.min(window.innerHeight,Math.ceil(mobileVisualViewport.offsetTop+mobileVisualViewport.height))
+      : window.innerHeight;
+    const clearance=Math.max(0,Math.ceil(visibleBottom-dockTop+16));
+    document.documentElement.style.setProperty("--mobile-scroll-clearance",clearance+"px");
+  };
+  if(mobileDock){
+    syncMobileScrollClearance();
+    if(typeof ResizeObserver==="function"){
+      const dockSizeObserver=new ResizeObserver(syncMobileScrollClearance);
+      dockSizeObserver.observe(mobileDock);
+      mobileDock.__saScrollClearanceObserver=dockSizeObserver;
+    }
+    window.addEventListener("resize",syncMobileScrollClearance,{passive:true});
+    window.addEventListener("orientationchange",syncMobileScrollClearance,{passive:true});
+    if(mobileVisualViewport){
+      mobileVisualViewport.addEventListener("resize",syncMobileScrollClearance,{passive:true});
+      mobileVisualViewport.addEventListener("scroll",syncMobileScrollClearance,{passive:true});
+    }
   }
 
   /* ---- subtle mouse parallax on background photo ---- */
