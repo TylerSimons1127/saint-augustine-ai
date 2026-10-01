@@ -2,7 +2,10 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://staugustineai.vercel.app/</loc>
-    <lastmod>2026-09-03</lastmod>
-    <priority>1.0</priority>
+    <lastmod>2026-09-30</lastmod>
+  </url>
+  <url>
+    <loc>https://staugustineai.vercel.app/landing</loc>
+    <lastmod>2026-09-30</lastmod>
   </url>
 </urlset>
