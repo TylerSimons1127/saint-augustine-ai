@@ -7,11 +7,10 @@ const STUB_PORT = 3988;
 const BACKEND_PORT = 3987;
 
 // Stub mirrors the real "reasoning-only" free model (nemotron-3-ultra): it emits
-// its whole answer under delta.reasoning, nothing under delta.content.
+// reasoning channel is private; the model answer is streamed only under delta.content.
 const OPENROUTER_SSE = [
-  'data: {"choices":[{"delta":{"reasoning":"Grace "}}]}',
-  'data: {"choices":[{"delta":{"reasoning":"is the life "}}]}',
-  'data: {"choices":[{"delta":{"reasoning":"of God within the soul."}}]}',
+  'data: {"choices":[{"delta":{"reasoning":"PRIVATE PLAN: reason silently."}}]}',
+  'data: {"choices":[{"delta":{"content":"Grace is a gift from God that heals the soul."}}]}',
   "data: [DONE]",
 ].join("\n") + "\n";
 
@@ -46,10 +45,10 @@ stub.listen(STUB_PORT, async () => {
     body: JSON.stringify(payload),
   });
 
-  // Frontend's own SSE parse logic (index.html L2092), reproduced here.
+  // Frontend's own SSE parse logic, reproduced here.
   const reader = resp.body.getReader();
   const dec = new TextDecoder();
-  let buf = "", reason = "", text = "", sawEmpty = false, sawReasoningEvent = false;
+  let buf = "", text = "", sawEmpty = false;
   while (true) {
     const { value, done } = await reader.read();
     if (done) break;
@@ -63,14 +62,13 @@ stub.listen(STUB_PORT, async () => {
       if (data === "{}" || data === "[DONE]") { if (data === "{}") sawEmpty = true; continue; }
       try {
         const j = JSON.parse(data);
-        if (j.reasoning != null) { reason += j.reasoning; sawReasoningEvent = true; continue; }
         if (j.text) text += j.text;
       } catch (_) {}
     }
   }
 
-  const pass = resp.status === 200 && sawReasoningEvent && text.trim().length > 0 && sawEmpty;
-  console.log(`status:${resp.status} sawReasoningEvent:${sawReasoningEvent} textLen:${text.trim().length} sawEmptyFinal:${sawEmpty}`);
+  const pass = resp.status === 200 && text.trim().length > 0 && !text.includes("PRIVATE PLAN") && sawEmpty;
+  console.log(`status:${resp.status} textLen:${text.trim().length} sawEmptyFinal:${sawEmpty}`);
   console.log(`text="${text.trim()}"`);
   console.log(pass ? "PASS (frontend request shape -> readable text via backend SSE)" : "FAIL");
   process.exit(pass ? 0 : 1);

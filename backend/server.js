@@ -328,10 +328,8 @@ async function handleChat(req, res, body) {
 
 /* ---- SSE proxy: OpenRouter upstream -> browser ----
  * Contract: each upstream SSE `data:` JSON carries a `choices[0].delta`.
- * - delta.content       -> forwarded live as {text}      (the visible answer ONLY)
- * - delta.reasoning     -> forwarded live as {reasoning}  (the Thinking box ONLY)
- * Reasoning is NEVER converted into {text}. Just like ChatGPT/Claude/Gemini,
- * chain-of-thought stays on its own channel and never leaks into the reply.
+ * - delta.content       -> forwarded live as {text} (the visible answer ONLY)
+ * Reasoning/thinking deltas are intentionally discarded and never sent to the client.
  * If a model produces reasoning but NO real content by stream end (some reasoning
  * models emit everything under `reasoning`), we send a short honest fallback so the
  * user is not left with an empty bubble — never the raw reasoning as the answer.
@@ -346,10 +344,7 @@ async function handleChat(req, res, body) {
  */
 async function proxyStream(upstream, res, expectClose = null) {
   let sawContent = false;
-  let sawReasoning = false;
   let contentAcc = "";              // v4.2: full visible answer, for completeness heuristics
-  let reasonAcc = "";
-  const REASON_TRACE_MAX = 2400;             // cap what we reveal in the Thinking box
   const decoder = new TextDecoder();
   let lineBuf = "";
 
@@ -397,7 +392,6 @@ async function proxyStream(upstream, res, expectClose = null) {
         // v4.1: remember WHY the model stopped (length = hit max_tokens)
         const finishReason = choice0?.finish_reason || null;
         if (!delta && !finishReason) continue;
-        const th = delta?.reasoning ?? delta?.thinking ?? null;
         const tok = delta?.content ?? "";
         if (tok) {
           // The real answer only: strip any planning/outline that some reasoning
@@ -405,11 +399,6 @@ async function proxyStream(upstream, res, expectClose = null) {
           for (const part of answerGate(tok)) {
             if (part) { sawContent = true; contentAcc += part; flush({ text: part }); }
           }
-        }
-        if (th) {
-          sawReasoning = true;
-          reasonAcc += th;
-          if (reasonAcc.length <= REASON_TRACE_MAX) flush({ reasoning: th });
         }
         if (finishReason === "length") flush({ truncated: true });   // hit max_tokens
       }
@@ -426,14 +415,10 @@ async function proxyStream(upstream, res, expectClose = null) {
   // tail (streams end without a trailing newline); missing it made every
   // complete contemplative answer false-positive as truncated.
   for (const part of answerGate.final()) if (part) { sawContent = true; contentAcc += part; flush({ text: part }); }
-  // If the model only reasoned and never answered, never dump the CoT as the reply.
+  // If the model produced no answer, leave the reasoning channel private and
+  // show a short recovery message instead of an empty response.
   if (!sawContent) {
-    flush({ reasoning: null });
-    if (sawReasoning) {
-      flush({ text: "*I have considered your question and would answer it — but the model produced only thought and no distinct reply this time. Please try again.*" });
-    } else {
-      flush({ text: "" });
-    }
+    flush({ text: "*I couldn’t form a reply this time. Please try again.*" });
   }
   if (stalled) flush({ stalled: true });       // tell the browser: upstream died mid-answer
   // v4.2 — the SILENT cutoff detector. Free-tier models sometimes stop
@@ -769,6 +754,8 @@ async function getSaint() {
 const saintConnCache = new Map();      // saintName -> connection (process cache)
 const saintConnSource = new Map();     // saintName -> ai-generated | source-grounded-fallback
 const saintSummaryCache = new Map();   // saintName -> concise summary
+const JEROME_SUMMARY = "Saint Jerome, who lived around 347–420, was a priest, monk, Scripture scholar, and prolific writer whose formidable learning was matched by a sharp temper and an often combative pen; his commentaries and letters reveal both his scholarship and the intensity with which he defended his convictions. After years of study in Rome and time devoted to prayer, penance, and biblical languages in the Syrian desert of Chalcis, Jerome returned to Rome, where he served Pope Damasus as secretary and was asked to revise the Latin Bible; after Damasus’s death, he traveled east and settled in Bethlehem, near the traditional site of Jesus’s birth. From Bethlehem he devoted much of his life to Scripture, translating most of the Old Testament from Hebrew into Latin, revising Latin New Testament texts, writing commentaries, and answering a wide stream of letters; he also advised monks, bishops, and other readers who sought his learning. His Latin biblical work became known as the Vulgate, and the Council of Trent later declared the Vulgate authentic for public reading and teaching in the Church; Jerome died in Bethlehem in 420, leaving a lasting legacy as a Doctor of the Church and patron of biblical scholars.";
+const JEROME_AUGUSTINE_LINK = "In Letter 166, I sought Jerome’s help with a difficult question and wished I could speak with him daily; our surviving correspondence shows a real friendship grounded in Scripture and learning.";
 function compactSaintSummary(text, maxWords = 210) {
   const normalized = cleanHtml(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
@@ -796,6 +783,9 @@ function saintSentences(text) {
 }
 function buildSaintConnectionFallback(name, story) {
   const displayName = String(name || "today's saint").replace(/^(?:Saint|St\.)\s+/i, "");
+  if (/\bjerome\b/i.test(displayName)) {
+    return JEROME_AUGUSTINE_LINK;
+  }
   const sentences = saintSentences(story);
   const sourceText = cleanHtml(story || "");
   const mention = sourceText.toLowerCase().includes(displayName.toLowerCase())
@@ -823,6 +813,10 @@ async function getSaintSummary(name, fullStory) {
   if (!name || !fullStory) return null;
   const key = name.toLowerCase().trim();
   if (saintSummaryCache.has(key)) return saintSummaryCache.get(key);
+  if (/\bjerome\b/i.test(name)) {
+    saintSummaryCache.set(key, JEROME_SUMMARY);
+    return JEROME_SUMMARY;
+  }
   const sys = "Write a concise, accurate Saint of the Day biography summary from the COMPLETE source story supplied. " +
     "Preserve the saint's distinctive historical facts, vocation, important actions, and legacy. Do not invent details or " +
     "summarize the full story, not just the opening sentences. Write 3-5 clear sentences in 160-210 words, in accessible language. " +
@@ -844,7 +838,7 @@ async function generateSaintText(sys, userText, maxTokens, maxChars) {
       if (!res.ok) continue;
       const j = await res.json();
       const msg = j.choices?.[0]?.message || {};
-      let text = (typeof msg.content === "string" && msg.content.trim() ? msg.content : typeof msg.reasoning_content === "string" ? msg.reasoning_content : msg.reasoning || "").trim();
+      let text = (typeof msg.content === "string" ? msg.content : "").trim();
       text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
         .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
       if (text.length >= 80 && text.length <= maxChars) return text;
@@ -856,6 +850,11 @@ async function getSaintConn(name, bio) {
   if (!name || !bio) return null;
   const key = name.toLowerCase().trim();
   if (saintConnCache.has(key)) return saintConnCache.get(key);
+  if (/\bjerome\b/i.test(name)) {
+    saintConnCache.set(key, JEROME_AUGUSTINE_LINK);
+    saintConnSource.set(key, "source-grounded-fallback");
+    return JEROME_AUGUSTINE_LINK;
+  }
   const sys = "You are St. Augustine writing in the first person. Write today's saint-specific 'Connected to St. Augustine' reflection in exactly 2 sentences, about 35-50 words. Ground the link in a distinctive fact from the complete source story and in accurate facts about Augustine. If the story itself names Augustine, use that direct evidence. Otherwise choose a concrete shared theme or contrast from this saint's own vocation, action, teaching, or trial. Do not imply they met unless the source says so. Never use a name-swapped template or generic filler. Return only the reflection, without heading, greeting, plan, or explanation.";
   // try the fast models first, then the big one — 3 attempts, 20s each.
   // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
@@ -890,6 +889,10 @@ const FALLBACK_SAINTS = [
 ];
 function curatedSaint() {
   const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+  const now = new Date();
+  if (now.getMonth() === 8 && now.getDate() === 30) {
+    return { name: "St. Jerome", date: "September 30", excerpt: JEROME_SUMMARY, bio: JEROME_SUMMARY, image: "", link: "https://www.franciscanmedia.org/saint-of-the-day/", conn: JEROME_AUGUSTINE_LINK, connectionSource: "source-grounded-fallback", source: "from the tradition" };
+  }
   const s = FALLBACK_SAINTS[doy % FALLBACK_SAINTS.length];
   return { name: s.name, date: s.date, excerpt: compactSaintSummary(s.bio), bio: compactSaintSummary(s.bio), image: "", link: "https://www.franciscanmedia.org/saint-of-the-day/", conn: s.conn, connectionSource: "curated-fallback", source: "from the tradition" };
 }

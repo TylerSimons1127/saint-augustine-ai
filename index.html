@@ -454,7 +454,6 @@ button,a,.icon-btn,input,textarea,select,.opt,.nav-tab,.sb-item,.model-btn,.reas
     color:var(--gold-ink);font-weight:700;margin:0 0 6px;
   }
   .msg.assistant .bubble .ts{font-size:9px;opacity:.75;margin-top:6px}
-  .msg.assistant .reasoning-box{margin:0 0 6px}
   .msg.assistant .bubble p{font-size:15.5px;line-height:1.58;max-width:58ch}
   .msg.assistant .bubble::before{display:none}
 
@@ -988,14 +987,6 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
   display:inline-flex;align-items:center;gap:5px;transition:all .14s ease}
 .code-copy:hover{background:var(--accent-soft);color:var(--ink);border-color:rgba(var(--accent-rgb),.4)}
 .code-copy svg{width:12px;height:12px}
-
-/* ---------- Reasoning expander ---------- */
-.reasoning-box{margin:-2px 0 8px}
-.reasoning-box summary{cursor:pointer;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);font-weight:600;list-style:none;display:inline-flex;align-items:center;gap:6px;user-select:none}
-.reasoning-box summary::-webkit-details-marker{display:none}
-.reasoning-box summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(-45deg);transition:transform .15s}
-.reasoning-box[open] summary::before{transform:rotate(45deg)}
-.reasoning-box .rb{margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(30,26,20,0.05);border:1px solid var(--border);font-size:13.5px;line-height:1.55;color:var(--ink-soft);white-space:pre-wrap}
 
 /* ---------- Message actions (retry / copy) ---------- */
 .msg .acts{display:flex;gap:8px;margin-top:6px;order:3;flex-basis:100%;padding-left:48px}
@@ -2069,7 +2060,7 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
 
 /* ══════════════════════════════════════════════════════════════════════
    v1.8.2 — craft-critic round 2: lesson timeline as gold spine, glass-gold
-   quote actions, quieter thinking expander, right-sized drop cap, clean
+   quote actions, right-sized drop cap, clean
    indicator, no placeholder wrap.
    ══════════════════════════════════════════════════════════════════════ */
 @media (max-width:768px){
@@ -2101,15 +2092,6 @@ textarea#prompt.caret-visible{caret-color:var(--accent-deep)}
     backdrop-filter:blur(8px) saturate(140%);-webkit-backdrop-filter:blur(8px) saturate(140%);
   }
   .quote-act:active{transform:scale(.94)}
-
-  /* 4. Thinking expander: from debug-log to a quiet meditative element —
-        italic serif hint, mono replaced, softer chevron. */
-  .reasoning-box summary{
-    font-family:var(--body);font-size:11.5px;letter-spacing:.02em;text-transform:none;
-    color:var(--ink-soft);font-weight:500;font-style:italic;
-  }
-  .reasoning-box summary::before{border-right-color:var(--gold-ink);border-bottom-color:var(--gold-ink)}
-  .reasoning-box .rb{font-size:12.5px;line-height:1.6;color:var(--muted);font-style:italic}
 
   /* 7. Message action pills: uniform glass-gold (Retry/Deeper/Copy/feedback) */
   .msg .acts .act{
@@ -2643,7 +2625,7 @@ document.addEventListener("visibilitychange",()=>{
   document.documentElement.style.setProperty("--rays-run", document.hidden ? "paused" : "running");
 });
 </script>
-<script src="lessons.js?v=study-content-2"></script>
+<script src="lessons.js?v=study-content-3"></script>
 <script>
 /* v1.7: on phones, reparent the tab bar to <body> so position:fixed resolves against
    the viewport — .topnav's backdrop-filter creates a containing block that would trap it.
@@ -4321,7 +4303,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const buf=loading.querySelector(".bubble");
 
     const messages=[...history];
-    let acc="", reasoningAcc="", bufStr="", hasReasoning=false;
+    let acc="", bufStr="";
     let streamStalled=false, streamTruncated=false;   // v4.1 cutoff events
     // prepend attachment note to the newest user message
     if(attachNote && messages.length) messages[messages.length-1]={role:"user", content:attachNote+messages[messages.length-1].content};
@@ -4374,11 +4356,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const dec=new TextDecoder();
       if(res._probe && res._probe.first && res._probe.first.value) bufStr += dec.decode(res._probe.first.value,{stream:true});
       const render=(streaming)=>{
-        let inner='';
-        if(hasReasoning){
-          inner += '<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reasoningAcc)+'</div></details>';
-        }
-        inner += streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
+        const inner = streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
                 buf.className = "bubble md";
                 buf.innerHTML = '<span class="who">St. Augustine</span>'+inner+(!streaming?'<span class="ts">'+fmtTime(new Date())+'</span>':'');
                 if(!streaming) enhanceCodeBlocks(buf);
@@ -4396,7 +4374,6 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(data==="{}" || data==="[DONE]") continue;
           try{
             const j=JSON.parse(data);
-            if(j.reasoning!=null){ reasoningAcc+=j.reasoning; hasReasoning=true; render(true); continue; }
             if(j.text){ acc+=j.text; render(true); }
             if(j.stalled) streamStalled=true;       // v4.1: upstream died mid-answer
             if(j.truncated) streamTruncated=true;   // v4.1: model hit max_tokens
@@ -4594,14 +4571,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                     : "Augustine pauses to consider\u2026";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+retryDepthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
-    let acc="", reason="", bufStr="", hasR=false;
+    let acc="", bufStr="";
     try{
       const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages}),signal:controller.signal});
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ let inner=''; if(hasR){ inner+='<details class="reasoning-box"><summary>Thinking…</summary><div class="rb">'+esc(reason)+'</div></details>'; } inner += s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
-      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.reasoning!=null){reason+=j.reasoning;hasR=true;render(true);continue;} if(j.text){acc+=j.text;render(true);} }catch(_){} } }
+      const render=(s)=>{ const inner=s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
+      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.text){acc+=j.text;render(true);} }catch(_){} } }
       render(false); if(!acc) acc="(no response)";
       if(window.__replyBell) window.__replyBell();
       history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
@@ -5423,7 +5400,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         // graceful fallback when the live fetch is unavailable, so the card is never empty.
         const SAINT_CONN = {
           "St. Augustine of Hippo": "He is the reason we are here. Converted in a Milan garden in 386, he became the greatest Latin Father of the West — teaching on grace, the Trinity, and the restless heart that finds no rest but in God.",
-          "St. Jerome": "Franciscan Media preserves Augustine's direct praise of Jerome: ‘What Jerome is ignorant of, no mortal has ever known.’ That historic bond is rooted in Jerome's scriptural learning.",
+          "St. Jerome": "In Letter 166, Augustine sought Jerome’s help with a difficult question and wished he could speak with him daily; their surviving correspondence shows a real friendship grounded in Scripture and learning.",
           "St. Monica": "Augustine called her the faithful one whose prayers wrested him from his wandering and gave the world a bishop.",
           "St. Thérèse of Lisieux": "Thérèse called Augustine her 'brother in the faith'; both wrote of restless hearts and the voyage home to God.",
           "St. Mary Magdalene": "Augustine called her the figure of the Church herself — forgiven much, and so loving much.",
@@ -5512,6 +5489,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               lessonContinuation=$('#lessonContinuation'), lessonContinuationBody=$('#lessonContinuationBody'),
               lessonPassageLabel=$('#lessonPassageLabel'), lessonSummary=$('#lessonSummary'), lessonLabel=$('#lessonWritingLabel'),
               lessonRegion=$('.dp-card.lesson'), lessonShuf=$('#lessonShuf'), lessonAsk=$('#lessonAsk'), lessonReturnToday=$('#lessonReturnToday'), tomorrowTeaser=$('#tomorrowTeaser'), studyReflectIntro=$('#studyReflectIntro');
+        const lessonStepLabels=lessonRegion?$$('.ls-l',lessonRegion):[];
         let lessonIdx=-1, lessonMode="daily", lessonObserver=null, lessonReadTimer=null, qActiveTopic=-1, studyQuizReady=false;
         const READ_KEY="saugustine_lessons_read_v1";
         function readSet(){ try{const r=localStorage.getItem(READ_KEY); return r?new Set(JSON.parse(r)):new Set();}catch(e){return new Set();} }
@@ -5527,18 +5505,25 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(lessonReadTimer){ clearTimeout(lessonReadTimer); lessonReadTimer=null; }
           const topicMode=lessonMode==="selected";
           if(lessonRegion) lessonRegion.setAttribute("aria-label",topicMode?"Selected Topic: "+t.name:"Lesson of the Day");
+          if(lessonStepLabels.length>=4){
+            lessonStepLabels[0].textContent=topicMode?"Selected topic":"Today’s topic";
+            lessonStepLabels[1].textContent="Augustine’s line";
+            lessonStepLabels[3].textContent="Connected vocabulary";
+          }
           if(lessonKicker) lessonKicker.textContent=(topicMode?"Selected Topic":"Lesson of the Day")+" · "+(idx+1)+" of "+LESSON.length;
           if(lessonName) lessonName.textContent=t.name;
           if(lessonNote) lessonNote.textContent=t.writingNote||"";
           if(lessonTopic) lessonTopic.textContent=t.topic||t.name;
-          if(lessonQuote) lessonQuote.textContent="“"+(t.primaryQuote||t.quote||"")+"”";
+          const quoteText=String(t.primaryQuote||t.quote||"").trim();
+          const quoteLine=(quoteText.match(/^[\s\S]*?[.!?](?=\s|$)/)||[quoteText])[0].trim();
+          if(lessonQuote) lessonQuote.textContent="“"+quoteLine+"”";
           if(lessonQuoteSource) lessonQuoteSource.textContent=t.primaryQuoteSource||t.writing||"";
           if(lessonRelatedScripture){
             const related=Boolean(t.relatedScripture&&t.relatedText);
             lessonRelatedScripture.hidden=!related;
             lessonRelatedScripture.textContent=related?"Scripture alongside this reading · "+t.relatedScripture+" — “"+t.relatedText+"”":"";
           }
-          if(lessonPassageLabel) lessonPassageLabel.textContent=t.primaryExcerpt?"A passage from Augustine":"A passage on this topic";
+          if(lessonPassageLabel) lessonPassageLabel.textContent=t.primaryExcerpt?"Read Augustine’s passage":"Read the topic passage";
           if(lessonExcerpt){
             const primary=t.primaryExcerpt;
             const paras=(t.excerpt||[]);
@@ -5562,7 +5547,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(t.primaryUrl) lessonPrimarySource.href=t.primaryUrl;
           }
           if(lessonVocab) lessonVocab.textContent=t.vocab||"";
-          if(lessonLabel) lessonLabel.textContent="The writing — "+(t.writing||"Source");
+          if(lessonLabel) lessonLabel.textContent="The writing behind it · "+(t.writing||"Source");
           if(lessonSummary) lessonSummary.textContent=t.summary||"";
           if(lessonReturnToday) lessonReturnToday.hidden=!topicMode;
           if(tomorrowTeaser) tomorrowTeaser.hidden=topicMode;
@@ -5625,6 +5610,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         function renderGlossary(q){
           q=(q||"").trim().toLowerCase();
           const terms=LESSON.map((t,i)=>({term:(t.vocab||"").split(" — ")[0]||t.name, def:(t.vocab||"").split(" — ").slice(1).join(" — ")||t.summary, src:t.name, i}))
+            .sort((a,b)=>a.term.localeCompare(b.term,undefined,{sensitivity:"base"})||a.src.localeCompare(b.src,undefined,{sensitivity:"base"}))
             .filter(x=>!q||x.term.toLowerCase().includes(q)||x.def.toLowerCase().includes(q)||x.src.toLowerCase().includes(q));
           glList.innerHTML=terms.map(x=>'<div class="gl-item"><p class="gl-term">'+esc(x.term)+'</p><p class="gl-def">'+esc(x.def)+'</p><span class="gl-src">From the lesson: '+esc(x.src)+'</span></div>').join("")||'<p class="gl-def" style="text-align:center;padding:20px">No terms match.</p>';
         }

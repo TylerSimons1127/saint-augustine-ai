@@ -47,12 +47,10 @@ running server or network access required.
 2. **Rate limit** — per-IP token bucket (capacity 8, refills 1 every 7.5s). A
    burst of 8 is allowed, then requests space out. Protects the free-tier quota
    from a flood or a scraped endpoint.
-3. **Streaming proxy** — forwards to OpenRouter and pipes the SSE stream back.
-   Many free "reasoning" models emit their *entire* answer under
-   `delta.reasoning` and nothing under `delta.content`. The proxy detects this
-   and surfaces the reasoning stream as the visible reply in real time (mirroring
-   once it passes a length threshold, or at stream end for short replies) so the
-   user never stares at an empty bubble.
+3. **Streaming proxy** — forwards only answer text from `delta.content` to the
+   browser in real time. Private reasoning/thinking deltas are discarded and
+   never exposed in the interface. If a model produces no answer text, the
+   browser receives a short retry message instead of internal reasoning.
 4. **Model fallback** — if the chosen model 404s / 429s / times out, the server
    retries the next curated model. Free models vanish without warning; this keeps
    the chat alive instead of failing the user.
