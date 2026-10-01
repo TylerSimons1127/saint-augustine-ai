@@ -874,7 +874,8 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 .paste-signal-note button:hover{background:rgba(var(--accent-rgb),.14);color:var(--ink)}
 @media (max-width:600px){
   .thread-share-tools{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;width:100%;min-height:0;margin:8px 0 4px;padding:8px 10px}
-  .thread-share-tools:has(#threadShareHint:not([hidden])){position:sticky;top:calc(56px + env(safe-area-inset-top));z-index:55}
+  .thread-share-tools:has(#threadShareHint:not([hidden])){position:fixed;top:auto;left:12px;right:12px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:60;width:auto;max-width:720px;margin:0 auto}
+  body:has(#thread.share-selecting) .dock .composer{visibility:hidden !important}
   .thread-share-hint{font-size:12px}
   .thread-share-tools button{min-height:44px;padding:0 11px;font-size:11.5px}
   .msg-share-toggle{min-height:44px;padding:0 13px;font-size:11.5px}
