@@ -239,7 +239,7 @@ a{color:inherit}
 .sb-item .txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:0}
 /* v2.1: pin/delete live IN the row (right of the title), never overlapping it.
    Hover-revealed on desktop; always visible on touch (no hover). */
-.sb-item .sbp,.sb-item .sbx{position:static;transform:none;width:26px;height:26px;border-radius:50%;
+.sb-item .sbp,.sb-item .sbx,.sb-item .sbs{position:static;transform:none;width:26px;height:26px;border-radius:50%;
   background:transparent;border:1px solid transparent;color:var(--muted);
   display:grid;place-items:center;cursor:pointer;flex:none;
   transition:opacity .12s, background .16s, color .16s, border-color .16s}
@@ -247,10 +247,15 @@ a{color:inherit}
 .sb-item:hover .sbp,.sb-item:focus-visible .sbp,.sb-item .sbp:focus-visible{opacity:1}
 .sb-item .sbx{opacity:0;color:#a03e30}
 .sb-item:hover .sbx,.sb-item:focus-visible .sbx,.sb-item .sbx:focus-visible{opacity:1}
+.sb-item .sbs{opacity:0;color:var(--gold-ink)}
+.sb-item:hover .sbs,.sb-item:focus-visible .sbs,.sb-item .sbs:focus-visible{opacity:1}
+.sb-item .sbs:hover{background:var(--accent-soft);border-color:var(--border)}
 /* v2.2.1: touch rows show NO pin/delete circles (user directive — "remove this
    from all conversations"). On phones, deleting/pinning happens through the
    Select-conversations bulk mode (tap rows to check them); rows stay clean. */
 .sb-item:hover{background:var(--accent-soft);border-color:var(--border)}
+.sb-item.selmode .sbs{display:none}
+@media (hover:none){.sb-item .sbs{opacity:1}}
 /* B25: hover preview — a quiet peek at the first exchange */
 .sb-item{position:relative}
 .sb-item .sb-peek{
@@ -841,6 +846,32 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px;padding-bottom:200px}
+.thread-share-tools{width:min(720px,100%);display:flex;align-items:center;gap:9px;min-height:40px;margin:2px 0 0;padding:0 4px}
+.thread-share-tools[hidden]{display:none}
+.thread-share-hint{flex:1;min-width:0;color:var(--muted);font-size:12px;line-height:1.4}
+.thread-share-tools button{min-height:36px;padding:0 13px;border:1px solid var(--border);border-radius:999px;background:var(--glass-strong);color:var(--gold-ink);font:600 12px var(--body);cursor:pointer;white-space:nowrap}
+.thread-share-tools button:hover{background:var(--accent-soft);border-color:rgba(var(--accent-rgb),.4)}
+.thread-share-tools button:disabled{opacity:.45;cursor:default}
+.thread-share-tools .share-selected{background:var(--accent-deep);color:#fbf7ee;border-color:var(--accent-deep)}
+.msg-share-toggle{display:none;position:absolute;z-index:2;top:-10px;right:0;width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:var(--panel);color:var(--gold-ink);box-shadow:var(--shadow-sm);place-items:center;cursor:pointer}
+.msg.assistant .msg-share-toggle{right:auto;left:48px}
+.msg-share-toggle svg{width:15px;height:15px}
+.msg.share-picked .bubble{outline:2px solid rgba(var(--accent-rgb),.72);outline-offset:2px}
+.thread.share-selecting .msg-share-toggle{display:grid}
+.thread.share-selecting .msg-edit,.thread.share-selecting .acts{display:none!important}
+.paste-signal-note{display:flex;align-items:flex-start;gap:9px;padding:9px 12px;margin:0 4px 8px;border:1px solid rgba(var(--accent-rgb),.28);border-radius:12px;background:var(--accent-soft);color:var(--ink-soft);font-size:12px;line-height:1.45}
+.paste-signal-note[hidden]{display:none}
+.paste-signal-note span{flex:1;min-width:0}
+.paste-signal-note button{width:26px;height:26px;flex:none;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:17px;line-height:1;cursor:pointer}
+.paste-signal-note button:hover{background:rgba(var(--accent-rgb),.14);color:var(--ink)}
+@media (max-width:480px){.thread-share-tools{gap:6px}.thread-share-tools button{padding:0 9px;font-size:11px}.thread-share-hint{font-size:11px}}
+@media (pointer:coarse){
+  .sb-item .sbs{width:44px;height:44px;opacity:1}
+  .sb-item .sbp,.sb-item .sbx{display:none}
+  .thread-share-tools button{min-height:44px}
+  .msg-share-toggle{width:44px;height:44px}
+  .paste-signal-note button{width:44px;height:44px}
+}
 .msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
 .msg.assistant{flex-wrap:wrap}
 .msg .av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-size:14px;color:var(--ink);
@@ -2848,7 +2879,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <button class="sugg" role="listitem" data-q="Teach me how to pray like you did, from the heart.">Teach me to pray</button>
           <button class="sugg" role="listitem" data-q="What is God calling me to do with my life right now?">What is God calling me to?</button>
         </div>
-        </section>
+  </section>
+
+  <div class="thread-share-tools" id="threadShareTools" hidden>
+    <button id="threadShareStart" type="button" aria-label="Choose questions and answers to share">Share messages</button>
+    <span class="thread-share-hint" id="threadShareHint" hidden>Choose messages.</span>
+    <button class="share-selected" id="threadShareSelected" type="button" hidden disabled>Share selected</button>
+    <button id="threadShareCancel" type="button" hidden>Cancel</button>
+  </div>
 
   <!-- THREAD (hidden until first send) -->
     <section class="thread" id="thread" aria-live="off"></section><!-- polite is toggled on stream end (D55: no chunk spam) -->
@@ -3170,6 +3208,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   <div class="composer glass" id="composer">
     <div class="attach-row" id="attachRow" hidden></div>
 
+    <div class="paste-signal-note" id="pasteSignalNote" role="status" hidden>
+      <span>This pasted text has a few patterns sometimes seen in AI writing. That is only a clue, not proof; Augustine will still respond to what you’re asking.</span>
+      <button id="pasteSignalDismiss" type="button" aria-label="Dismiss AI-style paste note">×</button>
+    </div>
+
     <div class="input-row">
       <button class="icon-btn" id="attachBtn" title="Attach files (PDF, DOCX, TXT)" aria-label="Attach files">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11.05 12.5 19.9a5 5 0 0 1-7.07-7.07l8.49-8.49a3 3 0 0 1 4.24 4.24l-8.49 8.49a1 1 0 0 1-1.41-1.41l7.78-7.78"/></svg>
@@ -3484,6 +3527,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
   function setPage(p){
     if(p===PAGE) return;
+    if(messageShareMode) setMessageShareMode(false);
     const previousPage=PAGE;
     if(PAGE_SCROLL[previousPage]!==undefined) PAGE_SCROLL[previousPage]=readScrollTop();
     PAGE_HIST[PAGE]=history.slice();
@@ -3492,6 +3536,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     history=PAGE_HIST[p]; activeId=PAGE_ACTIVE[p];
     thread=PAGE_ELS[p].threadEl;
     greet = (p==="chat") ? $("#greet") : null;
+    if(threadShareTools) threadShareTools.hidden=p!=="chat"||thread.hidden;
     // The outgoing page was saved before changing PAGE above.
     ["chat","study","today","prayer"].forEach(k=>{ if(PAGE_ELS[k].wrap){ PAGE_ELS[k].wrap.classList.toggle("on", k===p); if(k!==p){ PAGE_ELS[k].wrap.style.transform=""; PAGE_ELS[k].wrap.style.opacity=""; } } });
     // directional slide: motion follows travel direction (never a blank/white frame)
@@ -3554,6 +3599,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     anchorFromHash();
   },0);
   const prompt=$("#prompt"), send=$("#send"), composer=$("#composer");
+  const pasteSignalNote=$("#pasteSignalNote"), pasteSignalDismiss=$("#pasteSignalDismiss");
+  const threadShareTools=$("#threadShareTools"), threadShareStart=$("#threadShareStart"), threadShareHint=$("#threadShareHint"), threadShareSelected=$("#threadShareSelected"), threadShareCancel=$("#threadShareCancel");
+  let pastedTextSample="", pastedTextSignal=false, messageShareMode=false;
+  const selectedMessageIndexes=new Set();
   const fileInput=$("#fileInput"), attachBtn=$("#attachBtn"), attachRow=$("#attachRow");
   const controlsToggle=$("#controlsToggle");
   if(controlsToggle){
@@ -3611,6 +3660,104 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(words.length>maxWords) return words.slice(0,maxWords).join(" ")+"…";
       return String(t||"").trim();
     }
+  function messageShareText(message){
+    if(!message) return "";
+    if(typeof message.content==="string") return message.content.trim();
+    if(Array.isArray(message.content)) return message.content.map((part)=>{
+      if(typeof part==="string") return part;
+      if(part&&part.type==="text") return String(part.text||"");
+      if(part&&part.type==="image_url") return "[Image attached]";
+      return "";
+    }).filter(Boolean).join("\n").trim();
+    return "";
+  }
+  function messageRoleLabel(message){ return message&&message.role==="assistant"?"St. Augustine":"You"; }
+  async function shareText(title,text,successMessage){
+    const content=String(text||"").trim();
+    if(!content){ showToast("Nothing to share yet."); return false; }
+    if(navigator.share){
+      try{ await navigator.share({title,text:content}); showToast(successMessage||"Shared"); return true; }
+      catch(error){ if(error&&error.name==="AbortError") return false; }
+    }
+    try{ await navigator.clipboard.writeText(content); showToast("Copied — paste it into a message to share."); return true; }
+    catch(_){
+      const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
+      const url=URL.createObjectURL(blob), link=document.createElement("a");
+      link.href=url; link.download=(String(title||"saint-augustine-share").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"saint-augustine-share")+".txt";
+      link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); showToast("Downloaded a shareable text file."); return true;
+    }
+  }
+  function sessionShareText(session){
+    const messages=(session&&session.history||[]).map((message)=>({message,text:messageShareText(message)})).filter((entry)=>entry.text);
+    if(!messages.length) return "";
+    return "Saint Augustine AI — "+(session.title||"Conversation")+"\n\n"+messages.map(({message,text})=>messageRoleLabel(message)+":\n"+text).join("\n\n— — —\n\n");
+  }
+  async function shareConversation(id){
+    const session=sessions.find((item)=>item.id===id);
+    if(!session){ showToast("This conversation is no longer available."); return; }
+    await shareText("Saint Augustine AI — "+(session.title||"Conversation"),sessionShareText(session),"Conversation ready to share.");
+  }
+  function refreshMessageShareCount(){
+    if(!threadShareSelected) return;
+    const count=selectedMessageIndexes.size;
+    threadShareSelected.disabled=!count;
+    threadShareSelected.textContent=count?"Share ("+count+")":"Share selected";
+    threadShareSelected.setAttribute("aria-label",count?"Share "+count+" selected messages":"Share selected messages");
+  }
+  function setMessageShareMode(enabled){
+    messageShareMode=!!enabled;
+    selectedMessageIndexes.clear();
+    if(thread) thread.classList.toggle("share-selecting",messageShareMode);
+    if(threadShareTools){
+      threadShareTools.hidden=PAGE!=="chat"||!thread||thread.hidden;
+      if(threadShareStart) threadShareStart.hidden=messageShareMode;
+      if(threadShareHint) threadShareHint.hidden=!messageShareMode;
+      if(threadShareSelected) threadShareSelected.hidden=!messageShareMode;
+      if(threadShareCancel) threadShareCancel.hidden=!messageShareMode;
+    }
+    if(messageShareMode&&thread){
+      $$(".msg",thread).forEach((message,index)=>{
+        message.dataset.shareIndex=String(index);
+        let toggle=message.querySelector(".msg-share-toggle");
+        if(!toggle){
+          toggle=document.createElement("button"); toggle.type="button"; toggle.className="msg-share-toggle";
+          toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>';
+          message.appendChild(toggle);
+        }
+        const label=message.classList.contains("user")?"your question":"Augustine’s answer";
+        toggle.setAttribute("aria-label","Select "+label+" to share");
+        toggle.setAttribute("aria-pressed","false");
+        toggle.onclick=(event)=>{
+          event.stopPropagation();
+          const key=Number(message.dataset.shareIndex), selected=selectedMessageIndexes.has(key);
+          if(selected) selectedMessageIndexes.delete(key); else selectedMessageIndexes.add(key);
+          message.classList.toggle("share-picked",!selected);
+          toggle.setAttribute("aria-pressed",selected?"false":"true");
+          toggle.innerHTML=selected
+            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>';
+          refreshMessageShareCount();
+        };
+      });
+    }else if(thread){
+      $$(".msg-share-toggle",thread).forEach((toggle)=>toggle.remove());
+      $$(".msg.share-picked",thread).forEach((message)=>message.classList.remove("share-picked"));
+    }
+    if(prompt) prompt.disabled=messageShareMode;
+    if(messageShareMode) send.disabled=true; else if(typeof syncSend==="function") syncSend();
+    refreshMessageShareCount();
+  }
+  if(threadShareStart) threadShareStart.addEventListener("click",()=>{
+    if(send.classList.contains("stop")){ showToast("Wait for Augustine’s reply to finish before selecting messages."); return; }
+    setMessageShareMode(true);
+  });
+  if(threadShareCancel) threadShareCancel.addEventListener("click",()=>setMessageShareMode(false));
+  if(threadShareSelected) threadShareSelected.addEventListener("click",async()=>{
+    const selected=[...selectedMessageIndexes].sort((a,b)=>a-b).map((index)=>history[index]).filter(Boolean);
+    const body=selected.map((message)=>messageRoleLabel(message)+":\n"+messageShareText(message)).filter((line)=>!line.endsWith(":\n")).join("\n\n— — —\n\n");
+    const shared=await shareText("Saint Augustine AI — selected messages",body,"Selected messages ready to share.");
+    if(shared) setMessageShareMode(false);
+  });
   function saveSessions(){
       PAGE_ACTIVE[PAGE]=activeId;
       try{
@@ -3647,14 +3794,29 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(sbYesterday) sbYesterday.style.display = yesterday.length ? "flex" : "none";
       sbEarlier.style.display = earlier.length ? "flex" : "none";
     $$("#sbTodayList .sb-item, #sbYesterdayList .sb-item, #sbEarlierList .sb-item").forEach(el=>{
+      if(!el.querySelector(".sbs")){
+        const share=document.createElement("span");
+        share.className="sbs"; share.setAttribute("role","button"); share.setAttribute("tabindex","0");
+        share.setAttribute("aria-label","Share conversation: "+(sessions.find((item)=>item.id===el.dataset.id)?.title||"Conversation"));
+        share.dataset.share=el.dataset.id;
+        share.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.6 6.8-4.2M8.6 13.4l6.8 4.2"/></svg>';
+        const anchor=el.querySelector(".sbp")||el.querySelector(".sbx");
+        if(anchor) el.insertBefore(share,anchor); else el.appendChild(share);
+      }
       el.addEventListener("click",e=>{
         if(selectMode){ e.stopPropagation(); toggleSelect(el.dataset.id, el); return; }
+        if(e.target.closest(".sbs")) return; // conversation share is handled separately
         if(e.target.closest(".sbx")) return; // delete handled separately
         if(el.classList.contains("renaming")) return;
         loadSession(el.dataset.id);
       });
       const del=el.querySelector(".sbx");
       if(del) del.addEventListener("click",e=>{ e.stopPropagation(); deleteSession(el.dataset.id); });
+      const share=el.querySelector(".sbs");
+      if(share){
+        share.addEventListener("click",e=>{ e.preventDefault(); e.stopPropagation(); if(!selectMode) shareConversation(el.dataset.id); });
+        share.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault();e.stopPropagation();if(!selectMode)shareConversation(el.dataset.id);} });
+      }
       // B24: pin/unpin — pinned conversations float to the top of their group
       const pin=el.querySelector(".sbp");
       if(pin) pin.addEventListener("click",e=>{ e.stopPropagation();
@@ -3742,8 +3904,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       renderSessions();
     }
   function clearThreadState(){
+      if(messageShareMode) setMessageShareMode(false);
       if(thread) thread.innerHTML=""; if(thread) thread.hidden=true; if(greet) greet.hidden=false;
+      if(threadShareTools) threadShareTools.hidden=true;
       prompt.value=""; prompt.style.height="auto"; files.length=0; history.length=0; renderFiles(); syncSend();
+      clearPasteSignal();
       writeScrollTop(0);
     }
   function loadSession(id){
@@ -3752,6 +3917,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       clearThreadState();
       if(s.threadHtml){ thread.innerHTML=s.threadHtml; thread.hidden=false; greet && (greet.hidden=true); }
       history.length=0; (s.history||[]).forEach(m=>history.push(m));
+      if(threadShareTools) threadShareTools.hidden=PAGE!=="chat"||!history.length;
       setActive(id);
       if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
       // land on the latest message, like ChatGPT/Claude — not the top of a long thread
@@ -4002,7 +4168,37 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   /* ---- textarea auto-grow + enable send (v2.1.2: grip gone; fixed 180px cap) ---- */
   function syncSend(){ const streaming=send.classList.contains("stop"); const has=prompt.value.trim()!=="" || files.length>0; send.disabled = !has && !streaming; send.classList.toggle("ready", has && !streaming); }
+  function detectAiStylePaste(text){
+    const value=String(text||"").trim();
+    if(value.length<260) return false;
+    const cues=[
+      /\b(?:certainly|of course)[,!]|\bhere(?:'s| is) (?:a|the|an) (?:clear|concise|comprehensive|helpful|thoughtful|detailed)\b/i,
+      /\b(?:as an AI language model|I hope this helps|let me know if you need anything else|let's break this down|here are the key takeaways)\b/i,
+      /\b(?:it is important to note|in conclusion|to summarize|in summary|first and foremost)\b/i,
+    ].filter((pattern)=>pattern.test(value)).length;
+    const lines=value.split(/\r?\n/);
+    const listCount=lines.filter((line)=>/^\s*(?:[-*•]|\d+[.)])\s+\S/.test(line)).length;
+    const headingCount=lines.filter((line)=>/^\s{0,3}#{1,3}\s+\S/.test(line)).length;
+    const paragraphs=value.split(/\n\s*\n/).filter(Boolean).length;
+    const features=(cues?1:0)+(listCount>=3?1:0)+(headingCount>=2?1:0)+(paragraphs>=3&&value.length>=700?1:0);
+    return features>=2;
+  }
+  function pasteSampleStillPresent(value){
+    if(!pastedTextSample) return false;
+    const words=(text)=>new Set((String(text||"").toLowerCase().match(/[a-z0-9]{4,}/g)||[]));
+    const pasted=words(pastedTextSample), current=words(value);
+    let matches=0; pasted.forEach((word)=>{if(current.has(word)) matches++;});
+    return matches>=Math.min(8,Math.max(3,Math.ceil(pasted.size*.5)));
+  }
+  function clearPasteSignal(){ pastedTextSample=""; pastedTextSignal=false; if(pasteSignalNote) pasteSignalNote.hidden=true; }
+  prompt.addEventListener("paste",(event)=>{
+    pastedTextSample=(event.clipboardData&&event.clipboardData.getData("text/plain"))||"";
+    pastedTextSignal=detectAiStylePaste(pastedTextSample);
+    if(pasteSignalNote) pasteSignalNote.hidden=!pastedTextSignal;
+  });
+  if(pasteSignalDismiss) pasteSignalDismiss.addEventListener("click",clearPasteSignal);
   prompt.addEventListener("input",()=>{
+    if(pastedTextSignal&&!pasteSampleStillPresent(prompt.value)) clearPasteSignal();
     prompt.style.height="auto";
     prompt.style.height=Math.min(prompt.scrollHeight, 180)+"px";
     syncSend();
@@ -4229,6 +4425,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       // update history entry (text-only; images become a text note if present)
       const imgs=(Array.isArray(history[hIdx].content)&&history[hIdx].content.find(p=>p.type==="image_url"))?true:false;
       history[hIdx].content = imgs ? [{type:"text",text:v+" [note: image was attached]"}] : v;
+      history[hIdx].pastedAiSignal=false;
       bubbleEl.innerHTML=esc(v);
       // drop the assistant reply that followed this user turn, then regenerate
       const after=thread.children;
@@ -4254,8 +4451,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     if(!model){ showToast("Pick a model first."); return; }
     const text=prompt.value.trim();
     if(text==="" && files.length===0) return;
+    const pastedAiSignal=pastedTextSignal&&pasteSampleStillPresent(text);
+    const pasteOpening=pastedAiSignal?"This wording has some signs of AI-assisted text, though I cannot know its source from the text alone. Let us attend to the question it raises.\n\n":"";
     if(greet) greet.hidden=true;
     thread.hidden=false;
+    if(threadShareTools&&PAGE==="chat") threadShareTools.hidden=false;
 
     // user message — text, and images as content parts (vision models)
     const userMsg=text;
@@ -4275,12 +4475,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       userContent = text + (noteParts.length? "\n\n[Attached files]\n"+noteParts.join("\n\n") : "");
     }
     bubble("user",userHtml(userMsg));
-    history.push({role:"user", content:userContent});
+    history.push({role:"user", content:userContent, pastedAiSignal});
     // create/select a session from the first message
     if(!activeId) setActive(null);
     let attachNote="";
 
-    prompt.value=""; prompt.style.height="auto";
+    prompt.value=""; prompt.style.height="auto"; clearPasteSignal();
     const sent=files.splice(0); renderFiles(); syncSend();
 
     // send -> stop toggle
@@ -4312,7 +4512,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         res=await fetch(API+"/api/chat",{
           method:"POST",
           headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({model:cand.id, reasoning:reasoning, stream:true, messages}),
+          body:JSON.stringify({model:cand.id, reasoning:reasoning, stream:true, messages, pastedAiSignal}),
           signal:controller.signal
         });
         if(res.ok && res.body){
@@ -4350,7 +4550,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const dec=new TextDecoder();
       if(res._probe && res._probe.first && res._probe.first.value) bufStr += dec.decode(res._probe.first.value,{stream:true});
       const render=(streaming)=>{
-        const inner = streaming ? esc(acc)+'<span class="caret"></span>' : mdToHtml(acc);
+        const visibleAcc=pasteOpening+acc;
+        const inner = streaming ? esc(visibleAcc)+'<span class="caret"></span>' : mdToHtml(visibleAcc);
                 buf.className = "bubble md";
                 buf.innerHTML = '<span class="who">St. Augustine</span>'+inner+(!streaming?'<span class="ts">'+fmtTime(new Date())+'</span>':'');
                 if(!streaming) enhanceCodeBlocks(buf);
@@ -4380,8 +4581,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(streamStalled){
         acc += "\n\n*The connection faltered mid-thought — the reply above may be incomplete.*";
         render(false);
-        history.push({role:"assistant", content:acc});
-        recordSession(userMsg, acc);
+        history.push({role:"assistant", content:pasteOpening+acc});
+        recordSession(userMsg, pasteOpening+acc);
         addRetry(loading, messages, userMsg);
         showToast("Answer interrupted — tap Retry to have Augustine continue.");
         return;
@@ -4389,23 +4590,23 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(streamTruncated){
         acc += "\n\n*Augustine was still drawing breath when the length limit arrived. Tap Continue for the rest.*";
         render(false);
-        history.push({role:"assistant", content:acc});
-        recordSession(userMsg, acc);
+        history.push({role:"assistant", content:pasteOpening+acc});
+        recordSession(userMsg, pasteOpening+acc);
         addContinue(loading, messages, userMsg);
         return;
       }
       // D55: announce completion once (thread aria-live is off during streaming)
       if(thread){ thread.setAttribute("aria-live","polite"); setTimeout(()=>{ if(thread) thread.setAttribute("aria-live","off"); },1500); }
       if(window.__replyBell) window.__replyBell();
-      history.push({role:"assistant", content:acc});
-      recordSession(userMsg, acc);
+      history.push({role:"assistant", content:pasteOpening+acc});
+      recordSession(userMsg, pasteOpening+acc);
     }catch(e){
       const msg = (e&&e.message)||"Something went wrong.";
       const isAbort = aborted || (e&&e.name==="AbortError");
       if(isAbort){
-        buf.innerHTML='<span class="who">St. Augustine</span>'+ (acc? mdToHtml(acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>')+'<span class="ts">'+fmtTime(new Date())+'</span>';
-        if(acc){ enhanceCodeBlocks(buf); history.push({role:"assistant", content:acc}); }
-        recordSession(userMsg, acc||"(stopped)");
+        buf.innerHTML='<span class="who">St. Augustine</span>'+ (acc? mdToHtml(pasteOpening+acc)+'<p style="color:var(--muted);font-size:13px">⏹ Stopped.</p>' : '<span style="color:var(--muted)">Stopped.</span>')+'<span class="ts">'+fmtTime(new Date())+'</span>';
+        if(acc){ enhanceCodeBlocks(buf); history.push({role:"assistant", content:pasteOpening+acc}); }
+        recordSession(userMsg, acc?pasteOpening+acc:"(stopped)");
       }else{
         buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"+'<span class="ts">'+fmtTime(new Date())+'</span>';
         showToast(msg);
@@ -4556,7 +4757,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
   async function callChatRetry(messages, userMsg){
     if(!model){ showToast("Pick a model first."); return; }
+    const latestUser=[...messages].reverse().find((message)=>message.role==="user");
+    const pastedAiSignal=!!(latestUser&&latestUser.pastedAiSignal);
+    const pasteOpening=pastedAiSignal?"This wording has some signs of AI-assisted text, though I cannot know its source from the text alone. Let us attend to the question it raises.\n\n":"";
     if(greet) greet.hidden=true; thread.hidden=false;
+    if(threadShareTools&&PAGE==="chat") threadShareTools.hidden=false;
     send.classList.add("stop"); send.disabled=false; send.innerHTML='<span class="sq"></span>';
     const controller=new AbortController(); let aborted=false;
     send.onclick=()=>{ aborted=true; controller.abort(); };
@@ -4567,15 +4772,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const buf=loading.querySelector(".bubble");
     let acc="", bufStr="";
     try{
-      const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages}),signal:controller.signal});
+      const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages,pastedAiSignal}),signal:controller.signal});
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ const inner=s?esc(acc)+'<span class="caret"></span>':mdToHtml(acc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
+      const render=(s)=>{ const visibleAcc=pasteOpening+acc; const inner=s?esc(visibleAcc)+'<span class="caret"></span>':mdToHtml(visibleAcc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
       while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.text){acc+=j.text;render(true);} }catch(_){} } }
       render(false); if(!acc) acc="(no response)";
       if(window.__replyBell) window.__replyBell();
-      history.push({role:"assistant",content:acc}); recordSession(userMsg, acc); addRetry(loading, messages, userMsg);
+      history.push({role:"assistant",content:pasteOpening+acc}); recordSession(userMsg, pasteOpening+acc); addRetry(loading, messages, userMsg);
     }catch(e){
       const msg=(e&&e.message)||"Something went wrong.";
       buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
@@ -5319,7 +5524,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const clearAll=$("#clearAll");  if(clearAll) clearAll.addEventListener("click",()=>{
     if(clearAll.dataset.confirm==="1"){
       try{ localStorage.removeItem(LS_SESSIONS); localStorage.removeItem(LS_ACTIVE); }catch(_){}
-      sessions=[]; activeId=null; renderSessions(); greet.hidden=false; thread.hidden=true;
+      sessions=[]; activeId=null; renderSessions(); greet.hidden=false; thread.hidden=true; if(threadShareTools) threadShareTools.hidden=true;
       calcStorage(); showToast("All conversations cleared."); clearAll.dataset.confirm="0"; clearAll.textContent="Clear all conversations";
     } else {
       clearAll.dataset.confirm="1"; clearAll.textContent="Tap again to confirm — this cannot be undone";

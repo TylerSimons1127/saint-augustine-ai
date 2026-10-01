@@ -13,11 +13,18 @@ const OPENROUTER_SSE = [
   'data: {"choices":[{"delta":{"content":"Grace is a gift from God that heals the soul."}}]}',
   "data: [DONE]",
 ].join("\n") + "\n";
+let observedUpstreamRequest = null;
 
 const stub = http.createServer((req, res) => {
   if (req.url.startsWith("/models")) {
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify({ data: [{ id: "nvidia/nemotron-3-ultra-550b-a55b:free", name: "N", created: 0 }] }));
+    return;
+  }
+  if (req.url.startsWith("/chat/completions")) {
+    let body="";
+    req.on("data",(chunk)=>body+=chunk);
+    req.on("end",()=>{ try{observedUpstreamRequest=JSON.parse(body);}catch(_){} res.writeHead(200,{"content-type":"text/event-stream"}); res.end(OPENROUTER_SSE); });
     return;
   }
   res.writeHead(200, { "content-type": "text/event-stream" });
@@ -35,6 +42,7 @@ stub.listen(STUB_PORT, async () => {
   const payload = {
     model: "nvidia/nemotron-3-ultra-550b-a55b:free",
     reasoning: "contemplative",
+    pastedAiSignal: true,
     stream: true,
     messages: [{ role: "user", content: "What is grace?" }],
   };
@@ -68,8 +76,9 @@ stub.listen(STUB_PORT, async () => {
   }
 
   const pass = resp.status === 200 && text.trim().length > 0 && !text.includes("PRIVATE PLAN") && sawEmpty;
+  const pasteSignalReachedSystem = !!observedUpstreamRequest?.messages?.[0]?.content?.includes("PASTED-TEXT TRANSPARENCY");
   console.log(`status:${resp.status} textLen:${text.trim().length} sawEmptyFinal:${sawEmpty}`);
   console.log(`text="${text.trim()}"`);
-  console.log(pass ? "PASS (frontend request shape -> readable text via backend SSE)" : "FAIL");
-  process.exit(pass ? 0 : 1);
+  console.log(pass&&pasteSignalReachedSystem ? "PASS (frontend request + private reasoning + paste signal -> readable SSE)" : "FAIL");
+  process.exit(pass&&pasteSignalReachedSystem ? 0 : 1);
 });
