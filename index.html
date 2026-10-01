@@ -846,30 +846,48 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 
 /* ---------- Thread ---------- */
 .thread{width:min(720px,100%);display:flex;flex-direction:column;gap:22px;margin:auto 0;padding-top:8px;padding-bottom:200px}
-.thread-share-tools{width:min(720px,100%);display:flex;align-items:center;gap:9px;min-height:40px;margin:2px 0 0;padding:0 4px}
+.thread-share-tools{width:min(720px,100%);display:flex;align-items:center;gap:9px;min-height:44px;margin:6px 0 2px;padding:8px 12px;border:1px solid var(--border);border-radius:16px;background:var(--glass-strong);box-shadow:var(--shadow-sm)}
 .thread-share-tools[hidden]{display:none}
 .thread-share-hint{flex:1;min-width:0;color:var(--muted);font-size:12px;line-height:1.4}
 .thread-share-tools button{min-height:36px;padding:0 13px;border:1px solid var(--border);border-radius:999px;background:var(--glass-strong);color:var(--gold-ink);font:600 12px var(--body);cursor:pointer;white-space:nowrap}
 .thread-share-tools button:hover{background:var(--accent-soft);border-color:rgba(var(--accent-rgb),.4)}
 .thread-share-tools button:disabled{opacity:.45;cursor:default}
 .thread-share-tools .share-selected{background:var(--accent-deep);color:#fbf7ee;border-color:var(--accent-deep)}
-.msg-share-toggle{display:none;position:absolute;z-index:2;top:-10px;right:0;width:32px;height:32px;border:1px solid var(--border);border-radius:50%;background:var(--panel);color:var(--gold-ink);box-shadow:var(--shadow-sm);place-items:center;cursor:pointer}
-.msg.assistant .msg-share-toggle{right:auto;left:48px}
-.msg-share-toggle svg{width:15px;height:15px}
+.msg-share-toggle{display:none;position:static;z-index:auto;align-items:center;justify-content:center;gap:7px;min-width:108px;min-height:40px;padding:0 12px;border:1px solid var(--border);border-radius:999px;background:var(--glass-strong);color:var(--gold-ink);box-shadow:var(--shadow-sm);font:600 12px var(--body);white-space:nowrap;cursor:pointer;transition:background .16s ease,border-color .16s ease,color .16s ease}
+.msg-share-toggle[aria-pressed="true"]{background:var(--accent-soft);border-color:rgba(var(--accent-rgb),.55);color:var(--accent-deep)}
+.msg-share-toggle:focus-visible,.thread-share-tools button:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.msg-share-toggle svg{width:15px;height:15px;flex:none}
+.msg-share-toggle span{line-height:1}
 .msg.share-picked .bubble{outline:2px solid rgba(var(--accent-rgb),.72);outline-offset:2px}
-.thread.share-selecting .msg-share-toggle{display:grid}
+.thread.share-selecting .msg{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:7px}
+.thread.share-selecting .msg .av{display:none}
+.thread.share-selecting .msg .msg-share-toggle{display:inline-flex}
+.thread.share-selecting .msg.assistant .msg-share-toggle{grid-column:1;grid-row:1;justify-self:start}
+.thread.share-selecting .msg.assistant .bubble{grid-column:1;grid-row:2;justify-self:start;width:fit-content;max-width:min(560px,100%)}
+.thread.share-selecting .msg.user .msg-share-toggle{grid-column:1;grid-row:1;justify-self:end}
+.thread.share-selecting .msg.user .bubble{grid-column:1;grid-row:2;justify-self:end;width:fit-content;max-width:min(560px,100%)}
 .thread.share-selecting .msg-edit,.thread.share-selecting .acts{display:none!important}
 .paste-signal-note{display:flex;align-items:flex-start;gap:9px;padding:9px 12px;margin:0 4px 8px;border:1px solid rgba(var(--accent-rgb),.28);border-radius:12px;background:var(--accent-soft);color:var(--ink-soft);font-size:12px;line-height:1.45}
 .paste-signal-note[hidden]{display:none}
 .paste-signal-note span{flex:1;min-width:0}
 .paste-signal-note button{width:26px;height:26px;flex:none;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:17px;line-height:1;cursor:pointer}
 .paste-signal-note button:hover{background:rgba(var(--accent-rgb),.14);color:var(--ink)}
-@media (max-width:480px){.thread-share-tools{gap:6px}.thread-share-tools button{padding:0 9px;font-size:11px}.thread-share-hint{font-size:11px}}
+@media (max-width:600px){
+  .thread-share-tools{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;width:100%;min-height:0;margin:8px 0 4px;padding:8px 10px}
+  .thread-share-hint{font-size:12px}
+  .thread-share-tools button{min-height:44px;padding:0 11px;font-size:11.5px}
+  .msg-share-toggle{min-height:44px;padding:0 13px;font-size:11.5px}
+}
+@media (max-width:400px){
+  .thread-share-tools{grid-template-columns:minmax(0,1fr) minmax(96px,1fr);gap:7px}
+  .thread-share-hint{grid-column:1/-1}
+  .thread-share-tools button{width:100%;padding:0 9px}
+}
 @media (pointer:coarse){
   .sb-item .sbs{width:44px;height:44px;opacity:1}
   .sb-item .sbp,.sb-item .sbx{display:none}
   .thread-share-tools button{min-height:44px}
-  .msg-share-toggle{width:44px;height:44px}
+  .msg-share-toggle{min-height:44px}
   .paste-signal-note button{width:44px;height:44px}
 }
 .msg{display:flex;gap:14px;animation:rise .26s ease both;position:relative}
@@ -3759,21 +3777,26 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         let toggle=message.querySelector(".msg-share-toggle");
         if(!toggle){
           toggle=document.createElement("button"); toggle.type="button"; toggle.className="msg-share-toggle";
-          toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>';
           message.appendChild(toggle);
         }
-        const label=message.classList.contains("user")?"your question":"Augustine’s answer";
-        toggle.setAttribute("aria-label","Select "+label+" to share");
-        toggle.setAttribute("aria-pressed","false");
+        const isUserMessage=message.classList.contains("user");
+        const label=isUserMessage?"your question":"Augustine’s answer";
+        const shortLabel=isUserMessage?"question":"answer";
+        const paintShareToggle=(selected)=>{
+          const icon=selected
+            ? '<circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/>'
+            : '<circle cx="12" cy="12" r="9"/>';
+          toggle.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icon+'</svg><span>'+(selected?"Selected":"Select "+shortLabel)+'</span>';
+          toggle.setAttribute("aria-label",selected?"Remove "+label+" from shared messages":"Select "+label+" to share");
+          toggle.setAttribute("aria-pressed",selected?"true":"false");
+        };
+        paintShareToggle(false);
         toggle.onclick=(event)=>{
           event.stopPropagation();
           const key=Number(message.dataset.shareIndex), selected=selectedMessageIndexes.has(key);
           if(selected) selectedMessageIndexes.delete(key); else selectedMessageIndexes.add(key);
           message.classList.toggle("share-picked",!selected);
-          toggle.setAttribute("aria-pressed",selected?"false":"true");
-          toggle.innerHTML=selected
-            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>'
-            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>';
+          paintShareToggle(!selected);
           refreshMessageShareCount();
         };
       });
