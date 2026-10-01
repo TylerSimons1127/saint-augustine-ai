@@ -2749,9 +2749,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   .composer .controls-toggle{width:36px}
 }
 @media (max-width:480px){
-  .settings-body .set-row:has(.seg-ctl){align-items:stretch;flex-direction:column;gap:7px}
-  .settings-body .set-row:has(.seg-ctl) .seg-ctl{display:flex;width:100%;justify-content:stretch}
-  .settings-body .set-row:has(.seg-ctl) .seg-ctl button{flex:1 1 0;min-width:0;padding:6px 5px;font-size:11px;white-space:nowrap}
+  .settings-body .set-row{flex-wrap:wrap}
+  .settings-body .set-row .seg-ctl{display:flex;flex:0 0 100%;width:100%;justify-content:stretch}
+  .settings-body .set-row .seg-ctl button{flex:1 1 0;min-width:0;padding:6px 5px;font-size:11px;white-space:nowrap}
   .settings-sheet *::-webkit-scrollbar:horizontal{display:none;height:0}
 }
 /* Remove scale-based press effects on touch: feedback must not make the UI
