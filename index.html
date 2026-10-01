@@ -2731,6 +2731,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
   .dp-thread .phead h3{font-size:20px !important;margin-bottom:5px !important}
   .dp-thread .phead p{font-size:13.5px;line-height:1.55;color:var(--ink-soft)}
+  .settings-sheet{width:min(440px,calc(100vw - 20px));max-width:calc(100vw - 20px)}
+  .settings-body{box-sizing:border-box;min-width:0;max-width:100%;overflow-x:hidden}
+  .settings-head,.settings-body>.set-sec,.settings-body>.about,.set-row{min-width:0;max-width:100%}
+  .settings-body .seg-ctl{max-width:100%;flex-wrap:wrap}
   #page-chat:has(#greet:not([hidden])){
     min-height:calc(100vh - 216px) !important;
     min-height:calc(100svh - 216px) !important;
@@ -3550,7 +3554,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const compact={chat:"Message…",study:"Ask a question…",prayer:"Share a prayer…",today:"Ask about today…"};
     const ta=$("#prompt");
     if(!ta || !full[page]) return;
-    ta.placeholder=window.matchMedia("(max-width:380px)").matches?compact[page]:full[page];
+    ta.placeholder=window.matchMedia("(max-width:480px)").matches?compact[page]:full[page];
     ta.setAttribute("aria-label",full[page].replace(/…$/,""));
   };
   function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
