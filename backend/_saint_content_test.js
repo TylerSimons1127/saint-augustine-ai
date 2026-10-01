@@ -41,7 +41,9 @@ require("./server.js");
   assert.ok(!/the user wants|let me analyze|i need to write/i.test(saint.bio), "model planning text must never be returned as the saint summary");
   assert.ok(!saint.bio.includes("short teaser"), "AI summary must replace the card excerpt");
   assert.ok(saint.conn.includes("school for orphaned children"), "Augustine reflection should use a saint-specific fact");
-  assert.strictEqual(requests.length, 2, "expect separate summary and connection generations");
+  assert.strictEqual(requests.length, 4, "summary planning output should be rejected across all models before Augustine connection generation");
+  const summaryRequests = requests.filter((req) => req.messages[0].content.includes("COMPLETE source story"));
+  assert.strictEqual(summaryRequests.length, 3, "all summary models should reject the leaked planning and use the source fallback");
   for (const req of requests) {
     const prompt = req.messages.map((m) => m.content).join("\n");
     assert.ok(prompt.includes("FULL_STORY_END_MARKER"), "both generations must receive the complete story, including its final paragraph");

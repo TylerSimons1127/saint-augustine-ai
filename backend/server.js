@@ -838,7 +838,13 @@ async function getSaintSummary(name, fullStory) {
     "Preserve the saint's distinctive historical facts, vocation, important actions, and legacy. Do not invent details or " +
     "summarize the full story, not just the opening sentences. Write 3-5 clear sentences in 160-210 words, in accessible language. " +
     "Return only the summary, with no heading or commentary.";
-  const summary = await generateSaintText(sys, `Saint: ${name}\nComplete source story:\n${fullStory}`, 320, 1400);
+  const summary = await generateSaintText(
+    sys,
+    `Saint: ${name}\nComplete source story:\n${fullStory}`,
+    320,
+    1400,
+    isSaintSummaryOutput
+  );
   if (summary && isSaintSummaryOutput(summary)) {
     const polished = compactSaintSummary(summary);
     saintSummaryCache.set(key, polished);
@@ -853,7 +859,7 @@ async function getSaintSummary(name, fullStory) {
   }
   return null;
 }
-async function generateSaintText(sys, userText, maxTokens, maxChars) {
+async function generateSaintText(sys, userText, maxTokens, maxChars, acceptOutput = null) {
   const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);
   for (const model of models) {
     try {
@@ -869,7 +875,7 @@ async function generateSaintText(sys, userText, maxTokens, maxChars) {
       let text = (typeof msg.content === "string" ? msg.content : "").trim();
       text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
         .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
-      if (text.length >= 80 && text.length <= maxChars) return text;
+      if (text.length >= 80 && text.length <= maxChars && (!acceptOutput || acceptOutput(text))) return text;
     } catch (_) { /* try next model */ }
   }
   return null;
