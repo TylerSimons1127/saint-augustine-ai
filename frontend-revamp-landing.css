@@ -1,0 +1,22 @@
+/* Preview marketing page: existing copy/images/interactive examples preserved. */
+:root {
+  --color-paper:#f6f3ed; --color-paper-2:#eae5db; --color-paper-3:#ead8c2;
+  --color-ink:#203229; --color-ink-2:#564b3d; --color-muted:#736652; --color-rule:#d6cec0;
+  --color-accent:#374d40; --color-accent-dark:#203229;
+  --color-night:#203229; --color-night-2:#293e33; --color-gold:#d9c4a9; --color-gold-soft:#ead8c2;
+  --radius-sm:8px; --dur-fast:140ms;
+}
+.button.primary {box-shadow:none;}
+.nav-cta:hover,.button:hover {transform:none;}
+.scroll-cue::before {animation:none;}
+.builder {background:var(--color-paper);}
+.app-frame {border-radius:16px; overflow:hidden;}
+@media (max-width:600px) {
+  .nav {padding-inline:20px;}
+  .brand {font-size:18px; gap:8px;}
+  .nav-cta {min-height:44px; padding:10px 12px; font-size:12px;}
+  .hero-actions .button {min-height:48px; width:100%;}
+  .mode-tab {min-height:48px;}
+  .closing-actions .button {white-space:normal; line-height:1.4; min-height:48px;}
+}
+@media (prefers-reduced-motion:reduce) {*,*::before,*::after{animation:none!important; transition:none!important;}}

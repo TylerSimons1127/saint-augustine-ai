@@ -7,6 +7,7 @@
 <meta name="description" content="Ask in the voice of Augustine of Hippo. A Catholic AI companion built by Tyler Simons, Seton Hall Prep. Front-end preview." />
 <meta name="theme-color" content="#f6f2eb" />
 <meta name="author" content="Tyler Simons, Seton Hall Prep" />
+<meta name="robots" content="noindex,nofollow" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" media="(prefers-color-scheme: light)" />
 <link rel="icon" href="assets/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
 <link rel="manifest" href="manifest.webmanifest" />
@@ -2674,7 +2675,7 @@ document.addEventListener("visibilitychange",()=>{
   function place(){
     var tabs=document.querySelector('.nav-tabs'); if(!tabs) return;
     var home=tabs.parentElement, next=tabs.nextElementSibling;
-    place._home=home; place._next=next;
+    if(!place._home){ place._home=home; place._next=next; }
     if(window.matchMedia('(max-width:768px)').matches){
       if(tabs.parentElement!==document.body) document.body.appendChild(tabs);
     } else if(tabs.parentElement!==place._home){
@@ -2780,6 +2781,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
+<link rel="stylesheet" href="frontend-revamp.css" />
+<script src="frontend-revamp.js" defer></script>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -2856,6 +2859,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
 <!-- SIDEBAR (its top brand now lives in the full-width top bar) -->
 <aside class="sidebar" id="sidebar" aria-label="Conversations">
+  <div class="revamp-history-head">
+    <h2>Conversations</h2>
+    <button class="icon-btn" id="revampHistoryClose" type="button" aria-label="Close conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </div>
   <button class="sb-new" id="newChat">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     New conversation
@@ -2892,6 +2899,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       <span>Delete all</span>
     </button>
   </div>
+  <p class="preview-notice">Design preview <a href="https://staugustineai.vercel.app/" target="_blank" rel="noopener">Live app ↗</a></p>
   <div class="sb-bulk" id="sbBulk" hidden>
     <span id="sbBulkCount">0 selected</span>
     <button class="sb-bulk-del" id="sbBulkDel">Delete selected</button>
@@ -3878,6 +3886,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         loadSession(el.dataset.id);
       });
       const del=el.querySelector(".sbx");
+      const rename=document.createElement('span');
+      rename.className='sbr'; rename.setAttribute('role','button'); rename.setAttribute('tabindex','0');
+      rename.setAttribute('aria-label','Rename conversation');
+      rename.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 5 5-12 12-6 1 1-6Z"/><path d="m14 5 5 5"/></svg>';
+      const renameAction=e=>{e.preventDefault();e.stopPropagation();if(!selectMode) startRename(el,el.querySelector('.txt'));};
+      rename.addEventListener('click',renameAction);
+      rename.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ') renameAction(e);});
+      el.insertBefore(rename,del);
       if(del) del.addEventListener("click",e=>{ e.stopPropagation(); deleteSession(el.dataset.id); });
       const share=el.querySelector(".sbs");
       if(share){
@@ -3902,7 +3918,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       });
     });
     if(window.matchMedia("(max-width:900px)").matches){
-      $$("#sbTodayList .sb-item, #sbYesterdayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(!el.classList.contains("renaming")) sbClose(); }));
+      $$("#sbTodayList .sb-item, #sbYesterdayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(!selectMode&&!el.classList.contains("renaming")) sbClose(); }));
     }
     applySearch();
         setupReveal();
@@ -3984,6 +4000,26 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       clearThreadState();
       if(s.threadHtml){ thread.innerHTML=s.threadHtml; thread.hidden=false; greet && (greet.hidden=true); }
       history.length=0; (s.history||[]).forEach(m=>history.push(m));
+      // Saved HTML does not retain event listeners. Restore the same message
+      // controls when a conversation is reopened, using its original context.
+      [...thread.querySelectorAll('.msg')].forEach((message,index)=>{
+        if(message.classList.contains('user')){
+          const edit=message.querySelector('.msg-edit');
+          if(edit) edit.onclick=()=>editUserMessage(message);
+        }else if(history[index]&&history[index].role==='assistant'){
+          const canContinue=!!message.querySelector('[data-continue]');
+          message.querySelector('.acts')?.remove();
+          const context=history.slice(0,index);
+          const user=[...context].reverse().find(item=>item.role==='user');
+          if(user) (canContinue ? addContinue : addRetry)(message,context,user);
+        }
+        message.querySelectorAll('.code-copy').forEach(button=>{
+          button.onclick=()=>{
+            const code=button.closest('.code-wrap')?.querySelector('pre code');
+            if(code) navigator.clipboard.writeText(code.innerText).then(()=>showToast('Copied')).catch(()=>showToast('Copy failed'));
+          };
+        });
+      });
       if(threadShareTools) threadShareTools.hidden=PAGE!=="chat"||!history.length;
       setActive(id);
       if(s.model){ const mm=models.find(m=>m.name===s.model); if(mm) selectModel(mm); }
@@ -4642,8 +4678,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           }catch(_){}
         }
       }
+      if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
       render(false);
-      if(!acc) acc="(no response)";
       // v4.1 — the answer was cut short: say so, and offer the fix.
       if(streamStalled){
         acc += "\n\n*The connection faltered mid-thought — the reply above may be incomplete.*";
@@ -4845,13 +4881,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const reader=res.body.getReader(); const dec=new TextDecoder();
       const render=(s)=>{ const visibleAcc=pasteOpening+acc; const inner=s?esc(visibleAcc)+'<span class="caret"></span>':mdToHtml(visibleAcc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
       while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.text){acc+=j.text;render(true);} }catch(_){} } }
-      render(false); if(!acc) acc="(no response)";
+      if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
+      render(false);
       if(window.__replyBell) window.__replyBell();
       history.push({role:"assistant",content:pasteOpening+acc}); recordSession(userMsg, pasteOpening+acc); addRetry(loading, messages, userMsg);
     }catch(e){
-      const msg=(e&&e.message)||"Something went wrong.";
-      buf.innerHTML='<span class="who">St. Augustine</span><span style="color:var(--danger)">'+esc(msg)+"</span>"; showToast(msg);
-      history.push({role:"assistant",content:"[error] "+msg}); recordSession(userMsg, msg); addRetry(loading, messages, userMsg);
+      const isStopped=aborted || (e&&e.name==="AbortError");
+      const msg=isStopped ? "Stopped." : (e&&e.message)||"Something went wrong.";
+      buf.innerHTML='<span class="who">St. Augustine</span>'+(isStopped&&acc ? mdToHtml(pasteOpening+acc) : '')+'<span style="color:var('+(isStopped?'--muted':'--danger')+')">'+esc(msg)+"</span>";
+      if(!isStopped) showToast(msg);
+      history.push({role:"assistant",content:isStopped ? (acc||"(stopped)") : "[error] "+msg}); recordSession(userMsg,isStopped ? (acc||"(stopped)") : msg); addRetry(loading, messages, userMsg);
     }finally{
       send.classList.remove("stop"); send.disabled=(prompt.value.trim()===""&&files.length===0); send.classList.toggle("ready", !(prompt.value.trim()===""&&files.length===0));
       send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>'; send.onclick=null; syncSend(); writeScrollTop(readScrollHeight());
@@ -4937,7 +4976,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   if(sbToggle) sbToggle.addEventListener("click",()=>{ sb.classList.contains("open") ? sbClose() : sbOpen(); });
   if(sbScrim) sbScrim.addEventListener("click", sbClose);
   // close sidebar after picking a session (so it doesn't cover the chat on phones)
-  $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(window.matchMedia("(max-width:900px)").matches) sbClose(); }));
+  $$("#sbTodayList .sb-item, #sbEarlierList .sb-item").forEach(el=>el.addEventListener("click",()=>{ if(!selectMode&&window.matchMedia("(max-width:900px)").matches) sbClose(); }));
 
   /* ---- keep composer above the iOS keyboard (visualViewport) ---- */
   /* Small visual-viewport changes are Safari's browser chrome, not a keyboard.
@@ -5524,7 +5563,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         else if(key==="defaultReasoning"){ reasoning=v; if(prefs.convo) prefs.convo.defaultReasoning=v;
           $$('.reasoning .seg[data-reason]').forEach(x=>x.setAttribute("aria-pressed", x.dataset.reason===v)); }
         else if(key==="sendWith"){ if(prefs.convo) prefs.convo.sendWith=v; }
-        savePrefs(); syncSettingsUI();
+        savePrefs(); applyPrefs(); syncSettingsUI();
       });
     });
   });
@@ -6325,5 +6364,5 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       })();
 </script>
 
-</body></body>
+</body>
 </html>
