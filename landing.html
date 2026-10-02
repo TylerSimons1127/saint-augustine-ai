@@ -215,6 +215,7 @@
     .builder-copy{padding:clamp(4rem,9vw,9rem) var(--page-gutter);display:flex;flex-direction:column;justify-content:center}
     .builder h2{font-size:var(--text-4xl);max-width:12ch}
     .builder p{margin-top:var(--space-8);max-width:38rem;color:var(--color-night-muted)}
+    .builder p+p{margin-top:var(--space-4)}
     .builder dl{margin:var(--space-10) 0 0;display:grid;grid-template-columns:7rem 1fr;gap:var(--space-3) var(--space-6);font-size:var(--text-sm)}
     .builder dt{color:var(--color-gold)}
     .builder dd{margin:0}
@@ -245,7 +246,7 @@
       .experience-grid{grid-template-columns:1fr}
       .experience-head{position:relative;top:auto}
       .experience-item{min-height:auto}
-      .builder{grid-template-columns:1fr}.builder-image{min-height:28rem;background-image:linear-gradient(0deg,var(--color-night-2),transparent 60%),var(--image-greet)}
+      .builder{grid-template-columns:1fr}.builder-image{min-height:clamp(17rem,56vw,25rem);background-image:linear-gradient(0deg,var(--color-night-2),transparent 60%),var(--image-greet)}
     }
     @media (max-width:52rem){
       :root{--banner-height:4.5rem}
@@ -446,6 +447,16 @@
       </div>
     </section>
 
+    <section class="builder" aria-labelledby="builder-title">
+      <div class="builder-image" role="img" aria-label="A student sketches a digital interface beside an open book in a sunlit stone library"></div>
+      <div class="builder-copy">
+        <h2 id="builder-title" class="reveal">Built by a student, not a startup.</h2>
+        <p class="reveal" data-delay="1">Tyler Simons is a student at Seton Hall Prep. He began Saint Augustine AI as a small, hopeful project: a place where an honest question could be met with patience, Augustine’s words could be read in context, and prayer could begin simply.</p>
+        <p class="reveal" data-delay="2">He has shaped the experience from its daily lessons to the service behind each reply, and offers it freely for anyone to explore. The hope is simple: that someone might find a passage to carry, a little more clarity, or a quiet moment of peace when they need one.</p>
+        <dl class="reveal" data-delay="3"><dt>Builder</dt><dd>Tyler Simons</dd><dt>School</dt><dd>Seton Hall Prep</dd><dt>Code</dt><dd><a href="https://github.com/tylersimons1127/saint-augustine-ai">View the project on GitHub&nbsp;↗</a></dd><dt>Contact</dt><dd><a href="mailto:tyler.simons1127@gmail.com">tyler.simons1127@gmail.com</a></dd></dl>
+      </div>
+    </section>
+
     <section class="experience" id="experience" aria-labelledby="experience-title">
       <div class="experience-grid shell">
         <header class="experience-head">
@@ -578,15 +589,6 @@
           <div class="guardrail reveal"><strong>Model fallback</strong><span>Unavailable models yield to a healthy alternative.</span></div>
           <div class="guardrail reveal" data-delay="1"><strong>Hard timeouts</strong><span>Expired requests return cleanly instead of hanging.</span></div>
         </div>
-      </div>
-    </section>
-
-    <section class="builder" aria-labelledby="builder-title">
-      <div class="builder-image" role="img" aria-label="A student sketches a digital interface beside an open book in a sunlit stone library"></div>
-      <div class="builder-copy">
-        <h2 id="builder-title" class="reveal">Built by a student, not a startup.</h2>
-        <p class="reveal" data-delay="1">Tyler Simons is a student at Seton Hall Prep. He built both sides of the experience—from the static interface and daily formation tools to the Node service that protects the key and streams the answer. The work is tested, open to inspection, and free to use.</p>
-        <dl class="reveal" data-delay="2"><dt>Builder</dt><dd>Tyler Simons</dd><dt>School</dt><dd>Seton Hall Prep</dd><dt>Code</dt><dd><a href="https://github.com/tylersimons1127/saint-augustine-ai">View the project on GitHub&nbsp;↗</a></dd><dt>Contact</dt><dd><a href="mailto:tyler.simons1127@gmail.com">tyler.simons1127@gmail.com</a></dd></dl>
       </div>
     </section>
 
