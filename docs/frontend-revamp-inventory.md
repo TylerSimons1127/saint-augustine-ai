@@ -60,10 +60,9 @@ The preview uses a distinct origin: browsers isolate localStorage by origin, so 
 
 ## Published experiment
 
-- App: [frontend-revamp-deploy.vercel.app](https://frontend-revamp-deploy.vercel.app/#study)
+- App: [frontend-revamp-deploy.vercel.app](https://frontend-revamp-deploy.vercel.app/#today)
 - Landing: [experimental landing](https://frontend-revamp-deploy.vercel.app/landing)
 - Source: GitHub branch `frontend-revamp-test`; never merged into `main`.
 - Hosting: separate Vercel project `frontend-revamp-deploy`. The live project `staugustineai` and its public URL are unchanged. The experimental worktree is linked to the test project.
-- The repository's configured commit email was not recognized by the original Vercel project. The test site was published as a manual static artifact under the authenticated account, rather than changing Git identity or project permissions. Deployment credentials remain ignored local files.
-- Final deployed CSS and presentation JavaScript returned HTTP 200 and matched local SHA-256 hashes. The noindex response header was present. All four deployed pages were also checked in the browser at 375px; the compact lesson state and original backend model picker were present.
-- Production HTML returned HTTP 200 and contained neither experimental stylesheet nor script. Remote `main` remained `825e6d018c5afac859015057df557d21b420be39`, and both worktrees were clean after commits.
+- The final preview deployment completed successfully and was verified on the stable Vercel alias. The app and landing page return HTTP 200, `X-Robots-Tag: noindex, nofollow` is present, and the mobile artwork adjustment plus refreshed offline cache version are served.
+- The refreshed mobile landing page and the Study/Today app pages were inspected in-browser. The repeatable integrity check passes; live production HTML contains neither experimental asset. Remote `main` remains `825e6d018c5afac859015057df557d21b420be39`.
