@@ -741,13 +741,8 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
 .ls-n[data-step].done{background:var(--accent-deep);border-color:var(--accent-deep)}
 .ls .topic-vocab .rl2{display:block;font-size:14px;line-height:1.62;color:var(--ink);font-style:italic;padding:10px 12px;border-radius:10px;background:var(--accent-soft);border:1px solid rgba(var(--accent-rgb),.22)}
 .lesson-citation{font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--muted);margin:7px 0 0}
-.lesson-context{margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--border)}
-.lesson-context-title{font-family:var(--mono);font-size:10.5px;line-height:1.5;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-ink);margin:0 0 6px}
 .lesson-source{display:inline-flex;align-items:center;gap:6px;margin:12px 0 4px;color:var(--gold-ink);font-size:12px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
-.lesson-continuation{margin-top:12px;border-top:1px solid var(--border);padding-top:10px}
-.lesson-continuation summary{cursor:pointer;color:var(--gold-ink);font-size:12px;font-weight:600;min-height:40px;display:flex;align-items:center}
-.lesson-continuation summary:focus-visible{outline:2px solid var(--gold-ink);outline-offset:2px}
-.lesson-continuation .topic-excerpt{padding-top:8px}
+.lesson-reading-context{margin-top:10px!important;color:var(--ink-soft)}
 .lesson-top .dp-eyebrow-mini{margin:0 0 4px}
 .lesson-top .topic-name{margin:0 0 2px}
 #lessonQuote{font-style:normal}
@@ -3020,20 +3015,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <details class="ls" data-step="3">
               <summary>
                 <span class="ls-n" data-step="3" aria-hidden="true"></span>
-                <span class="ls-l" id="lessonPassageLabel">Read the passage & its context</span>
+                <span class="ls-l" id="lessonPassageLabel">The source, read closely</span>
                 <svg class="ls-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
               </summary>
               <div class="ls-b">
-                <div class="topic-excerpt" id="lessonExcerpt"></div>
-                <details class="lesson-continuation" id="lessonContinuation" hidden>
-                  <summary>Continue reading the lesson</summary>
-                  <div class="topic-excerpt" id="lessonContinuationBody"></div>
-                </details>
-                <div class="lesson-context">
-                  <p class="lesson-context-title" id="lessonWritingLabel">A closer reading</p>
-                  <p class="topic-summary" id="lessonSummary"></p>
-                </div>
-                <a class="lesson-source" id="lessonPrimarySource" hidden target="_blank" rel="noopener noreferrer">Read the primary text <span aria-hidden="true">↗</span></a>
+                <div class="topic-excerpt lesson-reading" id="lessonExcerpt"></div>
+                <p class="lesson-citation" id="lessonReadingCitation"></p>
+                <a class="lesson-source" id="lessonPrimarySource" hidden target="_blank" rel="noopener noreferrer">Open the source text <span aria-hidden="true">↗</span></a>
               </div>
             </details>
             <details class="ls" data-step="4">
@@ -5792,8 +5780,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         const lessonKicker=$('#lessonKicker'), lessonName=$('#lessonName'),
               lessonQuote=$('#lessonQuote'), lessonQuoteSource=$('#lessonQuoteSource'), lessonRelatedScripture=$('#lessonRelatedScripture'), lessonTopic=$('#lessonTopic'),
               lessonExcerpt=$('#lessonExcerpt'), lessonVocab=$('#lessonVocab'), lessonPrimarySource=$('#lessonPrimarySource'),
-              lessonContinuation=$('#lessonContinuation'), lessonContinuationBody=$('#lessonContinuationBody'),
-              lessonPassageLabel=$('#lessonPassageLabel'), lessonSummary=$('#lessonSummary'), lessonLabel=$('#lessonWritingLabel'),
+              lessonPassageLabel=$('#lessonPassageLabel'), lessonReadingCitation=$('#lessonReadingCitation'),
               lessonRegion=$('.dp-card.lesson'), lessonShuf=$('#lessonShuf'), lessonAsk=$('#lessonAsk'), lessonReturnToday=$('#lessonReturnToday'), tomorrowTeaser=$('#tomorrowTeaser'), studyReflectIntro=$('#studyReflectIntro');
         const lessonStepLabels=lessonRegion?$$('.ls-l',lessonRegion):[];
         let lessonIdx=-1, lessonMode="daily", lessonObserver=null, lessonReadTimer=null, qActiveTopic=-1, studyQuizReady=false;
@@ -5828,32 +5815,27 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             lessonRelatedScripture.hidden=!related;
             lessonRelatedScripture.textContent=related?"Scripture alongside this reading · "+t.relatedScripture+" — “"+t.relatedText+"”":"";
           }
-          if(lessonPassageLabel) lessonPassageLabel.textContent=t.primaryExcerpt?"Read the passage & its source":"Explore the topic & its source";
+          if(lessonPassageLabel) lessonPassageLabel.textContent="The source, read closely";
           if(lessonExcerpt){
-            const primary=t.primaryExcerpt;
-            const paras=(t.excerpt||[]);
-            const lead=primary||paras[0]||"";
-            lessonExcerpt.innerHTML=lead?"<p>"+esc(lead)+"</p>":"";
-            const extra=primary?paras:paras.slice(1);
-            if(lessonContinuation && lessonContinuationBody){
-              lessonContinuationBody.innerHTML=extra.map(p=>"<p>"+esc(p)+"</p>").join("");
-              lessonContinuation.hidden=!extra.length;
-              lessonContinuation.open=false;
-            }
-            [lessonExcerpt,lessonContinuationBody].filter(Boolean).forEach(container=>$$('p',container).forEach(p=>{
+            const lead=String(t.primaryExcerpt||(t.excerpt||[])[0]||"").trim();
+            const closeReading=String(t.summary||"").trim();
+            lessonExcerpt.innerHTML=[
+              lead?'<p class="askable">'+esc(lead)+"</p>":"",
+              closeReading?'<p class="lesson-reading-context">'+esc(closeReading)+"</p>":""
+            ].filter(Boolean).join("");
+            $$('p.askable',lessonExcerpt).forEach(p=>{
               p.tabIndex=0; p.classList.add("askable");
               const ask=()=>pageChat("Help me understand this passage about "+t.name+": “"+p.textContent+"” What does it mean, and how does it connect to "+(t.writing||"Augustine’s writings")+"?","study");
               p.addEventListener("click",ask);
               p.addEventListener("keydown",ev=>{ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); ask(); } });
-            }));
+            });
           }
+          if(lessonReadingCitation) lessonReadingCitation.textContent=t.writing||t.primaryQuoteSource||"";
           if(lessonPrimarySource){
-            lessonPrimarySource.hidden=!(t.primaryUrl&&t.primaryExcerpt);
+            lessonPrimarySource.hidden=!(t.primaryUrl&&(t.primaryExcerpt||(t.excerpt||[]).length));
             if(t.primaryUrl) lessonPrimarySource.href=t.primaryUrl;
           }
           if(lessonVocab) lessonVocab.textContent=t.vocab||"";
-          if(lessonLabel) lessonLabel.textContent="A closer reading";
-          if(lessonSummary) lessonSummary.textContent=t.summary||"";
           if(lessonReturnToday) lessonReturnToday.hidden=!topicMode;
           if(tomorrowTeaser) tomorrowTeaser.hidden=topicMode;
           if(lessonAsk) lessonAsk.textContent=topicMode?"Explore this topic with Augustine →":"Walk through today’s lesson with Augustine →";
@@ -5868,12 +5850,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           }
         }
         renderLesson(lessonForDate(),"daily");
-        /* Keep the five connected lesson elements readable in one continuous path. */
+        /* Keep the lesson calm on phones; let the reader open each next step. */
         (function lessonSteps(){
           const steps=$$('.ls');
           if(!steps.length) return;
-          window.__lessonSteps={ reset(){ steps.forEach(d=>d.open=true); } };
+          const compact=window.matchMedia("(max-width: 768px)");
+          window.__lessonSteps={ reset(){ steps.forEach(d=>{ d.open=!compact.matches||d.dataset.step==="1"; }); } };
           window.__lessonSteps.reset();
+          compact.addEventListener("change",window.__lessonSteps.reset);
         })();
         // tomorrow's lesson teaser (closes the daily loop)
         (function tomorrowTeaser(){
