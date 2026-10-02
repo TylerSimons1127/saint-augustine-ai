@@ -70,3 +70,7 @@ html,body {background:var(--color-paper);color:var(--color-ink);}
   .hero-copy::before {background:linear-gradient(0deg,var(--color-night) 0%,rgba(34,43,64,.86) 58%,rgba(34,43,64,.30) 100%);}
   .hero-visual::before {background:linear-gradient(0deg,var(--color-night) 2%,transparent 68%),linear-gradient(90deg,rgba(34,43,64,.54),transparent 80%);}
 }
+@media (max-width:52rem) {
+  .hero-visual {opacity:.68!important;}
+  .hero-visual img {filter:saturate(.92) contrast(1.02) brightness(1.12)!important;}
+}
