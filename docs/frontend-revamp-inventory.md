@@ -25,6 +25,15 @@ Baseline: production `825e6d0`. Inventory taken from the complete `index.html`, 
 
 Browser checks were performed in the Codex browser against the running local prototype, using synthetic conversations and attachments. Screenshots are saved in `outputs/frontend-revamp` in the parent workspace. The deployed static files are checked separately against this source.
 
+### Current visual pass — October 2, 2026
+
+- The default Parchment theme is now presented as **Midnight Linen** across the app and landing page: linen and warm-white reading surfaces, ink navy and slate controls, and the existing champagne-peach `#d9c4a9` accent. The saved theme ID and other user-selectable themes remain intact.
+- Default success, incorrect-answer, feedback, and destructive controls use the same quiet slate-and-paper palette rather than green and red.
+- Long-form pages use a calmer reading canvas; the Today masthead keeps its contextual image while decorative scenery no longer competes with text. Study remains compact-first on phones with its existing expandable lesson sections.
+- The shared composer is hidden on Study, Today, and Pray until the user asks Augustine a question; it then opens as a focused sheet with the existing modes, model selection, attachments, draft, and send/stop behavior.
+- The client-side assistant display filter removes explicit reasoning markers and obvious planning prose at render, local-history, sharing, and export boundaries. It is a presentation safeguard; model/provider quality and server-side filtering remain a separate backend concern.
+- The refreshed local Today page was checked at a phone viewport. The live saint title displays “Feast of the Guardian Angels” without a duplicated “Saint” prefix. The broader phone, tablet, and desktop page checks are recorded in the inventory above.
+
 Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: all 215 original DOM IDs retained, no duplicate IDs, four inline scripts plus the presentation script parse, lessons/config/backend unchanged, preview noindex and same-origin landing links present.
 
 ### Repairs made during verification

@@ -20,3 +20,53 @@
   .closing-actions .button {white-space:normal; line-height:1.4; min-height:48px;}
 }
 @media (prefers-reduced-motion:reduce) {*,*::before,*::after{animation:none!important; transition:none!important;}}
+
+/* The landing page shares the app's Midnight Linen system. */
+:root {
+  color-scheme:light;
+  --color-paper:#f7f5f0; --color-paper-2:#eeeae3; --color-paper-3:#e7dfd3;
+  --color-ink:#252833; --color-ink-2:#505562; --color-muted:#6f7280; --color-rule:#d9d7d1;
+  --color-rule-dark:#596273; --color-accent:#435675; --color-accent-ink:#fffdf9; --color-accent-dark:#303a55;
+  --color-night:#222b40; --color-night-2:#303a55; --color-night-text:#fffdf9; --color-night-muted:#c8ced8;
+  --color-gold:#d9c4a9; --color-gold-soft:#e8d9c6; --color-focus:#71819a;
+  --color-overlay:rgba(34,43,64,.44); --color-shadow:rgba(34,43,64,.12); --color-whitewash:rgba(255,253,249,.92);
+}
+html,body {background:var(--color-paper);color:var(--color-ink);}
+::selection {background:var(--color-gold-soft);color:var(--color-night);}
+.nav {color:var(--color-night-text);}
+.brand-mark {color:var(--color-gold);}
+.nav-cta {color:var(--color-night-text);border-color:rgba(255,253,249,.34);background:rgba(34,43,64,.48);box-shadow:none;}
+.nav-cta:hover {background:var(--color-gold);border-color:var(--color-gold);color:var(--color-night);}
+.button.primary,.nav-cta+.button.primary {background:var(--color-gold);color:var(--color-night);border-color:var(--color-gold);box-shadow:none;}
+.button.primary:hover {background:var(--color-gold-soft);border-color:var(--color-gold-soft);}
+.button.secondary {color:var(--color-night-text);border-color:rgba(255,253,249,.48);background:rgba(34,43,64,.16);}
+.button.secondary:hover {background:rgba(255,253,249,.12);color:var(--color-night-text);}
+.hero .button.secondary {color:#fffdf9;border-color:rgba(255,253,249,.55);background:rgba(34,43,64,.22);backdrop-filter:none;}
+.hero .button.secondary:hover {background:rgba(255,253,249,.12);border-color:rgba(255,253,249,.72);color:#fffdf9;}
+.hero {background:var(--color-night);color:var(--color-night-text);}
+.hero-copy::before {background:linear-gradient(105deg,var(--color-night) 46%,rgba(34,43,64,.78) 76%,transparent 100%);}
+.hero h1,.hero-caption {color:var(--color-night-text);}
+.hero h1 span {color:var(--color-gold);}
+.hero-lede,.hero-note,.hero-caption small,.scroll-cue {color:var(--color-night-muted);}
+.hero-visual::before {background:linear-gradient(90deg,var(--color-night) 0%,rgba(34,43,64,.12) 30%,transparent 75%),linear-gradient(0deg,rgba(34,43,64,.7),transparent 46%);}
+.hero-caption {border-color:rgba(255,253,249,.5);background:linear-gradient(0deg,rgba(34,43,64,.55),transparent);}
+.quote-band {background:linear-gradient(rgba(34,43,64,.78),rgba(34,43,64,.78)),var(--image-stone) center/cover;color:var(--color-night-text);}
+.quote-band blockquote strong,.day-step .time {color:var(--color-gold);}
+.quote-meta {border-color:rgba(255,253,249,.25);color:var(--color-night-muted);}
+.formation {background:var(--color-night);color:var(--color-night-text);}
+.formation-head p,.day-step p {color:var(--color-night-muted);}
+.dayline,.day-step {border-color:rgba(255,253,249,.22);}
+.trust {background:var(--color-paper-2);}
+.builder {background:var(--color-night-2);color:var(--color-night-text);}
+.builder p,.builder dd {color:var(--color-night-muted);}
+.builder dt {color:var(--color-gold);}
+.closing {background:var(--color-paper-3);color:var(--color-ink);}
+.closing .button {background:var(--color-night);color:var(--color-night-text);border-color:var(--color-night);}
+.closing .button:hover {background:var(--color-accent-dark);}
+.footer {background:var(--color-paper-3);color:var(--color-ink-2);}
+.app-frame {box-shadow:0 18px 54px rgba(34,43,64,.10);transform:none;}
+@media (max-width:600px) {
+  .nav {background:linear-gradient(180deg,rgba(34,43,64,.48),transparent);}
+  .hero-copy::before {background:linear-gradient(0deg,var(--color-night) 0%,rgba(34,43,64,.86) 58%,rgba(34,43,64,.30) 100%);}
+  .hero-visual::before {background:linear-gradient(0deg,var(--color-night) 2%,transparent 68%),linear-gradient(90deg,rgba(34,43,64,.54),transparent 80%);}
+}

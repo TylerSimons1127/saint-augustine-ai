@@ -2,43 +2,47 @@
 
 ## Scope and boundaries
 
-An isolated frontend experiment on `frontend-revamp-test`, based on production commit `825e6d0`. Production stays on `main`. All existing DOM IDs, content, storage keys, API routes, streaming, and event handlers are retained. The prototype uses the current static HTML/CSS/JavaScript stack; adding React or an animation framework would be unnecessary for this app.
+An isolated frontend experiment on `frontend-revamp-test`, based on production commit `825e6d0`. Production stays on `main`. All existing DOM IDs, content, storage keys, API routes, streaming, and event handlers are retained. The prototype stays on the current static HTML/CSS/JavaScript stack; all app pages and existing controls remain connected to their original behavior.
 
 ## Art direction
 
-A welcoming reading room: paper surfaces, the existing peach parchment accent `#d9c4a9`, ink in deep evergreen, and quiet natural scenery. Fraunces gives headings a literary character; Hanken Grotesk supports clear reading and compact controls. Catholic identity remains in the Sacred Heart mark, Augustine's words, sourced lessons, and the existing prayer content.
+**Midnight Linen** pairs soft book paper and warm linen with ink navy, slate, and the landing page's champagne-peach `#d9c4a9`. The result is Catholic and warm without leaning on the familiar green-and-red interface palette. Navy carries primary actions and active states; champagne is a restrained marker for quotations, selected accents, and moments that should feel tactile. Feedback and destructive states use quiet slate or parchment tones while keeping their wording and symbols clear.
 
-Mobile comes first: a 60px header, a stable four-tab navigation bar, a compact composer, generous touch targets, and progressive disclosure of long lessons. On desktop, conversation history has a permanent rail, content has a comfortable reading measure, and Study/Today/Pray use purposeful columns. Images provide atmosphere at the page opening; long reading surfaces are opaque enough to remain legible.
+The app is treated as a reading room: neutral cards sit on a calm linen canvas, editorial headings orient each page, and scenery appears only where it adds context. Study opens with one compact lesson path and progressive disclosure. Today keeps the current readings, saint, and progress easy to scan. Prayer begins with intention and familiar ways to enter the tradition. The shared composer is hidden while reading and appears as a focused reflection sheet when someone chooses to ask Augustine a question.
+
+Fraunces gives headings a literary character; Hanken Grotesk supports long-form reading and compact controls. Mobile keeps the four-tab navigation stable, preserves comfortable touch targets and safe areas, and lets long content breathe without a fixed composer covering it. Tablet and desktop gain wider, deliberate columns without stretching reading text across the screen.
 
 ## References researched
 
 | Source | Useful idea | Application here |
 | --- | --- | --- |
-| [Readwise Reader](https://readwise.io/read) and [Reader documentation](https://docs.readwise.io/reader/docs) | Prioritize the reading experience and place contextual tools near the text. | Readable answer measure, restrained action footers, source links alongside lesson passages. |
-| [Hallow features](https://hallow.com/features/) | A clear daily prayer routine and approachable entry points. | Intention-first prayer card, distinct guided Examen entry, simple daily navigation. |
-| [Linear](https://linear.app/) | Precise navigation, compact secondary controls, consistent surfaces. | A coherent shell, orderly settings, calm selection and focus states. |
+| [Readwise Reader](https://readwise.io/read) and [Reader documentation](https://docs.readwise.io/reader/docs) | Keep the reading surface focused and make annotation and text-size preferences part of reading, not an afterthought. | Hide the shared composer until reflection is requested, keep passages and sources together, and retain the existing saved reading preferences. |
+| [Hallow](https://hallow.com/features/) | Make daily prayer approachable through clear, guided entry points. | Keep intention entry, guided prayer, and the Church's traditional prayers visibly distinct and easy to start. |
+| [Linear](https://linear.app/) | Use a consistent visual language across navigation, controls, and states. | Carry the same restrained surfaces, focus behavior, and compact controls across all four pages. |
 
-These inform hierarchy and interaction. Their page layouts, branding, and copy are not reproduced.
+These references informed hierarchy and interactions. Their layouts, copy, and branding are not reproduced.
 
 ## Design tokens
 
-Color scales are defined in `frontend-revamp.css` (50–900). Semantic tokens consume these scales; saved alternative theme accents continue to apply.
+The default Parchment theme is presented as **Midnight Linen**; its stored theme ID remains `parchment` for compatibility. Other saved theme choices remain available. The landing page uses the same palette.
 
-| Scale | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Paper | #fdfcf9 | #f6f3ed | #eae5db | #d6cec0 | #b7ad9b | #948774 | #736652 | #564b3d | #3b342b | #27231d |
-| Peach | #fcf7f1 | #f6eadc | #ead8c2 | #d9c4a9 | #c4a785 | #aa8862 | #886746 | #674e36 | #483828 | #30271e |
-| Sage | #f3f6f3 | #e8eee8 | #d0dbd2 | #afc1b3 | #87a28e | #62816c | #496652 | #374d40 | #293e33 | #203229 |
-| Rose | #fcf3f1 | #f8e5e0 | #efc8bd | #dfa08e | #c47763 | #a95644 | #8d4235 | #70362c | #542a23 | #382019 |
+| Role | Color | Use |
+| --- | --- | --- |
+| Linen canvas | `#f5f3ee` | App background |
+| Warm paper | `#fffdf9` | Reading cards, navigation, and controls |
+| Ink | `#252833` | Main text |
+| Secondary ink | `#4b4e59` | Supporting text |
+| Midnight navy | `#303a55` | Main actions and selected controls |
+| Slate | `#596c88` | Links, labels, icons, and focus states |
+| Champagne peach | `#d9c4a9` | Quiet highlight and brand accent |
+| Pale slate | `#e9edf3` | Selected surfaces and success states |
 
-Type: xs 12/1.5, sm 14/1.5, md 16/1.55, lg 18/1.7, xl 22/1.35, 2xl 28/1.25, 3xl 36/1.2, 4xl 48/1.12, 5xl 64/1.08. Display sizes are fluid within these limits. Existing saved reply-size controls remain functional.
+Radii: 7px controls, 12px reading cards, 20px sheets. Shadows are limited to floating and modal controls. Borders and spacing structure reading cards without making every section appear to float. Type keeps the existing family, with fluid editorial headings and comfortable line height. Existing reply-size, motion, theme, and scenery settings continue to work.
 
-Spacing uses a 4px base: 4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80px. Radii: control 8px, surface 16px, sheet 24px. Elevation is reserved for fixed composer and modal sheets; reading cards have borders, not floating shadows.
-
-Motion: fast 140ms for hover/selection; base 220ms for drawers; slow 320ms for entrance. Ease `cubic-bezier(.22,1,.36,1)`. Respect the OS reduced-motion preference and the existing saved motion setting. No continuous decorative animation is added.
+Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. No continuous decorative animation is added.
 
 ## Implementation strategy
 
-The late-loaded stylesheet reshapes the existing DOM. A small presentation script keeps navigation/search placement responsive, adds accessible mobile drawer dismissal, and synchronizes page state. All business logic stays in `index.html`; lesson data stays in `lessons.js`; the backend remains unchanged. The preview is marked noindex and its marketing-page app links remain on the preview origin.
+The late-loaded stylesheet refines the existing DOM without replacing app behavior. A presentation script adds accessible contextual reflection entry points, focuses and dismisses the shared composer sheet, and normalizes the redundant Today saint heading. A narrow client-side sanitizer removes explicit model-thought markers and obvious planning prose from assistant content at render, history, sharing, and export boundaries; it does not change prompts, lesson content, API routes, or backend filtering.
 
-See [feature inventory](docs/frontend-revamp-inventory.md) for coverage and verification evidence.
+The preview is marked noindex. Its marketing-page app links remain on the preview origin. See [feature inventory](docs/frontend-revamp-inventory.md) for page coverage, the verification record, and known backend limits.

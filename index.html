@@ -3137,7 +3137,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         </section>
 
         <section class="dp-card" id="saintCard" aria-label="Saint or Event of the Day">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#ic-halo"/></svg>Saint <span id="saintName">of the Day</span></h3>
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#ic-halo"/></svg><span class="saint-heading-prefix">Saint</span> <span id="saintName">of the Day</span></h3>
           <div class="saint-card" id="saintBody" aria-live="polite">
             <div class="saint-portrait" id="saintPortrait" aria-hidden="true"></div>
             <div class="saint-text">
@@ -3726,12 +3726,20 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(words.length>maxWords) return words.slice(0,maxWords).join(" ")+"…";
       return String(t||"").trim();
     }
+  // Keep obvious model planning out of the reader while preserving ordinary prose.
+  // This is a narrow presentation safeguard; the backend and backup format stay intact.
+  function publicAssistantText(value){
+    let text=String(value==null?"":value)
+      .replace(/<(think|analysis|reasoning|scratchpad|internal_reasoning)\b[^>]*>[\s\S]*?(?:<\/\1\s*>|$)/gi,"");
+    const planning=/^(?:i should (?:speak|answer|respond|write|explain)\b|i should use my own voice\b|let me (?:structure|plan|draft|outline|formulate|think through|reason)\b|let['’]s (?:structure|plan|draft|outline|think through)\b|we need to (?:answer|respond|write|explain)\b|(?:internal\s+)?(?:analysis|reasoning|chain[- ]of[- ]thought)\s*[:—-])/i;
+    return text.split(/(\r?\n[ \t]*\r?\n)/).filter((part,index)=>index%2===1||!planning.test(part.trim())).join("").trim();
+  }
   function messageShareText(message){
     if(!message) return "";
-    if(typeof message.content==="string") return message.content.trim();
+    if(typeof message.content==="string") return (message.role==="assistant"?publicAssistantText(message.content):message.content).trim();
     if(Array.isArray(message.content)) return message.content.map((part)=>{
       if(typeof part==="string") return part;
-      if(part&&part.type==="text") return String(part.text||"");
+      if(part&&part.type==="text") return message.role==="assistant"?publicAssistantText(part.text):String(part.text||"");
       if(part&&part.type==="image_url") return "[Image attached]";
       return "";
     }).filter(Boolean).join("\n").trim();
@@ -3978,7 +3986,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const pinned = !!s.pinned;
     const firstUser=(s.history||[]).find(m=>m.role==="user");
     const firstAns=(s.history||[]).find(m=>m.role==="assistant");
-    const peek='<span class="sb-peek" aria-hidden="true"><span class="pk-q">'+esc((firstUser&&firstUser.content||s.title||"").slice(0,90))+'</span><span class="pk-a">'+esc((firstAns&&firstAns.content||"(no reply yet)").slice(0,140))+'</span><span class="pk-m">'+esc((s.model?String(s.model).split("/").pop():"unknown")+' · '+new Date(s.updated).toLocaleDateString())+'</span></span>';
+    const peek='<span class="sb-peek" aria-hidden="true"><span class="pk-q">'+esc((firstUser&&firstUser.content||s.title||"").slice(0,90))+'</span><span class="pk-a">'+esc((firstAns?messageShareText(firstAns):"(no reply yet)").slice(0,140))+'</span><span class="pk-m">'+esc((s.model?String(s.model).split("/").pop():"unknown")+' · '+new Date(s.updated).toLocaleDateString())+'</span></span>';
     return `<button class="sb-item${selectMode?' selmode':''}${selectedIds.has(s.id)?' sel':''}" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}${pinned?' — pinned':''}">${selectMode?`<span class="sb-check" aria-hidden="true"></span>`:''}<span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span>${pinned?'<svg class="pin-ic" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-label="Pinned"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg>':''}${peek}<span class="sbp" role="button" aria-label="${pinned?'Unpin':'Pin'} conversation" data-pin="${escAttr(s.id)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="${pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg></span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
   }
   function setActive(id){
@@ -3999,7 +4007,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if((s.page||"chat")!==PAGE) return; // only load a session belonging to the active page
       clearThreadState();
       if(s.threadHtml){ thread.innerHTML=s.threadHtml; thread.hidden=false; greet && (greet.hidden=true); }
-      history.length=0; (s.history||[]).forEach(m=>history.push(m));
+      const changedAssistantContent=new Map();
+      history.length=0; (s.history||[]).forEach((m,index)=>{
+        if(m&&m.role==="assistant"&&typeof m.content==="string"){
+          const visible=publicAssistantText(m.content);
+          if(visible!==m.content){changedAssistantContent.set(index,m.content);m.content=visible;}
+        }
+        history.push(m);
+      });
       // Saved HTML does not retain event listeners. Restore the same message
       // controls when a conversation is reopened, using its original context.
       [...thread.querySelectorAll('.msg')].forEach((message,index)=>{
@@ -4007,6 +4022,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           const edit=message.querySelector('.msg-edit');
           if(edit) edit.onclick=()=>editUserMessage(message);
         }else if(history[index]&&history[index].role==='assistant'){
+          if(changedAssistantContent.has(index)){
+            const answer=message.querySelector('.bubble');
+            if(answer){const time=answer.querySelector('.ts')?.outerHTML||'';answer.innerHTML='<span class="who">St. Augustine</span>'+mdToHtml(history[index].content)+time;}
+          }
           const canContinue=!!message.querySelector('[data-continue]');
           message.querySelector('.acts')?.remove();
           const context=history.slice(0,index);
@@ -4028,6 +4047,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     }
     function recordSession(firstMsg, assistantReply){
       if(!history.length) return;
+      history.forEach(message=>{
+        if(message&&message.role==="assistant"&&typeof message.content==="string") message.content=publicAssistantText(message.content);
+      });
       let s = activeId ? sessions.find(x=>x.id===activeId) : null;
       if(!s){ s = mkSession(firstMsg, model); sessions.unshift(s); }
       s.page = PAGE;
@@ -4199,7 +4221,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     return out;
   }
   function mdToHtml(src){
-    const lines = String(src||"").split(/\n/);
+    const lines = publicAssistantText(src).split(/\n/);
     let out=[], i=0, para=[];
     const flush=()=>{ if(para.length){ out.push('<p>'+inlineMd(esc(para.join(' ')))+'</p>'); para=[]; } };
     while(i<lines.length){
@@ -4653,7 +4675,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const dec=new TextDecoder();
       if(res._probe && res._probe.first && res._probe.first.value) bufStr += dec.decode(res._probe.first.value,{stream:true});
       const render=(streaming)=>{
-        const visibleAcc=pasteOpening+acc;
+        const visibleAcc=publicAssistantText(pasteOpening+acc);
         const inner = streaming ? esc(visibleAcc)+'<span class="caret"></span>' : mdToHtml(visibleAcc);
                 buf.className = "bubble md";
                 buf.innerHTML = '<span class="who">St. Augustine</span>'+inner+(!streaming?'<span class="ts">'+fmtTime(new Date())+'</span>':'');
@@ -4879,7 +4901,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
-      const render=(s)=>{ const visibleAcc=pasteOpening+acc; const inner=s?esc(visibleAcc)+'<span class="caret"></span>':mdToHtml(visibleAcc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
+      const render=(s)=>{ const visibleAcc=publicAssistantText(pasteOpening+acc); const inner=s?esc(visibleAcc)+'<span class="caret"></span>':mdToHtml(visibleAcc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
       while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.text){acc+=j.text;render(true);} }catch(_){} } }
       if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
       render(false);
@@ -4928,10 +4950,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const s = activeId ? sessions.find(x=>x.id===activeId) : null;
     const msgs = s ? (s.history||[]) : history;
     if(!msgs.length){ showToast("Nothing to export yet."); return; }
-    let md = "# Saint Augustine AI — conversation\n\n_Exported "+new Date().toLocaleString()+"_\n\n";
+      let md = "# Saint Augustine AI — conversation\n\n_Exported "+new Date().toLocaleString()+"_\n\n";
     for(const m of msgs){
       const who = m.role==="user" ? "You" : "St. Augustine";
-      md += "**"+who+":**\n\n"+(m.content||"")+"\n\n---\n\n";
+      md += "**"+who+":**\n\n"+messageShareText(m)+"\n\n---\n\n";
     }
     try{
       await navigator.clipboard.writeText(md);
@@ -5365,7 +5387,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
      ===================================================================== */
   const LS_PREFS="sa_prefs_v1";
   const THEMES=[
-    {id:"parchment", name:"Parchment",  c:["#f6f2eb","#d9c4a9","#fbf7ee"]},
+    {id:"parchment", name:"Midnight Linen", c:["#f5f3ee","#d9c4a9","#303a55"]},
     {id:"vellum",    name:"Vellum",     c:["#f2f1ec","#9a8a3e","#fbf7ee"]},
     {id:"lumen",     name:"Lumen",      c:["#fbf6ea","#c79a2e","#fffaf0"]},
     {id:"ember",     name:"Emberlight", c:["#f6efe6","#b07a4e","#fbf7ee"]},
@@ -5609,7 +5631,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     let md="# Saint Augustine AI — all conversations\n\n_Exported "+new Date().toLocaleString()+"_\n\n";
     list.forEach((s,i)=>{
       md+="## "+(s.title||"Conversation "+(i+1))+"\n\n";
-      (s.history||[]).forEach(m=>{ md+="**"+(m.role==="user"?"You":"St. Augustine")+":**\n\n"+(m.content||"")+"\n\n---\n\n"; });
+      (s.history||[]).forEach(m=>{ md+="**"+(m.role==="user"?"You":"St. Augustine")+":**\n\n"+messageShareText(m)+"\n\n---\n\n"; });
     });
     const blob=new Blob([md],{type:"text/markdown"});
     const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="saint-augustine-all.md"; a.click();
