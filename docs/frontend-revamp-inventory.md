@@ -48,3 +48,13 @@ Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: a
 ## Boundaries
 
 The preview uses a distinct origin: browsers isolate localStorage by origin, so production data is preserved and is not automatically visible in the preview. The existing JSON backup/restore flow can copy data when desired. No production data is read or rewritten by this experiment. Religious/source content and daily generation prompts are not changed.
+
+## Published experiment
+
+- App: [frontend-revamp-deploy.vercel.app](https://frontend-revamp-deploy.vercel.app/#study)
+- Landing: [experimental landing](https://frontend-revamp-deploy.vercel.app/landing)
+- Source: GitHub branch `frontend-revamp-test`; never merged into `main`.
+- Hosting: separate Vercel project `frontend-revamp-deploy`. The live project `staugustineai` and its public URL are unchanged. The experimental worktree is linked to the test project.
+- The repository's configured commit email was not recognized by the original Vercel project. The test site was published as a manual static artifact under the authenticated account, rather than changing Git identity or project permissions. Deployment credentials remain ignored local files.
+- Final deployed CSS and presentation JavaScript returned HTTP 200 and matched local SHA-256 hashes. The noindex response header was present. All four deployed pages were also checked in the browser at 375px; the compact lesson state and original backend model picker were present.
+- Production HTML returned HTTP 200 and contained neither experimental stylesheet nor script. Remote `main` remained `825e6d018c5afac859015057df557d21b420be39`, and both worktrees were clean after commits.
