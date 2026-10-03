@@ -1552,7 +1552,7 @@ html[data-motion="reduced"] #page-study #lessonShuf:hover svg {transform:none!im
 }
 
 /* Study quiz choices: answer lettering gives each option a calm, scannable anchor. */
-#page-study #quizOpts {counter-reset:quiz-answer;gap:9px;}
+#page-study #quizOpts {gap:9px;}
 #page-study #quizOpts .quiz-opt {
   position:relative;display:grid!important;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:12px;
   min-height:56px;padding:10px 50px 10px 12px!important;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--border))!important;
@@ -1560,11 +1560,11 @@ html[data-motion="reduced"] #page-study #lessonShuf:hover svg {transform:none!im
   box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 78%,transparent)!important;
   transition:transform 180ms var(--ease-premium),border-color 180ms ease,background 180ms ease,box-shadow 180ms ease;
 }
-#page-study #quizOpts .quiz-opt::before {
-  content:counter(quiz-answer,upper-alpha);counter-increment:quiz-answer;position:relative;top:auto;right:auto;
-  display:grid;place-items:center;width:28px;height:28px;border:1px solid color-mix(in srgb,var(--accent) 36%,var(--border));
+#page-study #quizOpts .quiz-opt-letter {
+  grid-column:1;display:grid;place-items:center;width:28px;height:28px;border:1px solid color-mix(in srgb,var(--accent) 36%,var(--border));
   border-radius:9px;background:var(--accent-soft);color:var(--accent-deep);font:600 11px/1 var(--body);text-align:center;
 }
+#page-study #quizOpts .quiz-opt-label {grid-column:2;min-width:0;}
 #page-study #quizOpts .quiz-opt:hover:not(:disabled) {
   transform:translateX(2px);border-color:color-mix(in srgb,var(--accent-deep) 46%,var(--border))!important;
   background:var(--paper-50)!important;box-shadow:0 7px 18px color-mix(in srgb,var(--ink) 7%,transparent),inset 0 1px 0 #fff!important;
@@ -1578,7 +1578,7 @@ html[data-motion="reduced"] #page-study #lessonShuf:hover svg {transform:none!im
 @media (max-width:420px) {
   #page-study #quizOpts {gap:8px;}
   #page-study #quizOpts .quiz-opt {min-height:54px;padding-left:10px!important;grid-template-columns:28px minmax(0,1fr);gap:10px;}
-  #page-study #quizOpts .quiz-opt::before {width:26px;height:26px;}
+  #page-study #quizOpts .quiz-opt-letter {width:26px;height:26px;}
 }
 @media (prefers-reduced-motion:reduce) {
   #page-study #quizOpts .quiz-opt {transition:none;}

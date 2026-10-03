@@ -49,7 +49,7 @@ Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: a
 
 ### Daily Quiz component refinement — October 3, 2026
 
-- Study quiz answers now use restrained A–D letter anchors, warm paper surfaces, and a clear trailing check/cross when the answer is reviewed. Hover, press, focus, correct, incorrect, and reduced-motion states remain inside the existing quiz behavior.
+- Study quiz answers now use restrained A–D letter anchors, warm paper surfaces, and a clear trailing check/cross when the answer is reviewed. Letter anchors are hidden from assistive technology, keeping each radio button's spoken label limited to the answer text. Hover, press, focus, correct, incorrect, and reduced-motion states remain inside the existing quiz behavior.
 - Checked the question at 1440×900 and the quiz card at 390×844 and 320×568. A wrong answer displayed the correction beside the right answer; long answer text wrapped cleanly at 320px without horizontal overflow.
 
 ### Repairs made during verification
