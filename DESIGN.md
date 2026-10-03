@@ -39,7 +39,7 @@ The default Parchment theme is presented as **Midnight Linen**; its stored theme
 
 Radii: 7px controls, 14px reading cards, 20px sheets. Reading cards use borders and paper tones; the welcome surface and focused composer use soft, offset shadows. Type keeps the existing family, with fluid editorial headings and comfortable line height. Existing reply-size, motion, theme, and scenery settings continue to work.
 
-Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. Page changes use a brief, single entrance; Study disclosures reveal their reading content with a short, soft lift; controls respond to hover, focus, and press. No continuous decorative animation is added.
+Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. Page changes use a brief, single entrance; Study disclosures reveal their reading content with a short, soft lift; the quiz progress line advances with each question; controls respond to hover, focus, and press. No continuous decorative animation is added.
 
 ## Implementation strategy
 

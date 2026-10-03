@@ -3063,6 +3063,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg><span id="quizHeading">Daily Quiz</span></h3>
             <span class="dp-mini-tag" id="quizProgress">Question 1 of 5</span>
           </div>
+          <div class="quiz-meter" id="quizMeter" aria-hidden="true"><span></span></div>
           <p class="quiz-q" id="quizQ"></p>
           <div class="quiz-opts" id="quizOpts" role="group" aria-label="Answer choices"></div>
           <p class="quiz-note" id="quizNote" hidden></p>
@@ -6080,12 +6081,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         const learnTag=document.getElementById('learnTag'),
               learnTitle=document.getElementById('learnTitle'),
               quizHeading=document.getElementById('quizHeading'),quizRegion=document.getElementById('sec-quiz-study'),
-              quizProgress=document.getElementById('quizProgress'),quizQ=document.getElementById('quizQ'),
+              quizProgress=document.getElementById('quizProgress'),quizMeter=document.getElementById('quizMeter'),quizQ=document.getElementById('quizQ'),
               quizOpts=document.getElementById('quizOpts'),quizNote=document.getElementById('quizNote'),
               quizNext=document.getElementById('quizNext'),quizDone=document.getElementById('quizDone'),
               quizScore=document.getElementById('quizScore'),quizPraise=document.getElementById('quizPraise'),
               quizRetry=document.getElementById('quizRetry'),quizAsk=document.getElementById('quizAsk');
         let qIdx=0,qScore=0,qAnswered=false,qPicked=-1;
+        function updateQuizMeter(value,total){
+          if(!quizMeter||!total) return;
+          quizMeter.style.setProperty('--quiz-progress',String(Math.min(1,Math.max(0,value/total))));
+        }
         function renderLearn(){
           const t=LESSON[todayLessonIdx()];
           if(learnTag) learnTag.textContent="Lesson of the day";
@@ -6099,6 +6104,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(quizHeading) quizHeading.textContent=qActiveTopic===todayLessonIdx()?"Daily Quiz":"Quiz · "+lesson.name;
           if(quizRegion) quizRegion.setAttribute("aria-label",qActiveTopic===todayLessonIdx()?"Daily Quiz":"Quiz for "+lesson.name);
           if(quizProgress) quizProgress.textContent="Question "+(qIdx+1)+" of "+topic.length;
+          updateQuizMeter(qIdx+1,topic.length);
           if(quizQ) quizQ.textContent=q.q;
           if(quizOpts){
             quizOpts.innerHTML="";
@@ -6143,6 +6149,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(quizDone) quizDone.hidden=false;
           if(quizProgress) quizProgress.textContent="Done";
           const n=LESSON[qActiveTopic].questions.length;
+          updateQuizMeter(n,n);
           if(quizScore) quizScore.textContent="You scored "+qScore+" of "+n;
           renderSparkline();
           const pct=qScore/n;
@@ -6159,6 +6166,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         function showSavedResult(saved){
           if(quizDone) quizDone.hidden=false;
           if(quizProgress) quizProgress.textContent="Done";
+          updateQuizMeter(saved.total,saved.total);
           if(quizScore) quizScore.textContent="You scored "+saved.score+" of "+saved.total;
           renderSparkline();
           const pct=saved.score/saved.total;
