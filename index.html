@@ -23,8 +23,8 @@
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..600&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,300..600&family=Hanken+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
 /* ============================================================
    SAINT AUGUSTINE AI — FRONT-END (v1, no backend)
@@ -55,7 +55,7 @@
   --shadow:0 12px 44px rgba(46,38,24,0.14);
   --shadow-sm:0 4px 18px rgba(46,38,24,0.10);
   /* type */
-  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --display:"Newsreader",Georgia,"Times New Roman",serif;
   --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
   /* radius / space */
@@ -196,7 +196,7 @@ a{color:inherit}
   display:flex;align-items:center;justify-content:center;gap:9px;
   height:42px;border-radius:999px;border:1px solid transparent;
   background:var(--accent-deep);color:#fbf7ee;font-size:13.5px;font-weight:500;
-  box-shadow:0 6px 16px rgba(93,66,34,0.28);
+  box-shadow:0 5px 14px rgba(34,43,64,0.15);
   transition:transform .12s ease, background .18s ease;
 }
 .sb-new:hover{background:var(--accent-press);transform:translateY(-1px)}
@@ -3217,12 +3217,36 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         <section class="dp-card" aria-label="Prayers of the tradition">
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg>Prayers of the tradition</h3>
           <div class="pray-chips" style="margin-bottom:0">
-            <button class="pray-chip" id="tradMorning">Morning Offering</button>
-            <button class="pray-chip" id="tradLectio">Lectio Divina</button>
-            <button class="pray-chip" id="tradExamen">The Examen</button>
-            <button class="pray-chip featured" id="examenGuided" title="A guided five-step walkthrough">Guided Examen</button>
-            <button class="pray-chip" id="tradRest">Prayer before rest</button>
-            <button class="pray-chip" id="tradSpirit">Holy Spirit Prayer</button>
+            <button class="pray-chip" id="tradMorning">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-calendar"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Morning Offering</span><small class="pray-chip-note">Offer today’s work, struggles, and joys to God.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
+            <button class="pray-chip" id="tradLectio">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book-open"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Lectio Divina</span><small class="pray-chip-note">Read, meditate, pray, and contemplate.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
+            <button class="pray-chip" id="tradExamen">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-check-circle"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">The Examen</span><small class="pray-chip-note">Notice gratitude; ask grace for tomorrow.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
+            <button class="pray-chip featured" id="examenGuided" title="A guided five-step walkthrough">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-halo"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Guided Examen</span><small class="pray-chip-note">Five quiet steps, with room to breathe.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
+            <button class="pray-chip" id="tradRest">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-heart"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Prayer before rest</span><small class="pray-chip-note">Surrender the day and entrust each worry.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
+            <button class="pray-chip" id="tradSpirit">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-flame"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Holy Spirit Prayer</span><small class="pray-chip-note">Let its words sink gently into the heart.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
           </div>
         </section>
 

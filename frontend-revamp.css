@@ -1218,3 +1218,73 @@ html[data-theme="parchment"] #page-today #todayStrip .ts-l {font-size:10px;line-
   #composer .reasoning::before,#composer .reasoning .seg {transition:none!important;}
 }
 html[data-motion="reduced"] #composer .reasoning::before,html[data-motion="reduced"] #composer .reasoning .seg {transition:none!important;}
+
+/* Prayer: let the selected scene open the page, then make each practice legible at a glance. */
+html[data-theme="parchment"] #page-prayer .dp-head {
+  min-height:178px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:28px 32px!important;
+  border:1px solid color-mix(in srgb,var(--accent) 26%,var(--border));border-radius:14px;
+  background-color:var(--paper-50);
+  background-image:linear-gradient(90deg,color-mix(in srgb,var(--paper-50) 96%,transparent) 0%,color-mix(in srgb,var(--paper-50) 91%,transparent) 58%,color-mix(in srgb,var(--paper-50) 78%,transparent) 100%),var(--bg-img,url('assets/bg.jpg'))!important;
+  background-size:cover;background-position:center 48%;
+  box-shadow:0 8px 22px color-mix(in srgb,var(--ink) 6%,transparent);
+}
+#page-prayer .pray-chips {display:flex;flex-direction:column;gap:2px;margin-top:8px;}
+#page-prayer .pray-chip {
+  box-sizing:border-box;width:100%;display:grid!important;grid-template-columns:36px minmax(0,1fr) 32px;align-items:center;gap:11px;
+  min-height:76px!important;padding:10px 6px!important;border:0;border-bottom:1px solid color-mix(in srgb,var(--border) 90%,transparent);
+  border-radius:10px;background:transparent;color:var(--ink);text-align:left;box-shadow:none;transform:none;
+  transition:background-color 160ms ease,color 160ms ease,border-color 160ms ease;
+}
+#page-prayer .pray-chip:last-child {border-bottom:0;}
+#page-prayer .pray-chip::after {content:none!important;display:none!important;}
+#page-prayer .pray-chip-mark {
+  box-sizing:border-box;width:36px;height:36px;display:grid;place-items:center;justify-self:center;
+  border:1px solid color-mix(in srgb,var(--accent) 30%,var(--border));border-radius:11px;
+  background:color-mix(in srgb,var(--accent-soft) 78%,var(--paper-50));color:var(--accent-deep);
+  transition:background-color 160ms ease,border-color 160ms ease,color 160ms ease;
+}
+#page-prayer .pray-chip-mark svg {display:block;width:18px;height:18px;}
+#page-prayer .pray-chip-copy {display:grid;gap:3px;min-width:0;}
+#page-prayer .pray-chip-title {font:600 14px/1.35 var(--body);color:var(--ink);}
+#page-prayer .pray-chip-note {font:400 12px/1.42 var(--body);color:var(--ink-soft);}
+#page-prayer .pray-chip-arrow {
+  box-sizing:border-box;width:28px;height:28px;display:grid;place-items:center;justify-self:center;
+  border:1px solid var(--border);border-radius:9px;background:var(--paper-50);color:var(--muted);
+  transition:transform 160ms var(--ease-premium),background-color 160ms ease,border-color 160ms ease,color 160ms ease;
+}
+#page-prayer .pray-chip-arrow svg {display:block;width:14px;height:14px;}
+#page-prayer .pray-chip.featured {
+  min-height:78px!important;margin:6px 0;padding:10px 10px!important;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--border));
+  border-radius:12px;background:color-mix(in srgb,var(--accent-soft) 78%,var(--paper-50));color:var(--ink);
+}
+#page-prayer .pray-chip.featured .pray-chip-mark {background:color-mix(in srgb,var(--accent) 24%,var(--paper-50));}
+#page-prayer .pray-chip.featured .pray-chip-arrow {border-color:color-mix(in srgb,var(--accent) 30%,var(--border));color:var(--accent-deep);}
+#page-prayer .pray-chip:focus-visible {position:relative;z-index:1;outline:2px solid var(--accent-deep)!important;outline-offset:2px;}
+#page-prayer .pray-chip:active {background:color-mix(in srgb,var(--accent-soft) 56%,transparent);}
+@media (hover:hover) {
+  #page-prayer .pray-chip:not(.featured):hover {background:color-mix(in srgb,var(--accent-soft) 45%,transparent);}
+  #page-prayer .pray-chip:hover .pray-chip-mark {border-color:color-mix(in srgb,var(--accent) 54%,var(--border));background:var(--accent-soft);}
+  #page-prayer .pray-chip:hover .pray-chip-arrow {transform:translateX(2px);border-color:color-mix(in srgb,var(--accent) 46%,var(--border));background:var(--accent-soft);color:var(--accent-deep);}
+  #page-prayer .pray-chip.featured:hover {background:color-mix(in srgb,var(--accent-soft) 92%,var(--paper-50));}
+}
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  html[data-theme="parchment"] #page-prayer .dp-head {
+    min-height:154px;padding:20px 18px!important;background-position:57% center;
+    background-image:linear-gradient(90deg,color-mix(in srgb,var(--paper-50) 96%,transparent) 0%,color-mix(in srgb,var(--paper-50) 91%,transparent) 64%,color-mix(in srgb,var(--paper-50) 82%,transparent) 100%),var(--bg-img,url('assets/bg.jpg'))!important;
+  }
+  #page-prayer .pray-chip {grid-template-columns:34px minmax(0,1fr) 30px;gap:9px;min-height:76px!important;padding:9px 4px!important;}
+  #page-prayer .pray-chip-mark {width:34px;height:34px;}
+  #page-prayer .pray-chip-note {font-size:11.5px;}
+  #page-prayer .pray-chip.featured {min-height:78px!important;padding:9px 8px!important;}
+}
+@media (max-width:360px) {
+  #page-prayer .pray-chip {grid-template-columns:32px minmax(0,1fr) 28px;gap:8px;padding-inline:2px;}
+  #page-prayer .pray-chip-mark {width:32px;height:32px;}
+  #page-prayer .pray-chip-arrow {width:26px;height:26px;}
+  #page-prayer .pray-chip-title {font-size:13px;}
+  #page-prayer .pray-chip-note {font-size:11px;}
+}
+@media (prefers-reduced-motion:reduce) {
+  #page-prayer .pray-chip,#page-prayer .pray-chip-mark,#page-prayer .pray-chip-arrow {transition:none!important;}
+}
+html[data-motion="reduced"] #page-prayer .pray-chip,html[data-motion="reduced"] #page-prayer .pray-chip-mark,html[data-motion="reduced"] #page-prayer .pray-chip-arrow {transition:none!important;}
