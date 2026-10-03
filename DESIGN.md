@@ -8,7 +8,7 @@ An isolated frontend experiment on `frontend-revamp-test`, based on production c
 
 **Midnight Linen** pairs soft book paper and warm linen with ink navy, slate, and the landing page's champagne-peach `#d9c4a9`. The result is Catholic and warm without leaning on the familiar green-and-red interface palette. Navy carries primary actions and active states; champagne is a restrained marker for quotations, selected accents, and moments that should feel tactile. Feedback and destructive states use quiet slate or parchment tones while keeping their wording and symbols clear.
 
-The app is treated as a reading room: neutral cards sit on a calm linen canvas, editorial headings orient each page, and scenery appears only where it adds context. Study opens with one compact lesson path and progressive disclosure; numbered steps connect on a fine reading rail, and the open step receives a warm paper highlight. Today keeps the current readings, saint, and progress easy to scan. Prayer begins with intention and familiar ways to enter the tradition. The shared composer is hidden while reading and appears as a focused reflection sheet when someone chooses to ask Augustine a question.
+The app is treated as a reading room: neutral cards sit on a calm linen canvas, editorial headings orient each page, and scenery appears only where it adds context. Study opens with one compact lesson path and progressive disclosure; numbered steps connect on a fine reading rail, and the open step receives a warm paper highlight. Today keeps the current readings, saint, and progress easy to scan; its three summary metrics use warm, lightly dimensional paper surfaces and matching icon medallions. Prayer begins with intention and familiar ways to enter the tradition. The shared composer is hidden while reading and appears as a focused reflection sheet when someone chooses to ask Augustine a question.
 
 Fraunces gives headings a literary character; Hanken Grotesk supports long-form reading and compact controls. Mobile keeps the four-tab navigation stable, preserves comfortable touch targets and safe areas, and lets long content breathe without a fixed composer covering it. Tablet and desktop gain wider, deliberate columns without stretching reading text across the screen.
 
@@ -39,7 +39,7 @@ The default Parchment theme is presented as **Midnight Linen**; its stored theme
 
 Radii: 7px controls, 14px reading cards, 20px sheets. Reading cards use borders and paper tones; the welcome surface and focused composer use soft, offset shadows. Type keeps the existing family, with fluid editorial headings and comfortable line height. Existing reply-size, motion, theme, and scenery settings continue to work.
 
-Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. Page changes use a brief, single entrance; Study disclosures reveal their reading content with a short, soft lift; the quiz progress line advances with each question; controls respond to hover, focus, and press. No continuous decorative animation is added.
+Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. Page changes use a brief, single entrance; Study disclosures reveal their reading content with a short, soft lift; Today’s metrics arrive with a brief stagger; the quiz progress line advances with each question; controls respond to hover, focus, and press. No continuous decorative animation is added.
 
 ## Implementation strategy
 
