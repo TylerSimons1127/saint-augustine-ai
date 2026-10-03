@@ -5584,7 +5584,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const themeGrid=$("#themeGrid");
   THEMES.forEach(t=>{
     const b=document.createElement("button"); b.className="swatch"; b.dataset.theme=t.id; b.setAttribute("aria-pressed","false");
-    b.innerHTML='<span class="chip" style="background:'+t.c[0]+';border-color:'+t.c[1]+'"></span><span class="nm">'+t.name+'</span>';
+    b.style.setProperty("--swatch-surface",t.c[0]);
+    b.style.setProperty("--swatch-accent",t.c[1]);
+    b.style.setProperty("--swatch-paper",t.c[2]);
+    b.innerHTML='<span class="chip" aria-hidden="true"><span class="swatch-sample"><span></span><span></span><span></span></span></span><span class="nm">'+t.name+'</span>';
     // C43: hover/focus previews the theme live; leaving reverts; click commits
     const preview=()=>{ document.documentElement.dataset.theme=t.id; };
     const revert=()=>{ document.documentElement.dataset.theme=prefs.theme||"parchment"; };
