@@ -1473,3 +1473,37 @@ html[data-motion="reduced"] #page-chat.on #greet:not([hidden]) .greet-sugg .sugg
   #page-chat #greet::after {top:0;}
   #page-chat #greet:not([hidden]) {transform:translateY(-10px);}
 }
+
+/* Keep Study's previous, shuffle, and next actions inside one tactile navigator. */
+#page-study .lesson-nav {
+  display:inline-flex!important;align-items:center;gap:0!important;width:max-content!important;
+  padding:3px;border:1px solid color-mix(in srgb,var(--border) 90%,transparent);
+  border-radius:14px;background:color-mix(in srgb,var(--paper-50) 84%,var(--bg));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.76);
+}
+#page-study .lesson-nav .daily-shuf.icon {
+  box-sizing:border-box;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;
+  border:0;border-radius:10px;background:transparent;color:var(--muted);box-shadow:none;
+  transition:background 180ms ease,color 180ms ease;
+}
+#page-study .lesson-nav .daily-shuf.icon+ .daily-shuf.icon {border-left:1px solid var(--border);border-radius:0;}
+#page-study .lesson-nav .daily-shuf.icon:first-child {border-radius:10px 0 0 10px;}
+#page-study .lesson-nav .daily-shuf.icon:last-child {border-radius:0 10px 10px 0;}
+#page-study .lesson-nav #lessonShuf {color:var(--accent-deep);}
+#page-study .lesson-nav .daily-shuf.icon:hover {background:var(--accent-soft);border-color:var(--border);color:var(--primary);transform:none;}
+#page-study .lesson-nav .daily-shuf.icon:focus-visible {outline:2px solid var(--accent-deep);outline-offset:-3px;}
+#page-study #lessonPrev svg,#page-study #lessonNext svg,#page-study #lessonShuf svg {transition:transform 180ms var(--ease-premium);}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  #page-study #lessonPrev:hover svg {transform:translateX(-2px);}
+  #page-study #lessonNext:hover svg {transform:translateX(2px);}
+  #page-study #lessonShuf:hover svg {transform:rotate(45deg);}
+}
+@media (prefers-reduced-motion:reduce) {
+  #page-study #lessonPrev svg,#page-study #lessonNext svg,#page-study #lessonShuf svg {transition:none;}
+}
+html[data-motion="reduced"] #page-study #lessonPrev svg,
+html[data-motion="reduced"] #page-study #lessonNext svg,
+html[data-motion="reduced"] #page-study #lessonShuf svg {transition:none!important;}
+html[data-motion="reduced"] #page-study #lessonPrev:hover svg,
+html[data-motion="reduced"] #page-study #lessonNext:hover svg,
+html[data-motion="reduced"] #page-study #lessonShuf:hover svg {transform:none!important;}

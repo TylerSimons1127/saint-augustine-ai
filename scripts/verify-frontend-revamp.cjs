@@ -21,4 +21,8 @@ assert.match(current,/name="robots" content="noindex,nofollow"/);
 const landing = fs.readFileSync('landing.html','utf8');
 assert.ok(!landing.includes('href="https://staugustineai.vercel.app/"'),'Preview landing escapes to production app');
 assert.ok(JSON.parse(fs.readFileSync('vercel.json','utf8')).headers[0].headers.some(h=>h.key==='X-Robots-Tag'&&h.value.includes('noindex')));
+const cssVersion = current.match(/<link\s+rel="stylesheet"\s+href="frontend-revamp\.css\?v=([^"]+)"/);
+assert.ok(cssVersion,'Revamp stylesheet needs a versioned URL for client and service-worker cache updates');
+const sw = fs.readFileSync('sw.js','utf8');
+assert.ok(sw.includes(`./frontend-revamp.css?v=${cssVersion[1]}`),'Offline shell stylesheet version must match index.html');
 console.log(`${oldIds.length} original DOM IDs retained; ${scripts} inline scripts parse; content, API configuration, and backend unchanged; preview links and noindex checked.`);
