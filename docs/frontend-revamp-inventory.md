@@ -59,6 +59,17 @@ Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: a
 - On viewports at least 1200px wide and 820px tall, the rail stays below the top bar while the long lesson scrolls; shorter desktop windows and narrower layouts retain normal document flow.
 - On wide Study layouts, the back-to-top control sits just beyond the content edge so it does not cover the Tomorrow card.
 
+### Natural reading canvas and mobile welcome — October 3, 2026
+
+- Restored the existing mountain-at-dawn scene as a continuous backdrop across Chat, Study, Pray, and Today. The saved scenery choice and dim setting still drive the same photo layer; warm reading cards let a restrained trace of the landscape through.
+- Added a 58-second drift to one small dawn-light layer using only transform and opacity. It pauses when the tab is hidden and is disabled by either the operating system or saved reduced-motion preference. The photograph itself stays sharp and static; no full-screen blur or animation loop was added.
+- Inspected all four pages at a 380×844 phone viewport and the Study composition at 1280×720. The photo remains atmospheric behind readable text and cards, the fixed navigation stays legible, and the document has no horizontal overflow.
+- Tightened the first-visit welcome dialog to fit down to 320×568, 390×568, and 390×844. Headings, privacy/safety notes, and the continue button fit inside the viewport without horizontal overflow.
+
+### Visual heuristic review — October 3, 2026
+
+- Reviewed the pattern-scan findings against the rendered app. Its contrast match was text inside the hidden confirmation scrim (`opacity: 0`); the screen-visible study copy sits on a 92%-opaque reading surface. The italic match is quoted/editorial emphasis in an assistant reply, the shadow match is a selected-scene outline, and the ambient gradients, progress tiles, and icon-led cards are intentional app components. The scan traverses inactive pages and hidden dialogs, so these matches are not evidence of a visible contrast or template issue.
+
 ### Repairs made during verification
 
 - Restore edit/retry/copy/report/code-copy/continue listeners when saved conversation HTML is reopened.
