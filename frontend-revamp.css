@@ -1224,6 +1224,19 @@ html.settings-open,html.settings-open body {overflow:hidden!important;overscroll
 @media (min-width:769px) {
   html.settings-open .stage {overflow:hidden!important;overscroll-behavior:none!important;}
 }
+.settings-sheet .swatch,.settings-sheet .bg-thumb {transition:transform 180ms var(--ease-premium),box-shadow 180ms ease,filter 180ms ease;}
+.settings-sheet .swatch .chip {transition:box-shadow 180ms ease,border-color 180ms ease;}
+.settings-sheet .swatch:focus-visible,.settings-sheet .bg-thumb:focus-visible {outline:2px solid var(--primary);outline-offset:3px;}
+@media (hover:hover) and (prefers-reduced-motion:no-preference) {
+  .settings-sheet .swatch:not([aria-pressed="true"]):hover {transform:translateY(-2px);}
+  .settings-sheet .swatch:not([aria-pressed="true"]):hover .chip {box-shadow:0 6px 14px rgba(38,43,55,.12);}
+  .settings-sheet .bg-thumb:not([aria-pressed="true"]):hover {transform:translateY(-2px);box-shadow:0 7px 16px rgba(38,43,55,.16);filter:saturate(1.06);}
+}
+@media (prefers-reduced-motion:no-preference) {
+  .settings-sheet .swatch:active,.settings-sheet .bg-thumb:active {transform:scale(.97);}
+}
+html[data-motion="reduced"] .settings-sheet .swatch,html[data-motion="reduced"] .settings-sheet .bg-thumb,html[data-motion="reduced"] .settings-sheet .swatch .chip {transition:none!important;}
+html[data-motion="reduced"] .settings-sheet .swatch:active,html[data-motion="reduced"] .settings-sheet .bg-thumb:active {transform:none;}
 html[data-theme="parchment"] #page-prayer .dp-head {
   min-height:178px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:28px 32px!important;
   border:1px solid color-mix(in srgb,var(--accent) 26%,var(--border));border-radius:14px;
