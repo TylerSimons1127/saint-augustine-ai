@@ -1771,3 +1771,29 @@ html[data-theme] #page-prayer .dp-head {align-items:center;text-align:center;}
 html[data-theme] #page-today .dp-head-actions,
 html[data-theme] #page-study .dp-head-actions {box-sizing:border-box;width:100%;}
 #page-prayer .pp-intent input::placeholder {text-align:center;}
+
+/* Give the Study introduction its own quiet paper surface above the landscape. */
+html[data-theme] #page-study .dp-head {
+  box-sizing:border-box;width:min(100%,760px);margin:4px auto 0;padding:22px 28px!important;
+  border:1px solid color-mix(in srgb,var(--border) 76%,var(--accent) 24%)!important;
+  border-bottom:1px solid color-mix(in srgb,var(--border) 76%,var(--accent) 24%)!important;
+  border-radius:18px!important;
+  background-color:color-mix(in srgb,var(--paper-50) 93%,transparent)!important;
+  background-image:linear-gradient(145deg,
+    color-mix(in srgb,var(--paper-50) 97%,transparent),
+    color-mix(in srgb,var(--paper-50) 90%,transparent))!important;
+  box-shadow:0 10px 28px color-mix(in srgb,var(--ink) 6%,transparent),
+    inset 0 1px 0 color-mix(in srgb,#fff 82%,transparent);
+  backdrop-filter:blur(10px) saturate(112%);-webkit-backdrop-filter:blur(10px) saturate(112%);
+}
+
+/* Center Augustine's welcome line and its time-of-day invitation in Chat. */
+#page-chat #greet h1,#page-chat #greetSub {
+  margin-inline:auto;text-align:center;
+}
+#page-chat #greet h1 {text-wrap:balance;}
+#page-chat #greetSub {max-width:42ch;}
+
+@media (max-width:768px) {
+  html[data-theme] #page-study .dp-head {padding:18px 18px!important;}
+}

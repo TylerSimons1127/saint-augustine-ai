@@ -71,6 +71,10 @@ Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: a
 - Centered page introductions, section titles, progress metrics, short lesson prompts, quiz prompts, prayer intention controls, and action-card copy across Today, Study, and Prayer. Long scripture readings, the lesson source passage, and saint biographies remain left aligned for comfortable reading. Chat message alignment and app behavior are unchanged.
 - Checked all three pages at 320×640 and 390×844, with no horizontal overflow and page titles centered within their hero surfaces; reviewed Study at 1280×720 and confirmed the source passage retains left alignment.
 
+### Chat welcome and Study hero refinement — October 3, 2026
+
+- Centered the Chat welcome quotation and its time-of-day invitation. Added a softly translucent, rounded paper panel behind the Study introduction so its text and controls remain distinct from the scenic background.
+
 ### Visual heuristic review — October 3, 2026
 
 - Reviewed the pattern-scan findings against the rendered app. Its contrast match was text inside the hidden confirmation scrim (`opacity: 0`); the screen-visible study copy sits on a 92%-opaque reading surface. The italic match is quoted/editorial emphasis in an assistant reply, the shadow match is a selected-scene outline, and the ambient gradients, progress tiles, and icon-led cards are intentional app components. The scan traverses inactive pages and hidden dialogs, so these matches are not evidence of a visible contrast or template issue.

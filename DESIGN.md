@@ -12,6 +12,8 @@ The app is treated as a reading room: an original mountain-at-dawn photograph ca
 
 Today, Study, and Prayer center their page introductions, card headings, compact prompts, and short supporting copy so the page feels composed around each reading surface. Scripture, source excerpts, biographies, and other long reflections remain left aligned within a comfortable measure. Chat keeps its conversational alignment.
 
+The Chat welcome centers Augustine’s opening quotation and its companion invitation. Study’s page introduction sits in a softly translucent paper panel, separating its title, explanation, and topic controls from the scenic backdrop while keeping the landscape present around it.
+
 On wider screens, the Chat welcome places the passage beside its starter prompts so the fixed composer does not obscure them; phones retain the compact two-by-two prompt grid.
 
 Newsreader gives headings a quieter, bookish character with a more editorial rhythm; Hanken Grotesk supports long-form reading and compact controls. Mobile keeps the four-tab navigation stable, preserves comfortable touch targets and safe areas, and lets long content breathe without a fixed composer covering it. Tablet and desktop gain wider, deliberate columns without stretching reading text across the screen.
