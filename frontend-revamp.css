@@ -1678,3 +1678,96 @@ html[data-theme="parchment"] body>.nav-tabs.nav-tabs {
   background-image:none!important;backdrop-filter:blur(12px) saturate(120%)!important;
   -webkit-backdrop-filter:blur(12px) saturate(120%)!important;
 }
+
+/* Center the short-form reading surfaces across Today, Study, and Prayer. */
+#page-today .dp-head,#page-study .dp-head,#page-prayer .dp-head {
+  align-items:center;text-align:center;
+}
+#page-today .dp-head>p:not(.dp-eyebrow),
+#page-study .dp-head>p:not(.dp-eyebrow),
+#page-prayer .dp-head>p:not(.dp-eyebrow) {
+  max-width:52ch;margin-inline:auto;text-align:center;text-wrap:pretty;
+}
+#page-today .dp-head-actions,#page-study .dp-head-actions {
+  display:flex;justify-content:center;flex-wrap:wrap;
+}
+
+/* Titles and compact facts sit on a shared center line within their cards. */
+#page-today .dp-card>h3,#page-study .dp-card>h3,#page-prayer .dp-card>h3 {
+  justify-content:center;align-items:center;text-align:center;
+}
+#page-today #todayStrip>.ts-cell {align-items:center;text-align:center;}
+#page-today #todayStrip .ts-meta {align-items:center;text-align:center;}
+#page-today #todayStrip .ts-n,#page-today #todayStrip .ts-l {text-align:center;}
+
+/* Long scripture and biography copy stays left aligned for comfortable reading. */
+#page-today #dpReadings .dp-reading p,
+#page-today #saintBio,#page-today #saintConnWrap {
+  max-width:68ch;margin-inline:auto;text-align:left;
+}
+#page-today #dpReadings .dp-reading .rl,
+#page-today .saint-date {text-align:center;}
+#page-today #dpReadingsLink {display:table;margin:16px auto 0;}
+#page-today #sec-readings .dp-act {
+  flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
+}
+#page-today #sec-readings .dp-act>span {text-align:center;}
+#page-today .saint-card {display:flex;flex-direction:column;align-items:center;}
+#page-today .saint-portrait {float:none;margin:0 auto 16px;}
+#page-today .saint-text {width:100%;}
+#page-today .saint-actions {align-items:center;text-align:center;}
+#page-today .saint-actions .dp-link {align-self:center;}
+#page-today .lesson-link {display:flex;flex-direction:column;align-items:center;text-align:center;}
+#page-today .lesson-link-name {display:flex;align-items:center;justify-content:center;text-align:center;}
+#page-today .lesson-link-hint {text-align:center;}
+
+/* The lesson's short reflections center; the source passage remains editorial. */
+#page-study .lesson-top {flex-direction:column;align-items:center;text-align:center;}
+#page-study .lesson-heading {text-align:center;}
+#page-study .lesson-nav {justify-content:center;}
+#page-study details.ls>summary {
+  display:grid;grid-template-columns:24px minmax(0,1fr) 20px;align-items:center;
+}
+#page-study details.ls>summary .ls-l {text-align:center;}
+#page-study .topic-topic,#page-study .topic-quote,
+#page-study .lesson-citation,#page-study .topic-vocab {text-align:center;}
+#page-study .topic-topic,#page-study .topic-quote {max-width:58ch;margin-inline:auto;}
+#page-study .quote-actions {justify-content:center;}
+#page-study .topic-excerpt,#page-study .topic-excerpt p,
+#page-study .topic-summary {text-align:left;}
+#page-study #lessonReadingCitation {text-align:center;}
+#page-study #lessonPrimarySource {display:table;margin:12px auto 0;}
+#page-study #sec-quiz-study .dp-card-head {flex-direction:column;align-items:center;text-align:center;}
+#page-study #sec-quiz-study .dp-card-head h3 {justify-content:center;text-align:center;}
+#page-study #quizQ,#page-study #quizNote,#page-study #quizScore,#page-study #quizPraise {
+  max-width:46ch;margin-inline:auto;text-align:center;
+}
+#page-study .quiz-done-actions {justify-content:center;}
+#page-study .tomorrow-teaser {justify-content:center;text-align:center;}
+#page-study .tt-meta {text-align:center;}
+#page-study .dp-thread .phead {text-align:center;}
+
+/* Prayer invitations feel balanced while their controls keep clear targets. */
+#page-prayer .pp-intent label {display:block;text-align:center;}
+#page-prayer .pp-intent input {text-align:center;}
+#page-prayer .dp-act {flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;}
+#page-prayer .dp-act>span {text-align:center;}
+#page-prayer .pray-chip-copy {text-align:center;}
+
+@media (max-width:768px) {
+  #page-today .dp-head,#page-study .dp-head,#page-prayer .dp-head {text-align:center;}
+  #page-today .dp-head>p:not(.dp-eyebrow),
+  #page-study .dp-head>p:not(.dp-eyebrow),
+  #page-prayer .dp-head>p:not(.dp-eyebrow) {max-width:38ch;}
+  #page-study .lesson-top {align-items:center;}
+  #page-study .lesson-nav {justify-content:center;}
+  #page-today .saint-actions .dp-cta {width:min(100%,360px);}
+}
+
+/* Theme-specific hero layouts also center their intrinsic-width headings. */
+html[data-theme] #page-today .dp-head,
+html[data-theme] #page-study .dp-head,
+html[data-theme] #page-prayer .dp-head {align-items:center;text-align:center;}
+html[data-theme] #page-today .dp-head-actions,
+html[data-theme] #page-study .dp-head-actions {box-sizing:border-box;width:100%;}
+#page-prayer .pp-intent input::placeholder {text-align:center;}
