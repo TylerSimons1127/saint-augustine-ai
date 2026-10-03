@@ -1358,3 +1358,36 @@ html[data-theme="parchment"] .quiz-opt.wrong::before {
 }
 html[data-motion="reduced"][data-theme="parchment"] .quiz-opt.correct::before,
 html[data-motion="reduced"][data-theme="parchment"] .quiz-opt.wrong::before {animation:none!important;}
+
+/* One measured marker tracks the active page, centered on its icon. */
+.topnav .nav-tabs {position:relative;--tab-indicator-base-width:24px;}
+.topnav .nav-tabs::after,
+body>.nav-tabs::after {
+  content:""!important;
+  display:block!important;
+  position:absolute;
+  z-index:2;
+  left:0;
+  bottom:3px;
+  width:var(--tab-indicator-width,var(--tab-indicator-base-width));
+  height:2px;
+  border-radius:999px;
+  background:var(--accent);
+  opacity:1;
+  transform:translate3d(var(--tab-i-x,0px),0,0);
+  transition:transform 280ms cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+.nav-tabs .nav-tab::after,
+.nav-tabs .nav-tab.on::after {content:none!important;display:none!important;}
+@media (max-width:768px) {
+  .nav-tabs {--tab-indicator-base-width:24px;}
+  body>.nav-tabs::after,.topnav .nav-tabs::after {
+    bottom:calc(4px + env(safe-area-inset-bottom));
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .topnav .nav-tabs::after,body>.nav-tabs::after {transition:none;}
+}
+html[data-motion="reduced"] .topnav .nav-tabs::after,
+html[data-motion="reduced"] body>.nav-tabs::after {transition:none!important;}
