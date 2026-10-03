@@ -321,6 +321,10 @@ details.ls>.ls-b {padding:0 0 24px 36px;}
   #page-prayer .pray-page {display:grid; grid-template-columns:minmax(0,1.3fr) minmax(320px,1fr); align-items:start;}
   #page-prayer .dp-head,#page-prayer .dp-thread {grid-column:1/-1;}
   #page-prayer .dp-cols {grid-template-columns:1fr;}
+  body[data-page="study"] #toTop {right:8px;}
+}
+@media (min-width:1200px) and (min-height:820px) {
+  #page-study .study-rail {position:sticky;top:24px;align-self:start;}
 }
 @media (min-width:769px) and (max-width:1199px) {
   :root {--rail:228px;}
