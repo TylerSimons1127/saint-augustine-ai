@@ -1305,3 +1305,56 @@ html[data-theme="parchment"] #page-prayer .dp-head {
   #page-prayer .pray-chip,#page-prayer .pray-chip-mark,#page-prayer .pray-chip-arrow {transition:none!important;}
 }
 html[data-motion="reduced"] #page-prayer .pray-chip,html[data-motion="reduced"] #page-prayer .pray-chip-mark,html[data-motion="reduced"] #page-prayer .pray-chip-arrow {transition:none!important;}
+
+/* Quiet, legible quiz feedback in the Midnight Linen palette. */
+html[data-theme="parchment"] .quiz-opt.correct,
+html[data-theme="parchment"] .quiz-opt.wrong {
+  box-sizing:border-box;
+  min-height:52px;
+  padding-right:48px!important;
+  opacity:1;
+}
+html[data-theme="parchment"] .quiz-opt.correct {
+  background:#f1e9de!important;
+  border-color:#c8b79f!important;
+  color:#303a55!important;
+}
+html[data-theme="parchment"] .quiz-opt.wrong {
+  background:#f3efe8!important;
+  border-color:#d2c8ba!important;
+  color:#574f43!important;
+}
+html[data-theme="parchment"] .quiz-opt.correct::before,
+html[data-theme="parchment"] .quiz-opt.wrong::before {
+  content:""!important;
+  position:absolute;
+  top:50%;
+  right:14px;
+  width:22px;
+  height:22px;
+  border:1px solid color-mix(in srgb,#303a55 18%,transparent);
+  border-radius:50%;
+  transform:translateY(-50%);
+  background-color:#e7dccd;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:13px 13px;
+  animation:quizMarkIn .24s cubic-bezier(.2,.8,.2,1) both;
+}
+html[data-theme="parchment"] .quiz-opt.correct::before {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23303a55' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 4 4L19 6'/%3E%3C/svg%3E");
+}
+html[data-theme="parchment"] .quiz-opt.wrong::before {
+  background-color:#e9e3d9;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23574f43' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m7 7 10 10M17 7 7 17'/%3E%3C/svg%3E");
+}
+@keyframes quizMarkIn {
+  from {opacity:0;transform:translateY(-50%) scale(.82);}
+  to {opacity:1;transform:translateY(-50%) scale(1);}
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-theme="parchment"] .quiz-opt.correct::before,
+  html[data-theme="parchment"] .quiz-opt.wrong::before {animation:none;}
+}
+html[data-motion="reduced"][data-theme="parchment"] .quiz-opt.correct::before,
+html[data-motion="reduced"][data-theme="parchment"] .quiz-opt.wrong::before {animation:none!important;}
