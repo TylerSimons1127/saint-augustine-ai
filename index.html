@@ -5521,12 +5521,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   });
   function openSettings(){
     lastFocus=document.activeElement;
+    document.documentElement.classList.add("settings-open");
     sheet.classList.add("show"); scrim.classList.add("show"); sheet.setAttribute("aria-hidden","false");
     syncSettingsUI(); settingsClose.focus();
     window.history.pushState({ov:"settings"},""); pushOverlay(closeSettings);
   }
   function closeSettings(){
     sheet.classList.remove("show"); scrim.classList.remove("show"); sheet.setAttribute("aria-hidden","true");
+    document.documentElement.classList.remove("settings-open");
     const idx=OVERLAYS.findIndex(o=>o.close===closeSettings); if(idx>-1) OVERLAYS.splice(idx,1);
     if(lastFocus&&lastFocus.focus) lastFocus.focus();
   }

@@ -1220,6 +1220,10 @@ html[data-theme="parchment"] #page-today #todayStrip .ts-l {font-size:10px;line-
 html[data-motion="reduced"] #composer .reasoning::before,html[data-motion="reduced"] #composer .reasoning .seg {transition:none!important;}
 
 /* Prayer: let the selected scene open the page, then make each practice legible at a glance. */
+html.settings-open,html.settings-open body {overflow:hidden!important;overscroll-behavior:none!important;}
+@media (min-width:769px) {
+  html.settings-open .stage {overflow:hidden!important;overscroll-behavior:none!important;}
+}
 html[data-theme="parchment"] #page-prayer .dp-head {
   min-height:178px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:28px 32px!important;
   border:1px solid color-mix(in srgb,var(--accent) 26%,var(--border));border-radius:14px;
