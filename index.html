@@ -5130,7 +5130,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const toTop=$("#toTop");
   function updateToTop(){
     if(!toTop) return;
-    const deep = readScrollTop() > 320;
+    const top = readScrollTop();
+    const remaining = readScrollHeight() - top - readScrollViewport();
+    const nearMobileEnd = !usesDocumentScroll() || remaining < 16;
+    const deep = top > 320 && nearMobileEnd;
     const daily = PAGE==="study" || PAGE==="today" || PAGE==="prayer";
     toTop.classList.toggle("show", deep && daily);
   }

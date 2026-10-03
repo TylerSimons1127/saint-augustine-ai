@@ -954,3 +954,32 @@ details.ls[open]>summary .ls-n {background:var(--accent-deep);color:var(--paper-
 html[data-motion="reduced"] *,html[data-motion="reduced"] *::before,html[data-motion="reduced"] *::after {
   animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important;
 }
+
+/* A quiet, tactile reveal for the lesson's progressive reading path. */
+details.ls[open]>.ls-b {animation:lesson-reveal 260ms var(--ease-reading) both;}
+details.ls>summary .ls-n {transition:transform var(--motion-fast) var(--ease-premium),background var(--motion-fast),color var(--motion-fast),box-shadow var(--motion-fast);}
+details.ls[open]>summary .ls-n {background:var(--accent);color:var(--primary);box-shadow:0 0 0 3px var(--accent-soft);transform:scale(1.04);}
+@keyframes lesson-reveal {from {opacity:0;transform:translateY(-5px);} to {opacity:1;transform:translateY(0);}}
+
+/* The daily-page return control is an icon button; its accessible name stays in the button label. */
+.to-top {
+  box-sizing:border-box;width:44px;height:44px;min-height:44px;padding:0;gap:0;
+  align-items:center;justify-content:center;border:1px solid var(--border);border-radius:14px;
+  background:var(--paper-50);color:var(--primary);box-shadow:var(--surface-shadow-small);
+  backdrop-filter:none;-webkit-backdrop-filter:none;font-size:0;line-height:0;letter-spacing:0;text-transform:none;
+  transition:transform var(--motion-fast) var(--ease-premium),background var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast);
+}
+.to-top.show {display:grid;place-items:center;}
+.to-top span {display:none;}
+.to-top svg {width:18px;height:18px;stroke-width:1.8;transition:transform var(--motion-fast) var(--ease-premium);}
+.to-top:hover {background:var(--accent-soft);border-color:var(--accent);color:var(--primary);transform:translateY(-2px);}
+.to-top:hover svg {transform:translateY(-1px);}
+.to-top:active {transform:scale(.96);}
+.to-top:focus-visible {outline:2px solid var(--accent-deep);outline-offset:3px;}
+
+.pp-intent input,.pp-intent input::placeholder {text-overflow:ellipsis;}
+.skip-link {top:10px;transform:translate(-50%,calc(-100% - 12px));transition:transform var(--motion-fast) var(--ease-premium);}
+.skip-link:focus-visible {top:10px;transform:translateX(-50%);}
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  .to-top {bottom:calc(82px + env(safe-area-inset-bottom,0px))!important;}
+}
