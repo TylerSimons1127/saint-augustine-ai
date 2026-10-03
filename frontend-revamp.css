@@ -1140,3 +1140,42 @@ html[data-theme="parchment"] #page-today #todayStrip .ts-l {font-size:10px;line-
   .examen-progress span {transition:none;}
   .examen-breath i {box-shadow:0 0 0 5px color-mix(in srgb,var(--accent-soft) 76%,transparent);}
 }
+
+/* Topic browser: make the curriculum feel like a curated index, not a raw list. */
+#lessonBrowserGrid {gap:10px;padding:3px 3px 10px;}
+#lessonBrowserGrid .lb-item {
+  min-height:68px;padding:10px 14px;gap:12px;border:1px solid color-mix(in srgb,var(--accent) 20%,var(--border));
+  border-radius:14px;background:linear-gradient(145deg,var(--panel),color-mix(in srgb,var(--panel) 91%,var(--accent-soft)));
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--paper-50) 82%,transparent);
+  transition:transform var(--motion-fast) var(--ease-premium),background var(--motion-fast),border-color var(--motion-fast),box-shadow var(--motion-fast);
+}
+#lessonBrowserGrid .lb-item .lb-n {
+  box-sizing:border-box;display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;
+  border:1px solid color-mix(in srgb,var(--accent) 27%,var(--border));background:var(--accent-soft);
+  color:var(--accent-deep);font:500 10px/1 var(--mono);letter-spacing:.025em;
+}
+#lessonBrowserGrid .lb-item .lb-t {flex:1;min-width:0;font:600 14px/1.35 var(--body);color:var(--ink);}
+#lessonBrowserGrid .lb-item:hover {
+  transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 58%,var(--border));
+  background:linear-gradient(145deg,var(--paper-50),color-mix(in srgb,var(--accent-soft) 58%,var(--paper-50)));
+  box-shadow:0 8px 20px color-mix(in srgb,var(--ink) 7%,transparent),inset 0 1px 0 var(--paper-50);
+}
+#lessonBrowserGrid .lb-item:active {transform:scale(.99);}
+#lessonBrowserGrid .lb-item.today {
+  border-color:color-mix(in srgb,var(--accent) 72%,var(--border));
+  background:linear-gradient(145deg,color-mix(in srgb,var(--accent-soft) 92%,var(--paper-50)),var(--paper-50));
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 24%,transparent),0 5px 14px color-mix(in srgb,var(--accent) 12%,transparent);
+}
+#lessonBrowserGrid .lb-item.today .lb-n {background:var(--accent);border-color:var(--accent);color:var(--primary);}
+#lessonBrowserGrid .lb-item.selected {border-color:var(--accent-deep);box-shadow:inset 0 0 0 1px var(--accent-deep);}
+#lessonBrowserGrid .lb-item.read::after {padding-left:8px;color:var(--accent-deep);font-size:14px;}
+#lessonBrowserGrid>.palette-empty {margin:6px 0;padding:22px 16px;border:1px solid var(--border);border-radius:14px;background:var(--panel);}
+#lessonSearch:focus-visible,#glossarySearch:focus-visible {
+  outline-color:var(--accent-deep)!important;outline-offset:2px!important;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent-soft) 84%,transparent)!important;
+}
+.lesson-results {font:500 11px/1.4 var(--body);letter-spacing:.015em;color:var(--muted);}
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  #lessonBrowserGrid .lb-item {min-height:66px;padding:9px 11px;}
+  #lessonBrowserGrid .lb-item .lb-n {width:30px;height:30px;}
+}
