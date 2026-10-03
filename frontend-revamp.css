@@ -1109,3 +1109,34 @@ html[data-theme="parchment"] #page-today #todayStrip .ts-l {font-size:10px;line-
 @media (prefers-reduced-motion:reduce) {
   .sidebar .sb-empty:not(.search) {animation:none;}
 }
+
+/* Guided Examen: keep the five movements visible, while prose stays easy to read. */
+.examen-progress {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:0 0 22px;padding:0 2px;}
+.examen-progress span {height:3px;border-radius:999px;background:color-mix(in srgb,var(--border) 82%,var(--paper-50));transition:background var(--motion-base) var(--ease-reading),transform var(--motion-base) var(--ease-reading);}
+.examen-progress span.is-complete {background:var(--accent-deep);}
+.examen-progress span.is-current {background:var(--accent);transform:scaleY(1.5);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent-soft) 72%,transparent);}
+.examen-body {max-width:44ch;margin-inline:auto;text-align:left;}
+.examen-breath i {background:radial-gradient(circle at 34% 30%,color-mix(in srgb,var(--paper-50) 88%,transparent),transparent 70%);}
+@keyframes breath {
+  0%,50%,100% {transform:scale(.72);opacity:.55;box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 16%,transparent);}
+  12.5%,62.5% {transform:scale(1.18);opacity:1;box-shadow:0 0 0 9px color-mix(in srgb,var(--accent) 12%,transparent);}
+}
+@media (max-width:480px) {
+  .examen-progress {gap:5px;margin-bottom:18px;}
+  .examen-body {font-size:15px;line-height:1.68;}
+}
+@media (max-width:480px) and (max-height:640px) {
+  .examen-modal {padding:10px;}
+  .examen-card {max-height:calc(100dvh - 20px);padding:20px 18px 14px;}
+  .examen-head {margin-bottom:10px;}
+  .examen-progress {margin-bottom:12px;}
+  .examen-title {font-size:30px;margin-bottom:8px;}
+  .examen-body {font-size:14px;line-height:1.55;margin-bottom:12px;}
+  .examen-breath {margin:0 0 10px;}
+  .examen-breath i {width:40px;height:40px;}
+  .examen-actions {position:sticky;bottom:-12px;z-index:2;padding:12px 0 2px;background:linear-gradient(to bottom,transparent 0,color-mix(in srgb,var(--paper-50) 90%,transparent) 10px,var(--paper-50) 16px);}
+}
+@media (prefers-reduced-motion:reduce) {
+  .examen-progress span {transition:none;}
+  .examen-breath i {box-shadow:0 0 0 5px color-mix(in srgb,var(--accent-soft) 76%,transparent);}
+}

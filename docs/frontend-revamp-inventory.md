@@ -40,6 +40,7 @@ Browser checks were performed in the Codex browser against the running local pro
 - Study's four lesson disclosures now read as a numbered path with a fine connective rail, warm active-step highlight, and focused keyboard outline. At 320px and 390px phone widths, step rows remain at least 58px tall and the page has no horizontal overflow; the 1440px layout retains the lesson-plus-quiz columns.
 - Today’s streak, lesson, and quiz metrics now use warm paper gradients, inset icon medallions, and a brief staggered entrance. Verified 91px tiles at 320px, 111px tiles at 390px, and the 3-column desktop row at 1440px, with no horizontal overflow; operating-system reduced motion disables the entrance.
 - The desktop conversation rail and mobile drawer now present the empty-history state in a softly framed surface with a larger quill medallion. Verified drawer open/close at 390px, fit at 320px, and entrance removal under reduced motion.
+- The guided Examen now shows its five-step position as the user moves through it, pairs the existing breathing circle with a soft halo, and left-aligns the longer reflection copy. At 320×568, the next/back actions remain visible; step 1→5 and finish were exercised. Reduced-motion disables the breathing animation and progress transitions.
 
 Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: all 215 original DOM IDs retained, no duplicate IDs, four inline scripts plus the presentation script parse, lessons/config/backend unchanged, preview noindex and same-origin landing links present.
 

@@ -3233,6 +3233,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               <span class="examen-kicker">Oratio · step <span id="examenStepN">1</span> of 5</span>
               <button class="examen-close" id="examenClose" aria-label="Close guided examen">×</button>
             </div>
+            <div class="examen-progress" id="examenProgress" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
             <h3 class="examen-title" id="examenTitle">Become still</h3>
             <p class="examen-body" id="examenBody"></p>
             <div class="examen-breath" id="examenBreath" aria-hidden="true"><i></i></div>
@@ -6364,13 +6365,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         ];
         const examenModal=$("#examenModal"), examenTitle=$("#examenTitle"), examenBody=$("#examenBody"),
               examenStepN=$("#examenStepN"), examenPrev=$("#examenPrev"), examenNext=$("#examenNext"),
-              examenCloseBtn=$("#examenClose"), examenBreath=$("#examenBreath");
+              examenCloseBtn=$("#examenClose"), examenBreath=$("#examenBreath"), examenProgress=$("#examenProgress");
         let examenStep=0;
         function renderExamen(){
           const s=EXAMEN_STEPS[examenStep];
           examenTitle.textContent=s.t;
           examenBody.textContent=s.b;
           examenStepN.textContent=examenStep+1;
+          if(examenProgress) [...examenProgress.children].forEach((segment,index)=>{
+            segment.classList.toggle("is-complete",index<examenStep);
+            segment.classList.toggle("is-current",index===examenStep);
+          });
           examenPrev.hidden=examenStep===0;
           examenNext.textContent=examenStep===EXAMEN_STEPS.length-1?"Amen · finish":"Next →";
           examenBreath.style.opacity = examenStep===0 ? "1" : ".45";
