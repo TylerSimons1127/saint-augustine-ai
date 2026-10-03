@@ -972,7 +972,7 @@ details.ls > .ls-b{padding:2px 0 16px 42px;flex:none;width:auto;min-width:0}
   background:var(--accent-soft) !important;border-color:var(--accent) !important;color:var(--gold-ink) !important;
   animation:quizPop .38s cubic-bezier(.32,.72,.28,1) both;
 }
-.quiz-opt.correct::before{
+.quiz-opt.correct::after{
   content:"✓";position:absolute;right:12px;font-weight:700;color:var(--ok);animation:checkSweep .38s cubic-bezier(.32,.72,.28,1) both;
 }
 .quiz-opt{position:relative}
@@ -2781,7 +2781,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=chat-grid-1" />
+<link rel="stylesheet" href="frontend-revamp.css?v=quiz-options-1" />
 <script src="frontend-revamp.js" defer></script>
 </head>
 <body>
