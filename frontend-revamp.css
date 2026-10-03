@@ -304,12 +304,13 @@ details.ls>.ls-b {padding:0 0 24px 36px;}
 .toast {z-index:160; background:var(--slate-800); color:var(--paper-50); border-radius:var(--radius-control); font-size:14px; box-shadow:0 8px 32px rgba(38,43,55,.12);}
 
 /* Desktop composition preserves the source order on smaller screens. */
+#page-study .study-rail {display:flex;flex-direction:column;gap:16px;min-width:0;}
 @media (min-width:1200px) {
   #page-study .daily-page {display:grid; grid-template-columns:minmax(0,1.75fr) minmax(300px,1fr); align-items:start;}
   #page-study .dp-head {grid-column:1/-1;}
-  #page-study .lesson {grid-column:1; grid-row:2/4;}
-  #page-study #sec-quiz-study {grid-column:2; grid-row:2;}
-  #page-study .tomorrow-teaser {grid-column:2; grid-row:3;}
+  #page-study .lesson {grid-column:1; grid-row:2;}
+  #page-study .study-rail {grid-column:2; grid-row:2;}
+  #page-study #sec-quiz-study,#page-study .tomorrow-teaser {grid-column:auto; grid-row:auto;}
   #page-study .dp-thread {grid-column:1/-1;}
   #page-today .daily-page {display:grid; grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr); align-items:start;}
   #page-today .dp-head,#page-today .today-strip,#page-today .dp-thread {grid-column:1/-1;}

@@ -2781,7 +2781,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=quiz-options-2" />
+<link rel="stylesheet" href="frontend-revamp.css?v=study-rail-1" />
 <script src="frontend-revamp.js" defer></script>
 </head>
 <body>
@@ -3047,42 +3047,44 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           </article>
         </section>
 
-        <!-- Tomorrow's lesson teaser: closes the daily loop, brings them back -->
-        <div class="tomorrow-teaser" id="tomorrowTeaser">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-          <div class="tt-meta">
-            <span class="tt-k">Tomorrow's lesson</span>
-            <span class="tt-name" id="tomorrowName">—</span>
-          </div>
-        </div>
+        <div class="study-rail">
+          <!-- v4.5: THE EXPANDED DAILY QUIZ lives here on Study — Today's card
+               is just a pointer now; this is where you actually take it -->
+          <section class="dp-card" aria-label="Daily Quiz" id="sec-quiz-study">
+            <div class="dp-card-head">
+              <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg><span id="quizHeading">Daily Quiz</span></h3>
+              <span class="dp-mini-tag" id="quizProgress">Question 1 of 5</span>
+            </div>
+            <div class="quiz-meter" id="quizMeter" aria-hidden="true"><span></span></div>
+            <p class="quiz-q" id="quizQ"></p>
+            <div class="quiz-opts" id="quizOpts" role="group" aria-label="Answer choices"></div>
+            <p class="quiz-note" id="quizNote" hidden></p>
+            <div class="quiz-next" id="quizNextRow">
+              <button class="dp-cta" id="quizNext" hidden>Next &rarr;</button>
+            </div>
+            <div class="quiz-done" id="quizDone" hidden>
+              <p class="quiz-score" id="quizScore"></p>
+              <div class="quiz-spark" id="quizSpark" aria-label="Your quiz scores this week" role="img"></div>
+              <p class="quiz-praise" id="quizPraise"></p>
+              <div class="quiz-done-actions">
+                <button class="dp-cta dp-cta-ghost" id="quizRetry">Try again</button>
+                <button class="dp-cta" id="quizAsk">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-chat"/></svg>
+                  <span>Ask Augustine about this</span>
+                </button>
+              </div>
+            </div>
+          </section>
 
-        <!-- v4.5: THE EXPANDED DAILY QUIZ lives here on Study — Today's card
-             is just a pointer now; this is where you actually take it -->
-        <section class="dp-card" aria-label="Daily Quiz" id="sec-quiz-study">
-          <div class="dp-card-head">
-            <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7h.01M12 11v6"/></svg><span id="quizHeading">Daily Quiz</span></h3>
-            <span class="dp-mini-tag" id="quizProgress">Question 1 of 5</span>
-          </div>
-          <div class="quiz-meter" id="quizMeter" aria-hidden="true"><span></span></div>
-          <p class="quiz-q" id="quizQ"></p>
-          <div class="quiz-opts" id="quizOpts" role="group" aria-label="Answer choices"></div>
-          <p class="quiz-note" id="quizNote" hidden></p>
-          <div class="quiz-next" id="quizNextRow">
-            <button class="dp-cta" id="quizNext" hidden>Next &rarr;</button>
-          </div>
-          <div class="quiz-done" id="quizDone" hidden>
-            <p class="quiz-score" id="quizScore"></p>
-            <div class="quiz-spark" id="quizSpark" aria-label="Your quiz scores this week" role="img"></div>
-            <p class="quiz-praise" id="quizPraise"></p>
-            <div class="quiz-done-actions">
-              <button class="dp-cta dp-cta-ghost" id="quizRetry">Try again</button>
-              <button class="dp-cta" id="quizAsk">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-chat"/></svg>
-                <span>Ask Augustine about this</span>
-              </button>
+          <!-- Tomorrow's lesson teaser follows today's study and quiz. -->
+          <div class="tomorrow-teaser" id="tomorrowTeaser">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <div class="tt-meta">
+              <span class="tt-k">Tomorrow's lesson</span>
+              <span class="tt-name" id="tomorrowName">—</span>
             </div>
           </div>
-        </section>
+        </div>
 
         <section class="dp-thread">
           <div class="phead"><h3>Reflect together</h3><p id="studyReflectIntro">Ask St. Augustine to go deeper on today's topic with you.</p></div>
