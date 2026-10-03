@@ -1083,3 +1083,29 @@ html[data-theme="parchment"] #page-today #todayStrip .ts-l {font-size:10px;line-
 @media (prefers-reduced-motion:reduce) {
   #page-today.page.on #todayStrip .ts-cell {animation:none;}
 }
+
+/* Empty conversation history is a considered state, not a blank sidebar. */
+.sidebar .sb-empty:not(.search) {
+  box-sizing:border-box;min-height:156px;margin:22px 0 0;padding:20px 16px;
+  align-items:center;justify-content:center;gap:12px;text-align:center;
+  border:1px solid color-mix(in srgb,var(--accent) 24%,var(--border));border-radius:16px;
+  background:radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--accent) 12%,transparent),transparent 72%),linear-gradient(150deg,var(--panel),color-mix(in srgb,var(--panel) 88%,var(--accent-soft)));
+  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--paper-50) 86%,transparent),0 10px 26px color-mix(in srgb,var(--ink) 5%,transparent);
+  animation:history-empty-arrive 380ms var(--ease-reading) both;
+}
+.sidebar .sb-empty:not(.search) svg {
+  box-sizing:border-box;display:block;width:44px;height:44px;padding:10px;
+  border:1px solid color-mix(in srgb,var(--accent) 32%,var(--border));border-radius:14px;
+  background:color-mix(in srgb,var(--accent-soft) 72%,var(--panel));color:var(--accent-deep);opacity:1;
+}
+.sidebar .sb-empty:not(.search) p {max-width:22ch;margin:0;color:var(--ink-soft);font-size:13px;line-height:1.55;}
+@keyframes history-empty-arrive {
+  from {opacity:0;transform:translateY(7px) scale(.99);}
+  to {opacity:1;transform:translateY(0) scale(1);}
+}
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  .sidebar .sb-empty:not(.search) {min-height:160px;margin-top:24px;padding:22px 18px;border-radius:17px;}
+}
+@media (prefers-reduced-motion:reduce) {
+  .sidebar .sb-empty:not(.search) {animation:none;}
+}
