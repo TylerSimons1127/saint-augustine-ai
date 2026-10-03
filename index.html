@@ -2781,7 +2781,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=today-ledger-1" />
+<link rel="stylesheet" href="frontend-revamp.css?v=mode-lens-1" />
 <script src="frontend-revamp.js" defer></script>
 </head>
 <body>
@@ -5494,6 +5494,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function lgSyncThumb(seg){
     const track=seg.closest(".reasoning"); if(!track) return;
     const r=seg.getBoundingClientRect(), t=track.getBoundingClientRect();
+    if(t.width<1||r.width<1){
+      track.style.removeProperty("--lg-x"); track.style.removeProperty("--lg-w");
+      track.classList.remove("lg-moving"); return;
+    }
     track.style.setProperty("--lg-x", (r.left-t.left)+"px");
     track.style.setProperty("--lg-w", r.width+"px");
     track.classList.add("lg-moving");
@@ -5502,12 +5506,21 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
   function lgInitThumb(){
     const on=document.querySelector('.reasoning .seg[aria-pressed="true"]');
-    if(on){ lgSyncThumb(on); const tr=on.closest(".reasoning"); tr&&tr.classList.remove("lg-moving"); }
+    if(on&&on.getBoundingClientRect().width>0){ lgSyncThumb(on); const tr=on.closest(".reasoning"); tr&&tr.classList.remove("lg-moving"); }
   }
-  /* init + re-measure when controls become visible (mobile kebab) or resize */
+  /* Re-measure when a hidden page or composer first becomes visible, then on resize. */
   if(document.readyState==="complete") lgInitThumb();
   else window.addEventListener("load", lgInitThumb);
   window.addEventListener("resize", ()=>{ lgInitThumb(); }, {passive:true});
+  if("ResizeObserver" in window){
+    document.querySelectorAll(".reasoning").forEach(track=>{
+      const observer=new ResizeObserver(()=>{
+        const on=track.querySelector('.seg[aria-pressed="true"]');
+        if(on) requestAnimationFrame(()=>lgSyncThumb(on));
+      });
+      observer.observe(track);
+    });
+  }
 
   /* ----- sheet open/close ----- */
   const settingsBtn=$("#settingsBtn"), sheet=$("#settingsSheet"), scrim=$("#settingsScrim"), settingsClose=$("#settingsClose");
