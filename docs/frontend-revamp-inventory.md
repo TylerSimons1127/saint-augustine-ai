@@ -33,6 +33,8 @@ Browser checks were performed in the Codex browser against the running local pro
 - The shared composer is hidden on Study, Today, and Pray until the user asks Augustine a question; it then opens as a focused sheet with the existing modes, model selection, attachments, draft, and send/stop behavior.
 - The client-side assistant display filter removes explicit reasoning markers and obvious planning prose at render, local-history, sharing, and export boundaries. It is a presentation safeguard; model/provider quality and server-side filtering remain a separate backend concern.
 - The refreshed local Today page was checked at a phone viewport. The live saint title displays “Feast of the Guardian Angels” without a duplicated “Saint” prefix. The broader phone, tablet, and desktop page checks are recorded in the inventory above.
+- A final app-only polish pass tightened the Chat welcome surface, mobile prompt grid, reading cards, touch feedback, safe-area spacing, and page transitions. Study, Today, and Pray now leave room for the fixed navigation at the end of long pages; alternate theme palettes remain independent of the Parchment refinements.
+- The four app routes were rechecked at 326×668, 390×844, 820×1180, 1024×900, and 1440×900. No horizontal document overflow was present at any checked size, and the route entrance animation settled without a sideways offset. Today’s final action clears the mobile bottom navigation.
 
 Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: all 215 original DOM IDs retained, no duplicate IDs, four inline scripts plus the presentation script parse, lessons/config/backend unchanged, preview noindex and same-origin landing links present.
 

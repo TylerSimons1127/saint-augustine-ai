@@ -35,11 +35,11 @@ The default Parchment theme is presented as **Midnight Linen**; its stored theme
 | Midnight navy | `#303a55` | Main actions and selected controls |
 | Slate | `#596c88` | Links, labels, icons, and focus states |
 | Champagne peach | `#d9c4a9` | Quiet highlight and brand accent |
-| Pale slate | `#e9edf3` | Selected surfaces and success states |
+| Soft peach | `#f1e9de` | Selected surfaces and quiet highlights |
 
-Radii: 7px controls, 12px reading cards, 20px sheets. Shadows are limited to floating and modal controls. Borders and spacing structure reading cards without making every section appear to float. Type keeps the existing family, with fluid editorial headings and comfortable line height. Existing reply-size, motion, theme, and scenery settings continue to work.
+Radii: 7px controls, 14px reading cards, 20px sheets. Reading cards use borders and paper tones; the welcome surface and focused composer use soft, offset shadows. Type keeps the existing family, with fluid editorial headings and comfortable line height. Existing reply-size, motion, theme, and scenery settings continue to work.
 
-Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. No continuous decorative animation is added.
+Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. Page changes use a brief, single entrance; controls respond to hover, focus, and press. No continuous decorative animation is added.
 
 ## Implementation strategy
 
