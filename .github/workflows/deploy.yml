@@ -1,4 +1,4 @@
-name: Deploy frontend to GitHub Pages
+name: Publish GitHub Pages mirror
 
 on:
   push:
@@ -24,10 +24,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload static site (frontend + config)
+      - name: Upload the static mirror (frontend + config)
         uses: actions/upload-pages-artifact@v3
         with:
           path: .          # publish repo root: index.html, config.js, assets/
-      - name: Deploy to GitHub Pages
+      - name: Publish the GitHub Pages mirror
         id: deployment
         uses: actions/deploy-pages@v4

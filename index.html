@@ -2666,6 +2666,7 @@ document.addEventListener("visibilitychange",()=>{
 });
 </script>
 <script src="lessons.js?v=study-content-3"></script>
+<script src="lesson-sources.js?v=source-audit-1"></script>
 <script>
 /* v1.7: on phones, reparent the tab bar to <body> so position:fixed resolves against
    the viewport — .topnav's backdrop-filter creates a containing block that would trap it.
@@ -2780,8 +2781,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=centered-welcome-bubble-1" />
+<link rel="stylesheet" href="frontend-revamp.css?v=app-improvements-1" />
+<link rel="stylesheet" href="app-features.css?v=app-improvements-1" />
 <script src="frontend-revamp.js" defer></script>
+<script src="app-features.js?v=app-improvements-1" defer></script>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -2898,7 +2901,6 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       <span>Delete all</span>
     </button>
   </div>
-  <p class="preview-notice">Design preview <a href="https://staugustineai.vercel.app/" target="_blank" rel="noopener">Live app ↗</a></p>
   <div class="sb-bulk" id="sbBulk" hidden>
     <span id="sbBulkCount">0 selected</span>
     <button class="sb-bulk-del" id="sbBulkDel">Delete selected</button>
@@ -3101,6 +3103,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <p>Read the Mass readings for this day, meet the saint of the day, and speak to St. Augustine about it.</p>
           <div class="dp-head-actions">
             <button class="dp-link-btn" id="goLessonBtn">Open today's lesson in Study &rarr;</button>
+            <button class="dp-link-btn" id="todayArchiveOpen" type="button">Past days</button>
           </div>
         </div>
 
@@ -3202,6 +3205,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <div class="pp-intent">
             <label for="prayIntent2">What would you like to pray for?</label>
             <input id="prayIntent2" type="text" maxlength="160" placeholder="A worry, a person, a thank-you, a need…" />
+            <p class="sa-intention-disclosure">Your intention stays on this device until you choose Lead me in prayer or Teach me to pray. Then its text is included in the request sent to the AI.</p>
+            <div class="sa-intention-tools"><button type="button" id="intentionSave">Save intention</button><button type="button" id="intentionListOpen">My intentions</button><button type="button" id="intentionClear">Clear</button></div>
+            <div id="intentionList" class="sa-intention-list" hidden></div>
           </div>
           <div class="dp-cols">
             <button class="dp-act" id="ppLead">
@@ -3238,6 +3244,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               <span class="pray-chip-copy"><span class="pray-chip-title">Guided Examen</span><small class="pray-chip-note">Five quiet steps, with room to breathe.</small></span>
               <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
+            <button class="pray-chip" id="timedPrayerOpen" type="button"><span class="pray-chip-copy"><span class="pray-chip-title">Timed prayer</span><small class="pray-chip-note">Choose a quiet 3-, 5-, or 10-minute path.</small></span><span class="pray-chip-arrow" aria-hidden="true">→</span></button>
             <button class="pray-chip" id="tradRest">
               <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-heart"/></svg></span>
               <span class="pray-chip-copy"><span class="pray-chip-title">Prayer before rest</span><small class="pray-chip-note">Surrender the day and entrust each worry.</small></span>
@@ -3280,10 +3287,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 <!-- COMPOSER DOCK -->
 <div class="dock">
   <div class="composer glass" id="composer">
+    <div id="serviceStatus" class="sa-service-status" role="status" aria-live="polite" hidden><span id="serviceStatusText"></span><button id="serviceRetry" type="button" hidden>Retry</button><button id="serviceCancel" type="button">Cancel</button></div>
     <div class="attach-row" id="attachRow" hidden></div>
 
     <div class="paste-signal-note" id="pasteSignalNote" role="status" hidden>
-      <span>This pasted text has a few patterns sometimes seen in AI writing. That is only a clue, not proof; Augustine will still respond to what you’re asking.</span>
+      <span>This pasted text has a few patterns sometimes seen in AI writing. That is only a clue, not proof; Augustine will still respond to what you’re asking. <button type="button" class="paste-why" id="pasteWhy">Why am I seeing this?</button></span>
       <button id="pasteSignalDismiss" type="button" aria-label="Dismiss AI-style paste note">×</button>
     </div>
 
@@ -3421,7 +3429,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <div class="beta-rows">
       <div class="beta-row">
         <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-        <div><b>Your privacy is yours</b><br><span>Conversations live in your browser only — nothing is stored on our servers.</span></div>
+        <div><b>Your history stays on this device</b><br><span>When you send a message, it travels through our Render service to OpenRouter so a model can answer. Their handling follows their own policies; avoid sending sensitive information.</span></div>
       </div>
       <div class="beta-row">
         <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg></span>
@@ -3521,14 +3529,31 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       <button class="switch" id="autoCite" aria-pressed="true" aria-label="Auto-link citations"></button>
     </div>
     <div class="set-row">
+      <span class="t">Show AI-style paste note</span>
+      <button class="switch" id="pasteNoteToggle" aria-pressed="true" aria-label="Show AI-style paste note"></button>
+    </div>
+    <div class="set-row">
       <span class="t">Default model</span>
       <button class="set-link" id="defModelBtn">Default</button>
     </div>
   </section>
 
   <section class="set-sec">
+    <div class="set-lbl">Gentle reminders</div>
+    <div class="set-row">
+      <span class="t">Hide day streak</span>
+      <button class="switch" id="hideStreakToggle" aria-pressed="false" aria-label="Hide day streak"></button>
+    </div>
+    <div class="set-row">
+      <span class="t">Pause streak counting</span>
+      <button class="switch" id="pauseStreakToggle" aria-pressed="false" aria-label="Pause streak counting"></button>
+    </div>
+  </section>
+
+  <section class="set-sec">
     <div class="set-lbl">Data (on this device)</div>
-    <p class="set-hint">Conversations are stored only in this browser. The server keeps nothing.</p>
+    <p class="set-hint">Conversation history and saved items stay in this browser. When you send a message, it is sent through our Render service to OpenRouter for a reply. Each provider has its own data policies; avoid sending sensitive information.</p>
+    <div class="set-row"><button class="set-link" id="savedOpen" type="button">Saved notes, passages &amp; prayers</button></div>
     <div class="set-row">
       <span class="t" id="storageUsed">—</span>
     </div>
@@ -3575,6 +3600,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 </div>
 
 <script src="config.js"></script>
+<script src="app-data.js?v=app-improvements-1"></script>
 <script>
 (function(){
   "use strict";
@@ -3607,6 +3633,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     ta.setAttribute("aria-label",full[page].replace(/…$/,""));
   };
   function currentThreadEl(){ return PAGE_ELS[PAGE].threadEl; }
+  function emitSaContext(){ window.dispatchEvent(new CustomEvent("sa:context",{detail:{page:PAGE,conversationId:activeId}})); }
   function setPage(p){
     if(p===PAGE){ syncComposerPlaceholder(p); return; }
     if(messageShareMode) setMessageShareMode(false);
@@ -3641,11 +3668,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     try{ window.dispatchEvent(new Event("pagechange")); }catch(e){}   // drives the sliding tab indicator
     if(activeId){ loadSession(activeId); }
     else { thread.innerHTML=""; if(greet) greet.hidden=false; }
+    emitSaContext();
     // restore the incoming page's saved scroll (top for first visit)
     requestAnimationFrame(()=>writeScrollTop(PAGE_SCROLL[p]!=null ? PAGE_SCROLL[p] : 0));
     // keep the URL hash in sync so refresh/deep-link/share works
-    if((" #"+p)!==(" "+location.hash) && !RG_ROUTING){ location.hash = p; }
+    const keepSelectedStudyTopic=p==="study"&&/^#study:topic=/.test(location.hash||"");
+    if((" #"+p)!==(" "+location.hash) && !RG_ROUTING && !keepSelectedStudyTopic){ location.hash = p; }
   }
+  window.__saSetPage=(p)=>setPage(p);
   syncComposerPlaceholder(PAGE);
   window.addEventListener("resize",()=>syncComposerPlaceholder(PAGE),{passive:true});
   // per-page scroll memory
@@ -3656,6 +3686,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function pageFromHash(){
     const h=(location.hash||"").replace(/^#/,"").split(":")[0];
     return PAGES.includes(h)?h:null;
+  }
+  function restoreLessonTopicFromHash(){
+    const match=(location.hash||"").match(/^#study:topic=([^:]+)$/);
+    if(!match) return;
+    const slug=decodeURIComponent(match[1]);
+    setTimeout(()=>{
+      const lessons=window.LESSON||[];
+      const index=lessons.findIndex(item=>String(item.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")===slug);
+      if(index>=0&&typeof window.__saRenderLesson==="function") window.__saRenderLesson(index,"selected");
+    },140);
   }
   // B28: "#today:sec-quiz" style anchors — after switching pages, scroll to the section
   function anchorFromHash(){
@@ -3670,6 +3710,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const p=pageFromHash();
     if(p && p!==PAGE){ RG_ROUTING=true; setPage(p); RG_ROUTING=false; }
     anchorFromHash();
+    restoreLessonTopicFromHash();
   });
   // NOTE: deferred to the next tick — setPage touches `history`/`activeId`,
   // which are declared later in this scope; running at parse time crashed on
@@ -3678,6 +3719,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const p=pageFromHash();
     if(p && p!==PAGE){ RG_ROUTING=true; setPage(p); RG_ROUTING=false; }
     anchorFromHash();
+    restoreLessonTopicFromHash();
   },0);
   const prompt=$("#prompt"), send=$("#send"), composer=$("#composer");
   const pasteSignalNote=$("#pasteSignalNote"), pasteSignalDismiss=$("#pasteSignalDismiss");
@@ -3776,18 +3818,36 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   async function shareText(title,text,successMessage){
     const content=String(text||"").trim();
     if(!content){ showToast("Nothing to share yet."); return false; }
-    if(navigator.share){
-      try{ await navigator.share({title,text:content}); showToast(successMessage||"Shared"); return true; }
-      catch(error){ if(error&&error.name==="AbortError") return false; }
-    }
-    try{ await navigator.clipboard.writeText(content); showToast("Copied — paste it into a message to share."); return true; }
-    catch(_){
-      const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
-      const url=URL.createObjectURL(blob), link=document.createElement("a");
-      link.href=url; link.download=(String(title||"saint-augustine-share").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"saint-augustine-share")+".txt";
-      link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); showToast("Downloaded a shareable text file."); return true;
-    }
+    const share=async()=>{
+      if(navigator.share){
+        try{ await navigator.share({title,text:content}); showToast(successMessage||"Shared"); return true; }
+        catch(error){ if(error&&error.name==="AbortError") return false; }
+      }
+      try{ await navigator.clipboard.writeText(content); showToast("Copied — paste it into a message to share."); return true; }
+      catch(_){
+        const blob=new Blob([content],{type:"text/plain;charset=utf-8"});
+        const url=URL.createObjectURL(blob), link=document.createElement("a");
+        link.href=url; link.download=(String(title||"saint-augustine-share").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"saint-augustine-share")+".txt";
+        link.click(); setTimeout(()=>URL.revokeObjectURL(url),1000); showToast("Downloaded a shareable text file."); return true;
+      }
+    };
+    return new Promise(resolve=>{
+      const scrim=document.createElement("div"); scrim.className="sa-share-scrim"; scrim.setAttribute("role","presentation");
+      const dialog=document.createElement("section"); dialog.className="sa-share-dialog"; dialog.setAttribute("role","dialog"); dialog.setAttribute("aria-modal","true");
+      const heading=document.createElement("h2"); heading.textContent="Review before sharing";
+      const sub=document.createElement("p"); sub.textContent="This is exactly what will be included.";
+      const preview=document.createElement("textarea"); preview.readOnly=true; preview.value=content; preview.setAttribute("aria-label","Share preview");
+      const buttons=document.createElement("div"); buttons.className="sa-feature-actions";
+      const cancel=document.createElement("button"); cancel.type="button"; cancel.textContent="Cancel";
+      const confirm=document.createElement("button"); confirm.type="button"; confirm.className="primary"; confirm.textContent="Share";
+      const close=(value)=>{ scrim.remove(); resolve(value); };
+      cancel.addEventListener("click",()=>close(false));
+      confirm.addEventListener("click",async()=>{ confirm.disabled=true; scrim.remove(); resolve(await share()); });
+      scrim.addEventListener("click",e=>{ if(e.target===scrim) close(false); });
+      buttons.append(cancel,confirm); dialog.append(heading,sub,preview,buttons); scrim.append(dialog); document.body.append(scrim); preview.focus();
+    });
   }
+  window.__saSharePreview=shareText;
   function sessionShareText(session){
     const messages=(session&&session.history||[]).map((message)=>({message,text:messageShareText(message)})).filter((entry)=>entry.text);
     if(!messages.length) return "";
@@ -4011,15 +4071,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function sessionHtml(s){
     const cur = s.id===activeId ? 'aria-current="true"' : '';
     const pinned = !!s.pinned;
+    const hasCitations=(s.history||[]).some(message=>/https?:\/\/|\b(?:source|citation)\b/i.test(messageShareText(message)));
     const firstUser=(s.history||[]).find(m=>m.role==="user");
     const firstAns=(s.history||[]).find(m=>m.role==="assistant");
     const peek='<span class="sb-peek" aria-hidden="true"><span class="pk-q">'+esc((firstUser&&firstUser.content||s.title||"").slice(0,90))+'</span><span class="pk-a">'+esc((firstAns?messageShareText(firstAns):"(no reply yet)").slice(0,140))+'</span><span class="pk-m">'+esc((s.model?String(s.model).split("/").pop():"unknown")+' · '+new Date(s.updated).toLocaleDateString())+'</span></span>';
-    return `<button class="sb-item${selectMode?' selmode':''}${selectedIds.has(s.id)?' sel':''}" ${cur} data-id="${escAttr(s.id)}" title="${escAttr(s.title)}${pinned?' — pinned':''}">${selectMode?`<span class="sb-check" aria-hidden="true"></span>`:''}<span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span>${pinned?'<svg class="pin-ic" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-label="Pinned"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg>':''}${peek}<span class="sbp" role="button" aria-label="${pinned?'Unpin':'Pin'} conversation" data-pin="${escAttr(s.id)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="${pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg></span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
+    return `<button class="sb-item${selectMode?' selmode':''}${selectedIds.has(s.id)?' sel':''}" ${cur} data-id="${escAttr(s.id)}" data-model="${escAttr(s.model||"")}" data-updated="${Number(s.updated)||0}" data-citations="${hasCitations?'1':'0'}" title="${escAttr(s.title)}${pinned?' — pinned':''}">${selectMode?`<span class="sb-check" aria-hidden="true"></span>`:''}<span class="dot"></span><span class="txt" data-id="${escAttr(s.id)}">${esc(s.title)}</span>${pinned?'<svg class="pin-ic" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-label="Pinned"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg>':''}${peek}<span class="sbp" role="button" aria-label="${pinned?'Unpin':'Pin'} conversation" data-pin="${escAttr(s.id)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="${pinned?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.8V5h6v5.8l2 3.2H7l2-3.2Z"/></svg></span><span class="sbx" role="button" aria-label="Delete conversation" data-del="${escAttr(s.id)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></button>`;
   }
   function setActive(id){
       if(activeId===id) return;   // already active — don't rebuild the list (this kept dblclick-rename from ever firing)
       activeId=id;
       renderSessions();
+      emitSaContext();
     }
   function clearThreadState(){
       if(messageShareMode) setMessageShareMode(false);
@@ -4089,30 +4151,37 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 
   /* ---- load free models from the backend (with cold-start retry) ---- */
+  let modelLoadController=null;
   async function loadModels(){
-    const delays=[1500, 4000, 9000]; // backoff for Render free-tier cold start
-    for(let attempt=0; attempt<=delays.length; attempt++){
+    if(modelLoadController) modelLoadController.abort();
+    modelLoadController=new AbortController();
+    const controller=modelLoadController, status=document.getElementById("serviceStatus"), statusText=document.getElementById("serviceStatusText"), cancel=document.getElementById("serviceCancel"), retry=document.getElementById("serviceRetry");
+    const setStatus=(message,visible=true,mode="loading")=>{ if(statusText) statusText.textContent=message; if(status) status.hidden=!visible; if(disclaimer) disclaimer.textContent=message; if(cancel) cancel.hidden=mode!=="loading"; if(retry) retry.hidden=mode!=="retry"; };
+    if(cancel) cancel.onclick=()=>controller.abort();
+    if(retry) retry.onclick=()=>loadModels();
+    setStatus("Waking Augustine… the free service may take about a minute to return.");
+    for(let attempt=0;attempt<2;attempt++){
       try{
-        if(attempt>0 && disclaimer) disclaimer.textContent="Waking up the model service… (try "+attempt+")";
-        const r=await fetch(API+"/api/models");
+        if(attempt===1) setStatus("The service is still waking. Retrying the safe connection check…");
+        const timeout=setTimeout(()=>controller.abort(),75000);
+        let r;
+        try{ r=await fetch(API+"/api/models",{signal:controller.signal,cache:"no-store"}); }
+        finally{ clearTimeout(timeout); }
         if(!r.ok) throw new Error("HTTP "+r.status);
-        const d=await r.json();
-        const ms=d.models||[];
-        models.length=0; models.push(...ms);
-        renderModelOptions();
-        const rec = ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")
-                 || ms.find(m=>m.featured)
-                 || ms[0];
+        const d=await r.json(), ms=d.models||[];
+        models.length=0; models.push(...ms); renderModelOptions();
+        const rec=ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")||ms.find(m=>m.featured)||ms[0];
         if(ms.length) selectModel(rec);
-        if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter · conversations stay on your device";
-        return;
+        setStatus("Connected · free models via OpenRouter · conversations stay on this device.",false,"idle");
+        modelLoadController=null; return;
       }catch(e){
-        if(attempt<delays.length){ await new Promise(r=>setTimeout(r, delays[attempt])); continue; }
-        if(disclaimer) disclaimer.textContent="Offline — tap to retry.";
-        showToast("Couldn't load models. Backend may be asleep.");
-        if(disclaimer) disclaimer.style.cursor="pointer";
+        if(controller.signal.aborted){ setStatus("Connection check cancelled. Retry when you’re ready.",true,"retry"); break; }
+        if(attempt===0){ await new Promise(resolve=>setTimeout(resolve,1800)); continue; }
+        setStatus("The service is not responding yet. Your message has not been sent.",true,"retry");
+        showToast("The model service is still waking. Try again shortly.");
       }
     }
+    modelLoadController=null;
   }
   function renderModelOptions(filterName=""){
     const q=(filterName||"").trim().toLowerCase();
@@ -4344,6 +4413,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
   function clearPasteSignal(){ pastedTextSample=""; pastedTextSignal=false; if(pasteSignalNote) pasteSignalNote.hidden=true; }
   prompt.addEventListener("paste",(event)=>{
+    const featurePrefs=window.SAData ? window.SAData.get("features",{}) : {};
+    if(featurePrefs.pasteHeuristic===false){ clearPasteSignal(); return; }
     pastedTextSample=(event.clipboardData&&event.clipboardData.getData("text/plain"))||"";
     pastedTextSignal=detectAiStylePaste(pastedTextSample);
     if(pasteSignalNote) pasteSignalNote.hidden=!pastedTextSignal;
@@ -4424,6 +4495,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     toast.innerHTML=(ic?'<span class="t-ic">'+ic+'</span>':"")+"<span>"+esc(m)+"</span>";
     clearTimeout(showToast._t); showToast._t=setTimeout(()=>toast.classList.remove("show"), opts&&opts.sticky?60000:2600);
   }
+  window.__saToast=showToast;
 
   /* ---- premium confirm dialog (replaces window.confirm) with optional Undo ---- */
   const confirmScrim=$("#confirmScrim"), confirmOk=$("#confirmOk"), confirmCancel=$("#confirmCancel"),
@@ -4599,6 +4671,36 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
 
   /* ---- real chat: stream from backend ---- */
+  function addFallbackModelNotice(bubbleElement, usedModelId){
+    if(!bubbleElement||!model||!usedModelId||usedModelId===model.id||bubbleElement.querySelector(".model-fallback-note")) return;
+    const actual=models.find(item=>item.id===usedModelId);
+    const note=document.createElement("p"); note.className="model-fallback-note";
+    note.textContent="Your selected model was unavailable; "+(actual?actual.name:usedModelId)+" answered instead.";
+    bubbleElement.append(note);
+  }
+  async function waitForBackend(signal, onWait){
+    let lastError=null;
+    for(let attempt=0;attempt<2;attempt++){
+      try{
+        const response=await fetch(API+"/api/healthz",{signal,cache:"no-store"});
+        if(response.ok) return;
+        throw new Error("Service check returned "+response.status);
+      }catch(error){
+        if(signal.aborted || (error&&error.name==="AbortError")) throw error;
+        lastError=error;
+        if(attempt===0){
+          if(onWait) onWait("Waking Augustine… checking that the service is ready before sending your question.");
+          await new Promise((resolve,reject)=>{
+            const timer=setTimeout(done,1800);
+            function done(){signal.removeEventListener("abort",stop);resolve();}
+            function stop(){clearTimeout(timer);signal.removeEventListener("abort",stop);reject(new DOMException("Stopped","AbortError"));}
+            signal.addEventListener("abort",stop,{once:true});
+          });
+        }
+      }
+    }
+    throw new Error("The service is still waking, so your question has not been sent. Try again shortly."+(lastError?"":""));
+  }
   async function callChat(){
     if(!model){ showToast("Pick a model first."); return; }
     const text=prompt.value.trim();
@@ -4633,6 +4735,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     let attachNote="";
 
     prompt.value=""; prompt.style.height="auto"; clearPasteSignal();
+    window.dispatchEvent(new CustomEvent("sa:sent",{detail:{page:PAGE,conversationId:activeId}}));
     const sent=files.splice(0); renderFiles(); syncSend();
 
     // send -> stop toggle
@@ -4647,14 +4750,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                     : "Augustine pauses to consider\u2026";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+depthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
+    const wakingTimer=setTimeout(()=>{ const label=buf.querySelector(".interim > span:not(.dots)"); if(label) label.textContent="Waking Augustine… the free service may take about a minute."; },2600);
 
     const messages=[...history];
     let acc="", bufStr="";
-    let streamStalled=false, streamTruncated=false;   // v4.1 cutoff events
+    let streamStalled=false, streamTruncated=false, actualModelId="";   // v4.1 cutoff events
     // prepend attachment note to the newest user message
     if(attachNote && messages.length) messages[messages.length-1]={role:"user", content:attachNote+messages[messages.length-1].content};
 
     try{
+      // Wake with a safe GET before the billable POST. Only the GET is retried.
+      await waitForBackend(controller.signal,(message)=>{ const label=buf.querySelector(".interim > span:not(.dots)"); if(label) label.textContent=message; });
       // F: free-model resilience — if one :free model is rate-limited (429), try the next
       const order=[model, ...models.filter(m=>m.id!==(model&&model.id))];
       let res=null, tried=[];
@@ -4684,7 +4790,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(timedOut) continue;   // silent model — try next
             if(firstVal && firstVal.done && !firstVal.value) continue;  // empty body — try next
           }
-          if(res){ res._probe={reader:probe, first:firstVal}; break; }   // got a working stream
+          if(res){ actualModelId=res.headers.get("X-Model-Used")||cand.id; clearTimeout(wakingTimer); res._probe={reader:probe, first:firstVal}; break; }   // got a working stream
         }
         // non-ok: if it looks like a rate-limit, try the next free model
         let msg="", rl=false;
@@ -4709,30 +4815,39 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                 if(!streaming) enhanceCodeBlocks(buf);
                 maybeScroll();
               };
-              while(true){
+      const processSseLine=(raw)=>{
+        const line=String(raw||"").trim();
+        if(!line || !line.startsWith("data:")) return;
+        const data=line.slice(5).trim();
+        if(data==="{}" || data==="[DONE]") return;
+        try{
+          const j=JSON.parse(data);
+          if(j.text){ acc+=j.text; render(true); }
+          if(j.stalled) streamStalled=true;
+          if(j.truncated) streamTruncated=true;
+        }catch(_){}
+      };
+      const consumeSseBuffer=()=>{
+        let nl;
+        while((nl=bufStr.indexOf("\n"))>=0){
+          const line=bufStr.slice(0,nl); bufStr=bufStr.slice(nl+1); processSseLine(line);
+        }
+      };
+      consumeSseBuffer(); // the first probed chunk can contain the complete short reply
+      while(true){
         const {value,done}=await reader.read();
         if(done) break;
         bufStr += dec.decode(value,{stream:true});
-        let nl;
-        while((nl=bufStr.indexOf("\n"))>=0){
-          const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1);
-          if(!line || !line.startsWith("data:")) continue;
-          const data=line.slice(5).trim();
-          if(data==="{}" || data==="[DONE]") continue;
-          try{
-            const j=JSON.parse(data);
-            if(j.text){ acc+=j.text; render(true); }
-            if(j.stalled) streamStalled=true;       // v4.1: upstream died mid-answer
-            if(j.truncated) streamTruncated=true;   // v4.1: model hit max_tokens
-          }catch(_){}
-        }
+        consumeSseBuffer();
       }
+      if(bufStr.trim()) processSseLine(bufStr);
       if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
       render(false);
       // v4.1 — the answer was cut short: say so, and offer the fix.
       if(streamStalled){
         acc += "\n\n*The connection faltered mid-thought — the reply above may be incomplete.*";
         render(false);
+        addFallbackModelNotice(buf,actualModelId);
         history.push({role:"assistant", content:pasteOpening+acc});
         recordSession(userMsg, pasteOpening+acc);
         addRetry(loading, messages, userMsg);
@@ -4742,6 +4857,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(streamTruncated){
         acc += "\n\n*Augustine was still drawing breath when the length limit arrived. Tap Continue for the rest.*";
         render(false);
+        addFallbackModelNotice(buf,actualModelId);
         history.push({role:"assistant", content:pasteOpening+acc});
         recordSession(userMsg, pasteOpening+acc);
         addContinue(loading, messages, userMsg);
@@ -4750,6 +4866,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       // D55: announce completion once (thread aria-live is off during streaming)
       if(thread){ thread.setAttribute("aria-live","polite"); setTimeout(()=>{ if(thread) thread.setAttribute("aria-live","off"); },1500); }
       if(window.__replyBell) window.__replyBell();
+      addFallbackModelNotice(buf,actualModelId);
       history.push({role:"assistant", content:pasteOpening+acc});
       recordSession(userMsg, pasteOpening+acc);
     }catch(e){
@@ -4767,6 +4884,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       }
       addRetry(loading, messages, userMsg);
     }finally{
+      clearTimeout(wakingTimer);
       send.classList.remove("stop"); send.disabled = (prompt.value.trim()==="" && files.length===0); send.classList.toggle("ready", !(prompt.value.trim()==="" && files.length===0));
       send.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
       send.onclick=null;
@@ -4812,9 +4930,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       '<button class="act" data-retry-deep title="Retry with more contemplative depth" aria-label="Retry with more contemplative depth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3c0 1.5 1 2.5 1 4-1.5 0-3-.5-4-2-1 3 0 6 3 8 2 1.5 4.5 2 7 1 3-1 5-4 5-7 0-4-3-8-9-8Z" opacity=".9"/><path d="M5 20c2-1 5-1 7 0 2 1 5 1 7 0"/></svg>Deeper</button>'+
       '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy</button>'+
       '<span class="act-sep" aria-hidden="true"></span>'+
-      '<button class="act fb" data-fb="up" title="This was helpful" aria-label="This was helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11"/><path d="M7 10l4-7a2 2 0 0 1 3 1.7V9h5.5a2 2 0 0 1 2 2.3l-1.4 7a2 2 0 0 1-2 1.7H7"/></svg></button>'+
-      '<button class="act fb" data-fb="down" title="This missed the mark" aria-label="This missed the mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V3"/><path d="M17 14l-4 7a2 2 0 0 1-3-1.7V15H4.5a2 2 0 0 1-2-2.3l1.4-7A2 2 0 0 1 5.9 4H17"/></svg></button>'+
-      '<button class="act fb" data-fb="report" title="Report a problem" aria-label="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 1-1h13l-2 4 2 4H5"/></svg></button>';
+      '<button class="act fb" data-fb="helpful">Helpful</button>'+
+      '<button class="act fb" data-fb="citation_issue">Citation issue</button>'+
+      '<button class="act fb" data-fb="missed_point">Missed the point</button>';
     loadingMsg.appendChild(acts);
 
     // only offer feedback when there is a real assistant reply (not an error/stopped stub)
@@ -4845,24 +4963,20 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     });
 
     // ---- feedback ----
-    async function sendFeedback(reason, detail){
+    async function sendFeedback(reason){
       try{
         const r=await fetch(API+"/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},
-          body:JSON.stringify({reason, detail:detail||"", model:replyModel, snippet:(replyText||"").slice(0,240)})});
+          body:JSON.stringify({reason})});
         return r.ok;
       }catch(_){ return false; }
     }
-    acts.querySelectorAll('[data-fb="up"],[data-fb="down"]').forEach(btn=>{
+    acts.querySelectorAll("[data-fb]").forEach(btn=>{
       btn.addEventListener("click", async ()=>{
-        const up = btn.dataset.fb==="up";
-        acts.querySelectorAll('[data-fb="up"],[data-fb="down"]').forEach(x=>x.classList.remove("on"));
+        acts.querySelectorAll("[data-fb]").forEach(x=>x.classList.remove("on"));
         btn.classList.add("on");
-        const ok=await sendFeedback(up?"helpful":"unhelpful");
-        showToast(up ? (ok?"Thanks — glad it helped ✓":"Thanks for the feedback") : (ok?"Noted — thank you ✓":"Thanks for the feedback"));
+        const ok=await sendFeedback(btn.dataset.fb);
+        showToast(ok?"Thanks — your anonymous feedback was counted ✓":"Thanks for the feedback");
       });
-    });
-    acts.querySelector('[data-fb="report"]').addEventListener("click",()=>{
-      openReportPop(replyText, replyModel, sendFeedback);
     });
   }
   function openReportPop(replyText, replyModel, sendFeedback){
@@ -4922,10 +5036,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                     : "Augustine pauses to consider\u2026";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+retryDepthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
-    let acc="", bufStr="";
+    let acc="", bufStr="", actualModelId="";
     try{
+      await waitForBackend(controller.signal,(message)=>{ const label=buf.querySelector(".interim > span:not(.dots)"); if(label) label.textContent=message; });
       const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages,pastedAiSignal}),signal:controller.signal});
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
+      actualModelId=res.headers.get("X-Model-Used")||model.id;
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
       const render=(s)=>{ const visibleAcc=publicAssistantText(pasteOpening+acc); const inner=s?esc(visibleAcc)+'<span class="caret"></span>':mdToHtml(visibleAcc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
@@ -4933,6 +5049,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
       render(false);
       if(window.__replyBell) window.__replyBell();
+      addFallbackModelNotice(buf,actualModelId);
       history.push({role:"assistant",content:pasteOpening+acc}); recordSession(userMsg, pasteOpening+acc); addRetry(loading, messages, userMsg);
     }catch(e){
       const isStopped=aborted || (e&&e.name==="AbortError");
@@ -5379,7 +5496,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
-    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images, which vision-capable models can actually look at. Files are read <b>on your device</b> and never stored on any server."},
+    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images for vision-capable models. Files are prepared in your browser; the extracted text or image needed for an answer is sent through Render to OpenRouter with your message. Provider data policies apply, so avoid sensitive information."},
     {t:"Edit, copy, retry", h:"After Augustine replies: <b>Retry</b> regenerates the answer, <b>Copy</b> copies it to your clipboard. And you can always <b>edit a question you already sent</b> with the little pencil — fix a typo and get an updated reply."},
   ];
   function startTut(){
@@ -5689,12 +5806,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const exportJson=$("#exportJson"), importJson=$("#importJson"), importFile=$("#importFile");
   if(exportJson) exportJson.addEventListener("click",()=>{
     const backup={
-      app:"Saint Augustine AI", version:1.5, exported:new Date().toISOString(),
+      app:"Saint Augustine AI", version:1.6, exported:new Date().toISOString(),
       sessions: JSON.parse(localStorage.getItem(LS_SESSIONS)||"[]"),
       prefs: (()=>{ try{ return JSON.parse(localStorage.getItem("sa_prefs_v1")||"{}"); }catch(e){ return {}; } })(),
       lessonsRead: (()=>{ try{ return JSON.parse(localStorage.getItem("saugustine_lessons_read_v1")||"[]"); }catch(e){ return []; } })(),
       streak: (()=>{ try{ return JSON.parse(localStorage.getItem("saugustine_streak_v1")||"null"); }catch(e){ return null; } })(),
-      quiz: (()=>{ const out={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf("saugustine_quiz_v1")===0){ try{ out[k]=JSON.parse(localStorage.getItem(k)); }catch(e){} } } return out; })()
+      quiz: (()=>{ const out={}; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.indexOf("saugustine_quiz_v1")===0){ try{ out[k]=JSON.parse(localStorage.getItem(k)); }catch(e){} } } return out; })(),
+      localFeatures: window.SAData ? window.SAData.collect() : {}
     };
     const blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
     const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
@@ -5718,6 +5836,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             try{ if(b.lessonsRead) localStorage.setItem("saugustine_lessons_read_v1", JSON.stringify(b.lessonsRead)); }catch(e){}
             try{ if(b.streak) localStorage.setItem("saugustine_streak_v1", JSON.stringify(b.streak)); }catch(e){}
             if(b.quiz) Object.keys(b.quiz).forEach(k=>{ try{ localStorage.setItem(k, JSON.stringify(b.quiz[k])); }catch(e){} });
+            if(b.localFeatures && window.SAData) window.SAData.restore(b.localFeatures);
             showToast("Backup restored ✓ — reloading"); setTimeout(()=>location.reload(),900);
           });
       }catch(err){ showToast("Restore failed: "+(err.message||err)); }
@@ -5849,6 +5968,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             saintCard.dataset.loadedDay=saintLocalDay();
             delete saintCard.dataset.loading;
           }
+          if(window.SAFeatures){ window.SAFeatures.saveToday("saint",d); window.SAFeatures.sourceStamp("saintCard",d.source||"Source not reported",d.fetchedAt||"",!!d.savedCopy); }
         }
         function loadSaint(){
           if(!saintCard || saintCard.dataset.loading==="1") return;
@@ -5864,6 +5984,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(!d || !d.name) throw new Error("invalid saint response");
             applySaint(d);
           }).catch(()=>{
+            if(window.SAFeatures&&window.SAFeatures.restoreToday("saint",saintCard)) return;
             if(saintCard) delete saintCard.dataset.loading;
             if(saintBio) saintBio.innerHTML='The saint of the day is waiting on Franciscan Media. Open the link below to meet them. <button class="dp-cta dp-cta-ghost" id="saintRetry" style="margin-top:10px;display:inline-block">Try again</button>';
             if(saintConn && saintConnWrap){
@@ -5915,22 +6036,23 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(lessonKicker) lessonKicker.textContent=(topicMode?"Selected Topic":"Lesson of the Day")+" · "+(idx+1)+" of "+LESSON.length;
           if(lessonName) lessonName.textContent=t.name;
           if(lessonTopic) lessonTopic.textContent=t.topic||t.name;
+          const quoteKind=t.quoteKind||(t.primaryQuote?"direct":"editorial");
           const quoteText=String(t.primaryQuote||t.quote||"").trim();
           const quoteLine=(quoteText.match(/^[\s\S]*?[.!?](?=\s|$)/)||[quoteText])[0].trim();
-          if(lessonQuote) lessonQuote.textContent="“"+quoteLine+"”";
-          if(lessonQuoteSource) lessonQuoteSource.textContent=t.primaryQuoteSource||t.writing||"";
+          if(lessonQuote) lessonQuote.textContent=quoteKind==="direct"?"“"+quoteLine+"”":quoteLine;
+          if(lessonQuoteSource) lessonQuoteSource.textContent=quoteKind==="direct"?"Direct quotation · "+(t.primaryQuoteSource||t.writing||"")+(t.translation?" · "+t.translation:""):"Editorial wording · informed by "+(t.writing||"Augustine’s writings")+" · not a verbatim quotation";
           if(lessonRelatedScripture){
             const related=Boolean(t.relatedScripture&&t.relatedText);
             lessonRelatedScripture.hidden=!related;
             lessonRelatedScripture.textContent=related?"Scripture alongside this reading · "+t.relatedScripture+" — “"+t.relatedText+"”":"";
           }
-          if(lessonPassageLabel) lessonPassageLabel.textContent="The source, read closely";
+          if(lessonPassageLabel) lessonPassageLabel.textContent="Source text and reading";
           if(lessonExcerpt){
             const lead=String(t.primaryExcerpt||(t.excerpt||[])[0]||"").trim();
             const closeReading=String(t.summary||"").trim();
             lessonExcerpt.innerHTML=[
-              lead?'<p class="askable">'+esc(lead)+"</p>":"",
-              closeReading?'<p class="lesson-reading-context">'+esc(closeReading)+"</p>":""
+              lead?'<p class="lesson-text-label">'+esc(t.primaryExcerpt?"Augustine’s source text":"Editorial passage summary · not direct quotation")+'</p><p class="askable">'+esc(lead)+"</p>":"",
+              closeReading?'<p class="lesson-reading-label">Editorial reading · a guide to the source, not Augustine’s words</p><p class="lesson-reading-context">'+esc(closeReading)+"</p>":""
             ].filter(Boolean).join("");
             $$('p.askable',lessonExcerpt).forEach(p=>{
               p.tabIndex=0; p.classList.add("askable");
@@ -5939,10 +6061,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               p.addEventListener("keydown",ev=>{ if(ev.key==="Enter"||ev.key===" "){ ev.preventDefault(); ask(); } });
             });
           }
-          if(lessonReadingCitation) lessonReadingCitation.textContent=t.writing||t.primaryQuoteSource||"";
+          if(lessonReadingCitation) lessonReadingCitation.textContent=(t.sourceCitation||t.writing||t.primaryQuoteSource||"")+(t.sourceLabel?" · "+t.sourceLabel:"");
           if(lessonPrimarySource){
             lessonPrimarySource.hidden=!(t.primaryUrl&&(t.primaryExcerpt||(t.excerpt||[]).length));
-            if(t.primaryUrl) lessonPrimarySource.href=t.primaryUrl;
+            if(t.primaryUrl){ lessonPrimarySource.href=t.primaryUrl; lessonPrimarySource.setAttribute("aria-label","Open linked source for "+(t.sourceCitation||t.writing||t.name)); }
           }
           if(lessonVocab) lessonVocab.textContent=t.vocab||"";
           if(lessonReturnToday) lessonReturnToday.hidden=!topicMode;
@@ -5950,6 +6072,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(lessonAsk) lessonAsk.textContent=topicMode?"Explore this topic with Augustine →":"Walk through today’s lesson with Augustine →";
           if(studyReflectIntro) studyReflectIntro.textContent=topicMode?"Bring this passage on "+t.name+" to St. Augustine for a shared reflection.":"Reflect with St. Augustine on today’s topic and its reading.";
           lessonIdx=idx;
+          window.dispatchEvent(new CustomEvent("sa:lesson",{detail:{index:idx,name:t.name,mode:lessonMode,slug:String(t.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}}));
+          if(topicMode){ const slug=String(t.name||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); window.history.replaceState(null,"",location.pathname+location.search+"#study:topic="+encodeURIComponent(slug)); }
           if(studyQuizReady && qActiveTopic!==idx) selectQuizTopic(idx);
           if(window.__lessonSteps) window.__lessonSteps.reset();
           updateLessonProgress();
@@ -5958,6 +6082,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(focus){ lessonObserver.unobserve(focus); lessonObserver.observe(focus); }
           }
         }
+        window.__saLessons=LESSON;
+        window.__saRenderLesson=(i,mode)=>renderLesson(i,mode);
         renderLesson(lessonForDate(),"daily");
         /* Keep the lesson calm on phones; let the reader open each next step. */
         (function lessonSteps(){
@@ -6020,9 +6146,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         if(lessonAsk) lessonAsk.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
           const quote=t.primaryQuote||t.quote||"";
-          const source=t.primaryQuoteSource||t.writing||"Augustine’s writings";
+          const source=t.primaryQuoteSource||t.sourceCitation||t.writing||"Augustine’s writings";
           const label=lessonMode==="selected"?"the topic":"today’s lesson";
-          pageChat("As St. Augustine, walk with me through "+label+", “"+t.name+".” The line we are carrying is: “"+quote+"” ("+source+"). Explain it in context, draw on "+t.writing+", and help me reflect on its meaning today.","study");
+          const line= t.quoteKind==="direct" ? "A direct line from the cited text is: “"+quote+"” ("+source+")." : "The lesson includes this editorial wording, which is not a verbatim quotation: "+quote+" (source: "+source+").";
+          pageChat("As St. Augustine, walk with me through "+label+", “"+t.name+".” "+line+" Explain the source in context, draw on "+t.writing+", and help me reflect on its meaning today.","study");
         });
         /* mark each lesson read after its full connected card remains substantially visible */
         (function trackLessonRead(){
@@ -6049,15 +6176,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         const quoteCopy=$('#quoteCopy'), quoteShare=$('#quoteShare');
         if(quoteCopy) quoteCopy.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
-          const txt="\u201C"+(t.primaryQuote||t.quote||"")+"\u201D — St. Augustine";
+          const quote=t.primaryQuote||t.quote||"";
+          const txt=t.quoteKind==="direct"?"\u201C"+quote+"\u201D — "+(t.primaryQuoteSource||"St. Augustine") : quote+"\n\nEditorial wording based on "+(t.writing||"Augustine’s writings")+" — not a verbatim quotation.";
           (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>showToast("Quote copied ✓")).catch(()=>showToast("Copy failed"));
         });
         if(quoteShare) quoteShare.addEventListener("click",()=>{
           const t=LESSON[lessonIdx % LESSON.length];
-          const txt="\u201C"+(t.primaryQuote||t.quote||"")+"\u201D — St. Augustine ("+(t.primaryQuoteSource||t.writing)+")";
-          const data={title:"Saint Augustine AI — "+t.name, text:txt, url:location.origin+location.pathname+"#study"};
-          if(navigator.share){ navigator.share(data).catch(()=>{}); }
-          else { (navigator.clipboard?navigator.clipboard.writeText(txt+" "+data.url):Promise.reject()).then(()=>showToast("Copied link + quote ✓")).catch(()=>showToast("Share failed")); }
+          const quote=t.primaryQuote||t.quote||"";
+          const attribution=t.quoteKind==="editorial"?"Editorial wording based on "+(t.writing||"Augustine’s writings")+" — not a verbatim quotation":"St. Augustine, "+(t.primaryQuoteSource||t.writing||"");
+          const txt=quote+"\n\n"+attribution+"\n"+(t.primaryUrl||"");
+          shareText("Saint Augustine AI — "+t.name,txt,"Lesson passage ready to share.");
         });
 
         /* ---- Streak + progress strip (Today) ---- */
@@ -6066,6 +6194,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         function updateStreak(){
           const today=todayStrKey();
           let data=null; try{ data=JSON.parse(localStorage.getItem(STREAK_KEY)||"null"); }catch(e){}
+          const gentlePrefs=window.SAData ? window.SAData.get("features",{}) : {};
+          if(gentlePrefs.pauseStreak){ const current=$('#streakN'); if(current&&data) current.textContent=data.count||0; return; }
           if(!data || data.last!==today){
             const yesterday=(()=>{ const n=new Date(); n.setDate(n.getDate()-1); return n.getFullYear()+"-"+(n.getMonth()+1)+"-"+n.getDate(); })();
             const cont = data && data.last===yesterday;
@@ -6188,7 +6318,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           const opts=quizOpts.querySelectorAll(".quiz-opt");
           opts.forEach((o,j)=>{o.classList.add("disabled");o.disabled=true;o.setAttribute("aria-checked",j===i?"true":"false");if(j===q.ans)o.classList.add("correct");});
           if(i===q.ans){ qScore++; b.classList.add("sweep"); } else { b.classList.add("wrong","settle"); }
-          if(quizNote){ quizNote.textContent=q.note; quizNote.hidden=false; }
+          if(quizNote){
+            const correct=i===q.ans;
+            quizNote.textContent=(correct?"That’s right. ":"Not quite. ")+q.note+" Revisit the source and connected reading above to see why.";
+            quizNote.hidden=false;
+            if(!correct&&window.SAData){
+              const missed=window.SAData.get("missed",[]),entry={id:Date.now()+"-"+qIdx,topicIndex:qActiveTopic,topic:LESSON[qActiveTopic].name,question:q.q,answer:q.opts[q.ans],note:q.note,created:new Date().toISOString()};
+              if(!missed.some((item)=>item.topicIndex===entry.topicIndex&&item.question===entry.question)){ missed.unshift(entry); window.SAData.set("missed",missed.slice(0,100)); }
+            }
+          }
           saveProgress();
         }
         function nextQ(){
@@ -6329,10 +6467,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           }).then(d=>{
             const blocks=[["First Reading",d.first],["Responsorial Psalm",d.psalm],["Gospel",d.gospel]].filter(b=>b[1]);
             if(!blocks.length) throw new Error("No readings returned.");
+            if(window.SAFeatures){ window.SAFeatures.saveToday("readings",d); window.SAFeatures.sourceStamp("sec-readings",d.source||d.disclaimer||"Source not reported",d.fetchedAt||"",!!d.savedCopy); }
             dpReadings.innerHTML=blocks.map(([label,txt])=>
               '<div class="dp-reading"><span class="rl">'+esc(label)+'</span><p>'+esc(txt)+'</p></div>').join("");
             if(d.link){ const l=$('#dpReadingsLink'); if(l && d.link) l.href=d.link; }
           }).catch(e=>{
+            if(window.SAFeatures&&window.SAFeatures.restoreToday("readings",dpReadings)) return;
             dpReadings.innerHTML='<p class="dp-error">'+esc(e&&e.message||"Could not load today's readings.")+' They are always waiting on the USCCB site.</p><button class="dp-cta dp-cta-ghost" id="readingsRetry" style="margin-top:10px">Try again</button>';
             const rr=document.getElementById("readingsRetry");
             if(rr) rr.addEventListener("click",()=>{ delete dpReadings.dataset.loaded; loadDailyReadings(); });
@@ -6359,6 +6499,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         })();
         function pageChat(text, targetPage){
           if(!text) return;
+          if(targetPage==="prayer"){
+            const intention=(document.getElementById("prayIntent2")?.value||"").trim();
+            const carry=window.SAData?window.SAData.get("prayerCarry",{}):{};
+            const contextParts=[];
+            if(intention) contextParts.push("The person praying is bringing this intention: \""+intention.slice(0,1000)+"\".");
+            if(carry&&carry.text){
+              const citation=carry.citation||carry.title||"the selected passage";
+              contextParts.push("The person has explicitly chosen to carry this passage into prayer. Reflect on it gently, without presenting it as a new quotation: \""+String(carry.text).slice(0,1400)+"\" ("+String(citation).slice(0,300)+(carry.source?"; source: "+String(carry.source).slice(0,500):"")+ ").");
+            }
+            if(contextParts.length) text+="\n\nPrayer context the person chose to share:\n"+contextParts.join("\n");
+          }
           if(targetPage && targetPage!==PAGE) setPage(targetPage);
           prompt.value=text;
           syncSend();
@@ -6366,6 +6517,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           if(thread) thread.hidden=false;
           callChat();
         }
+        window.__saAsk=(text,targetPage)=>{
+          if(targetPage&&targetPage!==PAGE) setPage(targetPage);
+          prompt.value=String(text||""); prompt.dispatchEvent(new Event("input",{bubbles:true})); prompt.focus();
+        };
 
         /* ---- Today page: quick actions ---- */
         const dpActExplain=$('#dpActExplain'), dpActPray=$('#dpActPray');
@@ -6384,14 +6539,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
         /* ---- Prayer page: lead / teach + tradition ---- */
         const ppLead=$('#ppLead'), ppTeach=$('#ppTeach'), prayIntent2=$('#prayIntent2');
-        const mkIntent=()=> (prayIntent2? prayIntent2.value.trim():"");
         if(ppLead) ppLead.addEventListener("click",()=>{
-          const intent=mkIntent();
-          pageChat("As St. Augustine, lead me in prayer now. "+(intent?("I bring this intention to you: \""+intent+"\". "):"")+"Begin with a word of guidance, then pray with me line by line so I can pray after you, full of love for God. Intimate and unhurried, under 220 words.","prayer");
+          pageChat("As St. Augustine, lead me in prayer now. Begin with a word of guidance, then pray with me line by line so I can pray after you, full of love for God. Intimate and unhurried, under 220 words.","prayer");
         });
         if(ppTeach) ppTeach.addEventListener("click",()=>{
-          const intent=mkIntent();
-          pageChat("As St. Augustine, teach me to pray better. "+(intent?("I'd like my prayer to carry this intention: \""+intent+"\". "):"")+"Explain one clear way to pray — the Examen, Lectio Divina, or a simple breath-prayer — in steady gentle steps I can follow today, and close with a short prayer. Under 220 words.","prayer");
+          pageChat("As St. Augustine, teach me to pray better. Explain one clear way to pray — the Examen, Lectio Divina, or a simple breath-prayer — in steady gentle steps I can follow today, and close with a short prayer. Under 220 words.","prayer");
         });
         const tradMap={
           tradMorning:"Lead me in a Morning Offering prayer as St. Augustine — offering this day, its work, its struggles, and its joys to God, so I can begin the day held by Him.",

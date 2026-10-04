@@ -1,5 +1,8 @@
 # Node
 node_modules/
+test-results/
+playwright-report/
+playwright/.cache/
 
 # Local backend env (NEVER commit your OpenRouter key)
 backend/.env

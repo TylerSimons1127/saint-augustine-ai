@@ -1,6 +1,7 @@
 // SaintAugustineAI — backend
 // Zero-dependency Node HTTP server. Holds the OpenRouter API key SERVER-SIDE
-// (never in the public frontend) and proxies model listing + chat streaming.
+// (never in the public frontend) and serves the app's model, chat, reading,
+// saint, health, and category-only feedback endpoints.
 //
 // Env:
 //   OPENROUTER_API_KEY  (required)  — your OpenRouter key
@@ -8,9 +9,11 @@
 //   SYSPROMPT_CACHE_MS   (default 120000) — how long to cache the free-models list
 //
 // Routes:
-//   GET  /api/health   -> { ok:true }
-//   GET  /api/models   -> { models: [ {id,name,desc,context} ] }  (OpenRouter :free models)
-//   POST /api/chat     -> SSE stream of assistant tokens (JSON bodies in, ndjson out)
+//   GET  /api/healthz, /api/health -> minimal availability status
+//   GET  /api/models               -> OpenRouter free-model list
+//   GET  /api/readings, /api/saint -> today's sourced content
+//   POST /api/chat                 -> streamed assistant text; reasoning is private
+//   POST /api/feedback              -> allowlisted category only; never conversation text
 
 const http = require("http");
 const fs = require("fs");
@@ -51,6 +54,7 @@ function sendJson(res, code, obj) {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Expose-Headers": "X-Model-Used, X-SA-Source, X-SA-Fetched-At",
     "Cache-Control": "no-store",
   });
   res.end(body);
@@ -59,6 +63,7 @@ function cors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Expose-Headers", "X-Model-Used, X-SA-Source, X-SA-Fetched-At");
 }
 
 // Hard timeout on outbound calls so a hung upstream (common on free model tiers)
@@ -118,20 +123,12 @@ const metrics = {
   startedAt: Date.now(),
 };
 
-// ---- user feedback (in-memory ring buffer; no disk) ----
-// Lets users flag a reply (unfaithful / off-topic / other). Capped so a flood
-// can't grow memory; we keep the most recent 200 entries. Exposed read-only via
-// /api/healthz for ops. Resets on deploy (acceptable for a free-tier MVP).
-const FEEDBACK_CAP = 200;
-const feedback = [];
-function addFeedback(entry) {
-  feedback.push({
-    ts: Date.now(),
-    reason: ["unfaithful", "off-topic", "other"].includes(entry.reason) ? entry.reason : "other",
-    detail: String(entry.detail || "").slice(0, 500),
-    model: String(entry.model || "").slice(0, 120),
-  });
-  if (feedback.length > FEEDBACK_CAP) feedback.splice(0, feedback.length - FEEDBACK_CAP);
+// Feedback is counted in memory only. Never retain message text, free-form
+// details, model identifiers, IP addresses, or a public feedback feed.
+const feedbackByReason = Object.create(null);
+function addFeedback(reason) {
+  const key = ["helpful", "citation_issue", "missed_point", "other"].includes(reason) ? reason : "other";
+  feedbackByReason[key] = (feedbackByReason[key] || 0) + 1;
 }
 function recordChat(model, outcome) {
   metrics.chatRequests++;
@@ -317,6 +314,8 @@ async function handleChat(req, res, body) {
       "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Expose-Headers": "X-Model-Used",
+      "X-Model-Used": cand,
       "X-Accel-Buffering": "no",
     });
     await proxyStream(upstream, res, reasoning);
@@ -629,13 +628,13 @@ async function getReadings() {
     const psalm = grab("Responsorial Psalm");
     const gospel = grab("Gospel");
     if(first || psalm || gospel){
-      return { first, psalm, gospel, disclaimer: "From the USCCB" };
+      return { first, psalm, gospel, disclaimer: "From the USCCB", source: "USCCB", link: "https://bible.usccb.org/daily-bible-readings", fetchedAt: new Date().toISOString() };
     }
     throw new Error("empty scrape");
   } catch (e) {
     // USCCB is frequently bot-blocked. Fall back to a rotating selection from
     // the tradition so the greeting card is never empty. Clearly labeled.
-    return curatedReadings();
+    return { ...curatedReadings(), source: "Curated Scripture fallback", link: "https://bible.usccb.org/daily-bible-readings", fetchedAt: new Date().toISOString() };
   }
 }
 
@@ -746,11 +745,12 @@ async function getSaint() {
       conn,
       connectionSource: saintConnSource.get(name.toLowerCase().trim()) || (conn ? "source-grounded-fallback" : "unavailable"),
       source: "Franciscan Media",
+      fetchedAt: new Date().toISOString(),
     };
   } catch (e) {
     // Site unreachable / blocked / changed markup: fall back to a curated,
     // on-theme saint so the card is never empty. Clearly labeled.
-    return curatedSaint();
+    return { ...curatedSaint(), fetchedAt: new Date().toISOString() };
   }
 }
 
@@ -972,21 +972,7 @@ const server = http.createServer(async (req, res) => {
   const url = (req.url || "").split("?")[0];
   try {
     if (req.method === "GET" && url === "/api/health") return sendJson(res, 200, { ok: true });
-    if (req.method === "GET" && url === "/api/healthz") {
-      const keyPresent = !!KEY;
-      const modelCount = modelsCache.data ? modelsCache.data.length : 0;
-      return sendJson(res, 200, {
-        ok: keyPresent, keyPresent, modelCount, ts: Date.now(),
-        uptimeSec: Math.round((Date.now() - metrics.startedAt) / 1000),
-        metrics: {
-          chatRequests: metrics.chatRequests,
-          rateLimited: metrics.rateLimited,
-          errors: metrics.errors,
-          byModel: metrics.byModel,
-        },
-        feedbackCount: feedback.length,
-      });
-    }
+    if (req.method === "GET" && url === "/api/healthz") return sendJson(res, 200, { ok: true });
     if (req.method === "GET" && url === "/api/models") {
       try { return sendJson(res, 200, { models: await getFreeModels() }); }
       catch (e) { return sendJson(res, 502, { error: "Could not fetch models." }); }
@@ -1015,14 +1001,8 @@ const server = http.createServer(async (req, res) => {
         try { body = await readBody(req); }
         catch (_) { return sendJson(res, 400, { error: "Invalid JSON body." }); }
         if (!body || typeof body !== "object") return sendJson(res, 400, { error: "Invalid body." });
-        addFeedback({ reason: body.reason, detail: body.detail, model: body.model });
-        return sendJson(res, 200, { ok: true });
-      }
-      if (req.method === "GET") {
-        return sendJson(res, 200, {
-          count: feedback.length,
-          recent: feedback.slice(-20).reverse(),
-        });
+        addFeedback(body.reason);
+        return sendJson(res, 202, { ok: true });
       }
       return sendJson(res, 405, { error: "Method not allowed." });
     }

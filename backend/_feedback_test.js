@@ -1,5 +1,5 @@
-// Test: /api/feedback accepts POSTs (capped reasons), rejects bad input, and
-// GET returns recent entries. Self-contained: owns its backend + a no-op stub.
+// Test: /api/feedback accepts anonymous category-only POSTs, rejects bad input,
+// and exposes neither feedback details nor diagnostics. Self-contained.
 const http = require("http");
 const STUB_PORT = 3977;
 const BACKEND_PORT = 3976;
@@ -17,19 +17,22 @@ stub.listen(STUB_PORT, async () => {
 
   // bad input -> 400
   const bad = await fetch(base, { method: "POST", headers: { "Content-Type": "application/json" }, body: "notjson" });
-  // valid submit
+  // valid category-only submit; hostile detail fields must not be retained or echoed
   const ok1 = await fetch(base, { method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ reason: "unfaithful", detail: "cited a non-existent encyclical", model: "nvidia/nemotron-3-ultra-550b-a55b:free" }) });
-  // reason normalized to "other" if unknown
+    body: JSON.stringify({ reason: "citation_issue", detail: "private text that must not be stored", snippet: "entire answer" }) });
+  // unknown reason normalizes to other
   const ok2 = await fetch(base, { method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ reason: "weird", detail: "x" }) });
-  // GET summary
+  // details and operational metrics have no public GET endpoint
   const get = await fetch(base);
-  const getJson = await get.json();
+  const health = await fetch(`http://127.0.0.1:${BACKEND_PORT}/api/healthz`);
+  const healthJson = await health.json();
+  const getText = await get.text();
 
-  const pass = bad.status === 400 && ok1.status === 200 && ok2.status === 200 &&
-    getJson.count === 2 && getJson.recent[0].reason === "other" && getJson.recent[1].reason === "unfaithful";
-  console.log(`bad:${bad.status} ok1:${ok1.status} ok2:${ok2.status} count:${getJson.count} recent[0].reason:${getJson.recent[0].reason}`);
-  console.log(pass ? "PASS (feedback route works, reason normalized)" : "FAIL");
+  const pass = bad.status === 400 && ok1.status === 202 && ok2.status === 202 &&
+    get.status === 405 && !getText.includes("private text") && healthJson.ok === true &&
+    Object.keys(healthJson).join(",") === "ok";
+  console.log(`bad:${bad.status} ok1:${ok1.status} ok2:${ok2.status} public-get:${get.status} health:${JSON.stringify(healthJson)}`);
+  console.log(pass ? "PASS (category-only feedback and minimal health)" : "FAIL");
   process.exit(pass ? 0 : 1);
 });

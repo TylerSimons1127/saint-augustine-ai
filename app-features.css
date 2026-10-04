@@ -1,0 +1,91 @@
+/* Focused feature layer — same parchment, ink and brass language as the app. */
+.sa-feature-scrim{position:fixed;inset:0;z-index:180;background:rgba(28,30,34,.42);backdrop-filter:blur(8px);display:grid;place-items:center;padding:20px;}
+.sa-feature-dialog{width:min(640px,100%);max-height:min(84dvh,840px);overflow:auto;border:1px solid rgba(255,255,255,.66);border-radius:22px;background:var(--paper-50,#faf8f2);color:var(--ink,#27272b);box-shadow:0 24px 70px rgba(31,29,24,.2);padding:24px;}
+.sa-feature-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;border-bottom:1px solid var(--border,#ded8cd);padding-bottom:14px;margin-bottom:16px;}
+.sa-feature-head h2{font:400 28px/1.16 var(--display,Georgia,serif);margin:0;color:var(--ink,#27272b);}
+.sa-feature-head p{font:13px/1.5 var(--body,system-ui,sans-serif);color:var(--muted,#66645f);margin:6px 0 0;}
+.sa-feature-close{width:40px;height:40px;border:1px solid var(--border,#ded8cd);border-radius:13px;background:rgba(255,255,255,.58);font-size:24px;color:var(--ink,#27272b);cursor:pointer;flex:none;}
+.sa-feature-content{font:14px/1.6 var(--body,system-ui,sans-serif);min-width:0;}
+.sa-feature-content p{margin:0 0 12px;color:var(--ink-soft,#4f5056);}
+.sa-feature-content a{color:var(--gold-ink,#6e4a21);}
+.sa-feature-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:18px;}
+.sa-feature-actions button,.sa-feature-item>button,.sa-feature-row button,.sa-intention-tools button,.sa-intention-list button,.sa-study-tools button,.sa-study-note-actions button,.sa-followups button,.sa-feature-mini-button{min-height:40px;padding:8px 13px;border:1px solid var(--border,#ded8cd);border-radius:12px;background:rgba(255,255,255,.72);color:var(--ink,#27272b);font:600 12px/1.2 var(--body,system-ui,sans-serif);cursor:pointer;}
+.sa-feature-actions button.primary{background:var(--accent,#d9c4a9);border-color:var(--accent,#d9c4a9);color:#30291f;}
+.sa-feature-actions button:disabled{opacity:.55;cursor:wait;}
+.sa-feature-search{box-sizing:border-box;width:100%;height:46px;margin:0 0 12px;padding:0 14px;border:1px solid var(--border,#ded8cd);border-radius:13px;background:#fffdf9;color:var(--ink,#27272b);font:14px var(--body,system-ui,sans-serif);}
+.sa-feature-list{display:grid;gap:10px;}
+.sa-feature-item{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:15px;border:1px solid var(--border,#ded8cd);border-radius:15px;background:rgba(255,255,255,.56);}
+.sa-feature-item h3{font:500 17px/1.3 var(--display,Georgia,serif);margin:4px 0 5px;}
+.sa-feature-item p{margin:0 0 8px;white-space:pre-wrap;overflow-wrap:anywhere;}
+.sa-feature-kicker{font:600 10px/1.4 var(--body,system-ui,sans-serif);text-transform:uppercase;letter-spacing:.1em;color:var(--gold-ink,#6e4a21);}
+.sa-feature-empty{padding:20px;text-align:center;color:var(--muted,#66645f);}
+.sa-share-dialog textarea{display:block;width:100%;min-height:220px;max-height:48dvh;resize:vertical;box-sizing:border-box;padding:14px;border:1px solid var(--border,#ded8cd);border-radius:14px;background:rgba(255,255,255,.76);color:var(--ink,#27272b);font:13px/1.55 var(--body,system-ui,sans-serif);}
+.sa-service-status{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 4px 8px;padding:9px 12px;border:1px solid rgba(var(--accent-rgb,180,145,102),.3);border-radius:12px;background:rgba(255,253,249,.88);color:var(--ink-soft,#4f5056);font:12px/1.4 var(--body,system-ui,sans-serif);}
+.sa-service-status[hidden]{display:none;}
+.sa-service-status button{flex:none;border:0;background:none;color:var(--gold-ink,#6e4a21);font:600 12px var(--body,system-ui,sans-serif);text-decoration:underline;cursor:pointer;}
+.sa-source-stamp{font:11px/1.45 var(--body,system-ui,sans-serif);color:var(--muted,#6d6b66);margin:7px 4px 14px;}
+.sa-source-stamp[data-saved-copy="true"]{color:var(--gold-ink,#6e4a21);}
+.sa-intention-disclosure{font-size:12px;line-height:1.5;color:var(--muted,#6d6b66);margin:-1px 0 8px!important;}
+.sa-intention-tools{display:flex;flex-wrap:wrap;gap:7px;}
+.sa-intention-tools button,.sa-intention-list button{min-height:36px;padding:6px 10px;font-size:11px;}
+.sa-intention-list{display:grid;gap:7px;margin-top:8px;}
+.sa-intention-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:8px;border:1px solid var(--border,#ded8cd);border-radius:12px;background:rgba(255,255,255,.5);}
+.sa-intention-row span{font-size:13px;overflow-wrap:anywhere;}
+.sa-intention-row input{min-width:0;height:36px;border:1px solid var(--border,#ded8cd);border-radius:8px;padding:0 9px;font:13px var(--body,system-ui,sans-serif);}
+.sa-study-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.sa-study-notes{padding:18px;margin-top:14px;border:1px solid var(--border,#ded8cd);border-radius:16px;background:rgba(255,253,249,.78);}
+.sa-study-notes h3{font:500 20px/1.2 var(--display,Georgia,serif);margin:0 0 8px;}
+.sa-study-notes textarea{box-sizing:border-box;width:100%;min-height:92px;padding:12px;border:1px solid var(--border,#ded8cd);border-radius:12px;background:rgba(255,255,255,.7);color:var(--ink,#27272b);font:14px/1.5 var(--body,system-ui,sans-serif);resize:vertical;}
+.sa-study-note-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.sa-study-note-list{display:grid;gap:7px;margin-top:12px;}
+.sa-study-note-list article{padding:10px 12px;border-radius:11px;background:rgba(214,197,168,.19);font-size:13px;white-space:pre-wrap;}
+.sa-followups{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0 46px;}
+.sa-followups button{min-height:34px;padding:6px 10px;font-size:11px;background:rgba(255,253,249,.62);}
+.sa-message-action{font-size:11px!important;}
+.sa-prayer-carry{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 12px;align-items:center;padding:12px 14px;margin:8px 0 10px;border:1px solid rgba(132,103,67,.2);border-radius:14px;background:rgba(255,253,249,.72);}
+.sa-prayer-carry[hidden]{display:none;}
+.sa-prayer-carry .sa-feature-kicker{grid-column:1/-1;}
+.sa-prayer-carry p{grid-column:1/-1;margin:0;font-size:13px;line-height:1.5;color:var(--ink-soft,#4f5056);}
+.sa-prayer-carry a,.sa-prayer-carry button{font:600 11px/1.3 var(--body,system-ui,sans-serif);color:var(--gold-ink,#6e4a21);background:none;border:0;padding:3px 0;text-align:left;text-decoration:underline;cursor:pointer;}
+.sa-history-filters{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px 10px;margin:8px 0;border:1px solid var(--border,#ded8cd);border-radius:13px;background:rgba(255,253,249,.64);}
+.sa-history-filters label{display:grid;gap:4px;font:600 10px/1.2 var(--body,system-ui,sans-serif);letter-spacing:.04em;color:var(--muted,#66645f);}
+.sa-history-filters select{width:100%;min-width:0;height:34px;border:1px solid var(--border,#ded8cd);border-radius:9px;background:rgba(255,255,255,.8);padding:0 8px;color:var(--ink,#27272b);font:12px var(--body,system-ui,sans-serif);}
+.sa-history-filters .sa-history-cite{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:0;}
+.sa-history-filters input{accent-color:var(--gold-ink,#6e4a21);}
+.sa-note-caption{font-size:12px!important;color:var(--muted,#66645f)!important;margin:0 0 10px!important;}
+.sa-intention-row button{min-height:36px;padding:6px 9px;font-size:11px;}
+.sa-feature-dialog :focus-visible,.sa-intention-row :focus-visible,.sa-prayer-carry :focus-visible{outline:2px solid var(--gold-ink,#6e4a21);outline-offset:2px;}
+.sa-archive-entry{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px;border:1px solid var(--border,#ded8cd);border-radius:14px;background:rgba(255,255,255,.55);}
+.sa-archive-entry+ .sa-archive-entry{margin-top:8px;}
+.sa-archive-entry h3{font:500 16px/1.3 var(--display,Georgia,serif);margin:0 0 4px;}
+.sa-archive-entry p{font-size:12px;margin:0;color:var(--muted,#6d6b66);}
+.sa-archive-entry button{min-height:40px;padding:8px 12px;border:1px solid var(--border,#ded8cd);border-radius:10px;background:#fffdf9;color:var(--ink,#27272b);font-weight:600;cursor:pointer;}
+.sa-timer-face{font:400 clamp(44px,12vw,68px)/1 var(--display,Georgia,serif);text-align:center;color:var(--gold-ink,#6e4a21);padding:20px 0 8px;}
+.sa-timer-stage{text-align:center;font:500 22px/1.2 var(--display,Georgia,serif);}
+.sa-timer-reading{padding:14px 16px;border-left:2px solid var(--accent,#d9c4a9);background:rgba(217,196,169,.16);}
+.sa-glossary-review{display:flex;gap:6px;margin-top:8px;}
+.sa-glossary-review button{border:1px solid var(--border,#ded8cd);border-radius:999px;background:rgba(255,255,255,.6);padding:5px 9px;font-size:11px;cursor:pointer;}
+html.sa-hide-streak #streakCell{display:none!important;}
+html.sa-quiet-reading #page-study .dp-head-actions,html.sa-quiet-reading #page-study .lesson-nav,html.sa-quiet-reading #page-study .tomorrow-teaser{opacity:.28;}
+html.sa-quiet-reading #page-study .lesson-reading{max-width:72ch;margin-inline:auto;font-size:1.08em;line-height:1.9;}
+html.sa-quiet-reading #page-study .dp-card.lesson{max-width:920px;margin-inline:auto;}
+html.sa-quiet-reading .bg{animation-play-state:paused!important;}
+.lesson-text-label,.lesson-reading-label{font:600 10px/1.4 var(--body,system-ui,sans-serif);letter-spacing:.09em;text-transform:uppercase;color:var(--gold-ink,#6e4a21);margin:10px 0 4px!important;}
+.model-fallback-note{font:12px/1.45 var(--body,system-ui,sans-serif);color:var(--muted,#6d6b66);margin:9px 0 0;padding-top:8px;border-top:1px solid rgba(90,80,65,.15);}
+@media(max-width:600px){
+  .sa-feature-scrim{align-items:end;padding:8px 8px max(8px,env(safe-area-inset-bottom));}
+  .sa-feature-dialog{width:100%;max-height:88dvh;border-radius:20px;padding:18px;}
+  .sa-feature-head h2{font-size:24px;}
+  .sa-feature-item{padding:12px;}
+  .sa-feature-item>button{min-height:44px;}
+  .sa-feature-actions button{min-height:44px;}
+  .sa-followups{margin-left:0;}
+  .sa-followups button{min-height:38px;}
+  .sa-intention-row{grid-template-columns:minmax(0,1fr) auto;}
+  .sa-intention-row button:last-child{grid-column:2;}
+  .sa-history-filters{grid-template-columns:1fr 1fr;}
+  .sa-intention-row>span,.sa-intention-row>input{grid-column:1/-1;}
+  .sa-intention-row button{min-height:40px;}
+  .sa-prayer-carry{grid-template-columns:minmax(0,1fr) auto;}
+}
+@media(prefers-reduced-motion:reduce){.sa-feature-scrim,.sa-feature-dialog{scroll-behavior:auto!important;transition:none!important;}}

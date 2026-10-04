@@ -1,0 +1,14 @@
+{
+  "name": "saint-augustine-ai-frontend-checks",
+  "private": true,
+  "scripts": {
+    "serve:test": "node scripts/serve.mjs",
+    "test:ui": "playwright test",
+    "check:sources": "node scripts/validate-sources.mjs",
+    "check:scripts": "node scripts/check-inline.mjs",
+    "test:release": "npm run check:scripts && npm run check:sources && npm run test:ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
