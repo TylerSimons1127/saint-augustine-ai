@@ -5,6 +5,7 @@ services:
     plan: free
     rootDir: backend
     branch: main
+    autoDeployTrigger: checksPass
     buildCommand: "npm install"
     startCommand: "npm start"
     envVars:

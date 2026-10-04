@@ -12,7 +12,7 @@ async function mockServices(page) {
     if (url.pathname.endsWith("/api/saint")) return route.fulfill({ status: 200, headers: cors, contentType: "application/json", body: JSON.stringify({ name: "St. Jerome", date: "October 4", bio: "A source-grounded test biography.", source: "Franciscan Media", link: "https://www.franciscanmedia.org/saint-of-the-day/", conn: "A historical connection for the test.", fetchedAt: new Date().toISOString() }) });
     if (url.pathname.endsWith("/api/chat")) {
       const model = request.postDataJSON()?.model || "test/model-free";
-      return route.fulfill({ status: 200, contentType: "text/event-stream", headers: { ...cors, "X-Model-Used": model, "Access-Control-Expose-Headers": "X-Model-Used" }, body: 'data: {"text":"A grounded test reply with a citation."}\n\ndata: [DONE]\n\n' });
+      return route.fulfill({ status: 200, contentType: "text/event-stream", headers: { ...cors, "X-Model-Used": model, "Access-Control-Expose-Headers": "X-Model-Used" }, body: 'data: {"text":"A grounded test reply with a citation: [Augustine](https://www.newadvent.org/fathers/130101.htm)."}\n\ndata: [DONE]\n\n' });
     }
     if (url.pathname.endsWith("/api/feedback")) return route.fulfill({ status: 202, headers: cors, body: "" });
     return route.fulfill({ status: 404, body: "not mocked" });
@@ -95,4 +95,40 @@ test("Study source trail, local archive, and prayer intention/timer controls wor
   await page.getByRole("button", { name: "3 minutes" }).click();
   await expect(page.locator("#saTimerFace")).toHaveText("03:00");
   await page.keyboard.press("Escape");
+  await page.locator("#ppLead").click();
+  await expect(page.locator(".msg.assistant").last()).toContainText("A grounded test reply");
+  await expect(page.locator(".msg.assistant").last().getByRole("button", { name: "Save prayer" })).toBeVisible();
+  await page.locator(".msg.assistant").last().getByRole("button", { name: "Save prayer" }).click();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("sa_prayer_favorites_v1") || "[]").length)).toBe(1);
+  await page.locator("#settingsBtn").click();
+  await page.locator("#savedOpen").click();
+  const savedDialog = page.getByRole("dialog", { name: "Saved on this device" });
+  await expect(savedDialog).toContainText("Favorite prayer");
+  await expect(savedDialog.locator(".sa-saved-sources a")).toHaveAttribute("href", "https://www.newadvent.org/fathers/130101.htm");
+  await page.locator(".sa-feature-item [data-group='Favorite prayer']").click();
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("sa_prayer_favorites_v1") || "[]").length)).toBe(0);
+});
+
+test("pausing streak counting preserves the saved count when resumed", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("sa_feature_prefs_v1", JSON.stringify({ pauseStreak: true }));
+    localStorage.setItem("saugustine_streak_v1", JSON.stringify({ last: "2000-1-1", count: 5 }));
+  });
+  await mockServices(page);
+  await page.goto("/#today");
+  await page.locator("#settingsBtn").click();
+  const toggle = page.locator("#pauseStreakToggle");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  const streak = await page.evaluate(() => JSON.parse(localStorage.getItem("saugustine_streak_v1")));
+  const today = await page.evaluate(() => { const date = new Date(); return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; });
+  expect(streak).toEqual({ last: today, count: 5 });
+});
+
+test("a copied Study topic deep link reopens the selected topic", async ({ page }) => {
+  await mockServices(page);
+  await page.goto("/#study:topic=angels");
+  await expect(page.locator("#lessonName")).toHaveText("Angels");
+  await expect(page.locator("#lessonKicker")).toContainText("Selected Topic");
 });

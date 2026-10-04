@@ -7,7 +7,7 @@
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const esc = (value) => String(value == null ? "" : value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const safeLink = (value) => { try { const url = new URL(String(value || ""), location.href); return url.protocol === "https:" || url.protocol === "http:" ? url.href : ""; } catch (_) { return ""; } };
+  const safeLink = (value) => { try { const raw = String(value || "").trim(); if (!/^https?:\/\//i.test(raw)) return ""; const url = new URL(raw); return url.protocol === "https:" || url.protocol === "http:" ? url.href : ""; } catch (_) { return ""; } };
   const toast = (message) => window.__saToast ? window.__saToast(message) : void 0;
   const localDay = () => {
     const d = new Date();
@@ -166,6 +166,15 @@
     store.set("saved", list.slice(0, 300));
     toast("Saved on this device ✓");
   }
+  function addFavoritePrayer(item) {
+    const normalized = String(item.text || "").trim();
+    if (!normalized) return;
+    const prayers = store.get("prayers", []);
+    if (prayers.some((entry) => entry.text === normalized)) { toast("Already in Favorite prayers."); return; }
+    prayers.unshift({ id: uid(), created: new Date().toISOString(), ...item, text: normalized });
+    store.set("prayers", prayers.slice(0, 100));
+    toast("Prayer saved to your favorites on this device ✓");
+  }
   function savedView() {
     const saved = store.get("saved", []), notes = store.get("notes", []), prayers = store.get("prayers", []);
     const rows = [
@@ -179,8 +188,12 @@
       const q = input.value.trim().toLocaleLowerCase();
       const matches = rows.filter((entry) => [entry.title, entry.text, entry.source, entry.topic, entry.group].some((part) => String(part || "").toLocaleLowerCase().includes(q)));
       list.innerHTML = matches.map((entry) => {
-        const href = safeLink(entry.source);
-        return '<article class="sa-feature-item"><div><span class="sa-feature-kicker">' + esc(entry.group) + (entry.topic ? " · " + esc(entry.topic) : "") + '</span><h3>' + esc(entry.title || entry.topic || entry.type || "Saved item") + '</h3><p>' + esc(entry.text) + '</p>' + (href ? '<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">Open source ↗</a>' : "") + '</div><button type="button" data-remove-saved="' + esc(entry.id) + '" data-group="' + esc(entry.group) + '">Remove</button></article>';
+        const sourceRows = Array.isArray(entry.sources) ? entry.sources : (entry.source ? [{ title: "Open source", href: entry.source }] : []);
+        const sourceMarkup = [...new Map(sourceRows.map((source) => [safeLink(source.href), source])).entries()]
+          .filter(([href]) => href)
+          .map(([href, source]) => '<a href="' + esc(href) + '" target="_blank" rel="noopener noreferrer">' + esc(source.title || "Open source") + ' ↗</a>')
+          .join(" · ");
+        return '<article class="sa-feature-item"><div><span class="sa-feature-kicker">' + esc(entry.group) + (entry.topic ? " · " + esc(entry.topic) : "") + '</span><h3>' + esc(entry.title || entry.topic || entry.type || "Saved item") + '</h3><p>' + esc(entry.text) + '</p>' + (sourceMarkup ? '<div class="sa-saved-sources">' + sourceMarkup + '</div>' : "") + '</div><button type="button" data-remove-saved="' + esc(entry.id) + '" data-group="' + esc(entry.group) + '">Remove</button></article>';
       }).join("") || '<p class="sa-feature-empty">No saved items yet.</p>';
     };
     list.addEventListener("click", (event) => {
@@ -209,7 +222,19 @@
       const value = button.getAttribute("aria-pressed") !== "true";
       button.setAttribute("aria-pressed", String(value)); updatePrefs({ [key]: value });
       if (key === "hideStreak") document.documentElement.classList.toggle("sa-hide-streak", value);
-      if (key === "pauseStreak") toast(value ? "Streak counting paused." : "Streak counting resumed.");
+      if (key === "pauseStreak") {
+        if (!value) {
+          try {
+            const streak = JSON.parse(localStorage.getItem("saugustine_streak_v1") || "null");
+            if (streak && Number.isFinite(Number(streak.count))) {
+              const date = new Date();
+              streak.last = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+              localStorage.setItem("saugustine_streak_v1", JSON.stringify(streak));
+            }
+          } catch (_) {}
+        }
+        toast(value ? "Streak counting paused." : "Streak counting resumed. Your saved count is preserved.");
+      }
       if (key === "pasteHeuristic" && !value) { $("#pasteSignalNote").hidden = true; toast("AI-style paste note turned off."); }
     });
   });
@@ -236,9 +261,11 @@
       try { await navigator.clipboard.writeText(citationFirstCopy(message)); toast("Answer and sources copied ✓"); }
       catch (_) { toast("Copy failed"); }
     });
-    addButton("Save", () => {
-      const type = context.page === "prayer" ? "prayer" : "answer";
-      addSaved({ type, title: type === "prayer" ? "Prayer with Augustine" : "Augustine’s answer", text: messageText(message), source: source[0]?.href || "", topic: context.page });
+    const isPrayer = context.page === "prayer" || !!message.closest("#threadPrayer");
+    addButton(isPrayer ? "Save prayer" : "Save", () => {
+      const type = isPrayer ? "prayer" : "answer";
+      const item = { type, title: type === "prayer" ? "Prayer with Augustine" : "Augustine’s answer", text: messageText(message), source: source[0]?.href || "", sources: source, topic: isPrayer ? "prayer" : context.page };
+      if (isPrayer) addFavoritePrayer(item); else addSaved(item);
     });
     if ("speechSynthesis" in window) {
       const speechButton = addButton("Read aloud", () => {
@@ -271,6 +298,8 @@
   const messageObserver = new MutationObserver((records) => records.forEach((record) => record.addedNodes.forEach((node) => {
     if (node.nodeType !== 1) return;
     if (node.matches?.(".msg.assistant")) enhanceMessage(node);
+    const containingMessage = node.closest?.(".msg.assistant") || (record.target.nodeType === 1 ? record.target.closest(".msg.assistant") : null);
+    if (containingMessage) enhanceMessage(containingMessage);
     scanMessages(node);
   })));
   ["#thread", "#threadStudy", "#threadDaily", "#threadPrayer"].forEach((selector) => { const target = $(selector); if (target) messageObserver.observe(target, { childList: true, subtree: true }); });
