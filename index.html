@@ -2781,10 +2781,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=app-improvements-1" />
-<link rel="stylesheet" href="app-features.css?v=app-improvements-2" />
+<link rel="stylesheet" href="frontend-revamp.css?v=premium-pass-1" />
+<link rel="stylesheet" href="app-features.css?v=premium-pass-1" />
 <script src="frontend-revamp.js" defer></script>
-<script src="app-features.js?v=app-improvements-2" defer></script>
+<script src="app-features.js?v=premium-pass-1" defer></script>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -3244,7 +3244,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               <span class="pray-chip-copy"><span class="pray-chip-title">Guided Examen</span><small class="pray-chip-note">Five quiet steps, with room to breathe.</small></span>
               <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
-            <button class="pray-chip" id="timedPrayerOpen" type="button"><span class="pray-chip-copy"><span class="pray-chip-title">Timed prayer</span><small class="pray-chip-note">Choose a quiet 3-, 5-, or 10-minute path.</small></span><span class="pray-chip-arrow" aria-hidden="true">→</span></button>
+            <button class="pray-chip" id="timedPrayerOpen" type="button">
+              <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Timed prayer</span><small class="pray-chip-note">Choose a quiet 3-, 5-, or 10-minute path.</small></span>
+              <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+            </button>
             <button class="pray-chip" id="tradRest">
               <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-heart"/></svg></span>
               <span class="pray-chip-copy"><span class="pray-chip-title">Prayer before rest</span><small class="pray-chip-note">Surrender the day and entrust each worry.</small></span>

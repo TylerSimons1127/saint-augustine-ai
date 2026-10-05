@@ -309,9 +309,13 @@
   const studyHead = $("#page-study .dp-head");
   let studyTools = null;
   if (studyHead) {
+    const studyToolsDisclosure = document.createElement("details");
+    studyToolsDisclosure.className = "sa-study-tools-disclosure";
+    studyToolsDisclosure.innerHTML = '<summary>More study tools</summary>';
     studyTools = document.createElement("div"); studyTools.className = "sa-study-tools";
     studyTools.innerHTML = '<button type="button" id="saContinueLesson">Continue lesson</button><button type="button" id="saTwoMinute">Two-minute path</button><button type="button" id="saQuietMode" aria-pressed="false">Quiet reading</button><button type="button" id="saLessonLink">Copy lesson link</button><button type="button" id="saTopicPrayer">Carry topic into prayer</button><button type="button" id="saReviewTerms">Review glossary</button>';
-    $(".dp-head-actions", studyHead)?.insertAdjacentElement("afterend", studyTools);
+    studyToolsDisclosure.append(studyTools);
+    $(".dp-head-actions", studyHead)?.insertAdjacentElement("afterend", studyToolsDisclosure);
   }
   const lessonCard = $("#page-study .dp-card.lesson");
   let notePad = null;
