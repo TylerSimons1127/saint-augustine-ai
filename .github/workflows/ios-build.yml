@@ -77,9 +77,34 @@ jobs:
           CODE_SIGNING_ALLOWED=NO
           build
 
+      - name: Launch app in an iPhone simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          SIMULATOR_UDID="$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          runtimes = json.load(sys.stdin)["devices"]
+          phones = [device for devices in runtimes.values() for device in devices
+                    if device.get("isAvailable") and "iPhone" in device.get("deviceTypeIdentifier", "")]
+          print(phones[0]["udid"] if phones else "")
+          ')"
+          if [[ -z "$SIMULATOR_UDID" ]]; then
+            echo "::error::No available iPhone simulator was found on this runner."
+            exit 1
+          fi
+          APP_PATH="$RUNNER_TEMP/sa-ios-derived/Build/Products/Debug-iphonesimulator/App.app"
+          xcrun simctl boot "$SIMULATOR_UDID"
+          xcrun simctl bootstatus "$SIMULATOR_UDID" -b
+          xcrun simctl install "$SIMULATOR_UDID" "$APP_PATH"
+          xcrun simctl launch --terminate-running-process "$SIMULATOR_UDID" com.tylersimons.saintaugustineai
+          sleep 8
+          xcrun simctl io "$SIMULATOR_UDID" screenshot "$RUNNER_TEMP/sa-ios-first-launch.png"
+
       - name: Save simulator build
         uses: actions/upload-artifact@v4
         with:
-          name: saint-augustine-ai-ios-simulator
-          path: ${{ runner.temp }}/sa-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+          name: saint-augustine-ai-ios-simulator-and-launch
+          path: |
+            ${{ runner.temp }}/sa-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+            ${{ runner.temp }}/sa-ios-first-launch.png
           if-no-files-found: error
