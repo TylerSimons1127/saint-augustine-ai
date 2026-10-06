@@ -66,6 +66,7 @@ test("privacy policy is reachable from settings and returns to the app", async (
   await expect(page).toHaveURL(/privacy-policy\.html$/);
   await expect(page.getByRole("heading", { name: "Your words, handled with care." })).toBeVisible();
   await expect(page.getByRole("heading", { name: "What is sent when you use AI" })).toBeVisible();
+  await expect(page.locator("#ai-requests")).toContainText("boolean signal to our backend");
   await page.getByRole("link", { name: "Return to the app" }).first().click();
   await expect(page.locator("#page-chat")).toBeVisible();
 });

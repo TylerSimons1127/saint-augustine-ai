@@ -71,7 +71,7 @@
         <h2>What is sent when you use AI</h2>
         <p>When you choose to send a message, the app sends its text and recent conversation context (up to 24 messages) to the Saint Augustine AI backend on Render. The backend forwards the request to OpenRouter and the model provider used for that response. If a selected model is unavailable, the backend may retry another supported model.</p>
         <p>OpenRouter documents that model providers have different retention and training practices; some may retain inputs or outputs or use them for model improvement. The app does not control each provider’s independent practices and cannot promise that a provider will delete a request. See <a href="https://openrouter.ai/privacy">OpenRouter’s privacy policy</a> and its <a href="https://openrouter.ai/providers/">provider directory</a> for current details. Avoid sending information you consider highly sensitive.</p>
-        <p>A prayer intention is sent only when you choose a prayer action that uses it. The app’s optional AI-style paste notice is a local formatting heuristic, not a separate detection service; if you send the text, it becomes part of the AI request.</p>
+        <p>A prayer intention is sent only when you choose a prayer action that uses it. The optional AI-style paste notice uses a local text-pattern heuristic, not a separate detection service. If you send a flagged message while the notice is active, the app also sends a boolean signal to our backend; it uses that signal to add brief context to the AI request so the reply can respond gently. The signal does not identify where the text came from.</p>
       </section>
 
       <section id="attachments">

@@ -16,7 +16,7 @@ The app stores conversation history, preferences, study progress, saved notes an
 
 When you send a message, the app sends its text and recent conversation context (up to 24 messages) to the Saint Augustine AI backend hosted on Render. Text extracted from a PDF or text file, or the image data from an attached picture, is included if you choose to send that message. Image files are sent as selected, so they may contain embedded metadata. A prayer intention is sent only when you choose a prayer action that uses it. The backend forwards the request to OpenRouter and the model provider that handles it; if the chosen model is unavailable, the backend may retry another offered model. OpenRouter says its model providers have different retention and training practices, and some may use inputs and outputs for model improvement. Review the providers' current privacy terms and avoid sending sensitive information.
 
-The app uses an on-device formatting heuristic for its optional AI-style paste notice. It does not use a separate detection service. If you send the flagged text, it becomes part of the message sent for the response.
+The app uses an on-device text-pattern heuristic for its optional AI-style paste notice; it does not use a separate detection service or determine where text came from. If you send a flagged message while the notice is active, the app also sends a boolean signal to our backend. The backend uses it to add brief context to the AI request so the reply can respond gently. The pasted message itself is also sent as part of the request.
 
 ## Service operation
 

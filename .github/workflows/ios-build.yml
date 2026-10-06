@@ -5,6 +5,7 @@ on:
     branches: [ios-mobile-app]
     paths:
       - "index.html"
+      - "privacy-policy.html"
       - "config.js"
       - "app-data.js"
       - "app-features.*"
@@ -18,11 +19,17 @@ on:
       - "capacitor.config.json"
       - "package.json"
       - "package-lock.json"
+      - "playwright.config.js"
+      - "tests/**"
+      - "scripts/check-inline.mjs"
+      - "scripts/validate-sources.mjs"
+      - "scripts/serve.mjs"
       - "ios/**"
       - ".github/workflows/ios-build.yml"
   pull_request:
     paths:
       - "index.html"
+      - "privacy-policy.html"
       - "config.js"
       - "app-data.js"
       - "app-features.*"
@@ -36,6 +43,11 @@ on:
       - "capacitor.config.json"
       - "package.json"
       - "package-lock.json"
+      - "playwright.config.js"
+      - "tests/**"
+      - "scripts/check-inline.mjs"
+      - "scripts/validate-sources.mjs"
+      - "scripts/serve.mjs"
       - "ios/**"
       - ".github/workflows/ios-build.yml"
   workflow_dispatch:
@@ -59,6 +71,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install Chromium for release checks
+        run: npx playwright install chromium
+
+      - name: Run release checks
+        run: npm run test:release
 
       - name: Build and sync bundled web app
         run: npm run ios:sync
