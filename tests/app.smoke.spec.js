@@ -58,6 +58,18 @@ test("chat streams, preserves a per-page draft, and emits category-only feedback
   await expect.poll(() => feedbackPayload).toEqual({ reason: "helpful" });
 });
 
+test("privacy policy is reachable from settings and returns to the app", async ({ page }) => {
+  await mockServices(page);
+  await page.goto("/");
+  await page.locator("#settingsBtn").click();
+  await page.getByRole("link", { name: "Privacy policy & AI data" }).click();
+  await expect(page).toHaveURL(/privacy-policy\.html$/);
+  await expect(page.getByRole("heading", { name: "Your words, handled with care." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What is sent when you use AI" })).toBeVisible();
+  await page.getByRole("link", { name: "Return to the app" }).first().click();
+  await expect(page.locator("#page-chat")).toBeVisible();
+});
+
 test("Study source trail, local archive, and prayer intention/timer controls work", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await mockServices(page);

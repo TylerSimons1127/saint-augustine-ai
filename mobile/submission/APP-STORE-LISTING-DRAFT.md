@@ -40,7 +40,7 @@ Draft: https://github.com/TylerSimons1127/saint-augustine-ai/issues
 
 ## Privacy policy URL
 
-Pending owner review and publication. See `PRIVACY-POLICY-DRAFT.md`.
+Candidate after this branch is merged and deployed: https://staugustineai.vercel.app/privacy-policy. The policy needs owner review and a confirmed privacy contact before App Store submission. See `PRIVACY-POLICY-DRAFT.md`.
 
 ## App Review notes draft
 

@@ -8,6 +8,7 @@ const output = path.join(root, "mobile", "www");
 const requiredFiles = [
   "index.html",
   "landing.html",
+  "privacy-policy.html",
   "config.js",
   "app-data.js",
   "app-features.css",
