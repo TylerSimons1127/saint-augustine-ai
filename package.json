@@ -2,6 +2,11 @@
   "name": "saint-augustine-ai-frontend-checks",
   "private": true,
   "scripts": {
+    "mobile:build": "node scripts/build-mobile.mjs",
+    "ios:assets": "node scripts/generate-ios-assets.mjs",
+    "ios:add": "cap add ios --packagemanager SPM",
+    "ios:sync": "npm run mobile:build && cap sync ios",
+    "ios:open": "cap open ios",
     "serve:test": "node scripts/serve.mjs",
     "test:ui": "playwright test",
     "check:sources": "node scripts/validate-sources.mjs",
@@ -9,6 +14,17 @@
     "test:release": "npm run check:scripts && npm run check:sources && npm run test:ui"
   },
   "devDependencies": {
-    "@playwright/test": "^1.63.0"
+    "@capacitor/cli": "^8.5.2",
+    "@playwright/test": "^1.63.0",
+    "esbuild": "^0.28.2"
+  },
+  "dependencies": {
+    "@capacitor/browser": "^8.0.5",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/filesystem": "^8.1.4",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
   }
 }

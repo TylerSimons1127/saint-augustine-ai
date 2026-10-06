@@ -1,0 +1,85 @@
+name: iOS simulator build
+
+on:
+  push:
+    branches: [ios-mobile-app]
+    paths:
+      - "index.html"
+      - "config.js"
+      - "app-data.js"
+      - "app-features.*"
+      - "frontend-revamp.*"
+      - "lessons.js"
+      - "lesson-sources.js"
+      - "assets/**"
+      - "mobile/**"
+      - "scripts/build-mobile.mjs"
+      - "scripts/generate-ios-assets.mjs"
+      - "capacitor.config.json"
+      - "package.json"
+      - "package-lock.json"
+      - "ios/**"
+      - ".github/workflows/ios-build.yml"
+  pull_request:
+    paths:
+      - "index.html"
+      - "config.js"
+      - "app-data.js"
+      - "app-features.*"
+      - "frontend-revamp.*"
+      - "lessons.js"
+      - "lesson-sources.js"
+      - "assets/**"
+      - "mobile/**"
+      - "scripts/build-mobile.mjs"
+      - "scripts/generate-ios-assets.mjs"
+      - "capacitor.config.json"
+      - "package.json"
+      - "package-lock.json"
+      - "ios/**"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Check out the app
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and sync bundled web app
+        run: npm run ios:sync
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Compile the iOS simulator app
+        run: >-
+          xcodebuild
+          -project ios/App/App.xcodeproj
+          -scheme App
+          -configuration Debug
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath "$RUNNER_TEMP/sa-ios-derived"
+          CODE_SIGNING_ALLOWED=NO
+          build
+
+      - name: Save simulator build
+        uses: actions/upload-artifact@v4
+        with:
+          name: saint-augustine-ai-ios-simulator
+          path: ${{ runner.temp }}/sa-ios-derived/Build/Products/Debug-iphonesimulator/App.app
+          if-no-files-found: error

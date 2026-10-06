@@ -1,0 +1,20 @@
+{
+  "appId": "com.tylersimons.saintaugustineai",
+  "appName": "Saint Augustine AI",
+  "webDir": "mobile/www",
+  "ios": {
+    "preferredContentMode": "mobile"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 350,
+      "launchAutoHide": true,
+      "backgroundColor": "#f6f2eb",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "LIGHT",
+      "overlaysWebView": true
+    }
+  }
+}

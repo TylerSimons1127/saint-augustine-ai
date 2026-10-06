@@ -1,5 +1,6 @@
 # Node
 node_modules/
+/mobile/www/
 test-results/
 playwright-report/
 playwright/.cache/
@@ -10,6 +11,8 @@ backend/.env
 # Local screenshots / scratch
 *.png
 *.py
+# iOS asset-catalog images are required source assets, not scratch screenshots.
+!/ios/App/App/Assets.xcassets/**/*.png
 
 # OS
 .DS_Store
