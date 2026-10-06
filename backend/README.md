@@ -32,11 +32,12 @@ running server or network access required.
 | Method | Route | Notes |
 |--------|-------|-------|
 | GET | `/api/health` | `{ ok: true }` liveness probe. |
-| GET | `/api/healthz` | Deep check: `keyPresent`, `modelCount`, `uptimeSec`, live `metrics`, `feedbackCount`. |
+| GET | `/api/healthz` | Minimal `{ ok: true }` health response; internal metrics are not exposed. |
 | GET | `/api/models` | Curated + free models from OpenRouter, cached. |
 | GET | `/api/readings` | Best-effort daily Mass readings (USCCB). May 502 if bot-blocked. |
+| GET | `/api/saint` | Saint of the day and a source-grounded Augustine connection (Franciscan Media when available, curated fallback otherwise). |
 | POST | `/api/chat` | Streaming chat proxy (see below). Rate-limited per IP. |
-| POST/GET | `/api/feedback` | Submit / list user feedback flags. |
+| POST | `/api/feedback` | Submit an allowlisted feedback category only; extra fields are discarded. GET is not available. |
 
 ## How `/api/chat` works
 
@@ -60,11 +61,12 @@ running server or network access required.
 
 ## Metrics & feedback
 
-`/api/healthz` reports in-memory metrics: total chat requests, per-model
-ok/err/fallback counts, error-status tallies, and rate-limit hits. A user
-feedback ring buffer (capped at 200 entries, no disk) captures flags
-(unfaithful / off-topic / other) and is exposed read-only via `/api/feedback`.
-Both reset on deploy — fine for a free-tier MVP.
+The process keeps aggregate operational counters in memory: total chat
+requests, per-model ok/err/fallback counts, error-status tallies, and
+rate-limit hits. The `/api/healthz` route does not expose those counters. The
+feedback endpoint accepts only an allowlisted category, counts it in memory,
+discards free-form fields, and has no public listing route. Counters reset when
+the process restarts or deploys; they are not written to app storage.
 
 ## Notes for contributors
 
