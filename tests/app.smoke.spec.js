@@ -70,6 +70,37 @@ test("privacy policy is reachable from settings and returns to the app", async (
   await expect(page.locator("#page-chat")).toBeVisible();
 });
 
+test("mobile composer clears the keyboard area and restores navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => {
+    const originalMatchMedia = window.matchMedia.bind(window);
+    window.matchMedia = (query) => query.includes("(hover:none)") && query.includes("(pointer:coarse)")
+      ? { matches: true, media: query, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {}, dispatchEvent() { return false; } }
+      : originalMatchMedia(query);
+    const viewport = new EventTarget();
+    viewport.height = window.innerHeight;
+    viewport.offsetTop = 0;
+    Object.defineProperty(window, "visualViewport", { configurable: true, value: viewport });
+    window.__saTestVisualViewport = viewport;
+  });
+  await mockServices(page);
+  await page.goto("/");
+  const dock = page.locator(".dock");
+  const nav = page.locator(".nav-tabs");
+  await page.evaluate(() => {
+    window.__saTestVisualViewport.height = 500;
+    window.__saTestVisualViewport.dispatchEvent(new Event("resize"));
+  });
+  await expect(dock).toHaveCSS("bottom", "352px");
+  await expect(nav).toHaveCSS("visibility", "hidden");
+  await page.evaluate(() => {
+    window.__saTestVisualViewport.height = window.innerHeight;
+    window.__saTestVisualViewport.dispatchEvent(new Event("resize"));
+  });
+  await expect(dock).not.toHaveAttribute("style", /bottom/);
+  await expect(nav).not.toHaveCSS("visibility", "hidden");
+});
+
 test("Study source trail, local archive, and prayer intention/timer controls work", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await mockServices(page);
