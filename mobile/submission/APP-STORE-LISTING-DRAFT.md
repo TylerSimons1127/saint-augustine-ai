@@ -26,7 +26,7 @@ PRAY — Write a private intention, ask for a guided prayer or gentle instructio
 
 TODAY — Read the daily Mass readings, learn about the saint of the day, continue the daily lesson, and follow your study progress.
 
-Conversations, notes, prayer intentions, and progress are stored on this device. Your messages, attachments, and prayer intentions are sent to the AI only when you choose to request a response; sharing and backups happen only when you choose those actions. AI replies are generated and may be mistaken. They are not the historical Augustine or official Church teaching, and they do not replace a priest or confessor. An internet connection is needed for AI responses and refreshed daily content.
+Conversations, notes, prayer intentions, and progress are stored on this device. Your messages, attachments, and prayer intentions are sent to the AI only when you choose to request a response. Requests are routed through our backend and OpenRouter to an AI model provider; providers’ retention and training practices vary. Review the Privacy Policy before using the AI features, and avoid sending information you consider highly sensitive. Sharing and backups happen only when you choose those actions. AI replies are generated and may be mistaken. They are not the historical Augustine or official Church teaching, and they do not replace a priest or confessor. An internet connection is needed for AI responses and refreshed daily content.
 
 Created by Tyler Simons, an independent student project inspired by the Saint Augustine Study Club run by Fr. Bogumil.
 
