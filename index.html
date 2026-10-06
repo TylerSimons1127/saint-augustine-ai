@@ -4172,11 +4172,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         try{ r=await fetch(API+"/api/models",{signal:controller.signal,cache:"no-store"}); }
         finally{ clearTimeout(timeout); }
         if(!r.ok) throw new Error("HTTP "+r.status);
-        const d=await r.json(), ms=d.models||[];
+        // The backend marks the only model IDs it accepts as featured. Hide
+        // other free-tier catalog entries so choosing a model never causes a
+        // predictable 400 response from /api/chat.
+        const d=await r.json(), ms=(d.models||[]).filter(m=>m.featured===true);
         models.length=0; models.push(...ms); renderModelOptions();
         const rec=ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")||ms.find(m=>m.featured)||ms[0];
         if(ms.length) selectModel(rec);
-        setStatus("Connected · free models via OpenRouter · conversations stay on this device.",false,"idle");
+        setStatus("Connected · supported free models via OpenRouter · conversations stay on this device.",false,"idle");
         modelLoadController=null; return;
       }catch(e){
         if(controller.signal.aborted){ setStatus("Connection check cancelled. Retry when you’re ready.",true,"retry"); break; }
@@ -5496,7 +5499,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const LS_TUT="sa_tut_v1";          // bump to v2/v3 when you ship new features worth teaching
   const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
   const TUTORIAL=[
-    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. The <b>★ Recommended</b> group — starting with <b>Nemotron 3 Ultra 550B</b> — is tuned for thoughtful, faithful answers. Search any of the free models, or keep the default. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
+    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. The <b>★ Recommended</b> options are the free models currently supported by the service, starting with <b>Nemotron 3 Ultra 550B</b>. Search the available options, or keep the default. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
     {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
