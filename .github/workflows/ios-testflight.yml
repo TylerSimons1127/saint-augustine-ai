@@ -1,0 +1,194 @@
+name: iOS TestFlight upload
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: macos-26
+    timeout-minutes: 60
+    env:
+      IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+      IOS_BUNDLE_ID: ${{ secrets.IOS_BUNDLE_ID }}
+      IOS_DISTRIBUTION_P12_BASE64: ${{ secrets.IOS_DISTRIBUTION_P12_BASE64 }}
+      IOS_DISTRIBUTION_P12_PASSWORD: ${{ secrets.IOS_DISTRIBUTION_P12_PASSWORD }}
+      IOS_APP_STORE_PROFILE_BASE64: ${{ secrets.IOS_APP_STORE_PROFILE_BASE64 }}
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_P8_BASE64: ${{ secrets.APP_STORE_CONNECT_KEY_P8_BASE64 }}
+    steps:
+      - name: Check out the iOS branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Validate signing setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          for name in IOS_TEAM_ID IOS_BUNDLE_ID IOS_DISTRIBUTION_P12_BASE64 IOS_DISTRIBUTION_P12_PASSWORD IOS_APP_STORE_PROFILE_BASE64 APP_STORE_CONNECT_KEY_ID APP_STORE_CONNECT_ISSUER_ID APP_STORE_CONNECT_KEY_P8_BASE64; do
+            if [[ -z "${!name:-}" ]]; then
+              echo "::error::Missing required GitHub Actions secret: ${name}"
+              exit 1
+            fi
+          done
+          CONFIGURED_BUNDLE_ID="$(node -p "require('./capacitor.config.json').appId")"
+          if [[ "$IOS_BUNDLE_ID" != "$CONFIGURED_BUNDLE_ID" ]]; then
+            echo "::error::IOS_BUNDLE_ID must match capacitor.config.json (${CONFIGURED_BUNDLE_ID}). Update and rebuild the app before uploading."
+            exit 1
+          fi
+
+      - name: Install dependencies and sync local app
+        run: |
+          npm ci
+          npm run ios:sync
+
+      - name: Import Apple signing assets
+        id: signing
+        shell: bash
+        run: |
+          set -euo pipefail
+          CERT_PATH="$RUNNER_TEMP/ios-distribution.p12"
+          PROFILE_PATH="$RUNNER_TEMP/ios-app-store.mobileprovision"
+          KEY_PATH="$RUNNER_TEMP/AuthKey.p8"
+          python3 - <<'PY'
+          import base64, os
+          files = {
+              "IOS_DISTRIBUTION_P12_BASE64": os.environ["CERT_PATH"],
+              "IOS_APP_STORE_PROFILE_BASE64": os.environ["PROFILE_PATH"],
+              "APP_STORE_CONNECT_KEY_P8_BASE64": os.environ["KEY_PATH"],
+          }
+          for secret, destination in files.items():
+              with open(destination, "wb") as output:
+                  output.write(base64.b64decode(os.environ[secret], validate=True))
+          PY
+          security cms -D -i "$PROFILE_PATH" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_UUID="$(/usr/libexec/PlistBuddy -c 'Print :UUID' "$RUNNER_TEMP/profile.plist")"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/${PROFILE_UUID}.mobileprovision"
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/ios-build.keychain-db"
+          KEYCHAIN_PASSWORD="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$IOS_DISTRIBUTION_P12_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+
+          {
+            echo "keychain_path=$KEYCHAIN_PATH"
+            echo "profile_uuid=$PROFILE_UUID"
+          } >> "$GITHUB_OUTPUT"
+          echo "::add-mask::$KEYCHAIN_PASSWORD"
+        env:
+          CERT_PATH: ${{ runner.temp }}/ios-distribution.p12
+          PROFILE_PATH: ${{ runner.temp }}/ios-app-store.mobileprovision
+          KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+
+      - name: Create App Store Connect API key file
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          payload = {
+              "key_id": os.environ["APP_STORE_CONNECT_KEY_ID"],
+              "issuer_id": os.environ["APP_STORE_CONNECT_ISSUER_ID"],
+              "key_filepath": os.environ["KEY_PATH"],
+              "in_house": False,
+          }
+          with open(os.environ["API_KEY_JSON"], "w", encoding="utf-8") as output:
+              json.dump(payload, output)
+          PY
+        env:
+          KEY_PATH: ${{ runner.temp }}/AuthKey.p8
+          API_KEY_JSON: ${{ runner.temp }}/app-store-connect-key.json
+
+      - name: Archive signed iOS app
+        shell: bash
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/SaintAugustineAI.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/sa-release-derived" \
+            DEVELOPMENT_TEAM="$IOS_TEAM_ID" \
+            PRODUCT_BUNDLE_IDENTIFIER="$IOS_BUNDLE_ID" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="${{ steps.signing.outputs.profile_uuid }}" \
+            archive
+
+      - name: Export App Store package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>signingStyle</key><string>manual</string>
+            <key>teamID</key><string>${IOS_TEAM_ID}</string>
+            <key>provisioningProfiles</key><dict>
+              <key>${IOS_BUNDLE_ID}</key><string>${{ steps.signing.outputs.profile_uuid }}</string>
+            </dict>
+          </dict></plist>
+          PLIST
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$RUNNER_TEMP/SaintAugustineAI.xcarchive" \
+            -exportPath "$RUNNER_TEMP/ios-export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist"
+          IPA_PATH="$(find "$RUNNER_TEMP/ios-export" -maxdepth 1 -name '*.ipa' -print -quit)"
+          if [[ -z "$IPA_PATH" ]]; then
+            echo "::error::Xcode did not produce an IPA."
+            exit 1
+          fi
+          echo "IPA_PATH=$IPA_PATH" >> "$GITHUB_ENV"
+
+      - name: Upload build to TestFlight
+        shell: bash
+        run: |
+          set -euo pipefail
+          gem install fastlane --no-document
+          fastlane pilot upload \
+            --ipa "$IPA_PATH" \
+            --app_identifier "$IOS_BUNDLE_ID" \
+            --api_key_path "$RUNNER_TEMP/app-store-connect-key.json" \
+            --skip_waiting_for_build_processing true
+
+      - name: Preserve the signed IPA as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: saint-augustine-ai-testflight-ipa
+          path: ${{ env.IPA_PATH }}
+          if-no-files-found: error
+
+      - name: Clean up signing material
+        if: always()
+        shell: bash
+        env:
+          KEYCHAIN_PATH: ${{ steps.signing.outputs.keychain_path }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+          rm -f \
+            "$RUNNER_TEMP/ios-distribution.p12" \
+            "$RUNNER_TEMP/ios-app-store.mobileprovision" \
+            "$RUNNER_TEMP/profile.plist" \
+            "$RUNNER_TEMP/AuthKey.p8" \
+            "$RUNNER_TEMP/app-store-connect-key.json"
