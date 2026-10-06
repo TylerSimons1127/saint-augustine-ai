@@ -53,6 +53,10 @@ Candidate after this branch is merged and deployed: https://staugustineai.vercel
 - Today includes daily readings, the saint of the day, and on-device lesson and quiz progress.
 - Conversation and answer sharing uses the iOS share sheet. Settings include a JSON backup and restore flow.
 
+## Screenshot drafts
+
+Four iPhone and four iPad screen drafts are in `screenshots-draft/`. They use Apple’s required portrait pixel dimensions but are Chromium captures without native iOS status-bar or Dynamic Island chrome. Replace them with captures from the final iOS Simulator or TestFlight app before submission.
+
 ## Owner decisions before submission
 
 - Confirm the public seller name and the App Store app name.
