@@ -24,6 +24,8 @@ npm run ios:sync
 
 ## Remaining App Store items
 
-An Apple developer account and macOS with a current Xcode release are needed to sign and upload the build. The app also needs its App Store Connect record, final privacy disclosures and policy URL, support URL, screenshots, age rating, and final review. App Store acceptance is decided by Apple; the app should be reviewed against the current minimum-functionality guidelines before submission.
+An active Apple Developer Program membership is needed to sign and upload a release. You do not need to own a Mac or iPhone for the build: GitHub Actions runs Xcode on a hosted macOS machine, and the iOS simulator workflow already compiles and launches the app there. A Mac or iPhone is useful for additional hands-on testing, especially before public release.
+
+The app still needs its App Store Connect record, final privacy disclosures and policy URL, support URL, final screenshots, age rating, and owner review. Apple decides acceptance; the app should be reviewed against the current minimum-functionality guidelines before submission.
 
 Draft listing text, a privacy-policy working copy, and owner-side TestFlight instructions are in `mobile/submission/`. The `.github/workflows/ios-testflight.yml` workflow builds and uploads a signed build after the owner adds the documented GitHub Actions secrets; a release tag can trigger it from this isolated branch. It does not submit the app for public review.

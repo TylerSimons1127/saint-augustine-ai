@@ -1,6 +1,8 @@
 # TestFlight setup for the owner
 
-The simulator build runs without an Apple account. Uploading an iPhone/iPad build to TestFlight needs your Apple Developer account, an app record, and signing credentials. The repository is configured to keep these values in GitHub Actions secrets; never commit certificates, provisioning profiles, or API keys.
+The simulator build runs without an Apple account. Uploading an iPhone/iPad build to TestFlight needs your active Apple Developer account, an app record, and signing credentials. You do not need a Mac or iPhone: the workflow builds on a GitHub-hosted macOS runner. A physical device is useful for hands-on TestFlight checks, but is not required to build or upload.
+
+The repository keeps signing values in GitHub Actions secrets; never commit certificates, provisioning profiles, private keys, or API keys. The steps below can be completed from Windows. Keep generated signing files in a private, non-synced folder and delete them when setup is complete.
 
 ## One-time Apple account tasks
 
@@ -11,6 +13,26 @@ The simulator build runs without an Apple account. Uploading an iPhone/iPad buil
 5. Create an App Store Connect Team API key with App Manager access. Download its `.p8` file once and store it securely.
 6. Create GitHub Actions secrets listed below. Use base64-encoded file contents for `.p12`, `.mobileprovision`, and `.p8`.
 7. After the secrets are set, trigger a TestFlight build by tagging the reviewed `ios-mobile-app` commit. This avoids merging the app branch into production. The workflow builds a signed archive and uploads it to TestFlight; it does not submit the app for public review.
+
+### Create the distribution certificate from Windows
+
+Git for Windows includes OpenSSL. Open PowerShell in a private folder that is not synced to cloud storage, then generate a private key and certificate request. Replace the email with the address on your Apple developer account:
+
+```powershell
+openssl genrsa -out apple_distribution.key 2048
+openssl req -new -key apple_distribution.key -out apple_distribution.csr -subj "/emailAddress=you@example.com/CN=Saint Augustine AI Distribution/C=US"
+```
+
+Upload `apple_distribution.csr` when creating an **Apple Distribution** certificate in Certificates, Identifiers & Profiles, then download the resulting `.cer` file. Convert it and create the password-protected `.p12` bundle:
+
+```powershell
+openssl x509 -inform DER -in apple_distribution.cer -out apple_distribution.pem
+openssl pkcs12 -export -inkey apple_distribution.key -in apple_distribution.pem -out apple_distribution.p12
+```
+
+OpenSSL prompts for an export password. Keep it private; it becomes the `IOS_DISTRIBUTION_P12_PASSWORD` GitHub secret. The `.key`, `.csr`, `.cer`, `.pem`, and `.p12` are signing material or intermediate files—never commit them or paste them into chat.
+
+Create an App Store provisioning profile for the registered App ID and download it. Create an App Store Connect API key with App Manager access and download its `.p8` file. Apple only makes the `.p8` download available when the key is created, so store it securely before leaving that page.
 
 ```sh
 git switch ios-mobile-app
