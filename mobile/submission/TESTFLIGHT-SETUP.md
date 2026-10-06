@@ -10,7 +10,16 @@ The simulator build runs without an Apple account. Uploading an iPhone/iPad buil
 4. Create an Apple Distribution certificate, export its certificate and private key as a password-protected `.p12`, then create an App Store provisioning profile for the same App ID.
 5. Create an App Store Connect Team API key with App Manager access. Download its `.p8` file once and store it securely.
 6. Create GitHub Actions secrets listed below. Use base64-encoded file contents for `.p12`, `.mobileprovision`, and `.p8`.
-7. Run **iOS TestFlight upload** from Actions on `ios-mobile-app`. The workflow builds a signed archive and uploads it to TestFlight; it does not submit the app for public review.
+7. After the secrets are set, trigger a TestFlight build by tagging the reviewed `ios-mobile-app` commit. This avoids merging the app branch into production. The workflow builds a signed archive and uploads it to TestFlight; it does not submit the app for public review.
+
+```sh
+git switch ios-mobile-app
+git pull --ff-only
+git tag -a ios-testflight-v1.0.0-b1 -m "Saint Augustine AI TestFlight build 1"
+git push origin ios-testflight-v1.0.0-b1
+```
+
+Use a new, unique tag name for each upload. GitHub requires a `workflow_dispatch` file to be on the default branch before it shows the manual Run workflow button; the tag trigger above works from this isolated branch without merging it.
 
 ## Required GitHub Actions secrets
 
