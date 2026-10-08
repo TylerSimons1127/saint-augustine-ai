@@ -7,7 +7,114 @@
   const search = document.getElementById('searchWrap');
   const navActions = document.querySelector('.nav-actions');
   const newChat = document.getElementById('newChat');
+  const stage = document.getElementById('stage');
   const small = window.matchMedia('(max-width:1000px)');
+  const compactReplyActions = window.matchMedia('(max-width:900px) and (pointer:coarse), (max-width:700px)');
+  let activeReplyActions = null;
+  function closeReplyActions(acts, returnFocus = false) {
+    if (!acts) return;
+    const trigger = acts.querySelector('.reply-action-trigger');
+    const panel = acts.querySelector('.reply-action-panel');
+    acts.classList.remove('is-open');
+    if (trigger) trigger.setAttribute('aria-expanded','false');
+    if (panel && compactReplyActions.matches) {
+      panel.inert = true;
+      panel.setAttribute('aria-hidden','true');
+    }
+    if (activeReplyActions === acts) {
+      activeReplyActions = null;
+      chatThread?.classList.remove('reply-actions-open');
+    }
+    if (returnFocus && trigger?.isConnected && compactReplyActions.matches) trigger.focus({preventScroll:true});
+  }
+  function keepReplyPanelClearOfDock(acts) {
+    const panel = acts?.querySelector('.reply-action-panel');
+    if (!panel) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const panelRect = panel.getBoundingClientRect();
+      const blockers = [document.querySelector('.composer'),document.querySelector('body > .nav-tabs')]
+        .filter(el => el && getComputedStyle(el).display !== 'none')
+        .map(el => el.getBoundingClientRect().top);
+      const shortLandscape = window.matchMedia('(max-height:480px) and (max-width:900px) and (pointer:coarse)').matches;
+      const clearance = shortLandscape ? 8 : 12;
+      const safeBottom = Math.min(window.innerHeight-12,...blockers) - clearance;
+      const distance = panelRect.bottom - safeBottom;
+      if (distance <= 0) return;
+      const documentScroll = window.matchMedia('(max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse)').matches;
+      const scrollTarget = documentScroll ? document.scrollingElement : stage;
+      if (scrollTarget) scrollTarget.scrollTo({top:scrollTarget.scrollTop+distance,behavior:'instant'});
+    }));
+  }
+  function syncReplyActions(root = document) {
+    const rows = [];
+    if (root.matches?.('.msg .acts')) rows.push(root);
+    root.querySelectorAll?.('.msg .acts').forEach(acts => rows.push(acts));
+    rows.forEach(acts => {
+      const trigger = acts.querySelector('.reply-action-trigger');
+      const panel = acts.querySelector('.reply-action-panel');
+      if (!trigger || !panel) return;
+      const compact = compactReplyActions.matches;
+      trigger.hidden = !compact;
+      if (compact) {
+        const open = acts.classList.contains('is-open');
+        panel.inert = !open;
+        panel.setAttribute('aria-hidden',String(!open));
+        trigger.setAttribute('aria-expanded',String(open));
+      } else {
+        acts.classList.remove('is-open');
+        panel.inert = false;
+        panel.setAttribute('aria-hidden','false');
+        trigger.setAttribute('aria-expanded','false');
+      }
+    });
+    if (activeReplyActions && !activeReplyActions.isConnected) {
+      activeReplyActions = null;
+      chatThread?.classList.remove('reply-actions-open');
+    }
+  }
+  document.addEventListener('click', event => {
+    const trigger = event.target.closest?.('.reply-action-trigger');
+    if (trigger && compactReplyActions.matches) {
+      const acts = trigger.closest('.acts');
+      if (!acts) return;
+      if (acts.classList.contains('is-open')) {
+        closeReplyActions(acts);
+      } else {
+        if (activeReplyActions && activeReplyActions !== acts) closeReplyActions(activeReplyActions);
+        acts.classList.add('is-open');
+        activeReplyActions = acts;
+        chatThread?.classList.add('reply-actions-open');
+        syncReplyActions(acts);
+        keepReplyPanelClearOfDock(acts);
+        if (event.detail === 0) acts.querySelector('.reply-action-panel .act:not([style*="display: none"])')?.focus({preventScroll:true});
+      }
+      return;
+    }
+    const action = event.target.closest?.('.reply-action-panel .act');
+    if (action && compactReplyActions.matches) closeReplyActions(action.closest('.acts'));
+    else if (activeReplyActions && !activeReplyActions.contains(event.target)) closeReplyActions(activeReplyActions);
+  });
+  document.addEventListener('pointerdown', event => {
+    if (activeReplyActions && !activeReplyActions.contains(event.target)) closeReplyActions(activeReplyActions);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && activeReplyActions) {
+      event.preventDefault();
+      closeReplyActions(activeReplyActions,true);
+    }
+  });
+  compactReplyActions.addEventListener('change', () => {
+    if (activeReplyActions) closeReplyActions(activeReplyActions);
+    syncReplyActions();
+  });
+  const replyActionObserver = new MutationObserver(records => {
+    records.forEach(record => record.addedNodes.forEach(node => {
+      if (node.nodeType === 1) syncReplyActions(node);
+    }));
+  });
+  const chatThread = document.getElementById('thread');
+  if (chatThread) replyActionObserver.observe(chatThread,{childList:true,subtree:true});
+  syncReplyActions();
   const peek = document.createElement('div');
   peek.className = 'revamp-conversation-peek';
   peek.setAttribute('aria-hidden','true');

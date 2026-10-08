@@ -4776,6 +4776,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       writeScrollTop(readScrollHeight());
     }
   }
+  function setReplyActionPanel(acts, buttonsHtml){
+    const panelId='reply-actions-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+    acts.innerHTML=
+      '<button class="reply-action-trigger" type="button" aria-label="More reply actions" aria-controls="'+panelId+'" aria-expanded="false">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg><span>More</span>'+
+      '</button><div class="reply-action-panel" id="'+panelId+'" role="group" aria-label="Reply actions" aria-hidden="true" inert>'+buttonsHtml+'</div>';
+  }
   /* v4.1 — Continue affordance for length-truncated answers: the half
      answer STAYS in history; we send a short "resume" instruction so
      Augustine picks up exactly where the limit cut him off. */
@@ -4783,8 +4790,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     if(loadingMsg.querySelector(".acts")) return;
     const acts=document.createElement("div");
     acts.className="acts";
-    acts.innerHTML='<button class="act" data-continue><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Continue</button>'+
-      '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy</button>';
+    setReplyActionPanel(acts,'<button class="act" data-continue><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Continue</button>'+
+      '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy</button>');
     loadingMsg.appendChild(acts);
     acts.querySelector("[data-continue]").addEventListener("click",()=>{
       acts.remove();
@@ -4809,13 +4816,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     if(loadingMsg.querySelector(".acts")) return;
     const acts=document.createElement("div");
     acts.className="acts";
-    acts.innerHTML='<button class="act" data-retry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Retry</button>'+
+    setReplyActionPanel(acts,'<button class="act" data-retry><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>Retry</button>'+
       '<button class="act" data-retry-deep title="Retry with more contemplative depth" aria-label="Retry with more contemplative depth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a3 3 0 0 0-3 3c0 1.5 1 2.5 1 4-1.5 0-3-.5-4-2-1 3 0 6 3 8 2 1.5 4.5 2 7 1 3-1 5-4 5-7 0-4-3-8-9-8Z" opacity=".9"/><path d="M5 20c2-1 5-1 7 0 2 1 5 1 7 0"/></svg>Deeper</button>'+
       '<button class="act" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-copy"/></svg>Copy</button>'+
       '<span class="act-sep" aria-hidden="true"></span>'+
-      '<button class="act fb" data-fb="up" title="This was helpful" aria-label="This was helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11"/><path d="M7 10l4-7a2 2 0 0 1 3 1.7V9h5.5a2 2 0 0 1 2 2.3l-1.4 7a2 2 0 0 1-2 1.7H7"/></svg></button>'+
-      '<button class="act fb" data-fb="down" title="This missed the mark" aria-label="This missed the mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V3"/><path d="M17 14l-4 7a2 2 0 0 1-3-1.7V15H4.5a2 2 0 0 1-2-2.3l1.4-7A2 2 0 0 1 5.9 4H17"/></svg></button>'+
-      '<button class="act fb" data-fb="report" title="Report a problem" aria-label="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 1-1h13l-2 4 2 4H5"/></svg></button>';
+      '<button class="act fb" data-fb="up" title="This was helpful" aria-label="This was helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11"/><path d="M7 10l4-7a2 2 0 0 1 3 1.7V9h5.5a2 2 0 0 1 2 2.3l-1.4 7a2 2 0 0 1-2 1.7H7"/></svg><span>Helpful</span></button>'+
+      '<button class="act fb" data-fb="down" title="This missed the mark" aria-label="This missed the mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V3"/><path d="M17 14l-4 7a2 2 0 0 1-3-1.7V15H4.5a2 2 0 0 1-2-2.3l1.4-7A2 2 0 0 1 5.9 4H17"/></svg><span>Not helpful</span></button>'+
+      '<button class="act fb" data-fb="report" title="Report a problem" aria-label="Report a problem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4a1 1 0 0 1 1-1h13l-2 4 2 4H5"/></svg><span>Report</span></button>'
+    );
     loadingMsg.appendChild(acts);
 
     // only offer feedback when there is a real assistant reply (not an error/stopped stub)
