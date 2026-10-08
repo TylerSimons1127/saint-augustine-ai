@@ -107,6 +107,10 @@ Run `node scripts/verify-frontend-revamp.cjs` for the repeatable static check: a
 
 ## Boundaries
 
+### Reading-room refinement — October 8, 2026
+
+All 36 approved frontend recommendations are implemented and reviewed in [the refinement checklist](frontend-refinement-checklist.md), which records the browser matrix, functional fixtures, visual review and limits. The work preserves the 215 original control IDs and source/API/backend files. New browser verifiers cover sharing selection, saved Continue recovery, streaming, attachment removal, Settings persistence, dialog keyboard behavior, portrait fallback and reading-error recovery. This pass modifies the experimental app only.
+
 The preview uses a distinct origin: browsers isolate localStorage by origin, so production data is preserved and is not automatically visible in the preview. The existing JSON backup/restore flow can copy data when desired. No production data is read or rewritten by this experiment. Religious/source content and daily generation prompts are not changed.
 
 ## Published experiment

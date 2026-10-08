@@ -2676,7 +2676,7 @@ document.addEventListener("visibilitychange",()=>{
     var tabs=document.querySelector('.nav-tabs'); if(!tabs) return;
     var home=tabs.parentElement, next=tabs.nextElementSibling;
     if(!place._home){ place._home=home; place._next=next; }
-    if(window.matchMedia('(max-width:768px)').matches){
+    if(window.matchMedia('(max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse)').matches){
       if(tabs.parentElement!==document.body) document.body.appendChild(tabs);
     } else if(tabs.parentElement!==place._home){
       place._home.insertBefore(tabs, place._next);
@@ -2781,7 +2781,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=centered-welcome-bubble-2" />
+<link rel="stylesheet" href="frontend-revamp.css?v=reading-room-36" />
 <script src="frontend-revamp.js" defer></script>
 </head>
 <body>
@@ -2925,7 +2925,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <span class="greet-brand">Saint<em>AugustineAI</em></span>
     <p class="eyebrow">Confessions · Book I, Chapter 1</p>
             <h1>&ldquo;You have made us for Yourself, O Lord, and our heart is restless until it rests in You.&rdquo;</h1>
-            <p class="sub" id="greetSub">Ask St. Augustine to explain a passage, console a weary thought, or reason through what weighs on you.</p>
+            <p class="sub" id="greetSub">Bring a question, a passage, or something on your mind.</p>
             <p class="greet-credit">Created by <b>Tyler Simons</b> · Seton Hall Prep</p>
         <div class="greet-sugg" id="greetSugg" role="list" aria-label="Starter questions">
           <button class="sugg" role="listitem" data-q="Explain the Confessions in a way a teenager can understand.">Explain the Confessions simply</button>
@@ -2958,7 +2958,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <div class="page" id="page-study" role="tabpanel" aria-label="Study">
       <div class="daily-page">
         <div class="dp-head">
-          <p class="dp-eyebrow">Lectio · Study · Understanding</p>
+          <p class="dp-eyebrow">Study</p>
           <h2>Study</h2>
           <p>Follow one topic all the way through: Augustine’s words, a passage to read, a key term, and the writing behind it.</p>
           <div class="dp-head-actions">
@@ -3130,7 +3130,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <div class="dp-cols" style="margin-top:16px">
             <button class="dp-act" id="dpActExplain">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#ic-message-lines"/></svg>
-              <span><b>Explain today's Gospel</b><small>A gentle unpacking of the message.</small></span>
+              <span><b>Explain today's Gospel</b><small>Understand the reading.</small></span>
             </button>
             <button class="dp-act" id="dpActPray">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#ic-heart"/></svg>
@@ -3202,16 +3202,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Pray with St. Augustine</h3>
           <div class="pp-intent">
             <label for="prayIntent2">What would you like to pray for?</label>
-            <input id="prayIntent2" type="text" maxlength="160" placeholder="A worry, a person, a thank-you, a need…" />
+            <textarea id="prayIntent2" rows="2" maxlength="160" placeholder="Who or what is on your heart?"></textarea>
           </div>
           <div class="dp-cols">
             <button class="dp-act" id="ppLead">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>
-              <span><b>Lead me in prayer</b><small>I'll pray with you, in my own voice.</small></span>
+              <span><b>Lead me in prayer</b><small>Pray for this intention.</small></span>
             </button>
             <button class="dp-act" id="ppTeach">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H2z"/><path d="M18 8h2a2 2 0 0 1 2 2v10"/><path d="m7 9 3 3-3 3"/></svg>
-              <span><b>Teach me to pray</b><small>A method, step by gentle step.</small></span>
+              <span><b>Teach me to pray</b><small>Learn a way to pray.</small></span>
             </button>
           </div>
         </section>
@@ -3236,7 +3236,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             </button>
             <button class="pray-chip featured" id="examenGuided" title="A guided five-step walkthrough">
               <span class="pray-chip-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-halo"/></svg></span>
-              <span class="pray-chip-copy"><span class="pray-chip-title">Guided Examen</span><small class="pray-chip-note">Five quiet steps, with room to breathe.</small></span>
+              <span class="pray-chip-copy"><span class="pray-chip-title">Guided Examen</span><small class="pray-chip-note">Reflect on your day in five steps.</small></span>
               <span class="pray-chip-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
             </button>
             <button class="pray-chip" id="tradRest">
@@ -3468,6 +3468,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <button class="settings-close" id="settingsClose" aria-label="Close settings">×</button>
   </div>
   <div class="settings-body">
+  <section class="set-sec">
     <div class="set-lbl">Appearance</div>
     <div class="set-hint">Theme</div>
     <div class="swatch-grid" id="themeGrid"></div>
@@ -4038,7 +4039,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const changedAssistantContent=new Map();
       history.length=0; (s.history||[]).forEach((m,index)=>{
         if(m&&m.role==="assistant"&&typeof m.content==="string"){
-          const visible=publicAssistantText(m.content);
+          if(/Augustine was still drawing breath when the length limit arrived/.test(m.content)) m.responseState="truncated";
+          if(/The connection faltered mid-thought/.test(m.content)) m.responseState="interrupted";
+          const visible=publicAssistantText(m.content).replace(/\n\n\*(?:Augustine was still drawing breath when the length limit arrived\. Tap Continue for the rest\.|The connection faltered mid-thought — the reply above may be incomplete\.)\*\s*$/,"");
           if(visible!==m.content){changedAssistantContent.set(index,m.content);m.content=visible;}
         }
         history.push(m);
@@ -4054,8 +4057,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             const answer=message.querySelector('.bubble');
             if(answer){const time=answer.querySelector('.ts')?.outerHTML||'';answer.innerHTML='<span class="who">St. Augustine</span>'+mdToHtml(history[index].content)+time;}
           }
-          const canContinue=!!message.querySelector('[data-continue]');
+          const responseState=history[index].responseState||message.dataset.responseState||'';
+          const canContinue=responseState==='truncated'||!!message.querySelector('[data-continue]');
           message.querySelector('.acts')?.remove();
+          if(responseState) setReplyStatus(message,responseState);
           const context=history.slice(0,index);
           const user=[...context].reverse().find(item=>item.role==='user');
           if(user) (canContinue ? addContinue : addRetry)(message,context,user);
@@ -4094,7 +4099,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const delays=[1500, 4000, 9000]; // backoff for Render free-tier cold start
     for(let attempt=0; attempt<=delays.length; attempt++){
       try{
-        if(attempt>0 && disclaimer) disclaimer.textContent="Waking up the model service… (try "+attempt+")";
+        if(attempt>0 && disclaimer) disclaimer.textContent="Connecting…";
         const r=await fetch(API+"/api/models");
         if(!r.ok) throw new Error("HTTP "+r.status);
         const d=await r.json();
@@ -4105,12 +4110,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                  || ms.find(m=>m.featured)
                  || ms[0];
         if(ms.length) selectModel(rec);
-        if(disclaimer) disclaimer.textContent="Connected · free models via OpenRouter · conversations stay on your device";
+        if(disclaimer) disclaimer.textContent="Connected · conversations saved on this device";
         return;
       }catch(e){
         if(attempt<delays.length){ await new Promise(r=>setTimeout(r, delays[attempt])); continue; }
         if(disclaimer) disclaimer.textContent="Offline — tap to retry.";
-        showToast("Couldn't load models. Backend may be asleep.");
+        showToast("Couldn't connect. Tap the connection status to retry.");
         if(disclaimer) disclaimer.style.cursor="pointer";
       }
     }
@@ -4643,9 +4648,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     send.innerHTML='<span class="sq"></span>';
     send.onclick=()=>{ aborted=true; controller.abort(); };
 
-    const depthWord = reasoning==="contemplative" ? "Augustine withdraws to contemplate\u2026"
-                    : reasoning==="quick" ? "Augustine turns to answer\u2026"
-                    : "Augustine pauses to consider\u2026";
+    const depthWord = "Preparing your response…";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+depthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
 
@@ -4710,10 +4713,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
                 if(!streaming) enhanceCodeBlocks(buf);
                 maybeScroll();
               };
-              while(true){
+      while(true){
         const {value,done}=await reader.read();
-        if(done) break;
-        bufStr += dec.decode(value,{stream:true});
+        if(value) bufStr += dec.decode(value,{stream:true});
+        if(done){ bufStr += dec.decode(); if(bufStr && !bufStr.endsWith("\n")) bufStr += "\n"; }
         let nl;
         while((nl=bufStr.indexOf("\n"))>=0){
           const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1);
@@ -4727,25 +4730,24 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(j.truncated) streamTruncated=true;   // v4.1: model hit max_tokens
           }catch(_){}
         }
+        if(done) break;
       }
       if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
       render(false);
       // v4.1 — the answer was cut short: say so, and offer the fix.
       if(streamStalled){
-        acc += "\n\n*The connection faltered mid-thought — the reply above may be incomplete.*";
-        render(false);
-        history.push({role:"assistant", content:pasteOpening+acc});
-        recordSession(userMsg, pasteOpening+acc);
+        setReplyStatus(loading,"interrupted");
+        history.push({role:"assistant", content:pasteOpening+acc,responseState:"interrupted"});
         addRetry(loading, messages, userMsg);
-        showToast("Answer interrupted — tap Retry to have Augustine continue.");
+        recordSession(userMsg, pasteOpening+acc);
+        showToast("Response interrupted. Retry to receive a new answer.");
         return;
       }
       if(streamTruncated){
-        acc += "\n\n*Augustine was still drawing breath when the length limit arrived. Tap Continue for the rest.*";
-        render(false);
-        history.push({role:"assistant", content:pasteOpening+acc});
-        recordSession(userMsg, pasteOpening+acc);
+        setReplyStatus(loading,"truncated");
+        history.push({role:"assistant", content:pasteOpening+acc,responseState:"truncated"});
         addContinue(loading, messages, userMsg);
+        recordSession(userMsg, pasteOpening+acc);
         return;
       }
       // D55: announce completion once (thread aria-live is off during streaming)
@@ -4775,6 +4777,23 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       syncSend();
       writeScrollTop(readScrollHeight());
     }
+  }
+  function replyBodyText(bubble){
+    if(!bubble) return '';
+    let text=bubble.innerText.trim();
+    const author=bubble.querySelector('.who')?.innerText.trim();
+    const timestamp=bubble.querySelector('.ts')?.innerText.trim();
+    if(author && text.startsWith(author)) text=text.slice(author.length).trimStart();
+    if(timestamp && text.endsWith(timestamp)) text=text.slice(0,-timestamp.length).trimEnd();
+    return text;
+  }
+  function setReplyStatus(message,state){
+    message.dataset.responseState=state;
+    message.querySelector('.reply-status')?.remove();
+    const status=document.createElement('p');
+    status.className='reply-status'; status.setAttribute('role','status');
+    status.textContent=state==='truncated'?'This response was cut short. Choose Continue in the reply actions to read the rest.':'The connection was interrupted. This response may be incomplete.';
+    message.querySelector('.bubble')?.after(status);
   }
   function setReplyActionPanel(acts, buttonsHtml){
     const panelId='reply-actions-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
@@ -4808,7 +4827,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     });
     acts.querySelector("[data-copy]").addEventListener("click",()=>{
       const b=loadingMsg.querySelector(".bubble");
-      const txt=b? b.innerText.replace(/^Augustine\s*/,"").trim() : "";
+      const txt=replyBodyText(b);
       navigator.clipboard.writeText(txt).then(()=>showToast("Copied")).catch(()=>showToast("Copy failed"));
     });
   }
@@ -4831,7 +4850,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     acts.querySelectorAll(".fb").forEach(b=>{ if(!hasReply) b.style.display="none"; });
 
     const b=loadingMsg.querySelector(".bubble");
-    const replyText = b? b.innerText.replace(/^Augustine\s*/,"").trim() : "";
+    const replyText = replyBodyText(b);
     const replyModel = (model && model.id) || "";
 
     acts.querySelector("[data-retry]").addEventListener("click",()=>{
@@ -4849,7 +4868,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       callChatRetry(messages, userMsg);
     });
     acts.querySelector("[data-copy]").addEventListener("click",()=>{
-      const txt=b? b.innerText.replace(/^Augustine\s*/,"").trim() : "";
+      const txt=replyBodyText(b);
       navigator.clipboard.writeText(txt).then(()=>showToast("Copied")).catch(()=>showToast("Copy failed"));
     });
 
@@ -4926,23 +4945,25 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     send.classList.add("stop"); send.disabled=false; send.innerHTML='<span class="sq"></span>';
     const controller=new AbortController(); let aborted=false;
     send.onclick=()=>{ aborted=true; controller.abort(); };
-    const retryDepthWord = reasoning==="contemplative" ? "Augustine withdraws to contemplate\u2026"
-                    : reasoning==="quick" ? "Augustine turns to answer\u2026"
-                    : "Augustine pauses to consider\u2026";
+    const retryDepthWord = "Preparing your response…";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+retryDepthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
-    let acc="", bufStr="";
+    let acc="", bufStr="", retryTruncated=false, retryStalled=false;
     try{
       const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages,pastedAiSignal}),signal:controller.signal});
       if(!res.ok){ let msg="Request failed ("+res.status+")"; try{ const e=await res.json(); msg=e.error||msg; }catch(_){} throw new Error(msg); }
       if(!res.body) throw new Error("No response stream.");
       const reader=res.body.getReader(); const dec=new TextDecoder();
       const render=(s)=>{ const visibleAcc=publicAssistantText(pasteOpening+acc); const inner=s?esc(visibleAcc)+'<span class="caret"></span>':mdToHtml(visibleAcc); buf.className="bubble md"; buf.innerHTML='<span class="who">St. Augustine</span>'+inner; maybeScroll(); };
-      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.text){acc+=j.text;render(true);} }catch(_){} } }
+      while(true){ const {value,done}=await reader.read(); if(done) break; bufStr+=dec.decode(value,{stream:true}); let nl; while((nl=bufStr.indexOf("\n"))>=0){ const line=bufStr.slice(0,nl).trim(); bufStr=bufStr.slice(nl+1); if(!line||!line.startsWith("data:"))continue; const data=line.slice(5).trim(); if(data==="{}"||data==="[DONE]")continue; try{ const j=JSON.parse(data); if(j.text){acc+=j.text;render(true);} if(j.truncated) retryTruncated=true; if(j.stalled) retryStalled=true; }catch(_){} } }
       if(!acc.trim()) throw new Error("No answer came through. Try again or choose another model.");
       render(false);
       if(window.__replyBell) window.__replyBell();
-      history.push({role:"assistant",content:pasteOpening+acc}); recordSession(userMsg, pasteOpening+acc); addRetry(loading, messages, userMsg);
+      const responseState=retryTruncated?'truncated':retryStalled?'interrupted':'';
+      if(responseState) setReplyStatus(loading,responseState);
+      history.push({role:"assistant",content:pasteOpening+acc,...(responseState?{responseState}:{})});
+      (retryTruncated?addContinue:addRetry)(loading,messages,userMsg);
+      recordSession(userMsg,pasteOpening+acc);
     }catch(e){
       const isStopped=aborted || (e&&e.name==="AbortError");
       const msg=isStopped ? "Stopped." : (e&&e.message)||"Something went wrong.";
@@ -5276,10 +5297,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   (function timeGreeting(){
     const el=document.getElementById("greetSub"); if(!el) return;
     const h=new Date().getHours();
-    el.textContent = h<5 ? "The hour is late. If something is keeping you awake, bring it to him now — he kept vigil too."
-      : h<11 ? "It is early. Bring the morning to him before the day gets loud — a question, a passage, a worry."
-      : h<17 ? "Midday. Bring whatever the morning stirred up — a passage, a doubt, a joy — and reason through it with him."
-      : "Evening now. Unpack the day with him — what went right, what weighed on you — before you rest.";
+    el.textContent = h<5 ? "Bring what is keeping you awake."
+      : h<11 ? "Begin your day with a question, a passage, or a prayer."
+      : h<17 ? "Bring a question or something on your mind."
+      : "Reflect on your day, or ask what is on your mind.";
   })();
   document.addEventListener("keydown",e=>{
     // Command palette: Cmd/Ctrl+K
@@ -5938,8 +5959,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             const lead=String(t.primaryExcerpt||(t.excerpt||[])[0]||"").trim();
             const closeReading=String(t.summary||"").trim();
             lessonExcerpt.innerHTML=[
-              lead?'<p class="askable">'+esc(lead)+"</p>":"",
-              closeReading?'<p class="lesson-reading-context">'+esc(closeReading)+"</p>":""
+              lead?'<span class="source-kind">'+(t.primaryExcerpt?'Excerpt':'Lesson introduction')+'</span><p class="askable">'+esc(lead)+"</p>":"",
+              closeReading?'<span class="source-kind">Reading notes</span><p class="lesson-reading-context">'+esc(closeReading)+"</p>":""
             ].filter(Boolean).join("");
             $$('p.askable',lessonExcerpt).forEach(p=>{
               p.tabIndex=0; p.classList.add("askable");
@@ -6342,7 +6363,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               '<div class="dp-reading"><span class="rl">'+esc(label)+'</span><p>'+esc(txt)+'</p></div>').join("");
             if(d.link){ const l=$('#dpReadingsLink'); if(l && d.link) l.href=d.link; }
           }).catch(e=>{
-            dpReadings.innerHTML='<p class="dp-error">'+esc(e&&e.message||"Could not load today's readings.")+' They are always waiting on the USCCB site.</p><button class="dp-cta dp-cta-ghost" id="readingsRetry" style="margin-top:10px">Try again</button>';
+            dpReadings.innerHTML='<p class="dp-error">Today’s readings could not be loaded. Try again or read them on USCCB.org.</p><button class="dp-cta dp-cta-ghost" id="readingsRetry">Try again</button>';
             const rr=document.getElementById("readingsRetry");
             if(rr) rr.addEventListener("click",()=>{ delete dpReadings.dataset.loaded; loadDailyReadings(); });
           });
