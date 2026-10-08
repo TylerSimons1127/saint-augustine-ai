@@ -28,6 +28,8 @@ try{for(const width of [390,1440]){
  assert.ok(row.metadata.every(e=>e.size>=12));
  await page.screenshot({path:path.join(path.resolve(__dirname,'../../artifacts'),`reading-details-${width}-today.png`),fullPage:true});
  await page.getByRole('tab',{name:'Study',exact:true}).click();
+ assert.ok(!(await page.locator('#lessonKicker').textContent()).includes(' read'));
+ assert.ok((await page.locator('#lessonReadStatus').textContent()).includes('lessons read'));
  await page.locator('#lessonBrowse').click();await page.waitForTimeout(200);
  await page.keyboard.press('Escape');await page.waitForTimeout(100);
  assert.equal(await page.locator('#lessonBrowserScrim').evaluate(e=>e.inert),true);

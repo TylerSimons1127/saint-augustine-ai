@@ -2781,7 +2781,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=reading-room-36" />
+<link rel="stylesheet" href="frontend-revamp.css?v=reading-room-36-final" />
 <script src="frontend-revamp.js" defer></script>
 </head>
 <body>
@@ -2974,6 +2974,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <div class="lesson-heading">
               <span class="dp-eyebrow-mini" id="lessonKicker">Lesson of the Day</span>
               <h4 class="topic-name" id="lessonName"></h4>
+              <p class="lesson-read-status" id="lessonReadStatus"></p>
             </div>
             <div class="lesson-nav">
               <button class="daily-shuf icon" id="lessonPrev" title="Previous lesson" aria-label="Previous lesson">
@@ -6014,7 +6015,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         // completion indicator preserves the distinction between the daily lesson and a chosen topic.
         function updateLessonProgress(){
           const s=readSet();
-          if(lessonKicker) lessonKicker.textContent=(lessonMode==="selected"?"Selected Topic":"Lesson of the Day")+" · "+(lessonIdx%LESSON.length+1)+" of "+LESSON.length+(s.size?" · "+s.size+" read":"");
+          if(lessonKicker) lessonKicker.textContent=(lessonMode==="selected"?"Selected Topic":"Lesson of the Day")+" · "+(lessonIdx%LESSON.length+1)+" of "+LESSON.length;
+          const lessonReadStatus=document.getElementById('lessonReadStatus');
+          if(lessonReadStatus) lessonReadStatus.textContent=(s.has(lessonIdx)?"Read":"Not yet read")+" · "+s.size+" of "+LESSON.length+" lessons read";
         }
         // Searchable topic browser. Selecting a topic opens the same complete connected path.
         const lbScrim=$('#lessonBrowserScrim'), lbGrid=$('#lessonBrowserGrid'), lbClose=$('#lessonBrowserClose'), lbSub=$('#lessonBrowserSub'), lbSearch=$('#lessonSearch'), lbResults=$('#lessonResults');

@@ -1322,6 +1322,7 @@ html[data-theme] #page-today #todayStrip .ts-n { font-variant-numeric: tabular-n
 .saint-bio-toggle { display: inline-flex; align-items: center; min-height: 44px; padding: 6px 0px; border: 0px; background: transparent; color: var(--primary); font: 600 13px/1.5 var(--body); text-decoration: underline; text-underline-offset: 4px; }
 .source-footer { padding-top: 12px; margin-top: 16px; border-top: 1px solid var(--border); font: 400 13px/1.6 var(--body); color: var(--muted); text-align: center; }
 .source-kind { display: block; margin-bottom: 4px; font: 600 12px/1.4 var(--body); letter-spacing: 0px; color: var(--ink-soft); text-transform: none; }
+.lesson-read-status { margin: 8px 0px 0px; color: var(--muted); font: 400 12px/1.5 var(--body); letter-spacing: 0px; text-transform: none; }
 .lesson-citation, .lesson-source, .gl-src { font: 400 13px/1.6 var(--body); letter-spacing: 0px; text-transform: none; }
 .bubble.md h1, .bubble.md h2, .bubble.md h3, .quiz-q, .gl-item .gl-term { font-family: var(--body); font-weight: 600; }
 .quiz-q { font-size: 18px; line-height: 1.5; }

@@ -64,6 +64,8 @@ All 36 items above were reviewed against the current implementation and browser 
 
 The integrity check passes: 215 original DOM IDs retained, inline/presentation scripts parse, API configuration, lesson content and backend unchanged. `git diff --check` passes. Landscape and desktop checks were repeated after their final geometry fixes.
 
+Live review with saved progress exposed the old combined lesson-position/read count. `lessonKicker` now contains only context and position; `lessonReadStatus` separately states whether this lesson was read and the total lessons read. The detail verifier asserts this separation. The preview deployment uses `vercel deploy --prod --yes --scope tyler12-8038` from the worktree linked to `frontend-revamp-deploy`; an unscoped deployment can fail authorization despite a valid CLI login. Remote `main` was `064f9a5e6e6ad596532453cdba919b2ad3c9fda5` before this publication.
+
 ## Limits
 
 These are emulated browser viewports, not physical iOS/Android devices. Native share recipient delivery, the operating-system keyboard and live provider answer quality are not proven by fixture tests. Historical daily-content/provider issues listed in the feature inventory require backend work outside this frontend refinement. Production and the landing page are outside this change.
