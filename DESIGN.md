@@ -1,54 +1,36 @@
 # Saint Augustine AI — experimental reading room
 
-## Scope and boundaries
+## Scope
 
-An isolated frontend experiment on `frontend-revamp-test`, based on production commit `825e6d0`. Production stays on `main`. All existing DOM IDs, content, storage keys, API routes, streaming, and event handlers are retained. The prototype stays on the current static HTML/CSS/JavaScript stack; all app pages and existing controls remain connected to their original behavior.
+The experiment lives on `frontend-revamp-test` and the separate Vercel preview. Existing page IDs, backend connections, response streaming, storage keys, preferences, and religious content stay connected to their existing behavior. The landing page is outside this refinement.
 
-## Art direction
+## Design direction
 
-**Midnight Linen** pairs soft book paper and warm linen with ink navy, slate, and the landing page's champagne-peach `#d9c4a9`. The result is Catholic and warm without leaning on the familiar green-and-red interface palette. Navy carries primary actions and active states; champagne is a restrained marker for quotations, selected accents, and moments that should feel tactile. Feedback and destructive states use quiet slate or parchment tones while keeping their wording and symbols clear.
+A Catholic reading room in natural morning light: the mountain landscape is a single continuous backdrop. Reading and reflection use opaque paper; navigation may use restrained translucency. The retained peach accent `#d9c4a9` marks selected states, navy carries primary actions, and muted ink supports sources and labels. Newsreader belongs to major headings, quotations, and lesson titles; Hanken Grotesk belongs to controls, explanations, and sustained reading.
 
-The app is treated as a reading room: an original mountain-at-dawn photograph carries continuously behind warm, lightly translucent reading surfaces, while editorial headings orient each page. A soft, slow-moving pool of dawn light gives the scene life without animating or blurring the photograph itself. Study opens with one compact lesson path and progressive disclosure; numbered steps connect on a fine reading rail, and the open step receives a warm paper highlight. Its topic chooser presents the 32-lesson curriculum as a curated index, with softly dimensional topic rows, restrained numbering, clear daily/selected/read states, and a focused search field. The daily quiz uses lettered answer anchors and quiet outcome marks so choices remain easy to scan and review on a phone. On tall, wide screens, the quiz and next-day teaser stay together in a sticky side column beside the lesson; tablet, short-window, and phone layouts retain a linear sequence after the reading. Today keeps the current readings, saint, and progress easy to scan; its three summary metrics use warm, lightly dimensional paper surfaces and matching icon medallions. The conversation drawer gives its empty state a quiet, welcoming panel. Prayer opens with a softly veiled scene and clear intention entry points, then turns the traditional prayer list into quiet, icon-led rows with concise invitations and tactile arrows. Guided Examen receives a restrained paper highlight; its five-part progress rail, readable reflection text, and breathing halo keep the exercise present without competing with the prayer list. The shared composer is hidden while reading and appears as a focused reflection sheet when someone chooses to ask Augustine a question. Its three response depths share one inset, warm-paper selection lens that glides to the chosen mode and keeps a clear four-sided margin on phones.
+Short titles and quotations remain centered. Paragraphs, editable fields, and repeated action descriptions use a predictable left edge. Scenery is not repeated inside mastheads. Boxes inside boxes, icon medallions, decorative quote marks, redundant arrows, and ornamental badges are removed where they obscure hierarchy.
 
-Today, Study, and Prayer center their page introductions, card headings, compact prompts, and short supporting copy so the page feels composed around each reading surface. Scripture, source excerpts, biographies, and other long reflections remain left aligned within a comfortable measure. Chat keeps its conversational alignment.
+## Page compositions
 
-The Chat welcome centers Augustine’s opening quotation and its companion invitation. Study’s page introduction sits in a softly translucent paper panel, separating its title, explanation, and topic controls from the scenic backdrop while keeping the landscape present around it.
+- **Chat:** a centered opening quotation with simple starter rows; existing conversations show only the conversation. Reply prose has paper behind it. More groups common response actions separately from feedback; system status sits outside Augustine’s answer. Normal sharing is a compact header action, with message selection retaining its dedicated mode.
+- **Study:** a compact masthead leads into one connected document with numbered disclosures. Sources have clear quotation/excerpt context and source footers. The lesson’s reflection action is consolidated into one primary entry. The quiz stays readable and communicates its result through wording and outcome symbols as well as color.
+- **Today:** a short daily briefing, legible 12px progress labels, and independent reading/saint columns at desktop. On smaller screens the reading, saint, lesson, and quiz retain their original order. A four-line biography preview expands in place; the saint has a consistent portrait crop and an intentional halo fallback.
+- **Pray:** a compact invitation followed by a readable expanding intention field and differentiated guidance actions. Traditional prayers are simple icon-and-text rows. Guided Examen keeps its functional breathing cue and five movements.
 
-On wider screens, the Chat welcome places the passage beside its starter prompts so the fixed composer does not obscure them; phones retain the compact two-by-two prompt grid.
+## Shared components
 
-Newsreader gives headings a quieter, bookish character with a more editorial rhythm; Hanken Grotesk supports long-form reading and compact controls. Mobile keeps the four-tab navigation stable, preserves comfortable touch targets and safe areas, and lets long content breathe without a fixed composer covering it. Tablet and desktop gain wider, deliberate columns without stretching reading text across the screen.
+Controls use the existing 7px radius, paper cards 12px, and modal sheets 20px. Primary actions use navy; secondary actions use quiet borders or links. Meaningful compact labels are at least 12px. Mobile controls retain 44px targets and their safe-area spacing. The composer keeps all three response depths visible without a heavy nested surface. Settings groups Appearance, Atmosphere, Conversation, and Data instead of showing all options at once. Dialogs share a title-and-close header. Toasts use the same ink palette with readable wording and symbols.
 
-## References researched
+## Motion
 
-| Source | Useful idea | Application here |
-| --- | --- | --- |
-| [Readwise Reader](https://readwise.io/read) and [Reader documentation](https://docs.readwise.io/reader/docs) | Keep the reading surface focused and make annotation and text-size preferences part of reading, not an afterthought. | Hide the shared composer until reflection is requested, keep passages and sources together, and retain the existing saved reading preferences. |
-| [Hallow](https://hallow.com/features/) | Make daily prayer approachable through clear, guided entry points. | Keep intention entry, guided prayer, and the Church's traditional prayers visibly distinct and easy to start. |
-| [Linear](https://linear.app/) | Use a consistent visual language across navigation, controls, and states. | Carry the same restrained surfaces, focus behavior, and compact controls across all four pages. |
+One brief page entrance communicates navigation. Individual cards, prompts, statistics, and empty states no longer repeat staggered entrance choreography. The slow ambient dawn-light layer and purposeful Examen breathing cue remain. The operating system and saved reduced-motion preferences stop ambient motion and remove transitions. Hover does not lift passive reading cards.
 
-These references informed hierarchy and interactions. Their layouts, copy, and branding are not reproduced.
+## Stylesheet strategy
 
-## Design tokens
+The late-loaded stylesheet resolves the retained production stylesheet without replacing its behavior. An initial consolidation removed 555 obsolete declarations for identical selectors in the same cascade context while retaining order and important priorities. Component contracts then establish explicit reading surfaces, page compositions, dialog headers, and action groups. Necessary `!important` declarations remain where the earlier inline stylesheet would otherwise override mobile geometry. Future changes should edit the component contract instead of adding another historical override pass.
 
-The default Parchment theme is presented as **Midnight Linen**; its stored theme ID remains `parchment` for compatibility. Other saved theme choices remain available. The landing page uses the same palette.
+## References
 
-| Role | Color | Use |
-| --- | --- | --- |
-| Linen canvas | `#f5f3ee` | App background |
-| Warm paper | `#fffdf9` | Reading cards, navigation, and controls |
-| Ink | `#252833` | Main text |
-| Secondary ink | `#4b4e59` | Supporting text |
-| Midnight navy | `#303a55` | Main actions and selected controls |
-| Slate | `#596c88` | Links, labels, icons, and focus states |
-| Champagne peach | `#d9c4a9` | Quiet highlight and brand accent |
-| Soft peach | `#f1e9de` | Selected surfaces and quiet highlights |
+[Readwise Reader](https://readwise.io/read) informed focused reading and saved preferences; [Hallow](https://hallow.com/features/) informed approachable prayer entry points; [Linear](https://linear.app/) informed consistency across controls and states. Their branding, content, and compositions are not copied. Research into generic AI interface patterns informed removal of repeated luxury styling, unnecessary containers, decorative metadata, and motion without a purpose.
 
-Radii: 7px controls, 14px reading cards, 20px sheets. Reading cards use borders and paper tones; the welcome surface and focused composer use soft, offset shadows. Type keeps the existing family, with fluid editorial headings and comfortable line height. Existing reply-size, motion, theme, and scenery settings continue to work.
-
-Motion is restrained and respects both the operating system's reduced-motion preference and the saved motion setting. Page changes use a brief, single entrance; Study disclosures reveal their reading content with a short, soft lift; Today’s metrics and the empty conversation state arrive with a brief stagger; the quiz and Examen progress indicators advance with their existing steps; the Examen breathing halo follows its breathing circle; controls respond to hover, focus, and press. The only ambient loop is a 58-second transform-and-opacity drift in the small dawn-light layer; it pauses while the tab is hidden and stops for either reduced-motion preference.
-
-## Implementation strategy
-
-The late-loaded stylesheet refines the existing DOM without replacing app behavior. A presentation script adds accessible contextual reflection entry points, focuses and dismisses the shared composer sheet, and normalizes the redundant Today saint heading. A narrow client-side sanitizer removes explicit model-thought markers and obvious planning prose from assistant content at render, history, sharing, and export boundaries; it does not change prompts, lesson content, API routes, or backend filtering.
-
-The preview is marked noindex. Its marketing-page app links remain on the preview origin. See [feature inventory](docs/frontend-revamp-inventory.md) for page coverage, the verification record, and known backend limits.
+Browser verification and known limits belong in [the feature inventory](docs/frontend-revamp-inventory.md). Code changes and static parsing alone are not evidence of visual quality.

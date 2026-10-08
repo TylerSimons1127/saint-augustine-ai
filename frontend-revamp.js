@@ -7,7 +7,127 @@
   const search = document.getElementById('searchWrap');
   const navActions = document.querySelector('.nav-actions');
   const newChat = document.getElementById('newChat');
+  const stage = document.getElementById('stage');
   const small = window.matchMedia('(max-width:1000px)');
+  const compactReplyActions = window.matchMedia('(max-width:900px) and (pointer:coarse), (max-width:700px)');
+  let activeReplyActions = null;
+  function closeReplyActions(acts, returnFocus = false) {
+    if (!acts) return;
+    const trigger = acts.querySelector('.reply-action-trigger');
+    const panel = acts.querySelector('.reply-action-panel');
+    acts.classList.remove('is-open');
+    if (trigger) trigger.setAttribute('aria-expanded','false');
+    if (panel && compactReplyActions.matches) {
+      panel.inert = true;
+      panel.setAttribute('aria-hidden','true');
+    }
+    if (activeReplyActions === acts) {
+      activeReplyActions = null;
+      chatThread?.classList.remove('reply-actions-open');
+    }
+    if (returnFocus && trigger?.isConnected && compactReplyActions.matches) trigger.focus({preventScroll:true});
+  }
+  function keepReplyPanelClearOfDock(acts) {
+    const panel = acts?.querySelector('.reply-action-panel');
+    if (!panel) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const panelRect = panel.getBoundingClientRect();
+      const blockers = [document.querySelector('.composer'),document.querySelector('body > .nav-tabs')]
+        .filter(el => el && getComputedStyle(el).display !== 'none')
+        .map(el => el.getBoundingClientRect().top);
+      const shortLandscape = window.matchMedia('(max-height:480px) and (max-width:900px) and (pointer:coarse)').matches;
+      const clearance = shortLandscape ? 8 : 12;
+      const safeBottom = Math.min(window.innerHeight-12,...blockers) - clearance;
+      const distance = panelRect.bottom - safeBottom;
+      if (distance <= 0) return;
+      const documentScroll = window.matchMedia('(max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse)').matches;
+      const scrollTarget = documentScroll ? document.scrollingElement : stage;
+      if (scrollTarget) scrollTarget.scrollTo({top:scrollTarget.scrollTop+distance,behavior:'instant'});
+    }));
+  }
+  function syncReplyActions(root = document) {
+    const rows = [];
+    if (root.matches?.('.msg .acts')) rows.push(root);
+    root.querySelectorAll?.('.msg .acts').forEach(acts => rows.push(acts));
+    rows.forEach(acts => {
+      const trigger = acts.querySelector('.reply-action-trigger');
+      const panel = acts.querySelector('.reply-action-panel');
+      if (!trigger || !panel) return;
+      if (!panel.querySelector('.reply-action-group')) {
+        const common = document.createElement('div');
+        common.className = 'reply-action-group';
+        common.setAttribute('role','group');
+        common.setAttribute('aria-label','Response actions');
+        const feedback = document.createElement('div');
+        feedback.className = 'reply-feedback-group';
+        feedback.setAttribute('role','group');
+        feedback.setAttribute('aria-label','Response feedback');
+        [...panel.children].forEach(button => (button.matches('[data-fb]') ? feedback : common).appendChild(button));
+        panel.append(common);
+        if (feedback.children.length) panel.append(feedback);
+      }
+      const compact = compactReplyActions.matches;
+      trigger.hidden = !compact;
+      if (compact) {
+        const open = acts.classList.contains('is-open');
+        panel.inert = !open;
+        panel.setAttribute('aria-hidden',String(!open));
+        trigger.setAttribute('aria-expanded',String(open));
+      } else {
+        acts.classList.remove('is-open');
+        panel.inert = false;
+        panel.setAttribute('aria-hidden','false');
+        trigger.setAttribute('aria-expanded','false');
+      }
+    });
+    if (activeReplyActions && !activeReplyActions.isConnected) {
+      activeReplyActions = null;
+      chatThread?.classList.remove('reply-actions-open');
+    }
+  }
+  document.addEventListener('click', event => {
+    const trigger = event.target.closest?.('.reply-action-trigger');
+    if (trigger && compactReplyActions.matches) {
+      const acts = trigger.closest('.acts');
+      if (!acts) return;
+      if (acts.classList.contains('is-open')) {
+        closeReplyActions(acts);
+      } else {
+        if (activeReplyActions && activeReplyActions !== acts) closeReplyActions(activeReplyActions);
+        acts.classList.add('is-open');
+        activeReplyActions = acts;
+        chatThread?.classList.add('reply-actions-open');
+        syncReplyActions(acts);
+        keepReplyPanelClearOfDock(acts);
+        if (event.detail === 0) acts.querySelector('.reply-action-panel .act:not([style*="display: none"])')?.focus({preventScroll:true});
+      }
+      return;
+    }
+    const action = event.target.closest?.('.reply-action-panel .act');
+    if (action && compactReplyActions.matches) closeReplyActions(action.closest('.acts'),event.detail === 0 && action.dataset.fb !== 'report');
+    else if (activeReplyActions && !activeReplyActions.contains(event.target)) closeReplyActions(activeReplyActions);
+  });
+  document.addEventListener('pointerdown', event => {
+    if (activeReplyActions && !activeReplyActions.contains(event.target)) closeReplyActions(activeReplyActions);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && activeReplyActions) {
+      event.preventDefault();
+      closeReplyActions(activeReplyActions,true);
+    }
+  });
+  compactReplyActions.addEventListener('change', () => {
+    if (activeReplyActions) closeReplyActions(activeReplyActions);
+    syncReplyActions();
+  });
+  const replyActionObserver = new MutationObserver(records => {
+    records.forEach(record => record.addedNodes.forEach(node => {
+      if (node.nodeType === 1) syncReplyActions(node);
+    }));
+  });
+  const chatThread = document.getElementById('thread');
+  if (chatThread) replyActionObserver.observe(chatThread,{childList:true,subtree:true});
+  syncReplyActions();
   const peek = document.createElement('div');
   peek.className = 'revamp-conversation-peek';
   peek.setAttribute('aria-hidden','true');
@@ -45,6 +165,9 @@
   function syncPage() {
     const active = document.querySelector('.nav-tab.on');
     if (active) document.body.dataset.page = active.dataset.page;
+    document.body.classList.toggle('history-contextual',active?.dataset.page !== 'chat');
+    if (sidebar.classList.contains('open')) toggle.click();
+    syncDrawer();
     if (readerOpen && active?.dataset.page !== readerPage) closeReaderComposer(false);
   }
   const saintName = document.getElementById('saintName');
@@ -58,8 +181,9 @@
     syncSaintHeading();
   }
   function syncDrawer() {
-    const open = sidebar.classList.contains('open') && small.matches;
-    sidebar.inert = small.matches && !open;
+    const drawer = small.matches || document.body.classList.contains('history-contextual');
+    const open = sidebar.classList.contains('open') && drawer;
+    sidebar.inert = drawer && !open;
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-controls', 'sidebar');
     sidebar.setAttribute('aria-label', 'Conversations');
@@ -76,7 +200,7 @@
   }
   close.addEventListener('click', () => {if(sidebar.classList.contains('open')) toggle.click();});
   sidebar.addEventListener('keydown', event => {
-    if (!small.matches || !sidebar.classList.contains('open')) return;
+    if (!(small.matches || document.body.classList.contains('history-contextual')) || !sidebar.classList.contains('open')) return;
     if (event.key === 'Tab') {
       const controls = [...sidebar.querySelectorAll('button,input,a,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
       const first = controls[0], last = controls[controls.length - 1];
@@ -198,5 +322,240 @@
     if(event.shiftKey && document.activeElement === first){event.preventDefault();last.focus();}
     else if(!event.shiftKey && document.activeElement === last){event.preventDefault();first.focus();}
   });
+
+  // Organize preferences without replacing controls or their saved values.
+  const settings = document.getElementById('settingsSheet');
+  const settingsBody = settings?.querySelector('.settings-body');
+  if (settingsBody) {
+    const sections = [...settingsBody.querySelectorAll(':scope > .set-sec')];
+    const names = ['Appearance','Atmosphere','Conversation','Data'];
+    const categories = document.createElement('div');
+    categories.className = 'settings-categories';
+    categories.setAttribute('role','tablist');
+    categories.setAttribute('aria-label','Settings categories');
+    const about = settingsBody.querySelector('.about');
+    if (sections[3] && about) sections[3].appendChild(about);
+    const soundRow = document.getElementById('soundToggle')?.closest('.set-row');
+    if (sections[2] && soundRow) sections[2].appendChild(soundRow);
+    function chooseCategory(index, focus = false) {
+      sections.forEach((section,i) => {
+        section.hidden = i !== index;
+        section.inert = i !== index;
+        const tab = categories.children[i];
+        tab.setAttribute('aria-selected',String(i === index));
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      settingsBody.scrollTop = 0;
+      if (focus) categories.children[index]?.focus();
+    }
+    sections.forEach((section,index) => {
+      section.id = section.id || 'settings-category-' + index;
+      section.setAttribute('role','tabpanel');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'settings-category';
+      button.id = 'settings-category-tab-' + index;
+      button.textContent = names[index] || 'Other';
+      button.setAttribute('role','tab');
+      button.setAttribute('aria-controls',section.id);
+      section.setAttribute('aria-labelledby',button.id);
+      button.addEventListener('click',() => chooseCategory(index));
+      button.addEventListener('keydown',event => {
+        let next;
+        if (event.key === 'ArrowRight') next = (index + 1) % sections.length;
+        if (event.key === 'ArrowLeft') next = (index + sections.length - 1) % sections.length;
+        if (event.key === 'Home') next = 0;
+        if (event.key === 'End') next = sections.length - 1;
+        if (next !== undefined) {event.preventDefault();chooseCategory(next,true);}
+      });
+      categories.appendChild(button);
+    });
+    settings.insertBefore(categories,settingsBody);
+    if (sections.length) chooseCategory(0);
+  }
+
+  // One heading and close treatment for searchable reading dialogs.
+  [['lessonBrowserScrim','lessonBrowserTitle','lessonBrowserClose'],['glossaryScrim','glossaryTitle','glossaryClose']].forEach(([scrimId,titleId,closeId]) => {
+    const title = document.getElementById(titleId);
+    const button = document.getElementById(closeId);
+    const modal = title?.closest('.beta-modal');
+    if (!modal || !button) return;
+    modal.querySelector(':scope > .tag')?.remove();
+    const header = document.createElement('div');
+    header.className = 'dialog-head';
+    modal.insertBefore(header,modal.firstChild);
+    header.append(title,button);
+    button.className = 'dialog-close';
+    button.removeAttribute('style');
+    button.textContent = '×';
+    button.setAttribute('aria-label','Close ' + title.textContent.toLowerCase());
+  });
+
+  const focusable = root => [...root.querySelectorAll('button:not(:disabled),input:not(:disabled),textarea:not(:disabled),a[href],[tabindex]:not([tabindex="-1"])')]
+    .filter(element => !element.closest('[hidden],[inert]') && element.getClientRects().length);
+  function manageDialog(element, closeButton, isOpen) {
+    if (!element) return;
+    let wasVisible = false;
+    let returnTo = null;
+    const sync = () => {
+      const visible = isOpen();
+      element.inert = !visible;
+      element.setAttribute('aria-hidden',String(!visible));
+      if (visible && !wasVisible) {
+        returnTo = document.activeElement.closest?.('.acts')?.querySelector('.reply-action-trigger') || document.activeElement;
+        requestAnimationFrame(() => (closeButton || focusable(element)[0])?.focus({preventScroll:true}));
+      }
+      if (!visible && wasVisible && returnTo?.isConnected) returnTo.focus({preventScroll:true});
+      wasVisible = visible;
+    };
+    new MutationObserver(sync).observe(element,{attributes:true,attributeFilter:['class','hidden']});
+    element.addEventListener('keydown',event => {
+      if (!isOpen()) return;
+      if (event.key === 'Escape' && closeButton) {event.preventDefault();closeButton.click();return;}
+      if (event.key !== 'Tab') return;
+      const controls = focusable(element), first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {event.preventDefault();last?.focus();}
+      else if (!event.shiftKey && document.activeElement === last) {event.preventDefault();first?.focus();}
+    });
+    sync();
+  }
+  manageDialog(settings,document.getElementById('settingsClose'),() => settings.classList.contains('show'));
+  [['lessonBrowserScrim','lessonBrowserClose'],['glossaryScrim','glossaryClose'],['whatsNewScrim','whatsNewClose'],['betaModal','betaAgree'],['tutModal','tutSkip'],['confirmScrim','confirmCancel']].forEach(([id,button]) => {
+    const element = document.getElementById(id);
+    manageDialog(element,document.getElementById(button),() => element.classList.contains('show'));
+  });
+  ['modelPop','sceneryPop'].forEach(id => {
+    const popover = document.getElementById(id);
+    if (!popover) return;
+    const syncPopover = () => {popover.inert = popover.hidden || !popover.classList.contains('open');};
+    new MutationObserver(syncPopover).observe(popover,{attributes:true,attributeFilter:['class','hidden']});
+    syncPopover();
+  });
+  manageDialog(examen,document.getElementById('examenClose'),() => !examen.hidden);
+  const reportObserver = new MutationObserver(records => {
+    records.forEach(record => record.addedNodes.forEach(element => {
+      if (element.nodeType !== 1 || !element.matches('.report-scrim')) return;
+      const cancel = element.querySelector('.rp-cancel');
+      const head = element.querySelector('.rp-head');
+      const dismiss = document.createElement('button');
+      dismiss.className = 'dialog-close';
+      dismiss.type = 'button';
+      dismiss.textContent = '×';
+      dismiss.setAttribute('aria-label','Close report');
+      dismiss.addEventListener('click',() => cancel?.click());
+      head?.appendChild(dismiss);
+      manageDialog(element,dismiss,() => element.classList.contains('show'));
+    }));
+  });
+  reportObserver.observe(document.body,{childList:true});
+
+  // Keep a biography concise initially while retaining the entire supplied text.
+  const biography = document.getElementById('saintBio');
+  if (biography) {
+    const readMore = document.createElement('button');
+    readMore.className = 'saint-bio-toggle';
+    readMore.type = 'button';
+    readMore.setAttribute('aria-controls','saintBio');
+    biography.insertAdjacentElement('afterend',readMore);
+    let previousBio = '';
+    const syncBio = () => {
+      const text = biography.textContent.trim();
+      if (text !== previousBio) {
+        previousBio = text;
+        biography.classList.add('saint-bio-collapsed');
+        readMore.setAttribute('aria-expanded','false');
+        readMore.textContent = 'Read full biography';
+      }
+      readMore.hidden = text.length < 380 || Boolean(biography.querySelector('.skel,button'));
+      if (readMore.hidden) biography.classList.remove('saint-bio-collapsed');
+    };
+    readMore.addEventListener('click',() => {
+      const expanded = readMore.getAttribute('aria-expanded') !== 'true';
+      readMore.setAttribute('aria-expanded',String(expanded));
+      readMore.textContent = expanded ? 'Show less' : 'Read full biography';
+      biography.classList.toggle('saint-bio-collapsed',!expanded);
+    });
+    new MutationObserver(syncBio).observe(biography,{childList:true,subtree:true,characterData:true});
+    syncBio();
+  }
+  const portrait = document.getElementById('saintPortrait');
+  if (portrait) {
+    const image = document.createElement('img');
+    image.alt = '';
+    image.decoding = 'async';
+    image.className = 'saint-portrait-image';
+    image.hidden = true;
+    const fallback = document.createElement('span');
+    fallback.className = 'saint-portrait-fallback';
+    fallback.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><use href="#ic-halo"/></svg>';
+    portrait.append(image,fallback);
+    let lastImage = '';
+    const syncPortrait = () => {
+      const url = portrait.style.backgroundImage.match(/^url\(["']?(.*?)["']?\)$/)?.[1] || '';
+      if (url === lastImage) return;
+      lastImage = url;
+      portrait.classList.add('is-fallback');
+      image.hidden = true;
+      fallback.hidden = false;
+      if (url) image.src = url;
+      else image.removeAttribute('src');
+    };
+    image.addEventListener('load',() => {
+      const usable = image.naturalWidth >= 96 && image.naturalHeight >= 96;
+      image.hidden = !usable;
+      fallback.hidden = usable;
+      portrait.classList.toggle('is-fallback',!usable);
+    });
+    image.addEventListener('error',() => {image.hidden = true;fallback.hidden = false;portrait.classList.add('is-fallback');});
+    new MutationObserver(syncPortrait).observe(portrait,{attributes:true,attributeFilter:['style']});
+    syncPortrait();
+    // Empty initial response needs the same intentional fallback.
+    if (!lastImage) portrait.classList.add('is-fallback');
+  }
+  ['lessonQuoteSource','lessonReadingCitation','lessonPrimarySource'].forEach(id => document.getElementById(id)?.classList.add('source-footer'));
+  const studyHead = document.getElementById('threadStudy')?.closest('.dp-thread')?.querySelector('.phead');
+  const studyAsk = document.getElementById('lessonAsk');
+  if (studyHead && studyAsk) {
+    const customAsk = studyHead.querySelector('.reader-ask');
+    if (customAsk) {
+      customAsk.classList.add('reader-ask-secondary');
+      customAsk.querySelector('span').textContent = 'Ask your own question';
+      customAsk.dataset.readerTitle = 'Ask about this lesson';
+    }
+    const heading = studyHead.querySelector('h3');
+    if (heading) heading.textContent = 'Reflect on this lesson';
+    studyHead.insertBefore(studyAsk,customAsk || null);
+  }
+  const shareTools = document.getElementById('threadShareTools');
+  if (shareTools) {
+    const syncShare = () => shareTools.classList.toggle('is-compact-share',!chatThread.classList.contains('share-selecting'));
+    new MutationObserver(syncShare).observe(chatThread,{attributes:true,attributeFilter:['class']});
+    syncShare();
+  }
+  const todayReadings = document.getElementById('sec-readings');
+  if (todayReadings) {
+    const columns = [['today-reading-column',['sec-readings','sec-lesson']],['today-saint-column',['saintCard','sec-quiz']]];
+    const parent = todayReadings.parentElement;
+    columns.forEach(([className,ids]) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = className;
+      parent.insertBefore(wrapper,parent.querySelector('.dp-thread'));
+      ids.forEach(id => {const card = document.getElementById(id);if (card) wrapper.appendChild(card);});
+    });
+  }
+  const prayerIntention = document.getElementById('prayIntent2');
+  if (prayerIntention?.tagName === 'TEXTAREA') {
+    const resizeIntention = () => {
+      prayerIntention.style.height = 'auto';
+      const height = Math.min(prayerIntention.scrollHeight,144);
+      prayerIntention.style.height = height + 'px';
+      prayerIntention.style.overflowY = prayerIntention.scrollHeight > 144 ? 'auto' : 'hidden';
+    };
+    prayerIntention.addEventListener('input',resizeIntention);
+    window.addEventListener('pagechange',() => {
+      if (document.body.dataset.page === 'prayer') requestAnimationFrame(resizeIntention);
+    });
+    if (prayerIntention.getClientRects().length) resizeIntention();
+  }
   placeSearch(); syncPage(); syncDrawer();
 })();
