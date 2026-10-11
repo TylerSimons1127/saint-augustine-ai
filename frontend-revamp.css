@@ -1945,3 +1945,12 @@ body:has(#thread.share-selecting) .dock { display: none !important; }
   #composer .reasoning { min-height: 52px !important; }
   #composer .reasoning .seg { min-height: 44px !important; height: 44px !important; }
 }
+
+/* Brand icon sizing: square tile keeps the new app mark crisp in the header. */
+.topnav .nav-brand .mark{width:26px!important;height:26px!important;object-fit:contain;border-radius:7px;filter:none;flex:none}
+.pray-hero .mk{width:38px!important;height:38px!important;object-fit:contain;border-radius:11px}
+.rp-head .mk{width:32px!important;height:32px!important;object-fit:contain;border-radius:9px}
+.beta-modal .mk{width:64px!important;height:64px!important;object-fit:contain;border-radius:16px}
+.about .mk{width:40px!important;height:40px!important;object-fit:contain;border-radius:10px}
+@media (max-width:768px){.topnav .nav-brand .mark{width:22px!important;height:22px!important}}
+@media (max-width:360px){.topnav .nav-brand .mark{width:20px!important;height:20px!important}}

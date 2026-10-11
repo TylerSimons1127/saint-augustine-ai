@@ -6,6 +6,8 @@
   <meta name="description" content="Saint Augustine AI is a free Catholic companion for Scripture, study, daily formation, and prayer—shaped by Augustine of Hippo and grounded in verifiable sources.">
   <link rel="canonical" href="https://staugustineai.vercel.app/landing">
   <meta name="theme-color" content="#f8f8f0">
+  <link rel="icon" href="assets/saint-augustine-icon-64.png" type="image/png" sizes="64x64">
+  <link rel="apple-touch-icon" href="assets/saint-augustine-icon-192.png" sizes="192x192">
   <title>Saint Augustine AI — A voice for the restless heart</title>
   <style>
     /* Hallmark · macrostructure: Split Studio · H2 hero knobs: ratio=7/5, proof=cinematic-still, crop=asymmetric
@@ -82,8 +84,8 @@
 
     .nav{height:var(--banner-height);padding-inline:var(--page-gutter);display:flex;align-items:center;justify-content:space-between;position:absolute;z-index:var(--z-sticky-nav);inset:0 0 auto;color:var(--color-night-text)}
     .brand{display:inline-flex;align-items:center;gap:var(--space-3);text-decoration:none;font-family:var(--font-display);font-size:var(--text-xl);font-weight:500;white-space:nowrap}
-    .brand-mark{width:1.4rem;height:1.4rem;display:grid;place-items:center;color:var(--color-gold)}
-    .brand-mark svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6}
+    .brand-mark{width:2rem;height:2rem;display:grid;place-items:center;color:var(--color-gold);flex:none}
+    .brand-mark .brand-icon{display:block;width:100%;height:100%;object-fit:contain;border-radius:8px;box-shadow:0 2px 9px rgba(31,27,22,.13)}
     .nav-cta,.button{display:inline-flex;align-items:center;justify-content:center;min-height:2.9rem;padding:.75rem 1.1rem;border-radius:var(--radius-sm);border:var(--rule-hair) solid currentColor;text-decoration:none;font-weight:600;line-height:1;white-space:nowrap;transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),box-shadow var(--dur-fast) var(--ease-out)}
     .nav-cta:hover,.button:hover{transform:translateY(-2px)}
     .nav-cta:active,.button:active{transform:translateY(1px)}
@@ -402,7 +404,7 @@
   <div class="progress" aria-hidden="true"></div>
   <header class="nav shell" aria-label="Primary navigation">
     <a class="brand" href="#top" aria-label="Saint Augustine AI home">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 27C7 21 4 16 4 10.5A6.5 6.5 0 0 1 16 7a6.5 6.5 0 0 1 12 3.5C28 16 25 21 16 27Z"/><path d="M16 7v20" opacity=".45"/></svg></span>
+      <span class="brand-mark" aria-hidden="true"><img class="brand-icon" src="assets/saint-augustine-icon-512.png" alt=""></span>
       <span>Saint Augustine AI</span>
     </a>
     <a class="nav-cta magnetic" href="https://staugustineai.vercel.app/">Open the app&nbsp;→</a>

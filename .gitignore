@@ -9,6 +9,7 @@ backend/.env
 
 # Local screenshots / scratch
 *.png
+!assets/saint-augustine-icon-*.png
 *.py
 
 # OS
