@@ -1965,9 +1965,14 @@ body:has(#thread.share-selecting) .dock { display: none !important; }
     padding-inline: 16px;
     border: 1px solid color-mix(in srgb, var(--primary) 72%, var(--accent)) !important;
     border-radius: 10px;
-    background: linear-gradient(145deg, var(--primary), color-mix(in srgb, var(--primary) 78%, var(--ink))) !important;
-    color: var(--paper-50) !important;
+    background: linear-gradient(145deg, #303a55, #222b40) !important;
+    color: #fffdf9 !important;
+    -webkit-text-fill-color: #fffdf9;
+    font-size: 14px !important;
     font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: .01em;
+    opacity: 1 !important;
     box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 4px 12px color-mix(in srgb, var(--ink) 16%, transparent);
   }
   html[data-theme] .sidebar .sb-new svg {
