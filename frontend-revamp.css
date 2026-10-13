@@ -1713,7 +1713,7 @@ html[data-theme] #page-today .dp-head-actions, html[data-theme] #page-study .dp-
   .thread.reply-actions-open { padding-bottom: 64px !important; }
   .msg.assistant .bubble { box-sizing: border-box; max-width: 100% !important; padding: 16px !important; border: 1px solid var(--border) !important; border-radius: 16px !important; background: var(--panel) !important; box-shadow: 0 5px 18px color-mix(in srgb,var(--ink) 7%,transparent) !important; backdrop-filter: none !important; }
   .msg.assistant .bubble .ts { color: var(--muted); opacity: 1; }
-  .msg .acts { box-sizing: border-box; display: block; width: calc(100% - 16px); max-width: calc(100% - 16px); flex: 0 0 auto; padding: 0px !important; margin: 8px 0px 0px 16px !important; }
+  .msg .acts { box-sizing: border-box; display: block; width: 100%; max-width: 100%; flex: 0 0 auto; padding: 0px !important; margin: 8px 0px 0px !important; }
   .acts .reply-action-trigger { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 84px; min-height: 44px; padding: 0px 14px; border: 1px solid var(--border); border-radius: 999px; background: var(--panel); color: var(--ink-soft); font: 600 13px/1 var(--body); box-shadow: 0 2px 8px color-mix(in srgb,var(--ink) 5%,transparent); }
   .acts .reply-action-trigger svg { width: 16px; height: 16px; flex: 0 0 auto; }
   .acts .reply-action-panel { display: none; box-sizing: border-box; width: 100%; max-width: min(100%, 520px); grid-template-columns: repeat(2, minmax(0px, 1fr)); gap: 6px; margin-top: 8px; padding: 8px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel); box-shadow: 0 10px 26px color-mix(in srgb,var(--ink) 9%,transparent); }

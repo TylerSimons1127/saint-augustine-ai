@@ -90,3 +90,57 @@ html.sa-quiet-reading .bg{animation-play-state:paused!important;}
   .sa-prayer-carry{grid-template-columns:minmax(0,1fr) auto;}
 }
 @media(prefers-reduced-motion:reduce){.sa-feature-scrim,.sa-feature-dialog{scroll-behavior:auto!important;transition:none!important;}}
+
+/* Keep the compact reply menu in the same quiet parchment language as its follow-up chips. */
+@media (max-width:900px) and (pointer:coarse), (max-width:700px) {
+  .sa-followups button,
+  .msg .acts .reply-action-trigger {
+    min-height:38px!important;
+    padding:6px 10px!important;
+    border:1px solid var(--border,#ded8cd)!important;
+    border-radius:12px!important;
+    background:rgba(255,253,249,.62)!important;
+    color:var(--ink-soft,#4f5056)!important;
+    box-shadow:none!important;
+    font:600 11px/1.2 var(--body,system-ui,sans-serif)!important;
+    transition:border-color 150ms ease,background-color 150ms ease,color 150ms ease;
+  }
+  .msg .acts .reply-action-trigger { gap:7px; }
+  .msg .acts .reply-action-panel {
+    border-color:color-mix(in srgb,var(--border,#ded8cd) 82%,var(--accent,#d9c4a9) 18%);
+    border-radius:16px;
+    background:color-mix(in srgb,var(--paper-50,#faf8f2) 94%,transparent);
+    box-shadow:0 8px 24px color-mix(in srgb,var(--ink,#27272b) 8%,transparent);
+  }
+  .msg .acts .reply-action-panel .act {
+    min-height:44px!important;
+    padding:8px 10px!important;
+    border:1px solid var(--border,#ded8cd)!important;
+    border-radius:12px!important;
+    background:rgba(255,253,249,.62)!important;
+    color:var(--ink-soft,#4f5056)!important;
+    font:600 11px/1.25 var(--body,system-ui,sans-serif)!important;
+    box-shadow:none!important;
+    transition:border-color 150ms ease,background-color 150ms ease,color 150ms ease;
+  }
+}
+@media (max-width:900px) and (pointer:coarse) and (hover:hover), (max-width:700px) and (hover:hover) {
+  .msg .acts .reply-action-trigger:hover,
+  .msg .acts .reply-action-panel .act:hover,
+  .sa-followups button:hover {
+    border-color:color-mix(in srgb,var(--accent,#d9c4a9) 48%,var(--border,#ded8cd))!important;
+    background:color-mix(in srgb,var(--accent-soft,#f2e9dc) 72%,rgba(255,253,249,.62))!important;
+    color:var(--ink,#27272b)!important;
+  }
+}
+@media (max-width:900px) and (pointer:coarse), (max-width:700px) {
+.msg .acts .reply-action-trigger:focus-visible,
+.msg .acts .reply-action-panel .act:focus-visible,
+.sa-followups button:focus-visible {
+  outline:2px solid var(--gold-ink,#6e4a21)!important;
+  outline-offset:2px;
+}
+}
+@media (prefers-reduced-motion:reduce) {
+  .msg .acts .reply-action-trigger,.msg .acts .reply-action-panel .act,.sa-followups button {transition:none!important;}
+}

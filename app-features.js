@@ -251,11 +251,27 @@
   function enhanceMessage(message) {
     if (!message.classList.contains("assistant")) return;
     const actions = $(".acts", message); if (!actions || actions.dataset.saEnhanced) return;
+    const replyActionPanel = $(".reply-action-panel", actions);
+    if (!replyActionPanel) return;
+    let replyActionList = $(".reply-action-group", replyActionPanel);
+    if (!replyActionList) {
+      replyActionList = document.createElement("div");
+      replyActionList.className = "reply-action-group";
+      replyActionList.setAttribute("role", "group");
+      replyActionList.setAttribute("aria-label", "Response actions");
+      const feedback = document.createElement("div");
+      feedback.className = "reply-feedback-group";
+      feedback.setAttribute("role", "group");
+      feedback.setAttribute("aria-label", "Response feedback");
+      [...replyActionPanel.children].forEach((child) => (child.matches("[data-fb]") ? feedback : replyActionList).append(child));
+      replyActionPanel.append(replyActionList);
+      if (feedback.childElementCount) replyActionPanel.append(feedback);
+    }
     actions.dataset.saEnhanced = "1";
     const source = citations(message), bubble = $(".bubble", message);
     const addButton = (label, action, className = "") => {
       const button = document.createElement("button"); button.type = "button"; button.className = "act sa-message-action " + className; button.textContent = label;
-      button.addEventListener("click", action); actions.append(button); return button;
+      button.addEventListener("click", action); replyActionList.append(button); return button;
     };
     addButton("Copy with sources", async () => {
       try { await navigator.clipboard.writeText(citationFirstCopy(message)); toast("Answer and sources copied ✓"); }
