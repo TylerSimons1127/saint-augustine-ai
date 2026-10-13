@@ -1,16 +1,23 @@
 // SaintAugustineAI — backend
-// Zero-dependency Node HTTP server. Holds the OpenRouter API key SERVER-SIDE
-// (never in the public frontend) and serves the app's model, chat, reading,
+// Zero-dependency Node HTTP server. Calls Amazon Bedrock first, with OpenRouter
+// as an automatic fallback. Provider credentials stay server-side.
+// Serves the app's model, chat, reading,
 // saint, health, and category-only feedback endpoints.
 //
 // Env:
-//   OPENROUTER_API_KEY  (required)  — your OpenRouter key
+//   AWS_BEARER_TOKEN_BEDROCK (recommended) — Amazon Bedrock API key
+//   BEDROCK_API_KEY          (alias)       — Amazon Bedrock API key
+//   BEDROCK_MODEL_ID         (default nvidia.nemotron-super-3-120b)
+//   AWS_REGION               (default us-east-1)
+//   BEDROCK_TIMEOUT_MS        (default 20000) — max wait for Bedrock response headers
+//   BEDROCK_STREAM_START_TIMEOUT_MS (default 7000) — max wait for first stream bytes
+//   OPENROUTER_API_KEY       (required fallback) — your OpenRouter key
 //   PORT                 (default 3000)
 //   SYSPROMPT_CACHE_MS   (default 120000) — how long to cache the free-models list
 //
 // Routes:
 //   GET  /api/healthz, /api/health -> minimal availability status
-//   GET  /api/models               -> OpenRouter free-model list
+//   GET  /api/models               -> Bedrock primary + OpenRouter fallback models
 //   GET  /api/readings, /api/saint -> today's sourced content
 //   POST /api/chat                 -> streamed assistant text; reasoning is private
 //   POST /api/feedback              -> allowlisted category only; never conversation text
@@ -22,6 +29,13 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER = process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+const BEDROCK_KEY = process.env.AWS_BEARER_TOKEN_BEDROCK || process.env.BEDROCK_API_KEY || "";
+const BEDROCK_REGION = process.env.AWS_REGION || process.env.BEDROCK_REGION || "us-east-1";
+const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || "nvidia.nemotron-super-3-120b";
+const BEDROCK_OPTION_ID = "bedrock-primary";
+const BEDROCK_CHAT_URL = (process.env.BEDROCK_BASE_URL || `https://bedrock-runtime.${BEDROCK_REGION}.amazonaws.com/openai/v1`).replace(/\/$/, "") + "/chat/completions";
+const BEDROCK_TIMEOUT_MS = Math.max(5000, Math.min(Number(process.env.BEDROCK_TIMEOUT_MS) || 20000, 110000));
+const BEDROCK_STREAM_START_TIMEOUT_MS = Math.max(1000, Math.min(Number(process.env.BEDROCK_STREAM_START_TIMEOUT_MS) || 7000, 30000));
 const MODELS_CACHE_MS = Number(process.env.SYSPROMPT_CACHE_MS) || 120000;
 
 // ---- loads the Catholic/Augustine persona once at boot ----
@@ -47,15 +61,16 @@ function readBody(req, limit = 2 * 1024 * 1024) {
     req.on("error", reject);
   });
 }
-function sendJson(res, code, obj) {
+function sendJson(res, code, obj, extraHeaders = {}) {
   const body = JSON.stringify(obj);
   res.writeHead(code, {
     "Content-Type": "application/json; charset=utf-8",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Expose-Headers": "X-Model-Used, X-SA-Source, X-SA-Fetched-At",
+    "Access-Control-Expose-Headers": "X-Model-Used, X-Provider-Used, X-SA-Source, X-SA-Fetched-At",
     "Cache-Control": "no-store",
+    ...extraHeaders,
   });
   res.end(body);
 }
@@ -63,10 +78,10 @@ function cors(res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Expose-Headers", "X-Model-Used, X-SA-Source, X-SA-Fetched-At");
+  res.setHeader("Access-Control-Expose-Headers", "X-Model-Used, X-Provider-Used, X-SA-Source, X-SA-Fetched-At");
 }
 
-// Hard timeout on outbound calls so a hung upstream (common on free model tiers)
+// Hard timeout on outbound calls so a hung provider
 // can't wedge the request forever. Without this, a slow OpenRouter chat can hang
 // the connection until the provider itself closes — the "contemplative times out"
 // symptom. AbortController gives us a clean, user-facing failure instead.
@@ -77,6 +92,55 @@ async function fetchWithTimeout(url, options = {}, ms = 30000) {
     return await fetch(url, { ...options, signal: ctrl.signal });
   } finally {
     clearTimeout(t);
+  }
+}
+
+function bedrockModelOption() {
+  const label = BEDROCK_MODEL_ID === "nvidia.nemotron-super-3-120b"
+    ? "NVIDIA Nemotron 3 Super 120B"
+    : BEDROCK_MODEL_ID;
+  return {
+    id: BEDROCK_OPTION_ID,
+    name: `Amazon Bedrock · ${label}`,
+    desc: "Primary provider. OpenRouter is used automatically if Bedrock cannot answer.",
+    context: null,
+    featured: true,
+    primary: true,
+    provider: "bedrock",
+  };
+}
+
+async function requestBedrock(payload, timeoutMs = BEDROCK_TIMEOUT_MS) {
+  if (!BEDROCK_KEY) return null;
+  return fetchWithTimeout(BEDROCK_CHAT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${BEDROCK_KEY}` },
+    body: JSON.stringify({ ...payload, model: BEDROCK_MODEL_ID }),
+  }, timeoutMs);
+}
+
+// Confirm that a successful streaming response produces bytes before committing
+// HTTP headers to the browser. Response.clone() tees the first bytes back to the
+// original body, so proxyStream can still forward the complete stream afterward.
+async function waitForStreamStart(response, timeoutMs) {
+  if (!response || !response.body) return false;
+  let reader;
+  try { reader = response.clone().body.getReader(); } catch (_) { return false; }
+  let timer;
+  try {
+    const result = await Promise.race([
+      reader.read(),
+      new Promise((resolve) => { timer = setTimeout(() => resolve({ timedOut: true }), timeoutMs); }),
+    ]);
+    if (!result || result.timedOut || result.done || !result.value?.byteLength) {
+      try { reader.cancel().catch(() => {}); } catch (_) {}
+      try { response.body.cancel().catch(() => {}); } catch (_) {}
+      return false;
+    }
+    try { reader.cancel().catch(() => {}); } catch (_) {}
+    return true;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -155,24 +219,38 @@ const CURATED_ORDER = new Map(CURATED.map((id, i) => [id, i]));
 
 async function getFreeModels() {
   if (modelsCache.data && Date.now() - modelsCache.at < MODELS_CACHE_MS) return modelsCache.data;
-  const res = await fetchWithTimeout(`${OPENROUTER}/models`, { headers: { Authorization: `Bearer ${KEY}` } }, 15000);
-  if (!res.ok) throw new Error(`OpenRouter models ${res.status}`);
-  const json = await res.json();
-  const list = (json.data || [])
-    .filter((m) => m.id.includes(":free") && m.pricing && m.pricing.prompt === "0" && m.pricing.completion === "0")
-    .map((m) => ({
-      id: m.id,
-      name: prettyName(m.id),
-      desc: (m.description || "").replace(/\s+/g, " ").trim().slice(0, 120),
-      context: m.context_length || null,
-      featured: CURATED.includes(m.id) ? true : undefined,
-    }))
-    .sort((a, b) => {
-      const af = CURATED_ORDER.has(a.id), bf = CURATED_ORDER.has(b.id);
-      if (af && bf) return CURATED_ORDER.get(a.id) - CURATED_ORDER.get(b.id);
-      if (af !== bf) return af ? -1 : 1;
-      return a.name.localeCompare(b.name);
-    });
+  const list = BEDROCK_KEY ? [bedrockModelOption()] : [];
+  if (KEY) {
+    try {
+      const res = await fetchWithTimeout(`${OPENROUTER}/models`, { headers: { Authorization: `Bearer ${KEY}` } }, 15000);
+      if (!res.ok) throw new Error(`OpenRouter models ${res.status}`);
+      const json = await res.json();
+      const backups = (json.data || [])
+        .filter((m) => typeof m.id === "string" && CURATED.includes(m.id) && m.pricing && m.pricing.prompt === "0" && m.pricing.completion === "0")
+        .map((m) => ({
+          id: m.id,
+          name: prettyName(m.id),
+          desc: BEDROCK_KEY
+            ? `OpenRouter backup preference. ${(m.description || "").replace(/\s+/g, " ").trim().slice(0, 88)}`.trim()
+            : (m.description || "").replace(/\s+/g, " ").trim().slice(0, 120),
+          context: m.context_length || null,
+          featured: CURATED.includes(m.id) ? true : undefined,
+          provider: "openrouter",
+          fallbackOnly: !!BEDROCK_KEY,
+        }))
+        .sort((a, b) => {
+          const af = CURATED_ORDER.has(a.id), bf = CURATED_ORDER.has(b.id);
+          if (af && bf) return CURATED_ORDER.get(a.id) - CURATED_ORDER.get(b.id);
+          if (af !== bf) return af ? -1 : 1;
+          return a.name.localeCompare(b.name);
+        });
+      list.push(...backups);
+    } catch (e) {
+      if (!list.length) throw e;
+      console.warn("OpenRouter backup model list unavailable; keeping Bedrock primary model option.");
+    }
+  }
+  if (!list.length) throw new Error("No model provider is configured.");
   modelsCache = { at: Date.now(), data: list };
   return list;
 }
@@ -191,7 +269,7 @@ function prettyName(id) {
 
 // ---- chat proxy (streams SSE) ----
 function friendlyError(status) {
-  if (status === 401) return "The backend's OpenRouter key is missing or invalid. Add OPENROUTER_API_KEY.";
+  if (status === 401) return "The configured model provider rejected its key. Check the provider credentials in the backend environment.";
   if (status === 429) return "That model is temporarily rate-limited (free tier). Pick another or retry shortly.";
   if (status === 402) return "The OpenRouter account has no credits (free-tiers exhausted or restricted).";
   if (status >= 500) return `The model provider reported an error (${status}). Try a different free model.`;
@@ -202,9 +280,9 @@ function friendlyError(status) {
 async function handleChat(req, res, body) {
   const { model, messages, reasoning, stream, pastedAiSignal } = body;
   if (!model) return sendJson(res, 400, { error: "Missing 'model'." });
-  // Lock the requested model to the curated free-tier allowlist. The API is
-  // public, so without this anyone could proxy paid models through our key.
-  if (!CURATED.includes(model)) {
+  // Requests may select the Bedrock primary or nominate a curated OpenRouter
+  // backup. Never accept a caller-supplied provider model ID.
+  if (model !== BEDROCK_OPTION_ID && !CURATED.includes(model)) {
     recordChat(model, "err");
     recordError(400);
     return sendJson(res, 400, { error: "That model is not on the available list. Choose one of the offered models." });
@@ -265,16 +343,88 @@ async function handleChat(req, res, body) {
     temperature,
   };
 
-  // Retry order: the user's chosen model first, then the rest of the curated
-  // list. Free models vanish or get rate-limited without warning; failing over
-  // to another curated model keeps the chat alive instead of 404-ing the user.
-  const ordered = [model];
-  for (const c of CURATED) if (c !== model) ordered.push(c);
+  let lastErr = { status: 503, error: "Neither Amazon Bedrock nor OpenRouter is available right now. Please try again shortly.", detail: "" };
 
-  let lastErr = { status: 502, error: "Could not reach OpenRouter.", detail: "" };
+  // Amazon Bedrock is the primary provider whenever its server-side API key is
+  // configured. The OpenAI-compatible Chat Completions endpoint preserves this
+  // backend's request and streaming contract. OpenRouter is attempted only if
+  // Bedrock fails before a response stream has been sent to the browser.
+  if (BEDROCK_KEY) {
+    let upstream = null;
+    try {
+      upstream = await requestBedrock(payloadBase, BEDROCK_TIMEOUT_MS);
+    } catch (e) {
+      lastErr = e.name === "AbortError"
+        ? { status: 504, error: "Amazon Bedrock took too long to respond. Trying the backup provider.", detail: "" }
+        : { status: 502, error: "Could not reach Amazon Bedrock. Trying the backup provider.", detail: "" };
+    }
+
+    if (upstream && upstream.ok && payloadBase.stream &&
+        (!upstream.body || !/text\/event-stream/i.test(upstream.headers.get("content-type") || ""))) {
+      try { await upstream.body?.cancel(); } catch (_) {}
+      upstream = null;
+      lastErr = { status: 502, error: "Amazon Bedrock returned an invalid stream. Trying the backup provider.", detail: "" };
+    }
+    if (upstream && upstream.ok && payloadBase.stream &&
+        !await waitForStreamStart(upstream, BEDROCK_STREAM_START_TIMEOUT_MS)) {
+      upstream = null;
+      lastErr = { status: 504, error: "Amazon Bedrock did not start streaming in time. Trying the backup provider.", detail: "" };
+    }
+
+    if (upstream && upstream.ok) {
+      const usedModel = `bedrock:${BEDROCK_MODEL_ID}`;
+      if (!payloadBase.stream) {
+        const json = await upstream.json();
+        recordChat(usedModel, "ok");
+        return sendJson(res, 200, {
+          content: json.choices?.[0]?.message?.content || "",
+          model: usedModel,
+          provider: "bedrock",
+        }, { "X-Model-Used": usedModel, "X-Provider-Used": "bedrock" });
+      }
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Expose-Headers": "X-Model-Used, X-Provider-Used",
+        "X-Model-Used": usedModel,
+        "X-Provider-Used": "bedrock",
+        "X-Accel-Buffering": "no",
+      });
+      await proxyStream(upstream, res, reasoning);
+      recordChat(usedModel, "ok");
+      return;
+    }
+
+    if (upstream) {
+      let detail = "";
+      try {
+        const errorBody = await upstream.json();
+        detail = errorBody.error?.message || errorBody.message || "";
+      } catch (_) {}
+      lastErr = {
+        status: upstream.status,
+        error: `Amazon Bedrock returned ${upstream.status}; trying the backup provider.`,
+        detail,
+      };
+    }
+    const metricKey = `bedrock:${BEDROCK_MODEL_ID}`;
+    const bedrockMetrics = metrics.byModel[metricKey] || (metrics.byModel[metricKey] = { ok: 0, err: 0, fallback: 0 });
+    bedrockMetrics.fallback++;
+  }
+
+  // Prefer the user's nominated OpenRouter backup, then try every other
+  // curated free backup once.
+  const preferredBackup = CURATED.includes(model) ? model : CURATED[0];
+  const ordered = [preferredBackup, ...CURATED.filter((candidate) => candidate !== preferredBackup)];
   for (const cand of ordered) {
     let upstream;
     try {
+      if (!KEY) {
+        lastErr = { status: 503, error: "Amazon Bedrock could not answer and the OpenRouter backup key is not configured.", detail: "" };
+        break;
+      }
       upstream = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
@@ -305,7 +455,8 @@ async function handleChat(req, res, body) {
       return sendJson(res, 200, {
         content: json.choices?.[0]?.message?.content || "",
         model: json.model,
-      });
+        provider: "openrouter",
+      }, { "X-Model-Used": cand, "X-Provider-Used": "openrouter" });
       // (non-stream success path — count handled below via stream branch)
     }
 
@@ -314,8 +465,9 @@ async function handleChat(req, res, body) {
       "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Expose-Headers": "X-Model-Used",
+      "Access-Control-Expose-Headers": "X-Model-Used, X-Provider-Used",
       "X-Model-Used": cand,
+      "X-Provider-Used": "openrouter",
       "X-Accel-Buffering": "no",
     });
     await proxyStream(upstream, res, reasoning);
@@ -895,21 +1047,39 @@ async function getSaintSummary(name, fullStory) {
 }
 async function generateSaintText(sys, userText, maxTokens, maxChars, acceptOutput = null) {
   const models = [CURATED[1] || CURATED[0], CURATED[2] || CURATED[0], CURATED[0]].filter((v, i, a) => a.indexOf(v) === i);
+  const payload = {
+    max_tokens: maxTokens,
+    temperature: 0.35,
+    stream: false,
+    messages: [{ role: "system", content: sys }, { role: "user", content: userText }],
+  };
+  const readAcceptedText = async (res) => {
+    if (!res || !res.ok) return null;
+    const j = await res.json();
+    const msg = j.choices?.[0]?.message || {};
+    let text = (typeof msg.content === "string" ? msg.content : "").trim();
+    text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
+      .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
+    return text.length >= 80 && text.length <= maxChars && (!acceptOutput || acceptOutput(text)) ? text : null;
+  };
+
+  // Keep generated saint reflections on the same provider order as chat.
+  if (BEDROCK_KEY) {
+    try {
+      const text = await readAcceptedText(await requestBedrock(payload, 20000));
+      if (text) return text;
+    } catch (_) { /* fall through to the OpenRouter backup */ }
+  }
+  if (!KEY) return null;
   for (const model of models) {
     try {
       const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
-        body: JSON.stringify({ model, max_tokens: maxTokens, temperature: 0.35, stream: false,
-          messages: [{ role: "system", content: sys }, { role: "user", content: userText }] }),
+        body: JSON.stringify({ ...payload, model }),
       }, 20000);
-      if (!res.ok) continue;
-      const j = await res.json();
-      const msg = j.choices?.[0]?.message || {};
-      let text = (typeof msg.content === "string" ? msg.content : "").trim();
-      text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
-        .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
-      if (text.length >= 80 && text.length <= maxChars && (!acceptOutput || acceptOutput(text))) return text;
+      const text = await readAcceptedText(res);
+      if (text) return text;
     } catch (_) { /* try next model */ }
   }
   return null;
@@ -924,9 +1094,8 @@ async function getSaintConn(name, bio) {
     return JEROME_AUGUSTINE_LINK;
   }
   const sys = "Write a thoughtful, polished editorial reflection for the Saint of the Day panel, in third person (do not impersonate Augustine). Use exactly 2 sentences, about 35-55 words. Ground one sentence in a distinctive, verifiable fact from the supplied biography; connect it to a specific, accurate Augustinian theme or writing only when the connection is meaningful. Prefer an actual historical link when the source documents one. Otherwise present a careful affinity, never imply the saints met or shared a direct relationship. Avoid generic praise and reusable templates. Return only the reflection, with no heading or commentary.";
-  // try the fast models first, then the big one — 3 attempts, 20s each.
-  // (First prod attempt returned null: CURATED[0] is a heavy reasoning model with a 12s
-  // ceiling — a non-stream completion of that class regularly exceeds it.)
+  // Bedrock is attempted first in generateSaintText; these OpenRouter backups
+  // start with the faster curated models and remain bounded to three attempts.
   const line = await generateSaintText(sys,
     `Saint: ${name}\nComplete source story: ${bio}\n\nWrite the 2-sentence "Connected to St. Augustine" reflection for this saint.`,
     160, 500, (output) => isSaintConnectionOutput(output, name, bio));
@@ -972,7 +1141,12 @@ const server = http.createServer(async (req, res) => {
   const url = (req.url || "").split("?")[0];
   try {
     if (req.method === "GET" && url === "/api/health") return sendJson(res, 200, { ok: true });
-    if (req.method === "GET" && url === "/api/healthz") return sendJson(res, 200, { ok: true });
+    if (req.method === "GET" && url === "/api/healthz") return sendJson(res, 200, {
+      ok: true,
+      primaryProvider: BEDROCK_KEY ? "bedrock" : KEY ? "openrouter" : "unconfigured",
+      providers: { bedrock: !!BEDROCK_KEY, openrouter: !!KEY },
+      bedrockModel: BEDROCK_KEY ? BEDROCK_MODEL_ID : null,
+    });
     if (req.method === "GET" && url === "/api/models") {
       try { return sendJson(res, 200, { models: await getFreeModels() }); }
       catch (e) { return sendJson(res, 502, { error: "Could not fetch models." }); }

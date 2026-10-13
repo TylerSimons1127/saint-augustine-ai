@@ -9,6 +9,16 @@ services:
     buildCommand: "npm install"
     startCommand: "npm start"
     envVars:
+      - key: AWS_BEARER_TOKEN_BEDROCK
+        sync: false
+      - key: AWS_REGION
+        value: us-east-1
+      - key: BEDROCK_MODEL_ID
+        value: nvidia.nemotron-super-3-120b
+      - key: BEDROCK_TIMEOUT_MS
+        value: 20000
+      - key: BEDROCK_STREAM_START_TIMEOUT_MS
+        value: 7000
       - key: OPENROUTER_API_KEY
         sync: false
       - key: PORT

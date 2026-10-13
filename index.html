@@ -3434,7 +3434,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <div class="beta-rows">
       <div class="beta-row">
         <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-        <div><b>Your history stays on this device</b><br><span>When you send a message, it travels through our Render service to OpenRouter so a model can answer. Their handling follows their own policies; avoid sending sensitive information.</span></div>
+        <div><b>Your history stays on this device</b><br><span>Conversation history stays in this browser. Messages travel through our Render service to the providers shown in the model picker. When Bedrock is configured, it answers first; OpenRouter may receive a message if Bedrock cannot answer. Avoid sending sensitive information.</span></div>
       </div>
       <div class="beta-row">
         <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg></span>
@@ -3558,7 +3558,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   <section class="set-sec">
     <div class="set-lbl">Data (on this device)</div>
-    <p class="set-hint">Conversation history and saved items stay in this browser. When you send a message, it is sent through our Render service to OpenRouter for a reply. Each provider has its own data policies; avoid sending sensitive information.</p>
+    <p class="set-hint">Conversation history and saved items stay in this browser. Messages travel through our Render service to the providers shown in the model picker. When Bedrock is configured, it answers first; OpenRouter may receive a message if Bedrock cannot answer. Each provider has its own data policies; avoid sending sensitive information.</p>
     <div class="set-row"><button class="set-link" id="savedOpen" type="button">Saved notes, passages &amp; prayers</button></div>
     <div class="set-row">
       <span class="t" id="storageUsed">—</span>
@@ -4160,7 +4160,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     saveSessions();
   }
 
-  /* ---- load free models from the backend (with cold-start retry) ---- */
+  /* ---- load provider choices from the backend (with cold-start retry) ---- */
   let modelLoadController=null;
   async function loadModels(){
     if(modelLoadController) modelLoadController.abort();
@@ -4169,7 +4169,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const setStatus=(message,visible=true,mode="loading")=>{ if(statusText) statusText.textContent=message; if(status) status.hidden=!visible; if(disclaimer) disclaimer.textContent=message; if(cancel) cancel.hidden=mode!=="loading"; if(retry) retry.hidden=mode!=="retry"; };
     if(cancel) cancel.onclick=()=>controller.abort();
     if(retry) retry.onclick=()=>loadModels();
-    setStatus("Waking Augustine… the free service may take about a minute to return.");
+    setStatus("Connecting to the model service…");
     for(let attempt=0;attempt<2;attempt++){
       try{
         if(attempt===1) setStatus("The service is still waking. Retrying the safe connection check…");
@@ -4180,9 +4180,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         if(!r.ok) throw new Error("HTTP "+r.status);
         const d=await r.json(), ms=d.models||[];
         models.length=0; models.push(...ms); renderModelOptions();
-        const rec=ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")||ms.find(m=>m.featured)||ms[0];
+        const rec=ms.find(m=>m.primary)||ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")||ms.find(m=>m.featured)||ms[0];
         if(ms.length) selectModel(rec);
-        setStatus("Connected · free models via OpenRouter · conversations stay on this device.",false,"idle");
+        setStatus(ms.some(m=>m.primary)
+          ? "Connected · Amazon Bedrock primary, OpenRouter backup · conversations stay on this device."
+          : "Connected · OpenRouter models · conversations stay on this device.",false,"idle");
         modelLoadController=null; return;
       }catch(e){
         if(controller.signal.aborted){ setStatus("Connection check cancelled. Retry when you’re ready.",true,"retry"); break; }
@@ -4201,20 +4203,34 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const REC_KEY="saugustine_recent_models_v1";
       let recents=[];
       try{ recents=JSON.parse(localStorage.getItem(REC_KEY)||"[]").filter(x=>models.some(m=>m.id===x)).slice(0,3); }catch(e){}
-      const feat=shown.filter(m=>m.featured); const rest=shown.filter(m=>!m.featured);
+      const allShown=shown;
+      const feat=allShown.filter(m=>m.featured); const rest=allShown.filter(m=>!m.featured);
       const recentModels=recents.map(id=>models.find(m=>m.id===id)).filter(Boolean);
+      const primary=allShown.find(m=>m.primary);
       shown=[];
-      if(recentModels.length){ shown.push("__recent__", ...recentModels); }
-      shown.push(...feat);
-      if(rest.length) shown.push("__divider__", ...rest);
+      if(primary){
+        const backups=allShown.filter(m=>!m.primary);
+        const recentBackups=recentModels.filter(m=>!m.primary);
+        shown.push(primary,"__backup__");
+        if(recentBackups.length) shown.push("__recent__",...recentBackups);
+        const featuredBackups=backups.filter(m=>m.featured&&!recentBackups.some(r=>r.id===m.id));
+        const otherBackups=backups.filter(m=>!m.featured&&!recentBackups.some(r=>r.id===m.id));
+        shown.push(...featuredBackups);
+        if(otherBackups.length) shown.push("__divider__",...otherBackups);
+      }else{
+        if(recentModels.length){ shown.push("__recent__", ...recentModels); }
+        shown.push(...feat);
+        if(rest.length) shown.push("__divider__", ...rest);
+      }
     }
     let html="";
     for(const m of shown){
       if(m==="__recent__"){ html+='<div class="pgroup">Recent</div>'; continue; }
-      if(m==="__divider__"){ html+='<div class="pgroup">All free models</div>'; continue; }
+      if(m==="__backup__"){ html+='<div class="pgroup">OpenRouter backups</div>'; continue; }
+      if(m==="__divider__"){ html+=models.some(item=>item.primary)?'<div class="pgroup">More backups</div>':'<div class="pgroup">All free models</div>'; continue; }
       html+=`
       <div class="opt${m.featured?' rec':''}" role="option" aria-selected="${model&&m.id===model.id}" data-model="${esc(m.name)}" data-id="${esc(m.id)}" data-desc="${esc(m.desc||"")}">
-        <span class="on">${esc(m.id)}${m.featured?' <span class="rec-tag">★ Recommended</span>':''}</span>
+        <span class="on">${esc(m.primary?m.name:m.id)}${m.primary?' <span class="rec-tag">Primary</span>':m.featured?' <span class="rec-tag">★ Recommended</span>':''}</span>
         <span class="od">${esc(m.desc||"")}</span>
       </div>`;
     }
@@ -4234,7 +4250,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       "google/gemma-4-26b-a4b-it:free": "Gemma 4",
       "minimax/minimax-m3:free": "MiniMax M3",
     };
-    function shortName(m){ return FRIENDLY[m.id] || (m.name || m.id || "Model"); }
+    function shortName(m){ return m.primary ? "Bedrock · Primary" : (FRIENDLY[m.id] || (m.name || m.id || "Model")); }
     function selectModel(m){
       model=m;
       modelVal.textContent=shortName(m);
@@ -4682,10 +4698,14 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   /* ---- real chat: stream from backend ---- */
   function addFallbackModelNotice(bubbleElement, usedModelId){
-    if(!bubbleElement||!model||!usedModelId||usedModelId===model.id||bubbleElement.querySelector(".model-fallback-note")) return;
+    if(!bubbleElement||!model||!usedModelId||usedModelId.startsWith("bedrock:")||bubbleElement.querySelector(".model-fallback-note")) return;
+    const bedrockWasPrimary=models.some(item=>item.primary);
+    if(usedModelId===model.id&&!bedrockWasPrimary) return;
     const actual=models.find(item=>item.id===usedModelId);
     const note=document.createElement("p"); note.className="model-fallback-note";
-    note.textContent="Your selected model was unavailable; "+(actual?actual.name:usedModelId)+" answered instead.";
+    note.textContent=bedrockWasPrimary
+      ? "Amazon Bedrock was unavailable; "+(actual?actual.name:"an OpenRouter model")+" replied through the backup provider."
+      : "Your selected model was unavailable; "+(actual?actual.name:usedModelId)+" answered instead.";
     bubbleElement.append(note);
   }
   async function waitForBackend(signal, onWait){
@@ -4758,7 +4778,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const depthWord = "Preparing your response…";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+depthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
-    const wakingTimer=setTimeout(()=>{ const label=buf.querySelector(".interim > span:not(.dots)"); if(label) label.textContent="Waking Augustine… the free service may take about a minute."; },2600);
+    const wakingTimer=setTimeout(()=>{ const label=buf.querySelector(".interim > span:not(.dots)"); if(label) label.textContent="Waiting for the model service…"; },2600);
 
     const messages=[...history];
     let acc="", bufStr="";
@@ -5527,11 +5547,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const LS_TUT="sa_tut_v1";          // bump to v2/v3 when you ship new features worth teaching
   const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
   const TUTORIAL=[
-    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. The <b>★ Recommended</b> group — starting with <b>Nemotron 3 Ultra 550B</b> — is tuned for thoughtful, faithful answers. Search any of the free models, or keep the default. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
+    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. Amazon Bedrock is the primary provider; the OpenRouter models are available as automatic backups. You can choose the preferred backup for each conversation. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
     {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
-    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images for vision-capable models. Files are prepared in your browser; the extracted text or image needed for an answer is sent through Render to OpenRouter with your message. Provider data policies apply, so avoid sensitive information."},
+    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images for vision-capable models. Files are prepared in your browser; the text or image needed for an answer is sent through Render to Amazon Bedrock first, with OpenRouter as the backup. Provider data policies apply, so avoid sensitive information."},
     {t:"Edit, copy, retry", h:"After Augustine replies: <b>Retry</b> regenerates the answer, <b>Copy</b> copies it to your clipboard. And you can always <b>edit a question you already sent</b> with the little pencil — fix a typo and get an updated reply."},
   ];
   function startTut(){

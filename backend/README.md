@@ -1,76 +1,74 @@
-# SaintAugustineAI — Backend
+# Saint Augustine AI backend
 
-Zero-dependency Node.js HTTP server that proxies chat requests to OpenRouter's
-free-tier models, streaming the answer back to the browser as Server-Sent Events.
-The persona (Saint Augustine) lives in `system-prompt.txt`; this server is the
-transport, guard-rails, and observability layer.
+Zero-dependency Node.js service that sends chat requests to Amazon Bedrock first
+and automatically falls back to the curated OpenRouter free models if Bedrock
+cannot answer. Provider credentials stay on the server; they are never sent to
+the browser. Daily saint reflections use the same provider order.
 
 ## Run
 
 ```bash
 cd backend
-npm install        # no deps, but creates node_modules/.bin if needed
-npm start           # listens on PORT (default 3000)
-npm test            # runs the full backend test suite (no external server needed)
+npm install
+npm start
+npm test
 ```
-
-`npm test` runs every test in `backend/` in sequence. Each test starts its own
-backend + stub on isolated ports, so the suite is fully self-contained — no
-running server or network access required.
 
 ## Environment variables
 
-| Var | Default | Purpose |
-|-----|---------|---------|
-| `PORT` | `3000` | HTTP listen port |
-| `OPENROUTER_API_KEY` | — | **Required in production.** Your OpenRouter key. Never exposed to the browser. |
-| `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | Override for tests/proxies (points at a stub). |
-| `SYSPROMPT_CACHE_MS` | `120000` | How long the `/api/models` response is cached. |
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `3000` | HTTP listen port. |
+| `AWS_BEARER_TOKEN_BEDROCK` | — | Amazon Bedrock API key. Set it in Render's secret environment settings. `BEDROCK_API_KEY` is also accepted as an alias. |
+| `AWS_REGION` | `us-east-1` | Bedrock region used by the default endpoint. |
+| `BEDROCK_MODEL_ID` | `nvidia.nemotron-super-3-120b` | Primary Bedrock model ID. Choose a model available in the selected region that supports Chat Completions and streaming. |
+| `BEDROCK_BASE_URL` | `https://bedrock-runtime.<region>.amazonaws.com/openai/v1` | Optional Bedrock API base URL override. The server appends `/chat/completions`. |
+| `BEDROCK_TIMEOUT_MS` | `20000` | Max time waiting for Bedrock response headers before trying OpenRouter. |
+| `BEDROCK_STREAM_START_TIMEOUT_MS` | `7000` | Max time waiting for the first Bedrock stream bytes before trying OpenRouter. |
+| `OPENROUTER_API_KEY` | — | OpenRouter fallback key. Required for failover. |
+| `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | Optional OpenRouter URL override, used by the self-contained backend checks. |
+| `SYSPROMPT_CACHE_MS` | `120000` | Cache duration for the model picker list. |
+
+Bedrock charges for model inference. Review the model's current rate and set an
+AWS budget alert before enabling the key. Never commit provider keys or put them
+in frontend configuration.
 
 ## Routes
 
 | Method | Route | Notes |
-|--------|-------|-------|
-| GET | `/api/health` | `{ ok: true }` liveness probe. |
-| GET | `/api/healthz` | Deep check: `keyPresent`, `modelCount`, `uptimeSec`, live `metrics`, `feedbackCount`. |
-| GET | `/api/models` | Curated + free models from OpenRouter, cached. |
-| GET | `/api/readings` | Best-effort daily Mass readings (USCCB). May 502 if bot-blocked. |
-| POST | `/api/chat` | Streaming chat proxy (see below). Rate-limited per IP. |
-| POST/GET | `/api/feedback` | Submit / list user feedback flags. |
+| --- | --- | --- |
+| GET | `/api/health` | Liveness probe. |
+| GET | `/api/healthz` | Liveness probe used before chat sends. |
+| GET | `/api/models` | Bedrock primary option followed by OpenRouter fallback choices. |
+| GET | `/api/readings` | Best-effort daily Mass readings. |
+| GET | `/api/saint` | Saint of the day and its reflections. |
+| POST | `/api/chat` | Streaming chat; forwards answer text only and discards reasoning. |
+| POST/GET | `/api/feedback` | Category-only feedback; never stores conversation text. |
 
-## How `/api/chat` works
+## Provider order
 
-1. **Allowlist guard** — the requested `model` must be in the curated `CURATED`
-   list. The public API is open, so without this anyone could proxy *paid*
-   OpenRouter models through your free key. Non-curated models are rejected (400)
-   before any upstream call.
-2. **Rate limit** — per-IP token bucket (capacity 8, refills 1 every 7.5s). A
-   burst of 8 is allowed, then requests space out. Protects the free-tier quota
-   from a flood or a scraped endpoint.
-3. **Streaming proxy** — forwards only answer text from `delta.content` to the
-   browser in real time. Private reasoning/thinking deltas are discarded and
-   never exposed in the interface. If a model produces no answer text, the
-   browser receives a short retry message instead of internal reasoning.
-4. **Model fallback** — if the chosen model 404s / 429s / times out, the server
-   retries the next curated model. Free models vanish without warning; this keeps
-   the chat alive instead of failing the user.
-5. **Hard timeouts** — every outbound fetch (models, chat, readings) has an
-   `AbortController` timeout. A hung upstream returns a clean 504, not an
-   infinite spinner.
+1. The browser can choose the Bedrock primary or nominate a preferred
+   OpenRouter backup. The server accepts only these known IDs; callers cannot
+   use this public endpoint to proxy arbitrary paid models.
+2. When `AWS_BEARER_TOKEN_BEDROCK` is configured, chat and generated saint
+   reflections go to the configured Bedrock model first. The primary uses
+   Amazon Bedrock's OpenAI-compatible Chat Completions endpoint and preserves
+   the existing stream format.
+3. If Bedrock errors, times out, or returns an invalid stream before the app
+   starts streaming to the browser, the server tries the chosen OpenRouter
+   backup, then the remaining curated OpenRouter models.
+4. If the Bedrock key is absent, the backend continues with OpenRouter so an
+   incomplete deployment can still serve the previous behavior. Configure the
+   Bedrock key in Render before considering Bedrock active as primary.
 
-## Metrics & feedback
+The OpenRouter model list is cached and used for backup choices. If OpenRouter
+is temporarily unable to list models while Bedrock is configured, `/api/models`
+still returns the Bedrock primary option.
 
-`/api/healthz` reports in-memory metrics: total chat requests, per-model
-ok/err/fallback counts, error-status tallies, and rate-limit hits. A user
-feedback ring buffer (capped at 200 entries, no disk) captures flags
-(unfaithful / off-topic / other) and is exposed read-only via `/api/feedback`.
-Both reset on deploy — fine for a free-tier MVP.
+## Data and credentials
 
-## Notes for contributors
-
-- This server has **no npm dependencies** — do not add any without reason.
-- The frontend (in the repo root) talks to this server via `config.js`
-  (`window.SA_API_BASE`). It is a separate deploy (GitHub Pages) from this
-  backend (Render).
-- When Render auto-deploy is off, push to `main` then click **Manual Deploy** on
-  the Render dashboard for changes to go live.
+Conversation history is stored in the browser. A message sent for a reply is
+transmitted from the browser to this backend and then to Amazon Bedrock; if
+Bedrock cannot answer, it can be sent to OpenRouter as the backup. Each provider
+has its own data policies, so avoid sending sensitive information. The API keys
+remain in Render environment variables and are not returned from health routes.
