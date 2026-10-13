@@ -22,7 +22,7 @@ npm test
 | `AWS_BEARER_TOKEN_BEDROCK` | — | Amazon Bedrock API key. Set it in Render's secret environment settings. `BEDROCK_API_KEY` is also accepted as an alias. |
 | `AWS_REGION` | `us-east-1` | Bedrock region used by the default endpoint. |
 | `BEDROCK_MODEL_ID` | `nvidia.nemotron-super-3-120b` | Primary Bedrock model ID. Choose a model available in the selected region that supports Chat Completions and streaming. |
-| `BEDROCK_BASE_URL` | `https://bedrock-runtime.<region>.amazonaws.com/openai/v1` | Optional Bedrock API base URL override. The server appends `/chat/completions`. |
+| `BEDROCK_BASE_URL` | `https://bedrock-mantle.<region>.api.aws/v1` | Optional Bedrock API base URL override. The server appends `/chat/completions`. |
 | `BEDROCK_TIMEOUT_MS` | `20000` | Max time waiting for Bedrock response headers before trying OpenRouter. |
 | `BEDROCK_STREAM_START_TIMEOUT_MS` | `7000` | Max time waiting for the first Bedrock stream bytes before trying OpenRouter. |
 | `OPENROUTER_API_KEY` | — | OpenRouter fallback key. Required for failover. |
