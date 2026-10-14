@@ -2782,9 +2782,10 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 }
 </style>
 <link rel="stylesheet" href="frontend-revamp.css?v=reading-room-42-production" />
-<link rel="stylesheet" href="app-features.css?v=premium-pass-2" />
+<link rel="stylesheet" href="app-features.css?v=premium-pass-3" />
+<link rel="stylesheet" href="reading-room.css?v=reading-room-design-2" />
 <script src="frontend-revamp.js" defer></script>
-<script src="app-features.js?v=premium-pass-2" defer></script>
+<script src="app-features.js?v=premium-pass-3" defer></script>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -2924,9 +2925,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   <!-- EMPTY / GREETING -->
   <section class="greet" id="greet">
     <span class="greet-brand">Saint<em>AugustineAI</em></span>
+    <figure class="room-art"><img src="assets/st-augustine.png" width="180" height="245" alt="Painting of Saint Augustine holding a burning heart." /><figcaption>Augustine of Hippo</figcaption></figure>
+    <div class="room-greeting-copy">
     <p class="eyebrow">Confessions · Book I, Chapter 1</p>
             <h1>&ldquo;You have made us for Yourself, O Lord, and our heart is restless until it rests in You.&rdquo;</h1>
             <p class="sub" id="greetSub">Bring a question, a passage, or something on your mind.</p>
+    </div>
             <p class="greet-credit">Created by <b>Tyler Simons</b> · Seton Hall Prep</p>
         <div class="greet-sugg" id="greetSugg" role="list" aria-label="Starter questions">
           <button class="sugg" role="listitem" data-q="Explain the Confessions in a way a teenager can understand.">Explain the Confessions simply</button>
@@ -2961,7 +2965,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         <div class="dp-head">
           <p class="dp-eyebrow">Study</p>
           <h2>Study</h2>
-          <p>Follow one topic all the way through: Augustine’s words, a passage to read, a key term, and the writing behind it.</p>
+          <p>One topic, Augustine’s words, and room to reflect.</p>
           <div class="dp-head-actions">
             <button class="dp-link-btn" id="lessonBrowse" type="button">Choose a topic</button>
             <button class="dp-link-btn" id="lessonReturnToday" type="button" hidden>Return to today’s lesson</button>
@@ -3103,7 +3107,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <h2>Today</h2>
           <p>Read the Mass readings for this day, meet the saint of the day, and speak to St. Augustine about it.</p>
           <div class="dp-head-actions">
-            <button class="dp-link-btn" id="goLessonBtn">Open today's lesson in Study &rarr;</button>
+            <button class="dp-link-btn" id="goLessonBtn" aria-label="Open today's lesson in Study">Today's lesson &rarr;</button>
             <button class="dp-link-btn" id="todayArchiveOpen" type="button">Past days</button>
           </div>
         </div>
@@ -3198,15 +3202,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         <div class="dp-head">
           <p class="dp-eyebrow">Oratio · Meditatio · Contemplatio</p>
           <h2>Prayer</h2>
-          <p>Let St. Augustine lead you, teach you to pray, or hold the prayers of the tradition with you.</p>
+          <p>Bring an intention, or begin with a prayer of the Church.</p>
         </div>
 
         <section class="dp-card" aria-label="Pray with St. Augustine">
           <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21c-4-3-8-6.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 4.5-4 8-8 11Z"/></svg>Pray with St. Augustine</h3>
           <div class="pp-intent">
             <label for="prayIntent2">What would you like to pray for?</label>
-            <input id="prayIntent2" type="text" maxlength="160" placeholder="A worry, a person, a thank-you, a need…" />
-            <p class="sa-intention-disclosure">Your intention stays on this device until you choose Lead me in prayer or Teach me to pray. Then its text is included in the request sent to the AI.</p>
+            <textarea id="prayIntent2" rows="2" maxlength="160" placeholder="A worry, a person, a thank-you, a need…"></textarea>
+            <p class="sa-intention-disclosure">Your intention stays on this device. It is sent to AI when you choose Lead me in prayer or Teach me to pray.</p>
             <div class="sa-intention-tools"><button type="button" id="intentionSave">Save intention</button><button type="button" id="intentionListOpen">My intentions</button><button type="button" id="intentionClear">Clear</button></div>
             <div id="intentionList" class="sa-intention-list" hidden></div>
           </div>
@@ -3838,19 +3842,33 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       }
     };
     return new Promise(resolve=>{
-      const scrim=document.createElement("div"); scrim.className="sa-share-scrim"; scrim.setAttribute("role","presentation");
-      const dialog=document.createElement("section"); dialog.className="sa-share-dialog"; dialog.setAttribute("role","dialog"); dialog.setAttribute("aria-modal","true");
-      const heading=document.createElement("h2"); heading.textContent="Review before sharing";
+      const returnTo=document.activeElement;
+      const background=[...document.body.children].map(element=>({element,inert:element.inert}));
+      const scrim=document.createElement("div"); scrim.className="sa-share-scrim sa-feature-scrim"; scrim.setAttribute("role","presentation");
+      const dialog=document.createElement("section"); dialog.className="sa-share-dialog sa-feature-dialog"; dialog.setAttribute("role","dialog"); dialog.setAttribute("aria-modal","true");
+      const heading=document.createElement("h2"); heading.id="share-preview-title"; heading.textContent="Review before sharing"; dialog.setAttribute("aria-labelledby",heading.id);
       const sub=document.createElement("p"); sub.textContent="This is exactly what will be included.";
+      const head=document.createElement("div"); head.className="sa-feature-head";
+      const title=document.createElement("div"); title.append(heading,sub);
+      const dismiss=document.createElement("button"); dismiss.type="button"; dismiss.className="sa-feature-close"; dismiss.textContent="×"; dismiss.setAttribute("aria-label","Close share preview"); head.append(title,dismiss);
       const preview=document.createElement("textarea"); preview.readOnly=true; preview.value=content; preview.setAttribute("aria-label","Share preview");
       const buttons=document.createElement("div"); buttons.className="sa-feature-actions";
       const cancel=document.createElement("button"); cancel.type="button"; cancel.textContent="Cancel";
       const confirm=document.createElement("button"); confirm.type="button"; confirm.className="primary"; confirm.textContent="Share";
-      const close=(value)=>{ scrim.remove(); resolve(value); };
+      const cleanup=()=>{ document.removeEventListener("keydown",keyHandler,true); scrim.remove(); background.forEach(({element,inert})=>{if(element.isConnected)element.inert=inert;}); if(returnTo?.isConnected)returnTo.focus({preventScroll:true}); };
+      const close=(value)=>{ cleanup(); resolve(value); };
+      const keyHandler=(event)=>{
+        if(event.key==="Escape"){event.preventDefault();event.stopImmediatePropagation();close(false);}
+        if(event.key!=="Tab")return;
+        const controls=[...dialog.querySelectorAll("button:not(:disabled),textarea")]; const first=controls[0],last=controls[controls.length-1];
+        if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+        else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+      };
+      dismiss.addEventListener("click",()=>close(false));
       cancel.addEventListener("click",()=>close(false));
-      confirm.addEventListener("click",async()=>{ confirm.disabled=true; scrim.remove(); resolve(await share()); });
+      confirm.addEventListener("click",async()=>{ confirm.disabled=true; cleanup(); resolve(await share()); });
       scrim.addEventListener("click",e=>{ if(e.target===scrim) close(false); });
-      buttons.append(cancel,confirm); dialog.append(heading,sub,preview,buttons); scrim.append(dialog); document.body.append(scrim); preview.focus();
+      buttons.append(cancel,confirm); dialog.append(head,preview,buttons); scrim.append(dialog); document.body.append(scrim); background.forEach(({element})=>element.inert=true); document.addEventListener("keydown",keyHandler,true); dismiss.focus();
     });
   }
   window.__saSharePreview=shareText;
@@ -5025,6 +5043,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     }
     acts.querySelectorAll("[data-fb]").forEach(btn=>{
       btn.addEventListener("click", async ()=>{
+        if(btn.dataset.fb==="report"){openReportPop(replyText,replyModel,sendFeedback);return;}
         acts.querySelectorAll("[data-fb]").forEach(x=>x.classList.remove("on"));
         btn.classList.add("on");
         const ok=await sendFeedback(btn.dataset.fb);
@@ -5037,40 +5056,41 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const scrim=document.createElement("div");
     scrim.className="report-scrim";
     scrim.setAttribute("role","dialog"); scrim.setAttribute("aria-modal","true"); scrim.setAttribute("aria-label","Report a problem");
-    const safeReply = esc(replyText||"").slice(0,4000);
+    const background=[...document.body.children].map(element=>({element,inert:element.inert}));
+    const previousOverflow=document.body.style.overflow;
+    const categories=[{label:'Incorrect teaching',reason:'report'},{label:'Unclear or off-topic',reason:'missed_point'},{label:'Inappropriate',reason:'report'},{label:'Broken citations',reason:'citation_issue'},{label:'Other',reason:'report'}];
     scrim.innerHTML=
       '<div class="report-modal">'+
         '<div class="rp-head"><img class="mk" src="assets/saint-augustine-icon-512.png" alt="" width="30" height="34" /><h2>Report a reply</h2></div>'+
-        '<p class="rp-sub">The response you are reporting:</p>'+
-        (safeReply ? '<div class="rp-response"><span class="who">St. Augustine</span>'+safeReply+'</div>' : '')+
-        '<div class="rp-title">What’s the issue?</div>'+
+        '<p class="rp-sub">Send an anonymous report. Your conversation is not included.</p>'+
+        '<div class="rp-title">What needs attention?</div>'+
         '<div class="rp-reasons">'+
-          ['Incorrect teaching','Unclear or off-topic','Inappropriate','Broken formatting','Other'].map(r=>'<button class="rp-chip" data-r="'+esc(r)+'">'+esc(r)+'</button>').join("")+
+          categories.map(item=>'<button class="rp-chip" data-r="'+esc(item.reason)+'" aria-pressed="false">'+esc(item.label)+'</button>').join("")+
         '</div>'+
-        '<textarea class="rp-detail" placeholder="Optional — add a detail…"></textarea>'+
         '<div class="rp-actions"><button class="rp-cancel">Cancel</button><button class="rp-send" disabled>Send report</button></div>'+
       '</div>';
     document.body.appendChild(scrim);
+    background.forEach(({element})=>element.inert=true);
     document.body.style.overflow="hidden";
     requestAnimationFrame(()=>scrim.classList.add("show"));
     let chosen=null;
     const card=scrim.querySelector(".report-modal");
     scrim.querySelectorAll(".rp-chip").forEach(c=>c.addEventListener("click",()=>{
-      scrim.querySelectorAll(".rp-chip").forEach(x=>x.classList.remove("on"));
-      c.classList.add("on"); chosen=c.dataset.r;
+      scrim.querySelectorAll(".rp-chip").forEach(x=>{x.classList.remove("on");x.setAttribute("aria-pressed","false");});
+      c.classList.add("on"); c.setAttribute("aria-pressed","true"); chosen=c.dataset.r;
       scrim.querySelector(".rp-send").disabled=false;
     }));
     scrim.querySelector(".rp-cancel").addEventListener("click",()=>closePop());
     scrim.querySelector(".rp-send").addEventListener("click",async ()=>{
-      const detail=scrim.querySelector(".rp-detail").value.trim();
-      const ok=await sendFeedback("report", (chosen||"")+(detail?(": "+detail):""));
+      const ok=await sendFeedback(chosen||"report");
       closePop();
       showToast(ok?"Report sent — thank you ✓":"Thanks for the report");
     });
     scrim.addEventListener("click",(e)=>{ if(e.target===scrim) closePop(); });
     function closePop(){
       scrim.classList.remove("show");
-      document.body.style.overflow="";
+      document.body.style.overflow=previousOverflow;
+      background.forEach(({element,inert})=>{if(element.isConnected)element.inert=inert;});
       setTimeout(()=>scrim.remove(),240);
     }
   }
@@ -5087,7 +5107,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     const retryDepthWord = "Preparing your response…";
     const loading=bubble("assistant",'<span class="interim"><svg class="interim-quill" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3.5c-1.8 0-7 1.5-10.5 6C6.5 13 5 17 5 19c2 0 6-1.5 9.5-4.5C18 11.5 20 6.5 20 3.5Z"/><path d="M4 20c1.5-3 3-5 5-6.5"/></svg><span>'+retryDepthWord+'</span><span class="dots"><i></i><i></i><i></i></span></span>');
     const buf=loading.querySelector(".bubble");
-    let acc="", bufStr="", actualModelId="";
+    let acc="", bufStr="", actualModelId="", retryTruncated=false, retryStalled=false;
     try{
       await waitForBackend(controller.signal,(message)=>{ const label=buf.querySelector(".interim > span:not(.dots)"); if(label) label.textContent=message; });
       const res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:model.id,reasoning:reasoning,stream:true,messages,pastedAiSignal}),signal:controller.signal});
@@ -5749,7 +5769,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   let activeScene='bg.jpg';
   function setScenery(file){activeScene=file; if(photo) photo.style.backgroundImage=`url("assets/${file}")`; $$('.sc-thumb').forEach(x=>x.classList.toggle('on',x.dataset.f===file));}
   const sceneryPop=$('#sceneryPop'), sceneryScrim=$('#sceneryScrim'), sceneryGrid=$('#glassSceneryGrid');
-  SCENES.forEach(s=>{const t=document.createElement('div');t.className='sc-thumb'+(s.id===activeScene?' on':'');t.dataset.f=s.id;t.style.backgroundImage=`url("assets/${s.id}")`;
+  SCENES.forEach(s=>{const t=document.createElement('div');t.className='sc-thumb'+(s.id===activeScene?' on':'');t.dataset.f=s.id;t.style.backgroundImage=`url("assets/bg/thumbs/${s.id.split('/').pop()}")`;
     t.innerHTML=`<span class="sc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="sc-tt">${s.label}</span>`;
     t.onclick=()=>{setScenery(s.id);closeScenery();};sceneryGrid.appendChild(t);});
   function openScenery(){sceneryPop.hidden=false;requestAnimationFrame(()=>sceneryPop.classList.add('open'));sceneryScrim.classList.add('show');}
@@ -6530,7 +6550,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             if(d.link){ const l=$('#dpReadingsLink'); if(l && d.link) l.href=d.link; }
           }).catch(e=>{
             if(window.SAFeatures&&window.SAFeatures.restoreToday("readings",dpReadings)) return;
-            dpReadings.innerHTML='<p class="dp-error">'+esc(e&&e.message||"Could not load today's readings.")+' They are always waiting on the USCCB site.</p><button class="dp-cta dp-cta-ghost" id="readingsRetry" style="margin-top:10px">Try again</button>';
+            dpReadings.innerHTML='<p class="dp-error">Today’s readings could not be loaded. Try again, or read them on the USCCB site.</p><button class="dp-cta dp-cta-ghost" id="readingsRetry" style="margin-top:10px">Try again</button>';
             const rr=document.getElementById("readingsRetry");
             if(rr) rr.addEventListener("click",()=>{ delete dpReadings.dataset.loaded; loadDailyReadings(); });
           });

@@ -12,7 +12,7 @@ try{for(const width of [390,1440]){
   const url=new URL(r.request().url());
   if(url.pathname==='/api/models')return r.fulfill({json:{models:[{id:'qa',name:'QA model'}]}});
   if(url.pathname==='/api/readings'){readingRequests++;return readingRequests===1?r.fulfill({status:503,json:{error:'fixture'}}):r.fulfill({json:{first:'A recovered reading fixture.',psalm:'A recovered psalm fixture.',gospel:'A recovered gospel fixture.'}});}
-  if(url.pathname==='/api/saint')return r.fulfill({json:{name:'Saint fixture',bio:'A short supplied biography.',connection:'A supplied connection.',image:'/portrait-fixture.svg'}});
+  if(url.pathname==='/api/saint')return r.fulfill({json:{name:'Saint fixture',bio:'A short supplied biography.',conn:'A supplied connection.',image:'/portrait-fixture.svg'}});
   return r.fulfill({status:404,json:{}});
  });
  await context.route('**/portrait-fixture.svg',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="120" height="160"><rect width="120" height="160" fill="#d9c4a9"/></svg>'}));

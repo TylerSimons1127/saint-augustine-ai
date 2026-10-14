@@ -9,7 +9,8 @@
   const newChat = document.getElementById('newChat');
   const stage = document.getElementById('stage');
   const small = window.matchMedia('(max-width:1000px)');
-  const compactReplyActions = window.matchMedia('(max-width:900px) and (pointer:coarse), (max-width:700px)');
+  // A contained More menu uses the same action hierarchy at every screen size.
+  const compactReplyActions = window.matchMedia('all');
   let activeReplyActions = null;
   function closeReplyActions(acts, returnFocus = false) {
     if (!acts) return;
@@ -158,14 +159,13 @@
   let wasOpen = false;
 
   function placeSearch() {
-    if (small.matches) sidebar.insertBefore(search, newChat);
-    else navActions.insertBefore(search, document.getElementById('settingsBtn'));
+    sidebar.insertBefore(search, newChat);
     if (!small.matches && sidebar.classList.contains('open')) toggle.click();
   }
   function syncPage() {
     const active = document.querySelector('.nav-tab.on');
     if (active) document.body.dataset.page = active.dataset.page;
-    document.body.classList.toggle('history-contextual',active?.dataset.page !== 'chat');
+    document.body.classList.add('history-contextual');
     if (sidebar.classList.contains('open')) toggle.click();
     syncDrawer();
     if (readerOpen && active?.dataset.page !== readerPage) closeReaderComposer(false);
@@ -199,10 +199,17 @@
     wasOpen = open;
   }
   close.addEventListener('click', () => {if(sidebar.classList.contains('open')) toggle.click();});
+  sidebar.addEventListener('click', event => {
+    const row=event.target.closest('.sb-item');
+    if (!row || row.classList.contains('selmode') || row.classList.contains('renaming')) return;
+    const action=event.target.closest('button,[role="button"]');
+    if (action && action!==row) return;
+    if (sidebar.classList.contains('open') && document.body.classList.contains('history-contextual')) toggle.click();
+  });
   sidebar.addEventListener('keydown', event => {
     if (!(small.matches || document.body.classList.contains('history-contextual')) || !sidebar.classList.contains('open')) return;
     if (event.key === 'Tab') {
-      const controls = [...sidebar.querySelectorAll('button,input,a,[tabindex="0"]')].filter(el => !el.disabled && el.getClientRects().length);
+      const controls = [...sidebar.querySelectorAll('button,input,select,summary,a,[tabindex="0"]')].filter(el => !el.disabled && !el.closest('[hidden],[inert]') && el.getClientRects().length);
       const first = controls[0], last = controls[controls.length - 1];
       if (event.shiftKey && document.activeElement === first) {event.preventDefault(); last.focus();}
       else if (!event.shiftKey && document.activeElement === last) {event.preventDefault(); first.focus();}
@@ -234,6 +241,8 @@
     {id:'threadDaily',title:"Reflect on today’s readings",label:'Ask Augustine about today'},
     {id:'threadPrayer',title:'Continue in prayer',label:'Open a prayer conversation'}
   ];
+  const prayerConversationTitle = document.querySelector('#threadPrayer')?.closest('.dp-thread')?.querySelector('.phead h3');
+  if (prayerConversationTitle) prayerConversationTitle.textContent = 'Pray in your own words';
   readingPrompts.forEach(item => {
     const thread = document.getElementById(item.id);
     const head = thread?.closest('.dp-thread')?.querySelector('.phead');
@@ -327,6 +336,12 @@
   const settings = document.getElementById('settingsSheet');
   const settingsBody = settings?.querySelector('.settings-body');
   if (settingsBody) {
+    const conversationSection = document.getElementById('defModelBtn')?.closest('.set-sec');
+    const remindersSection = document.getElementById('pauseStreakToggle')?.closest('.set-sec');
+    if (conversationSection && remindersSection && conversationSection !== remindersSection) {
+      [...remindersSection.children].forEach(element => conversationSection.appendChild(element));
+      remindersSection.remove();
+    }
     const sections = [...settingsBody.querySelectorAll(':scope > .set-sec')];
     const names = ['Appearance','Atmosphere','Conversation','Data'];
     const categories = document.createElement('div');
@@ -334,9 +349,10 @@
     categories.setAttribute('role','tablist');
     categories.setAttribute('aria-label','Settings categories');
     const about = settingsBody.querySelector('.about');
-    if (sections[3] && about) sections[3].appendChild(about);
+    const dataSection = document.getElementById('savedOpen')?.closest('.set-sec');
+    if (dataSection && about) dataSection.appendChild(about);
     const soundRow = document.getElementById('soundToggle')?.closest('.set-row');
-    if (sections[2] && soundRow) sections[2].appendChild(soundRow);
+    if (conversationSection && soundRow) conversationSection.appendChild(soundRow);
     function chooseCategory(index, focus = false) {
       sections.forEach((section,i) => {
         section.hidden = i !== index;
@@ -557,5 +573,64 @@
     });
     if (prayerIntention.getClientRects().length) resizeIntention();
   }
+  document.addEventListener('DOMContentLoaded', () => {
+    const topicsButton = document.getElementById('lessonBrowse');
+    if (topicsButton) {topicsButton.textContent = 'Topics'; topicsButton.setAttribute('aria-label','Choose a topic');}
+    const studyTools = document.querySelector('.sa-study-tools-disclosure');
+    const studyActions = document.querySelector('#page-study .dp-head-actions');
+    if (studyTools && studyActions) {
+      studyTools.querySelector('summary').textContent = 'Tools';
+      studyTools.querySelector('summary').setAttribute('aria-label','Study tools');
+      studyActions.appendChild(studyTools);
+    }
+    const studyHead = document.querySelector('#page-study .dp-head');
+    const studyDocument = document.querySelector('#page-study .lesson > article');
+    if (studyHead && studyDocument) studyDocument.prepend(studyHead);
+    const studyPage = document.querySelector('#page-study .daily-page');
+    const quiz = document.getElementById('sec-quiz-study');
+    const lessonNavigation = document.querySelector('#page-study .lesson-nav');
+    if (studyPage && quiz && lessonNavigation) {
+      const lessonActions = document.createElement('div');
+      lessonActions.className = 'room-lesson-actions';
+      lessonNavigation.before(lessonActions);
+      const quizJump = document.createElement('button');
+      quizJump.className = 'room-quiz-jump';
+      quizJump.type = 'button';
+      quizJump.textContent = 'Take the quiz';
+      quizJump.setAttribute('aria-controls','sec-quiz-study');
+      quizJump.addEventListener('click', () => {
+        const reduced = document.documentElement.dataset.motion === 'reduced' || window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+        quiz.scrollIntoView({block:'start',behavior:reduced?'instant':'smooth'});
+        quiz.setAttribute('tabindex','-1');
+        quiz.focus({preventScroll:true});
+      });
+      lessonActions.append(lessonNavigation,quizJump);
+      const readingColumn = document.createElement('div');
+      readingColumn.className = 'room-study-main';
+      const companion = document.createElement('div');
+      companion.className = 'room-study-companion';
+      [...studyPage.children].forEach(element => {
+        (element === quiz || element.classList.contains('study-rail') || element.classList.contains('tomorrow-teaser') ? companion : readingColumn).appendChild(element);
+      });
+      studyPage.append(readingColumn,companion);
+    }
+    const prayerHead = document.querySelector('#page-prayer .dp-head');
+    const intentionCard = document.querySelector('#page-prayer .pray-page > .dp-card');
+    if (prayerHead && intentionCard) {
+      intentionCard.classList.add('room-prayer-intention');
+      intentionCard.prepend(prayerHead);
+    }
+    const todayHead = document.querySelector('#page-today .dp-head');
+    const progressStrip = document.getElementById('todayStrip');
+    if (todayHead && progressStrip) {
+      const briefing = document.createElement('div');
+      briefing.className = 'room-day-brief';
+      todayHead.before(briefing);
+      briefing.append(todayHead,progressStrip);
+    }
+    const greeting = document.getElementById('greet');
+    const creatorCredit = greeting?.querySelector('.greet-credit');
+    if (creatorCredit) greeting.appendChild(creatorCredit);
+  });
   placeSearch(); syncPage(); syncDrawer();
 })();

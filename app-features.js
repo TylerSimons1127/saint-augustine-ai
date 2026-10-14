@@ -17,8 +17,11 @@
   const updatePrefs = (patch) => store.set("features", { ...prefs(), ...patch });
   const uid = () => (globalThis.crypto && crypto.randomUUID ? crypto.randomUUID() : "sa-" + Date.now() + "-" + Math.random().toString(36).slice(2));
 
+  let activeFeatureDialogClose = null;
   function openDialog(title, description, content, actions = [], onClose = null) {
-    document.querySelector(".sa-feature-scrim")?.remove();
+    if (activeFeatureDialogClose) activeFeatureDialogClose(false);
+    const previousFocus = document.activeElement;
+    const backgroundState = [...document.body.children].filter(element => element instanceof HTMLElement).map(element => [element,element.inert]);
     const scrim = document.createElement("div");
     scrim.className = "sa-feature-scrim";
     scrim.setAttribute("role", "presentation");
@@ -45,18 +48,31 @@
     });
     const closeButton = $(".sa-feature-close", dialog);
     let closed = false;
-    const close = () => {
+    const close = (returnFocus = true) => {
       if (closed) return;
       closed = true;
-      scrim.remove(); document.removeEventListener("keydown", onKey);
+      scrim.remove(); document.removeEventListener("keydown", onKey, true);
+      backgroundState.forEach(([element,inert]) => { if (element.isConnected) element.inert = inert; });
+      if (activeFeatureDialogClose === close) activeFeatureDialogClose = null;
       if (typeof onClose === "function") onClose();
+      if (returnFocus && previousFocus?.isConnected) previousFocus.focus({ preventScroll:true });
     };
-    const onKey = (event) => { if (event.key === "Escape") close(); };
+    const onKey = (event) => {
+      if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); close(); return; }
+      if (event.key !== "Tab") return;
+      const focusable = $$('button:not(:disabled),a[href],input:not(:disabled),textarea:not(:disabled),select:not(:disabled),[tabindex="0"]',dialog).filter(element=>element.getClientRects().length);
+      const first=focusable[0],last=focusable[focusable.length-1];
+      if (!first) { event.preventDefault(); return; }
+      if (event.shiftKey && document.activeElement===first) {event.preventDefault();last.focus();}
+      else if (!event.shiftKey && document.activeElement===last) {event.preventDefault();first.focus();}
+    };
     closeButton.addEventListener("click", close);
     scrim.addEventListener("click", (event) => { if (event.target === scrim) close(); });
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey, true);
     scrim.append(dialog);
     document.body.append(scrim);
+    backgroundState.forEach(([element]) => { element.inert = true; });
+    activeFeatureDialogClose = close;
     closeButton.focus();
     return { scrim, dialog, body, close };
   }
@@ -84,7 +100,7 @@
       stamp = document.createElement("p");
       stamp.className = "sa-source-stamp";
       stamp.id = "sa-source-" + targetId;
-      target.insertAdjacentElement("afterend", stamp);
+      target.appendChild(stamp);
     }
     const when = fetchedAt ? new Date(fetchedAt) : null;
     const label = when && !Number.isNaN(when.getTime()) ? when.toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "time unavailable";
@@ -517,13 +533,19 @@
   if (selectControl && !$("#saHistoryFilters")) {
     const filters = document.createElement("div"); filters.className = "sa-history-filters"; filters.id = "saHistoryFilters";
     filters.innerHTML = '<label>Updated <select id="saHistoryDate"><option value="all">Any time</option><option value="7">Past week</option><option value="30">Past month</option><option value="older">Older</option></select></label><label>Model <select id="saHistoryModel"><option value="all">All models</option></select></label><label class="sa-history-cite"><input id="saHistoryCited" type="checkbox"> Has citations</label>';
-    selectControl.insertAdjacentElement("afterend", filters);
+    const tools = document.createElement("div"); tools.className = "room-history-tools";
+    const filterToggle = document.createElement("button"); filterToggle.type = "button"; filterToggle.className = "room-history-filter-toggle";
+    filterToggle.setAttribute("aria-controls", filters.id); filterToggle.setAttribute("aria-expanded", "false"); filterToggle.textContent = "Filters";
+    selectControl.insertAdjacentElement("beforebegin", tools); tools.append(selectControl, filterToggle); tools.insertAdjacentElement("afterend", filters); filters.hidden = true;
+    filterToggle.addEventListener("click", () => { filters.hidden = !filters.hidden; filterToggle.setAttribute("aria-expanded", String(!filters.hidden)); });
     const captureSearchMatches = () => {
       const search = $("#search"), active = !!(search && search.value.trim());
       $$(".sb-item").forEach((item) => { item.dataset.saSearchMatch = !active || item.style.display !== "none" ? "true" : "false"; });
     };
     const apply = () => {
       const date = $("#saHistoryDate").value, model = $("#saHistoryModel").value, cited = $("#saHistoryCited").checked, cutoff = Date.now() - (Number(date) || 0) * 86400000;
+      const activeCount = Number(date !== "all") + Number(model !== "all") + Number(cited);
+      filterToggle.textContent = activeCount ? "Filters (" + activeCount + ")" : "Filters";
       $$(".sb-item").forEach((item) => {
         const updated = Number(item.dataset.updated) || 0;
         const dateMatch = date === "all" || (date === "older" ? updated < Date.now() - 30 * 86400000 : updated >= cutoff);

@@ -1,0 +1,488 @@
+/* Current reading-room component contract. Loaded after legacy compatibility styles.
+   Photo is atmosphere; opaque paper carries prose. All theme and storage IDs are retained. */
+:root {
+  --primary: #293a49;
+  --radius-control:9px;
+  --radius-surface:14px;
+  --radius-sheet:20px;
+  --room-radius: 14px;
+  --room-control: 9px;
+  --room-line: var(--border);
+  --room-shadow: 0 8px 28px rgba(22,31,37,.08);
+  --room-ease: cubic-bezier(.2,.7,.2,1);
+  --rail: 0px;
+  --header: 72px;
+  --content-max: 1120px;
+}
+html[data-theme="parchment"] {
+  --bg: #f4f0e9;
+  --bg-2: #ede6dc;
+  --panel: #fffdf9;
+  --card: #fffdf9;
+  --paper-50: #fffdf9;
+  --paper-100: #f6f1e9;
+  --paper-200: #eae3d8;
+  --paper-300: #dcd5ca;
+  --ink: #293139;
+  --ink-soft: #4c555b;
+  --muted: #666d70;
+  --primary: #293a49;
+  --accent: #d9c4a9;
+  --accent-soft: #f0e6d8;
+  --accent-deep: #745b3c;
+  --gold-ink: #745b3c;
+  --border: #e1dbd1;
+  --room-line: #e1dbd1;
+}
+html[data-theme="rosae"] { --muted:#786367; }
+html[data-theme="sakura"] { --muted:#7d6269; }
+html[data-theme] body { --rail: 0px; }
+html[data-theme] .bg { opacity: 1 !important; filter: saturate(.85) !important; }
+html[data-theme] .bg .photo { transform: none !important; filter: none !important; }
+html[data-theme] .bg .veil { background: linear-gradient(180deg,rgba(220,232,232,.15),rgba(21,34,42,.25)) !important; opacity: 1 !important; }
+html[data-theme] .bg .rays, html[data-theme] .bg .glow, html[data-theme] .bg .vignette { display:none !important; }
+html[data-theme] .bg::after { opacity:.15; }
+html[data-theme] .topnav {
+  height:var(--header); min-height:var(--header); padding:0 24px 0 82px;
+  background:var(--panel) !important; border-bottom:1px solid var(--room-line);
+  box-shadow:none; backdrop-filter:none !important; gap:20px;
+}
+html[data-theme] .topnav .nav-brand { min-width:0; width:auto; gap:10px; font:500 21px/1.2 var(--display); letter-spacing:-.4px; }
+html[data-theme] .topnav .nav-brand .mark { width:30px !important; height:30px !important; border-radius:8px; }
+html[data-theme] .topnav .nav-brand em { color:inherit; }
+html[data-theme] .topnav .nav-tabs { padding:3px; background:transparent !important; border:0; box-shadow:none; gap:4px; }
+html[data-theme] .nav-tab { min-height:44px; border-radius:var(--room-control); padding:0 18px; gap:8px; font:500 14px/1.3 var(--body); color:var(--ink-soft); background:transparent !important; border:0; box-shadow:none !important; }
+html[data-theme] .nav-tab.on { background:var(--accent-soft) !important; color:var(--ink) !important; }
+html[data-theme] .nav-tab::before, html[data-theme] .nav-tab::after, html[data-theme] .nav-tabs::before, html[data-theme] .nav-tabs::after { display:none !important; }
+html[data-theme] .nav-tab.on .nav-ico, html[data-theme] .nav-tab.on svg { color:var(--ink) !important; }
+html[data-theme] .nav-tab .nav-ico-line { opacity:1 !important; transform:none !important; }
+html[data-theme] .nav-tab .nav-ico-fill { display:none !important; }
+html[data-theme] .icon-btn, html[data-theme] .sb-toggle { width:44px; height:44px; min-width:44px; border:1px solid var(--room-line) !important; border-radius:var(--room-control) !important; background:transparent !important; color:var(--ink); box-shadow:none !important; }
+html[data-theme] .sb-toggle { display:flex !important; position:fixed; left:22px; top:14px; z-index:51; }
+html[data-theme] .topnav .nav-actions { margin-left:auto; }
+html[data-theme] .stage { left:0 !important; margin-left:0 !important; padding:36px 32px 190px !important; }
+html[data-theme] .page { width:100%; max-width:var(--content-max); margin-inline:auto; }
+html[data-theme] #page-chat { max-width:850px; padding:0 !important; height:auto !important; min-height:0 !important; align-content:start !important; }
+html[data-theme] #page-chat:has(#greet:not([hidden])) { min-height:0 !important; justify-content:flex-start !important; }
+html[data-theme] .daily-page, html[data-theme] .pray-page { gap:22px; }
+html[data-theme] #page-study .daily-page { max-width:900px; margin-inline:auto; display:flex; flex-direction:column; }
+html[data-theme] .room-study-main, html[data-theme] .room-study-companion { display:flex; flex-direction:column; gap:22px; min-width:0; }
+html[data-theme] .room-study-companion > .study-rail { display:flex !important; flex-direction:column; gap:22px; position:static !important; width:100%; min-width:0; }
+html[data-theme] .room-lesson-actions { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; }
+html[data-theme] .room-quiz-jump { min-height:44px; padding:10px 12px; border:1px solid var(--room-line); border-radius:var(--room-control); background:transparent; font:500 12px/1.4 var(--body); color:var(--ink-soft); }
+html[data-theme] #page-study .ls-b { max-width:70ch; margin-inline:0; }
+html[data-theme] #page-study .lesson-flow .topic-topic, html[data-theme] #page-study .lesson-flow .lesson-reading { max-width:none !important; margin-inline:0 !important; }
+html[data-theme] .tomorrow-teaser { border:1px solid var(--room-line); border-radius:var(--room-radius); background:var(--panel); padding:22px; box-shadow:none; }
+@media (min-width:1200px) {
+  html[data-theme] #page-study .daily-page { display:grid; grid-template-columns:minmax(0,1fr) 310px; max-width:1120px; align-items:start; gap:24px; }
+  html[data-theme] .room-study-companion { position:sticky; top:24px; }
+  html[data-theme] #sec-quiz-study { position:static !important; width:100% !important; padding:24px !important; }
+  html[data-theme] #sec-quiz-study .quiz-q { font-size:16px; line-height:1.55; }
+  html[data-theme] #sec-quiz-study .quiz-opt { font-size:14px; }
+}
+html[data-theme] .dp-head, html[data-theme] #page-study .dp-head, html[data-theme] #page-prayer .dp-head, html[data-theme] #page-today .dp-head {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:0; padding:24px 28px !important; margin:0; gap:0;
+  border:1px solid var(--room-line) !important; border-radius:var(--room-radius) !important;
+  background-color:var(--bg) !important; background-image:linear-gradient(var(--panel),var(--panel)) !important;
+  box-shadow:var(--room-shadow) !important; backdrop-filter:none !important; text-align:center;
+}
+html[data-theme] .dp-head::before, html[data-theme] .dp-head::after { display:none !important; }
+html[data-theme] #page-study .lesson .dp-head, html[data-theme] #page-prayer .room-prayer-intention .dp-head {
+  padding:0 0 22px !important; margin-bottom:24px; border:0 !important; border-bottom:1px solid var(--room-line) !important;
+  border-radius:0 !important; background:none !important; box-shadow:none !important;
+}
+html[data-theme] .room-day-brief { grid-column:1/-1; order:0; border:1px solid var(--room-line); border-radius:var(--room-radius); background-color:var(--bg); background-image:linear-gradient(var(--panel),var(--panel)); box-shadow:var(--room-shadow); }
+html[data-theme] #page-today .room-day-brief .dp-head { border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; }
+html[data-theme] #page-today .room-day-brief #todayStrip { border:0 !important; border-top:1px solid var(--room-line) !important; border-radius:0 !important; box-shadow:none !important; background:none !important; padding-block:14px; }
+html[data-theme] :is(#page-study,#page-today,#page-prayer) .dp-head { width:100% !important; max-width:none !important; }
+html[data-theme] .dp-head h2 { margin:0 !important; font:400 38px/1.1 var(--display) !important; letter-spacing:-.8px; color:var(--ink); }
+html[data-theme] .dp-head > p:not(.dp-eyebrow) { max-width:48ch; margin:8px auto 0; font:400 15px/1.55 var(--body) !important; color:var(--ink-soft); }
+html[data-theme] .dp-head .dp-eyebrow { display:none; }
+html[data-theme] #page-today .dp-head .dp-eyebrow { display:block; margin:0 0 10px; font:500 12px/1.4 var(--body); letter-spacing:.1em; color:var(--muted); }
+html[data-theme] .dp-head-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; margin:16px 0 0; }
+html[data-theme] .dp-link-btn, html[data-theme] .daily-shuf, html[data-theme] .dp-head-actions button, html[data-theme] .reader-ask-secondary {
+  min-height:44px; padding:9px 14px; border:1px solid var(--room-line) !important; border-radius:var(--room-control) !important;
+  background:transparent !important; font:500 13px/1.35 var(--body) !important; color:var(--ink) !important; box-shadow:none !important; text-transform:none; letter-spacing:0;
+}
+html[data-theme] .dp-card, html[data-theme] .dp-thread > .phead, html[data-theme] .sa-study-notes {
+  padding:28px !important; border:1px solid var(--room-line) !important; border-radius:var(--room-radius) !important;
+  background-color:var(--bg) !important; background-image:linear-gradient(var(--panel),var(--panel)) !important;
+  backdrop-filter:none !important; box-shadow:var(--room-shadow) !important;
+}
+html[data-theme] .dp-card::before, html[data-theme] .dp-card::after { display:none !important; }
+html[data-theme] .dp-card h3 { display:flex; align-items:center; justify-content:flex-start; gap:10px; margin:0 0 20px; font:400 26px/1.2 var(--display); letter-spacing:-.35px; text-align:left !important; }
+html[data-theme] .dp-card h3 svg { width:21px; height:21px; flex:none; color:var(--gold-ink); background:none; padding:0; border:0; }
+html[data-theme] :is(#page-study,#page-today,#page-prayer) .dp-card h3 { flex-direction:row !important; justify-content:flex-start !important; align-items:center !important; text-align:left !important; }
+html[data-theme] :is(#page-study,#page-today,#page-prayer) .dp-act { display:flex !important; flex-direction:row !important; align-items:center !important; justify-content:flex-start !important; text-align:left !important; }
+html[data-theme] :is(#page-study,#page-today,#page-prayer) .dp-act span { text-align:left !important; }
+html[data-theme] .dp-thread { gap:18px; }
+html[data-theme] .dp-thread .phead { text-align:center; }
+html[data-theme] .dp-thread .phead h3 { margin:0; font:400 30px/1.2 var(--display); }
+html[data-theme] .dp-thread .phead p { max-width:45ch; margin:8px auto 18px; font-size:15px; line-height:1.6; color:var(--ink-soft); }
+html[data-theme] .dp-cta, html[data-theme] .daily-cta, html[data-theme] .reader-ask:not(.reader-ask-secondary), html[data-theme] .sa-feature-actions .primary {
+  min-height:46px; padding:12px 18px; border:1px solid transparent !important; border-radius:var(--room-control) !important;
+  background:var(--primary) !important; color:var(--paper-50,#fffdf9) !important; font:600 14px/1.4 var(--body); box-shadow:none !important; text-transform:none; letter-spacing:0;
+}
+html[data-theme] .dp-cta-ghost { background:transparent !important; color:var(--ink) !important; border-color:var(--room-line) !important; }
+html[data-theme] .dp-act { display:flex; align-items:center; justify-content:flex-start; min-height:68px; padding:14px 12px; gap:14px; border:0 !important; border-bottom:1px solid var(--room-line) !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; text-align:left; }
+html[data-theme] .dp-act b { font:600 14px/1.45 var(--body); color:var(--ink); }
+html[data-theme] .dp-act small { margin-top:3px; font:400 13px/1.45 var(--body); color:var(--muted); }
+html[data-theme] .dp-act svg { width:21px; height:21px; flex:none; color:var(--gold-ink); }
+html[data-theme] .dp-cols { gap:12px; }
+/* Welcome: one real artwork and one quotation, followed by useful questions. */
+html[data-theme] #greet {
+  display:grid; grid-template-columns:180px minmax(0,1fr); column-gap:32px; row-gap:24px; align-items:center;
+  width:100%; height:auto !important; min-height:0 !important; max-height:none !important; padding:36px !important; margin:0 auto !important; text-align:center;
+  border:1px solid var(--room-line) !important; border-radius:var(--room-radius) !important;
+  background-color:var(--bg) !important; background-image:linear-gradient(var(--panel),var(--panel)) !important;
+  box-shadow:var(--room-shadow) !important; backdrop-filter:none !important;
+}
+html[data-theme] #greet::before, html[data-theme] #greet::after, html[data-theme] .greet-brand { display:none !important; }
+html[data-theme] #page-chat #greet[hidden] { display:none !important; }
+.room-art { margin:0; width:180px; }
+.room-art img { display:block; width:100%; height:245px; object-fit:cover; object-position:50% 28%; border-radius:80px 80px 5px 5px; }
+.room-art figcaption { margin-top:9px; font:400 12px/1.4 var(--body); color:var(--muted); }
+.room-greeting-copy { min-width:0; }
+@media (min-width:769px) and (min-height:481px) {
+  html[data-theme] #page-chat #greet { grid-template-columns:180px minmax(0,1fr) !important; grid-template-rows:auto auto auto !important; align-content:start !important; transform:none !important; }
+  html[data-theme] #page-chat #greet > .room-art { grid-area:1 / 1; }
+  html[data-theme] #page-chat #greet > .room-greeting-copy { grid-area:1 / 2; }
+  html[data-theme] #page-chat #greet > .greet-credit { grid-area:2 / 1 / auto / -1; }
+  html[data-theme] #page-chat #greet #greetSugg { grid-area:3 / 1 / auto / -1; padding:0 !important; border-left:0 !important; align-self:auto; }
+}
+html[data-theme] #greet .eyebrow { margin:0 0 16px; font:500 11px/1.45 var(--body); color:var(--gold-ink); letter-spacing:.1em; }
+html[data-theme] #greet h1 { max-width:21ch; margin:0 auto !important; font:400 38px/1.16 var(--display) !important; letter-spacing:-.65px; text-align:center !important; text-wrap:balance; }
+html[data-theme] #greet .sub { max-width:38ch; margin:18px auto 0 !important; font:400 15px/1.6 var(--body) !important; text-align:center !important; color:var(--ink-soft); }
+html[data-theme] #greet .greet-credit { grid-column:1/-1; margin:0 !important; padding:18px 0 0; border-top:1px solid var(--room-line); font:400 12px/1.5 var(--body); color:var(--muted); }
+html[data-theme] #greet .greet-sugg { grid-column:1/-1; display:grid; grid-template-columns:1fr 1fr; gap:0 24px; margin:0 !important; }
+html[data-theme] #greet .sugg { min-height:54px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:13px 0 !important; border:0 !important; border-top:1px solid var(--room-line) !important; border-radius:0 !important; background:transparent !important; color:var(--ink-soft); font:500 13px/1.4 var(--body); text-align:left !important; box-shadow:none !important; }
+html[data-theme] #greet .sugg::after { content:'↗'; position:static; font-size:16px; flex:none; opacity:.55; }
+/* Conversation: paper includes the answer and its actions. */
+html[data-theme] .thread, html[data-theme] .thread-inner { gap:24px; }
+html[data-theme] .msg.assistant { display:flex; flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:12px; padding:26px; border:1px solid var(--room-line); border-radius:var(--room-radius); background-color:var(--bg); background-image:linear-gradient(var(--panel),var(--panel)); box-shadow:var(--room-shadow); }
+html[data-theme] .msg.assistant .bubble { width:100%; max-width:none; padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; backdrop-filter:none !important; font-size:var(--reply-size) !important; line-height:var(--reply-lh) !important; }
+html[data-theme] .msg.assistant .av { display:none !important; }
+html[data-theme] .msg.assistant .who { margin-bottom:12px; font:600 12px/1.4 var(--body); color:var(--gold-ink); letter-spacing:.065em; }
+html[data-theme] .msg .tm { color:var(--muted); font:400 12px/1.4 var(--body); letter-spacing:0; }
+html[data-theme] .msg.user .bubble { max-width:min(88%,600px); background:var(--accent-soft) !important; border:1px solid color-mix(in srgb,var(--accent) 40%,var(--room-line)); border-radius:14px 14px 4px 14px; padding:16px 18px; color:var(--ink); box-shadow:none; }
+html[data-theme] .msg.assistant .acts, html[data-theme] .msg.assistant .sa-followups { margin:0 !important; gap:7px; align-self:stretch; }
+html[data-theme] .msg.assistant .acts { display:block; flex:0 0 auto; width:100%; max-width:100%; padding:0 !important; }
+html[data-theme] .msg.assistant .bubble > :is(p,ul,ol,blockquote) { max-width:72ch; }
+html[data-theme] .sa-followups { padding-top:14px; border-top:1px solid var(--room-line); }
+html[data-theme] .sa-followups button, html[data-theme] .msg .acts .reply-action-trigger { min-height:44px !important; padding:9px 12px !important; border:1px solid var(--room-line) !important; border-radius:var(--room-control) !important; background:transparent !important; color:var(--ink-soft) !important; font:500 12px/1.35 var(--body) !important; box-shadow:none !important; }
+html[data-theme] .msg .acts .reply-action-panel { max-width:100%; border-radius:var(--room-control); background:var(--panel) !important; box-shadow:none !important; border-color:var(--room-line); }
+html[data-theme] .msg .acts .reply-action-trigger { display:inline-flex; align-items:center; gap:8px; }
+html[data-theme] .msg .acts .reply-action-trigger svg { width:16px; height:16px; }
+html[data-theme] .msg .acts .reply-action-panel { display:none; width:100%; margin-top:8px; padding:8px; border:1px solid var(--room-line); }
+html[data-theme] .msg .acts.is-open .reply-action-panel { display:block; }
+html[data-theme] .reply-action-group, html[data-theme] .reply-feedback-group { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; }
+html[data-theme] .reply-feedback-group { margin-top:8px; padding-top:8px; border-top:1px solid var(--room-line); }
+html[data-theme] .msg .acts .reply-action-panel .act { display:flex; align-items:center; gap:8px; padding:10px; width:100%; border:0 !important; background:transparent !important; text-align:left; white-space:normal; }
+html[data-theme] .msg .acts .reply-action-panel .act svg { flex:none; }
+html[data-theme] .msg .acts .reply-action-panel .act span { display:inline !important; }
+html[data-theme] .msg .acts .reply-action-panel .act { font:500 12px/1.4 var(--body) !important; min-height:44px !important; color:var(--ink-soft) !important; }
+html[data-theme] .thread-share-tools { width:100%; margin:0 0 18px; padding:12px 14px; border:1px solid var(--room-line); border-radius:var(--room-control); background:var(--panel); color:var(--ink); gap:8px; }
+html[data-theme] .thread-share-tools.is-compact-share { background:transparent; border:0; padding:0; }
+html[data-theme] .thread-share-tools button { min-height:44px; border-radius:var(--room-control); padding:9px 13px; font-size:12px; }
+html[data-theme] .thread.share-selecting .msg { padding:18px; }
+html[data-theme] .thread.share-selecting .msg .msg-share-toggle { position:static !important; align-self:stretch; justify-content:flex-start; width:100%; min-height:44px; margin:0 0 8px; padding:10px 12px; border-radius:var(--room-control); box-shadow:none; }
+/* Study: one connected document with quiet numbered sections. */
+html[data-theme] .lesson-top { display:flex; flex-direction:column; align-items:center; gap:16px; margin:0 0 20px; padding:0 0 24px; border-bottom:1px solid var(--room-line); text-align:center; }
+html[data-theme] .lesson-heading { min-width:0; }
+html[data-theme] .lesson-top .dp-eyebrow-mini { font:500 12px/1.4 var(--body); color:var(--gold-ink); letter-spacing:.065em; }
+html[data-theme] .lesson-top .topic-name { max-width:25ch; margin:10px auto 8px; font:400 36px/1.14 var(--display); color:var(--ink); letter-spacing:-.65px; text-wrap:balance; }
+html[data-theme] .lesson-read-status { margin:0; font:400 12px/1.5 var(--body); color:var(--muted); }
+html[data-theme] .lesson-nav { display:flex; align-items:center; gap:0; padding:0; border:1px solid var(--room-line); border-radius:var(--room-control); background:transparent; box-shadow:none; }
+html[data-theme] .lesson-nav .daily-shuf { width:44px; height:44px; padding:10px; border:0 !important; border-radius:0 !important; }
+html[data-theme] .lesson-nav .daily-shuf + .daily-shuf { border-left:1px solid var(--room-line) !important; }
+html[data-theme] .lesson-flow { border:0; background:transparent; margin:0; }
+html[data-theme] .lesson-flow::before { display:none !important; }
+html[data-theme] .ls { margin:0; padding:0; border:0; border-bottom:1px solid var(--room-line); background:transparent !important; border-radius:0; }
+html[data-theme] .ls:last-child { border-bottom:0; }
+html[data-theme] .ls summary { display:flex; align-items:center; gap:14px; padding:17px 0 !important; min-height:58px; border-radius:0; text-align:left !important; background:none !important; }
+html[data-theme] .ls .ls-n { position:static; width:26px; height:auto; flex:none; margin:0; padding:0; border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; color:var(--gold-ink); font:500 13px/1.4 var(--body); }
+html[data-theme] .ls .ls-n::before { content:'0' attr(data-step); }
+html[data-theme] #page-study .lesson-flow .ls-n::after { display:none !important; }
+html[data-theme] #page-study .lesson-flow .ls-n { transform:none !important; display:block !important; }
+html[data-theme] .ls .ls-l { font:600 14px/1.4 var(--body); text-align:left !important; color:var(--ink-soft); flex:1; }
+html[data-theme] .ls .ls-chev { width:17px; height:17px; margin-left:auto; color:var(--muted); }
+html[data-theme] .ls-b { padding:0 0 22px 40px !important; text-align:left !important; background:none !important; border:0 !important; }
+html[data-theme] .ls-b p, html[data-theme] .lesson-reading p, html[data-theme] .topic-topic { text-align:left !important; font-size:calc(var(--reply-size) - 1px) !important; line-height:1.75 !important; color:var(--ink-soft); }
+html[data-theme] .quote-wrap { padding:0; border:0; background:transparent; text-align:left; }
+html[data-theme] .quote-wrap .topic-quote { margin:0 0 16px; font:400 27px/1.4 var(--display) !important; color:var(--ink); text-align:left !important; }
+html[data-theme] .quote-wrap::before, html[data-theme] .topic-quote::before, html[data-theme] .topic-quote::after { display:none !important; }
+html[data-theme] .lesson-citation, html[data-theme] .source-footer, html[data-theme] .source-kind { font:400 12px/1.5 var(--body) !important; color:var(--muted); text-align:left !important; letter-spacing:0; text-transform:none; }
+html[data-theme] .lesson-reading .source-kind { display:block; margin:0 0 8px; color:var(--gold-ink); font-weight:600 !important; }
+html[data-theme] .lesson-source { display:inline-flex; align-items:center; min-height:44px; gap:6px; color:var(--gold-ink); font-weight:500 !important; }
+html[data-theme] .quote-act { min-height:44px; padding:8px 12px; border:1px solid var(--room-line); border-radius:var(--room-control); background:transparent; font:500 12px/1.4 var(--body); color:var(--ink-soft); }
+html[data-theme] .topic-vocab { background:var(--accent-soft); padding:16px; border:0; border-left:2px solid var(--accent); border-radius:0; }
+html[data-theme] .topic-vocab .rl2 { font:400 16px/1.75 var(--body); text-align:left; color:var(--ink-soft); }
+html[data-theme] .sa-study-tools-disclosure { margin:0; padding:0; border:0; }
+html[data-theme] .sa-study-tools-disclosure > summary { width:auto; min-height:44px; padding:10px 12px; border:1px solid var(--room-line); border-radius:var(--room-control); background:transparent; color:var(--ink-soft); font:500 12px/1.4 var(--body); }
+html[data-theme] .sa-study-tools-disclosure[open] { flex-basis:100%; }
+html[data-theme] .sa-study-tools-disclosure[open] .sa-study-tools { justify-content:center; padding-top:10px; border-top:1px solid var(--room-line); }
+html[data-theme] .sa-study-tools button, html[data-theme] .sa-study-note-actions button, html[data-theme] .sa-intention-tools button { min-height:44px; border-radius:var(--room-control); font-size:12px; background:transparent; border-color:var(--room-line); }
+html[data-theme] .sa-study-notes h3 { font:400 25px/1.2 var(--display); margin:0 0 8px; }
+html[data-theme] .sa-study-notes textarea { min-height:112px; border-radius:var(--room-control); background:var(--bg); border-color:var(--room-line); font:400 16px/1.65 var(--body); }
+html[data-theme] .sa-note-caption { font-size:12px !important; line-height:1.6; }
+html[data-theme] .quiz-opt { min-height:50px; padding:12px 16px; border-radius:var(--room-control); font-size:15px; line-height:1.5; background:var(--bg); box-shadow:none !important; }
+html[data-theme] .quiz-q { font-size:18px; line-height:1.5; }
+/* Today: shared progress strip; reading and saint columns have equal surfaces. */
+html[data-theme] #page-today .daily-page { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:22px; }
+html[data-theme] #page-today .dp-head, html[data-theme] #page-today #todayStrip, html[data-theme] #page-today .dp-thread { grid-column:1/-1; }
+html[data-theme] #page-today .today-reading-column, html[data-theme] #page-today .today-saint-column { display:flex; flex-direction:column; gap:22px; min-width:0; grid-area:auto; }
+html[data-theme] #todayStrip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); padding:18px 0; margin:0; gap:0; border:1px solid var(--room-line); border-radius:var(--room-radius); background-color:var(--bg); background-image:linear-gradient(var(--panel),var(--panel)); box-shadow:var(--room-shadow); }
+html[data-theme] #page-today #todayStrip .ts-cell { display:flex !important; flex-direction:row; align-items:center !important; justify-content:center !important; gap:12px; min-height:54px; padding:0 18px; border:0 !important; border-right:1px solid var(--room-line) !important; border-radius:0 !important; background:none !important; box-shadow:none !important; }
+html[data-theme] #page-today #todayStrip .ts-cell:last-child { border-right:0 !important; }
+html[data-theme] #page-today #todayStrip .ts-cell::before, html[data-theme] #page-today #todayStrip .ts-cell::after { display:none !important; }
+html[data-theme] #page-today #todayStrip .ts-cell svg { width:20px !important; height:20px !important; padding:0 !important; border:0 !important; background:none !important; color:var(--gold-ink); }
+html[data-theme] #todayStrip .ts-meta { text-align:left; }
+html[data-theme] #todayStrip .ts-n { font:400 28px/1.1 var(--display); color:var(--ink); }
+html[data-theme] #todayStrip .ts-l { display:block; margin-top:5px; font:400 12px/1.4 var(--body) !important; text-transform:none; letter-spacing:0; color:var(--muted); }
+html[data-theme] #page-today #todayStrip .ts-cell { min-height:54px !important; }
+html[data-theme] #page-today #todayStrip .ts-meta { width:auto !important; flex:0 0 auto; text-align:left !important; }
+html[data-theme] #page-today #todayStrip .ts-n { font:400 28px/1.1 var(--display) !important; }
+html[data-theme] #page-today #todayStrip .ts-l { font:400 12px/1.4 var(--body) !important; text-transform:none !important; letter-spacing:0 !important; }
+html[data-theme] .dp-reading { font:400 calc(var(--reply-size) - 1px)/1.8 var(--body); text-align:left !important; }
+html[data-theme] #page-today .dp-reading p, html[data-theme] #saintBio, html[data-theme] #saintConnWrap { font-size:var(--reply-size) !important; line-height:1.8 !important; }
+html[data-theme] #saintBio.saint-bio-collapsed { display:-webkit-box !important; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden; }
+html[data-theme] .dp-reading .rl, html[data-theme] .dp-readings .rl { display:block; margin:20px 0 8px; color:var(--gold-ink); font:600 12px/1.5 var(--body); letter-spacing:.05em; text-align:left; }
+html[data-theme] .dp-readings .dp-reading:first-child .rl { margin-top:0; }
+html[data-theme] #page-today #sec-readings .rl { text-align:left !important; justify-content:flex-start !important; }
+html[data-theme] .sa-source-stamp { margin:18px 0 0; padding-top:12px; border-top:1px solid var(--room-line); }
+html[data-theme] .dp-link, html[data-theme] .sa-source-stamp { min-height:0; font:400 12px/1.6 var(--body); color:var(--muted); }
+html[data-theme] .dp-link { display:inline-flex; align-items:center; min-height:44px; color:var(--gold-ink); }
+html[data-theme] #page-today #saintCard, html[data-theme] #page-today #sec-lesson, html[data-theme] #page-today #sec-quiz { background-color:var(--bg) !important; background-image:linear-gradient(var(--panel),var(--panel)) !important; }
+html[data-theme] #saintCard .saint-card { display:block !important; }
+html[data-theme] #saintCard .saint-portrait { float:left; width:86px; height:114px; margin:0 18px 10px 0 !important; border-radius:7px; background:var(--accent-soft) !important; box-shadow:none; border:1px solid var(--room-line); overflow:hidden; }
+html[data-theme] .saint-portrait img { width:100%; height:100%; object-fit:cover; }
+html[data-theme] .saint-portrait-fallback { padding:18px !important; color:var(--gold-ink); }
+html[data-theme] .saint-portrait-fallback svg { width:44px !important; height:44px !important; }
+html[data-theme] .saint-text { text-align:left; }
+html[data-theme] .saint-date { text-align:left !important; margin:0 0 9px; font:500 12px/1.4 var(--body); color:var(--gold-ink); letter-spacing:.03em; }
+html[data-theme] #saintConnWrap { clear:both; margin:20px 0 0; padding-top:16px; border-top:1px solid var(--room-line); }
+html[data-theme] #saintConnWrap .rl { margin-top:0; }
+html[data-theme] .saint-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+html[data-theme] .saint-bio-toggle { min-height:44px; margin-top:4px; font-size:12px; }
+html[data-theme] .lesson-link { padding:0; min-height:44px; border:0; border-radius:0; background:none; text-align:left; }
+html[data-theme] .lesson-link-name { font:400 25px/1.2 var(--display); text-align:left; }
+html[data-theme] .lesson-link-hint { margin-top:10px; color:var(--gold-ink); font:500 12px/1.5 var(--body); text-align:left; }
+/* Prayer: intention and the tradition form two purposeful columns. */
+html[data-theme] .pray-page { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); align-items:start; }
+html[data-theme] .pray-page > .dp-head, html[data-theme] .pray-page > .dp-thread { grid-column:1/-1; }
+html[data-theme] .pp-intent label { display:block; margin:0 0 10px; color:var(--ink-soft); font:500 14px/1.4 var(--body); text-transform:none; letter-spacing:0; text-align:left; }
+html[data-theme] #page-prayer .pp-intent label { text-align:left !important; }
+html[data-theme] #page-prayer .dp-act > svg { width:21px !important; height:21px !important; padding:0 !important; border:0 !important; background:none !important; }
+html[data-theme] .dp-thread, html[data-theme] .dp-thread > .phead { width:100% !important; max-width:none !important; }
+html[data-theme] #prayIntent2 { width:100%; min-height:90px; max-height:144px; resize:vertical; padding:14px; border:1px solid var(--room-line); border-radius:var(--room-control); background:var(--bg); color:var(--ink); font:400 16px/1.6 var(--body); text-align:left; }
+html[data-theme] #prayIntent2::placeholder { color:var(--muted); opacity:1; }
+html[data-theme] .sa-intention-disclosure { margin:10px 0 !important; font:400 12px/1.55 var(--body); text-align:left; }
+html[data-theme] .sa-intention-tools { gap:6px; margin-bottom:14px; }
+html[data-theme] #page-prayer .dp-cols { display:flex; flex-direction:column; gap:0; }
+html[data-theme] #page-prayer .dp-act:first-child { background:var(--accent-soft) !important; border:0 !important; border-radius:var(--room-control) !important; padding-inline:14px; }
+html[data-theme] .pray-chip-grid { display:flex; flex-direction:column; gap:0; }
+html[data-theme] #page-prayer .pray-chip { display:flex !important; flex-direction:row !important; align-items:center !important; min-height:76px; padding:16px 0 !important; border:0 !important; border-bottom:1px solid var(--room-line) !important; border-radius:0 !important; background:none !important; box-shadow:none !important; gap:14px; text-align:left !important; }
+html[data-theme] .pray-chip-mark { width:25px !important; height:25px !important; padding:0 !important; flex:none; border:0 !important; background:none !important; border-radius:0; }
+html[data-theme] .pray-chip-mark svg { width:22px; height:22px; color:var(--gold-ink); }
+html[data-theme] .pray-chip-copy { flex:1; text-align:left !important; }
+html[data-theme] .pray-chip-title { display:block; font:500 15px/1.4 var(--body); color:var(--ink); }
+html[data-theme] .pray-chip-note { display:block; font:400 13px/1.5 var(--body); color:var(--muted); }
+html[data-theme] #page-prayer .pray-chip-arrow { display:grid !important; place-items:center; color:var(--muted); width:16px; height:20px; padding:0; border:0; background:none; border-radius:0; margin:0; flex:none; }
+html[data-theme] .pray-chip.featured { margin-top:12px; padding:16px !important; border:0 !important; border-radius:var(--room-control) !important; background:var(--accent-soft) !important; }
+/* Composer, menus and saved preferences share the same physical scale. */
+html[data-theme] .dock { left:0 !important; padding-inline:24px; }
+html[data-theme] .composer { max-width:800px; padding:10px !important; border:1px solid var(--room-line) !important; border-radius:18px !important; background:var(--panel) !important; box-shadow:0 8px 36px rgba(22,31,37,.15) !important; backdrop-filter:none !important; }
+html[data-theme] .composer::before, html[data-theme] .composer::after { display:none !important; }
+html[data-theme] .composer .row { gap:8px; }
+html[data-theme] #prompt { font:400 16px/1.5 var(--body); padding:10px 4px; color:var(--ink); }
+html[data-theme] #prompt::placeholder { color:var(--muted); }
+html[data-theme] .composer .icon-btn { border:0 !important; background:transparent !important; }
+html[data-theme] #send { width:44px; height:44px; min-height:44px; border-radius:var(--room-control) !important; box-shadow:none !important; }
+html[data-theme] #send.ready { background:var(--primary) !important; color:var(--paper-50) !important; }
+html[data-theme] #composer .controls { padding:6px 0 0; gap:8px; }
+html[data-theme] #composer .reasoning { display:flex; padding:3px !important; gap:3px !important; min-height:48px !important; background:var(--bg) !important; border:0 !important; border-radius:var(--room-control) !important; box-shadow:none !important; }
+html[data-theme] #composer .reasoning::before { display:none !important; }
+html[data-theme] #composer .reasoning .seg { flex:1; min-width:0; min-height:44px !important; height:44px !important; padding:8px 6px; border-radius:7px !important; color:var(--ink-soft) !important; font:500 12px/1.4 var(--body) !important; box-shadow:none !important; background:transparent !important; }
+html[data-theme] #composer .reasoning .seg[aria-pressed="true"] { background:var(--accent-soft) !important; color:var(--ink) !important; }
+html[data-theme] .sidebar { width:320px; padding:24px 18px 16px; background:var(--panel) !important; border-right:1px solid var(--room-line); box-shadow:12px 0 48px rgba(22,31,37,.13); }
+html[data-theme] body.history-contextual .sidebar { position:fixed !important; inset:0 auto 0 0 !important; z-index:82 !important; transform:translateX(-105%) !important; transition:transform 220ms var(--room-ease); }
+html[data-theme] body.history-contextual .sidebar.open { transform:translateX(0) !important; }
+html[data-theme] #revampHistoryClose { display:flex !important; }
+html[data-theme] .revamp-history-head { margin:0 0 20px; padding:0; }
+html[data-theme] .revamp-history-head h2 { font:400 26px/1.2 var(--display); }
+html[data-theme] .sidebar .nav-search { display:flex; width:100%; margin-bottom:12px; border:1px solid var(--room-line); border-radius:var(--room-control); background:var(--bg); min-height:46px; }
+html[data-theme] .sidebar .sb-new { min-height:48px; padding:12px 16px; border:0 !important; border-radius:var(--room-control); background:var(--primary) !important; color:#fffdf9 !important; -webkit-text-fill-color:#fffdf9 !important; opacity:1 !important; box-shadow:none !important; }
+html[data-theme] .sidebar .sb-new-label { display:inline-block !important; font:600 14px/1.4 var(--body) !important; color:#fffdf9 !important; -webkit-text-fill-color:#fffdf9 !important; visibility:visible !important; text-shadow:none; }
+html[data-theme] .sidebar .sb-select { min-height:44px; margin-top:8px; padding:10px; border:0; border-radius:var(--room-control); background:transparent; color:var(--muted); font-size:12px; }
+html[data-theme] .room-history-tools { display:flex; align-items:center; gap:8px; width:100%; }
+html[data-theme] .room-history-tools .sb-select, html[data-theme] .room-history-filter-toggle { flex:1; min-height:44px; margin:0; padding:9px 8px; border:1px solid var(--room-line); border-radius:var(--room-control); background:transparent; color:var(--ink-soft); font:500 12px/1.4 var(--body); }
+html[data-theme] .room-history-filter-toggle[aria-expanded="true"] { background:var(--accent-soft); color:var(--ink); }
+html[data-theme] #saHistoryFilters[hidden] { display:none !important; }
+html[data-theme] .sidebar .sb-scroll { min-height:88px; }
+html[data-theme] #sidebar .sb-item.a-hid, html[data-theme] #sidebar .sb-item.a-in { opacity:1 !important; transform:none !important; }
+html[data-theme] .sa-history-filters { margin:12px 0; padding:12px 0; border:0; border-block:1px solid var(--room-line); border-radius:0; background:none; }
+html[data-theme] .sa-history-filters label { font-size:12px; }
+html[data-theme] .sa-history-filters select { min-height:40px; background:var(--bg); border-radius:var(--room-control); }
+html[data-theme] .sb-empty { padding:24px 14px; border:0; background:none; box-shadow:none; }
+html[data-theme] .sb-empty svg { border:0; padding:0; background:none; }
+html[data-theme] .sb-item { min-height:48px; border-radius:var(--room-control); box-shadow:none; }
+html[data-theme] .sb-foot { border-top:1px solid var(--room-line); padding-top:14px; }
+html[data-theme] .settings-sheet, html[data-theme] .sa-feature-dialog, html[data-theme] .lesson-browser, html[data-theme] .glossary, html[data-theme] .report-modal, html[data-theme] .examen, html[data-theme] .confirm-modal {
+  background-color:var(--bg) !important; background-image:linear-gradient(var(--panel),var(--panel)) !important;
+  border:1px solid var(--room-line); border-radius:20px; box-shadow:0 24px 72px rgba(22,31,37,.2); color:var(--ink);
+}
+html[data-theme] .settings-categories { display:flex; flex-wrap:nowrap; overflow-x:auto; gap:2px; padding:8px 20px; background:transparent; border-bottom:1px solid var(--room-line); }
+html[data-theme] .settings-category { flex:1 0 auto; min-height:44px; padding:9px 10px; border-radius:var(--room-control); font-size:13px; }
+html[data-theme] .settings-category[aria-selected="true"] { background:var(--accent-soft); color:var(--ink); }
+html[data-theme] .settings-sheet .set-sec { padding:24px; }
+html[data-theme] .settings-sheet .swatch .nm { font-size:12px; }
+html[data-theme] .sa-feature-close, html[data-theme] .dialog-close { width:44px; height:44px; min-width:44px; border-radius:var(--room-control); background:transparent; color:var(--ink); border:1px solid var(--room-line); }
+html[data-theme] .sa-feature-head h2, html[data-theme] .dialog-head h2 { font:400 28px/1.2 var(--display); }
+html[data-theme] .rp-head h2 { font:400 28px/1.2 var(--display); }
+html[data-theme] .rp-chip { min-height:44px; padding:10px 13px; border:1px solid var(--room-line); border-radius:var(--room-control); background:transparent; color:var(--ink-soft); font:500 13px/1.4 var(--body); }
+html[data-theme] .rp-chip.on { background:var(--accent-soft); color:var(--ink); }
+html[data-theme] .rp-actions button { min-height:44px; border-radius:var(--room-control); }
+html[data-theme] .sa-feature-content { font-size:15px; line-height:1.7; }
+html[data-theme] .sa-feature-item { border:0; border-bottom:1px solid var(--room-line); border-radius:0; padding:16px 0; background:none; }
+html[data-theme] .sa-feature-search, html[data-theme] .sa-share-dialog textarea { background:var(--bg); font-size:16px; border-color:var(--room-line); border-radius:var(--room-control); }
+html[data-theme] .sa-feature-actions button, html[data-theme] .sa-feature-row button, html[data-theme] .sa-feature-item > button { min-height:44px; border-radius:var(--room-control); font-size:13px; }
+html[data-theme] .page.on { animation:room-page-arrive 180ms var(--room-ease) both; }
+@keyframes room-page-arrive { from {opacity:0;transform:translateY(3px)} to {opacity:1;transform:translateY(0)} }
+@media (hover:hover) {
+  html[data-theme] button:hover:not(:disabled) { filter:none; }
+  html[data-theme] .nav-tab:hover:not(.on), html[data-theme] .icon-btn:hover, html[data-theme] .sugg:hover, html[data-theme] .sa-followups button:hover, html[data-theme] .dp-link-btn:hover { background:var(--accent-soft) !important; color:var(--ink) !important; transform:none !important; }
+  html[data-theme] .dp-act:hover, html[data-theme] .pray-chip:hover { background:var(--bg) !important; transform:none !important; }
+}
+html[data-theme] :is(button,a,input,textarea,summary,select):focus-visible { outline:2px solid var(--gold-ink) !important; outline-offset:3px; box-shadow:none !important; }
+@media (max-width:1100px) {
+  html[data-theme] .topnav { gap:12px; }
+  html[data-theme] .nav-tab { padding-inline:13px; }
+  html[data-theme] #page-today .daily-page, html[data-theme] .pray-page { display:flex; flex-direction:column; }
+  html[data-theme] #page-today .today-reading-column, html[data-theme] #page-today .today-saint-column { display:contents; }
+  html[data-theme] #page-prayer .pray-page > .dp-card { width:100% !important; max-width:none !important; align-self:stretch !important; }
+  html[data-theme] #page-today .dp-head { order:0; }
+  html[data-theme] #page-today #todayStrip { order:1; }
+  html[data-theme] #page-today #sec-readings { order:2; }
+  html[data-theme] #page-today #saintCard { order:3; }
+  html[data-theme] #page-today #sec-lesson { order:4; }
+  html[data-theme] #page-today #sec-quiz { order:5; }
+  html[data-theme] #page-today .dp-thread { order:6; }
+}
+@media (max-width:768px), (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  :root { --header:64px; }
+  html[data-theme] .topnav { padding:0 68px; justify-content:center; gap:8px; height:64px; min-height:64px; }
+  html[data-theme] .topnav .nav-brand { justify-content:center; gap:8px; font-size:18px; white-space:nowrap; }
+  html[data-theme] .topnav .nav-brand .mark { width:25px !important; height:25px !important; }
+  html[data-theme] .topnav .nav-actions { position:absolute; right:14px; margin:0; }
+  html[data-theme] .sb-toggle { top:10px !important; left:14px !important; }
+  html[data-theme] .stage { padding:calc(var(--header) + 20px) 16px 108px !important; }
+  html[data-theme] body[data-page="chat"] .stage { padding-bottom:220px !important; }
+  html[data-theme] .daily-page, html[data-theme] .pray-page { gap:16px !important; }
+  html[data-theme] .dp-head, html[data-theme] #page-study .dp-head, html[data-theme] #page-prayer .dp-head, html[data-theme] #page-today .dp-head { padding:18px 20px !important; }
+  html[data-theme] .dp-head h2 { font-size:30px !important; }
+  html[data-theme] .dp-head > p:not(.dp-eyebrow) { margin-top:7px; max-width:34ch; font-size:14px !important; line-height:1.5 !important; }
+  html[data-theme] .dp-head-actions { gap:6px; margin-top:12px; }
+  html[data-theme] .dp-head .dp-head-actions button { padding-inline:12px; font-size:12px !important; }
+  html[data-theme] .sa-study-tools-disclosure { margin-top:0; }
+  html[data-theme] .sa-study-tools-disclosure > summary { min-height:44px; padding:9px 11px; }
+  html[data-theme] .dp-card, html[data-theme] .dp-thread > .phead, html[data-theme] .sa-study-notes { padding:22px 20px !important; }
+  html[data-theme] .dp-card h3 { font-size:24px; margin-bottom:18px; }
+  html[data-theme] #greet { display:block; padding:22px !important; }
+  .room-art { width:48px; margin:0 auto 12px; }
+  .room-art img { height:64px; border-radius:24px 24px 3px 3px; }
+  .room-art figcaption { display:none; }
+  html[data-theme] #greet .eyebrow { margin-bottom:12px; font-size:12px; letter-spacing:.085em; }
+  html[data-theme] #greet h1 { max-width:23ch; font-size:27px !important; line-height:1.15 !important; }
+  html[data-theme] #greet .sub { margin-top:16px !important; font-size:14px !important; }
+  html[data-theme] #greet .greet-credit { margin-top:16px !important; padding-top:14px; font-size:12px; }
+  html[data-theme] #greet .greet-sugg { margin-top:14px !important; gap:0 14px; }
+  html[data-theme] #greet .sugg { min-height:50px; padding:11px 0 !important; font-size:12px; }
+  html[data-theme] .msg.assistant { padding:22px 20px; }
+  html[data-theme] .msg.assistant .bubble { font-size:var(--reply-size) !important; }
+  html[data-theme] .sa-followups button { flex:1 1 auto; }
+  html[data-theme] .thread-share-tools:not(.is-compact-share) { flex-wrap:wrap; }
+  html[data-theme] .thread-share-hint { flex-basis:100%; }
+  html[data-theme] .lesson-top { gap:14px; padding-bottom:20px; margin-bottom:10px; }
+  html[data-theme] .lesson-top .topic-name { font-size:29px; margin-top:8px; }
+  html[data-theme] .lesson-top .dp-eyebrow-mini { font-size:12px; }
+  html[data-theme] .ls summary { gap:10px; padding:17px 0 !important; }
+  html[data-theme] .ls .ls-l { font-size:14px; }
+  html[data-theme] .ls-b { padding-left:0 !important; }
+  html[data-theme] .quote-wrap .topic-quote { font-size:25px !important; }
+  html[data-theme] #todayStrip { padding:14px 0; }
+  html[data-theme] #page-today #todayStrip .ts-cell { flex-direction:column; gap:6px; padding:0 8px; }
+  html[data-theme] #page-today #todayStrip .ts-cell svg { display:none; }
+  html[data-theme] #todayStrip .ts-meta { text-align:center; }
+  html[data-theme] #page-today #todayStrip .ts-meta { text-align:center !important; }
+  html[data-theme] #todayStrip .ts-n { font-size:27px; }
+  html[data-theme] #todayStrip .ts-l { font-size:12px !important; margin-top:4px; }
+  html[data-theme] .saint-portrait { width:70px; height:94px; margin-right:14px; }
+  html[data-theme] #saintBio.saint-bio-collapsed { -webkit-line-clamp:4; }
+  html[data-theme] .dp-reading { font-size:calc(var(--reply-size) - 1px); }
+  html[data-theme] .dp-cols { grid-template-columns:1fr; gap:0; }
+  html[data-theme] .dock { padding-inline:12px !important; bottom:calc(76px + env(safe-area-inset-bottom)) !important; }
+  html[data-theme] .composer { border-radius:16px !important; }
+  html[data-theme] body > .nav-tabs { min-height:68px; height:calc(68px + env(safe-area-inset-bottom)); padding:7px 10px calc(7px + env(safe-area-inset-bottom)); gap:2px; border-top:1px solid var(--room-line); background:var(--panel) !important; backdrop-filter:none !important; box-shadow:none !important; }
+  html[data-theme] body > .nav-tabs .nav-tab { padding:5px 4px !important; min-height:54px; font-size:12px !important; border-radius:10px; gap:5px; }
+  html[data-theme] body > .nav-tabs .nav-tab-icon { width:21px; height:21px; }
+  html[data-theme] body > .nav-tabs .nav-tab.on { background:var(--accent-soft) !important; }
+  html[data-theme] .sidebar { width:min(340px,92vw); padding:20px 18px 16px; }
+  html[data-theme] .sa-feature-scrim { padding:12px; }
+  html[data-theme] .sa-feature-dialog { padding:22px 20px; max-height:calc(100dvh - 32px); }
+  html[data-theme] .settings-categories { padding-inline:12px; }
+  html[data-theme] .settings-category { padding-inline:8px; font-size:12px; }
+  html[data-theme] .settings-sheet .set-sec { padding:20px; }
+  html[data-theme] .settings-sheet .swatch-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:360px) {
+  html[data-theme] .topnav { padding-inline:64px; }
+  html[data-theme] .topnav .nav-brand { font-size:16px; gap:6px; }
+  html[data-theme] .topnav .nav-brand .mark { width:22px !important; height:22px !important; }
+  html[data-theme] .stage { padding-inline:12px !important; }
+  html[data-theme] #greet { padding:22px 18px !important; }
+  html[data-theme] #greet h1 { font-size:27px !important; }
+  html[data-theme] .dp-card { padding-inline:18px !important; }
+}
+@media (max-width:430px) and (max-height:650px) {
+  html[data-theme] #page-study .dp-head h2 { font-size:27px !important; }
+  html[data-theme] #page-study .dp-head > p:not(.dp-eyebrow) { display:none; }
+  html[data-theme] #page-study .lesson .dp-head { padding-bottom:16px !important; margin-bottom:16px; }
+  html[data-theme] #page-study .lesson-top { gap:10px; padding-bottom:14px; margin-bottom:0; }
+  html[data-theme] #page-study .lesson-top .topic-name { font-size:26px; }
+}
+@media (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  :root { --header:52px; }
+  html[data-theme] .topnav { height:52px; min-height:52px; }
+  html[data-theme] .sb-toggle { top:4px !important; }
+  html[data-theme] .stage { padding-top:calc(var(--header) + 14px) !important; padding-inline:calc(20px + env(safe-area-inset-left)) !important; }
+  html[data-theme] body > .nav-tabs { height:56px; min-height:56px; padding:3px 12px; }
+  html[data-theme] body > .nav-tabs .nav-tab { min-height:48px; flex-direction:row; gap:8px; }
+  html[data-theme] .dock { bottom:62px !important; }
+  html[data-theme] .composer .controls { display:none !important; }
+  html[data-theme] .composer.expanded .controls { display:flex !important; }
+  html[data-theme] .composer .controls-toggle { display:flex !important; }
+  html[data-theme] .dock .disclaimer { display:none !important; }
+  html[data-theme] .sidebar { padding:12px 16px; gap:6px; overflow-y:auto; }
+  html[data-theme] .revamp-history-head { margin-bottom:4px; }
+  html[data-theme] .sidebar .nav-search { margin-bottom:0; }
+  html[data-theme] .sidebar .sb-foot { padding-top:8px; }
+  html[data-theme] .dp-head, html[data-theme] #page-study .dp-head, html[data-theme] #page-prayer .dp-head, html[data-theme] #page-today .dp-head { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 20px; text-align:left; }
+  html[data-theme] .dp-head h2 { font-size:26px !important; }
+  html[data-theme] #page-study .lesson .dp-head h2, html[data-theme] #page-prayer .room-prayer-intention .dp-head h2 { font-size:26px !important; }
+  html[data-theme] .dp-head > p:not(.dp-eyebrow) { margin:0 !important; max-width:40ch; text-align:left; }
+  html[data-theme] .dp-head > p:not(.dp-eyebrow) { display:none; }
+  html[data-theme] .dp-head-actions { grid-column:2; grid-row:1 / span 3; margin:0; }
+  html[data-theme] #page-study .lesson .dp-head, html[data-theme] #page-prayer .room-prayer-intention .dp-head { margin-bottom:16px; padding-bottom:16px !important; }
+  html[data-theme] #page-study .lesson-top { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; padding-bottom:14px; margin-bottom:0; text-align:left; }
+  html[data-theme] #page-study .lesson-top .topic-name { max-width:none; margin:6px 0; font-size:26px; text-align:left; }
+  html[data-theme] #page-study .room-lesson-actions { gap:8px; }
+  html[data-theme] #greet { display:grid; grid-template-columns:90px minmax(0,1fr); gap:18px; }
+  .room-art { width:90px; margin:0; }
+  .room-art img { height:120px; }
+  html[data-theme] #greet h1 { font-size:29px !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-theme] .page.on, html[data-theme] .bg, html[data-theme] .bg::before, html[data-theme] .bg::after { animation:none !important; }
+}
+html[data-motion="reduced"] .page.on, html[data-motion="reduced"] .bg, html[data-motion="reduced"] .bg::before, html[data-motion="reduced"] .bg::after { animation:none !important; }

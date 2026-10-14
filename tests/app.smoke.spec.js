@@ -54,6 +54,7 @@ test("chat streams, preserves a per-page draft, and emits category-only feedback
   await expect(page.locator("#prompt")).toHaveValue("Help me understand Augustine on memory.");
   await page.locator("#send").click();
   await expect(page.locator(".msg.assistant .bubble").last()).toContainText("A grounded test reply");
+  await page.locator(".msg.assistant").last().locator(".reply-action-trigger").click();
   await page.locator(".msg.assistant").last().locator('[data-fb="helpful"]').click();
   await expect.poll(() => feedbackPayload).toEqual({ reason: "helpful" });
 });
@@ -112,12 +113,15 @@ test("Study source trail, local archive, and prayer intention/timer controls wor
   await page.getByRole("button", { name: "3 minutes" }).click();
   await expect(page.locator("#saTimerFace")).toHaveText("03:00");
   await page.keyboard.press("Escape");
+  await expect(page.locator("#timedPrayerOpen")).toBeFocused();
   await page.locator("#ppLead").click();
   await expect(page.locator(".msg.assistant").last()).toContainText("A grounded test reply");
+  await page.locator("#threadPrayer .msg.assistant").last().locator(".reply-action-trigger").click();
   await expect(page.locator(".msg.assistant").last().getByRole("button", { name: "Save prayer" })).toBeVisible();
   await page.locator(".msg.assistant").last().getByRole("button", { name: "Save prayer" }).click();
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("sa_prayer_favorites_v1") || "[]").length)).toBe(1);
   await page.locator("#settingsBtn").click();
+  await page.getByRole("tab", {name:"Data",exact:true}).click();
   await page.locator("#savedOpen").click();
   const savedDialog = page.getByRole("dialog", { name: "Saved on this device" });
   await expect(savedDialog).toContainText("Favorite prayer");
@@ -134,6 +138,7 @@ test("pausing streak counting preserves the saved count when resumed", async ({ 
   await mockServices(page);
   await page.goto("/#today");
   await page.locator("#settingsBtn").click();
+  await page.getByRole("tab", {name:"Conversation",exact:true}).click();
   const toggle = page.locator("#pauseStreakToggle");
   await expect(toggle).toHaveAttribute("aria-pressed", "true");
   await toggle.click();

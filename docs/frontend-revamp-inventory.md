@@ -1,5 +1,7 @@
 # Frontend revamp completeness inventory
 
+Current October 14 refinement and verification: [reading-room design pass](reading-room-design-pass.md). The records below describe earlier dated passes and their baselines.
+
 Baseline: production `825e6d0`. Inventory taken from the complete `index.html`, `lessons.js`, `config.js`, service worker, landing page, and backend route contracts before implementation. All 215 original DOM IDs are retained. Original handlers remain in use, with the repair notes below. “Checked” records exercised flows; it does not imply every provider, browser, or preference permutation was tested.
 
 | Area | Existing content and capabilities | Implementation / verification |

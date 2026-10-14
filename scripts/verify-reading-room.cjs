@@ -20,10 +20,11 @@ try{for(const [width,height] of sizes.filter(s=>!process.env.QA_WIDTH||s[0]===Nu
   }
  },{legacy});
  await context.route('**/config.js*',r=>r.fulfill({contentType:'application/javascript',body:'window.SA_API_BASE=location.origin;'}));
- let chats=0;const requests=[];
+ let chats=0;const requests=[],feedbackRequests=[];
  await context.route('**/api/**',async r=>{
   const url=new URL(r.request().url()); let body={};
   if(url.pathname==='/api/models')body={models:[{id:'qa-model',name:'Test model',context:8192}]};
+  if(url.pathname==='/api/feedback'){feedbackRequests.push(r.request().postDataJSON());body={ok:true};}
   if(url.pathname==='/api/readings')body={first:'Reading fixture: a short passage displayed on a readable surface.',psalm:'Psalm fixture: a brief response.',gospel:'Gospel fixture: a passage for layout verification.',link:'https://bible.usccb.org/daily-bible-readings'};
   if(url.pathname==='/api/saint')body={name:'Saint fixture',date:'October 8',bio:biography,connection:'A fixture reflection for typography checks.',image:'/missing-portrait.png',link:'https://www.franciscanmedia.org/saint-of-the-day/'};
   if(url.pathname==='/api/chat'){
@@ -46,7 +47,7 @@ try{for(const [width,height] of sizes.filter(s=>!process.env.QA_WIDTH||s[0]===Nu
  assert.equal(await page.locator('.saint-bio-toggle').getAttribute('aria-expanded'),'true');
  await page.locator('.saint-bio-toggle').click();
  row.biography={fullRetained:true,collapsed:true,fallback:await page.locator('#saintPortrait').evaluate(e=>e.classList.contains('is-fallback'))};
- if(width===390||width===1440){
+ if(width===390||width===768||width===1440){
   await page.locator('#settingsBtn').click();
   for(const category of ['Appearance','Atmosphere','Conversation','Data']){
    await page.getByRole('tab',{name:category,exact:true}).click();
@@ -70,17 +71,17 @@ try{for(const [width,height] of sizes.filter(s=>!process.env.QA_WIDTH||s[0]===Nu
   if(width===1440){await page.locator('#sbToggle').click();assert.equal(await page.locator('#sidebar').evaluate(e=>e.inert),false);await page.locator('#revampHistoryClose').click();assert.equal(await page.locator('#sidebar').evaluate(e=>e.inert),true);}
  }
  await page.getByRole('tab',{name:'Chat',exact:true}).click();
- if(width<=1000)await page.locator('#sbToggle').click();
+ await page.locator('#sbToggle').click();
  await capture('history-open'); await page.locator('.sb-item .txt').click();
  await page.waitForTimeout(350);
  assert.equal(await page.locator('#greet').evaluate(e=>getComputedStyle(e).display),'none');
  assert.equal(await page.locator('#thread [data-continue]').count(),1);
  assert.ok(!(await page.locator('#thread .bubble.md').textContent()).includes('drawing breath'));
- if(width<1000)await page.locator('.reply-action-trigger').click();
+ await page.locator('.reply-action-trigger').click();
  await capture('reply-actions');
  row.reply=await page.evaluate(()=>{const panel=document.querySelector('#thread .reply-action-panel'),p=panel.getBoundingClientRect(),c=document.querySelector('#composer').getBoundingClientRect();return {hiddenGreeting:getComputedStyle(document.querySelector('#greet')).display==='none',continuation:!!panel.querySelector('[data-continue]'),overlap:p.width>0&&p.bottom>c.top&&p.top<c.bottom,buttons:[...panel.querySelectorAll('button')].map(b=>({label:b.textContent.trim(),height:b.getBoundingClientRect().height}))};});
  assert.equal(row.reply.overlap,false,`${width} menu overlap`);
- if(width<1000)await page.keyboard.press('Escape');
+ await page.keyboard.press('Escape');
  await page.locator('#threadShareStart').click();await page.locator('.msg-share-toggle').first().click();assert.equal(await page.locator('.msg-share-toggle[aria-pressed=true]').count(),1);await capture('sharing');await page.locator('#threadShareCancel').click();
  if(width===390){
   await page.locator('.reply-action-trigger').click();await page.locator('[data-continue]').click();
@@ -95,17 +96,22 @@ try{for(const [width,height] of sizes.filter(s=>!process.env.QA_WIDTH||s[0]===Nu
   await page.locator('#newChat').evaluate(el=>el.click());await page.locator('#prompt').fill('Another test question.');await page.locator('#send').click();
   await page.waitForFunction(()=>document.querySelector('#thread').textContent.includes('complete answer'));
   await page.locator('.reply-action-trigger').click();
-  assert.equal(await page.locator('.reply-action-panel .act').count(),6);
-  assert.equal(await page.locator('.reply-feedback-group .act').count(),3);
+  assert.ok(await page.locator('.reply-action-panel [data-copy]').isVisible());
+  assert.ok(await page.locator('.reply-action-panel [data-retry]').isVisible());
+  assert.equal(await page.locator('.reply-feedback-group .act').count(),5);
   await capture('complete-reply-actions');
   await page.locator('[data-fb=report]').click();await page.waitForTimeout(200);
-  assert.ok(await page.locator('.report-scrim .dialog-close').isVisible());await capture('report');
+  try{await page.locator('.report-scrim .dialog-close').waitFor({state:'visible',timeout:7000});}catch(error){console.log(JSON.stringify(await page.evaluate(()=>({report:document.querySelector('.report-scrim')?.outerHTML,errors:document.querySelector('#thread')?.textContent.slice(-600)})),null,2));throw error;}await capture('report');
   await page.keyboard.press('Escape');await page.waitForTimeout(250);assert.equal(await page.locator('.report-scrim').count(),0);
+  await page.locator('.reply-action-trigger').click();await page.locator('[data-fb=report]').click();await page.getByRole('button',{name:'Broken citations',exact:true}).click();await page.getByRole('button',{name:'Send report',exact:true}).click();await page.waitForTimeout(250);assert.deepEqual(feedbackRequests.at(-1),{reason:'citation_issue'});
   await page.locator('.reply-action-trigger').click();await page.locator('[data-copy]').click();
   assert.ok((await page.evaluate(()=>navigator.clipboard.readText())).includes('complete answer'));
   await page.locator('#threadShareStart').click();await page.locator('.msg-share-toggle').last().click();await page.locator('#threadShareSelected').click();
+  await page.getByRole('dialog',{name:'Review before sharing'}).getByRole('button',{name:'Share',exact:true}).click();
   assert.ok((await page.evaluate(()=>navigator.clipboard.readText())).includes('complete answer'));
   assert.equal(await page.locator('#thread').evaluate(e=>e.classList.contains('share-selecting')),false);
+  await page.locator('#sbToggle').click();await page.locator('.room-history-filter-toggle').click();await page.locator('#saHistoryDate').selectOption('older');assert.equal(await page.locator('.sb-item:visible').count(),0);await page.locator('#saHistoryDate').selectOption('all');await page.locator('.room-history-filter-toggle').click();
+  await page.locator('.sb-item .sbs').first().click();const shareDialog=page.getByRole('dialog',{name:'Review before sharing'});const fullPreview=await shareDialog.getByRole('textbox',{name:'Share preview'}).inputValue();assert.ok(fullPreview.includes('Another test question.')&&fullPreview.includes('complete answer'));await page.screenshot({path:path.join(out,`reading-room-${width}x${height}-whole-share-preview.png`)});await page.keyboard.press('Escape');assert.equal(await shareDialog.count(),0);assert.equal(await page.locator('#sidebar').evaluate(e=>e.inert),false);await page.locator('#revampHistoryClose').click();
   await page.locator('#fileInput').setInputFiles({name:'reflection.txt',mimeType:'text/plain',buffer:Buffer.from('A local attachment fixture.')});
   assert.ok((await page.locator('#attachRow').textContent()).includes('reflection.txt'));await page.locator('#attachRow .fx').click();assert.ok(await page.locator('#attachRow').evaluate(e=>e.hidden));
   await page.locator('#settingsBtn').click();await page.getByRole('tab',{name:'Appearance',exact:true}).click();
@@ -113,7 +119,7 @@ try{for(const [width,height] of sizes.filter(s=>!process.env.QA_WIDTH||s[0]===Nu
   await page.locator('#settingsClose').click();await page.reload();await page.waitForTimeout(250);
   assert.equal(await page.locator('html').getAttribute('data-theme'),'vellum');assert.equal(await page.locator('html').getAttribute('data-motion'),'reduced');
   assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('sa_prefs_v1')).textScale),'xl');
-  row.extra={completeActions:true,reportDismissal:true,copy:true,selectedShare:true,attachment:true,preferencesPersist:true};
+  row.extra={completeActions:true,reportDismissal:true,anonymousReport:true,copy:true,selectedShare:true,wholeSharePreview:true,historyFilters:true,attachment:true,preferencesPersist:true};
  }
  row.errors=errors;assert.deepEqual(errors,[]);result.push(row);
  await context.close();

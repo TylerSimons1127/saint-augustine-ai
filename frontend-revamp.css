@@ -1791,6 +1791,7 @@ html[data-motion="reduced"][data-theme="parchment"] .dp-card:not(.lesson) {trans
 
 @media (max-width:768px) {
   html[data-theme] #page-study .dp-head {padding:18px 18px!important;}
+}
 @media (max-height: 480px) and (max-width: 900px) and (pointer: coarse) {
   .sidebar { overflow-y: auto; }
   .sidebar > * { flex-shrink: 0; }
