@@ -9,6 +9,9 @@ const stub = http.createServer((req, res) => {
 });
 stub.listen(STUB_PORT, async () => {
   process.env.PORT = String(BACKEND_PORT);
+  process.env.GROQ_API_KEY = "";
+  process.env.AWS_BEARER_TOKEN_BEDROCK = "";
+  process.env.BEDROCK_API_KEY = "";
   process.env.OPENROUTER_API_KEY = "dummy";
   process.env.OPENROUTER_BASE_URL = `http://127.0.0.1:${STUB_PORT}`;
   require("./server.js");
@@ -31,7 +34,9 @@ stub.listen(STUB_PORT, async () => {
 
   const pass = bad.status === 400 && ok1.status === 202 && ok2.status === 202 &&
     get.status === 405 && !getText.includes("private text") && healthJson.ok === true &&
-    Object.keys(healthJson).join(",") === "ok";
+    healthJson.primaryProvider === "openrouter" && healthJson.providers?.groq === false &&
+    healthJson.providers?.bedrock === false && healthJson.providers?.openrouter === true &&
+    healthJson.groqModel === null && healthJson.bedrockModel === null && Object.keys(healthJson).length === 5;
   console.log(`bad:${bad.status} ok1:${ok1.status} ok2:${ok2.status} public-get:${get.status} health:${JSON.stringify(healthJson)}`);
   console.log(pass ? "PASS (category-only feedback and minimal health)" : "FAIL");
   process.exit(pass ? 0 : 1);

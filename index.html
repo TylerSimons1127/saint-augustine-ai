@@ -3443,7 +3443,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <div class="beta-rows">
       <div class="beta-row">
         <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3Z"/><path d="m9 12 2 2 4-4"/></svg></span>
-        <div><b>Your history stays on this device</b><br><span>Conversation history stays in this browser. Messages travel through our Render service to the providers shown in the model picker. When Bedrock is configured, it answers first; OpenRouter may receive a message if Bedrock cannot answer. Avoid sending sensitive information.</span></div>
+        <div><b>Your history stays on this device</b><br><span>Conversation history stays in this browser. Messages travel through our Render service to the providers shown in the model picker. When Groq is configured, it answers first; OpenRouter may receive a message if Groq cannot answer. Avoid sending sensitive information.</span></div>
       </div>
       <div class="beta-row">
         <span class="br-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-book"/></svg></span>
@@ -3567,7 +3567,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   <section class="set-sec">
     <div class="set-lbl">Data (on this device)</div>
-    <p class="set-hint">Conversation history and saved items stay in this browser. Messages travel through our Render service to the providers shown in the model picker. When Bedrock is configured, it answers first; OpenRouter may receive a message if Bedrock cannot answer. Each provider has its own data policies; avoid sending sensitive information.</p>
+    <p class="set-hint">Conversation history and saved items stay in this browser. Messages travel through our Render service to the providers shown in the model picker. When Groq is configured, it answers first; OpenRouter may receive a message if Groq cannot answer. Each provider has its own data policies; avoid sending sensitive information.</p>
     <div class="set-row"><button class="set-link" id="savedOpen" type="button">Saved notes, passages &amp; prayers</button></div>
     <div class="set-row">
       <span class="t" id="storageUsed">—</span>
@@ -4205,8 +4205,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         models.length=0; models.push(...ms); renderModelOptions();
         const rec=ms.find(m=>m.primary)||ms.find(m=>m.id==="nvidia/nemotron-3-ultra-550b-a55b:free")||ms.find(m=>m.featured)||ms[0];
         if(ms.length) selectModel(rec);
-        setStatus(ms.some(m=>m.primary)
-          ? "Connected · Amazon Bedrock primary, OpenRouter backup · conversations stay on this device."
+        const primary=ms.find(m=>m.primary);
+        setStatus(primary
+          ? "Connected · "+(primary.provider==="groq"?"Groq":"Amazon Bedrock")+" primary, OpenRouter backup · conversations stay on this device."
           : "Connected · OpenRouter models · conversations stay on this device.",false,"idle");
         modelLoadController=null; return;
       }catch(e){
@@ -4273,7 +4274,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       "google/gemma-4-26b-a4b-it:free": "Gemma 4",
       "minimax/minimax-m3:free": "MiniMax M3",
     };
-    function shortName(m){ return m.primary ? "Bedrock · Primary" : (FRIENDLY[m.id] || (m.name || m.id || "Model")); }
+    function shortName(m){ return m.primary ? (m.provider==="groq" ? "Groq · Primary" : "Bedrock · Primary") : (FRIENDLY[m.id] || (m.name || m.id || "Model")); }
     function selectModel(m){
       model=m;
       modelVal.textContent=shortName(m);
@@ -4721,13 +4722,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   /* ---- real chat: stream from backend ---- */
   function addFallbackModelNotice(bubbleElement, usedModelId){
-    if(!bubbleElement||!model||!usedModelId||usedModelId.startsWith("bedrock:")||bubbleElement.querySelector(".model-fallback-note")) return;
-    const bedrockWasPrimary=models.some(item=>item.primary);
-    if(usedModelId===model.id&&!bedrockWasPrimary) return;
+    if(!bubbleElement||!model||!usedModelId||(usedModelId.startsWith("bedrock:")||usedModelId.startsWith("groq:"))||bubbleElement.querySelector(".model-fallback-note")) return;
+    const configuredPrimary=models.find(item=>item.primary);
+    if(usedModelId===model.id&&!configuredPrimary) return;
     const actual=models.find(item=>item.id===usedModelId);
     const note=document.createElement("p"); note.className="model-fallback-note";
-    note.textContent=bedrockWasPrimary
-      ? "Amazon Bedrock was unavailable; "+(actual?actual.name:"an OpenRouter model")+" replied through the backup provider."
+    note.textContent=configuredPrimary
+      ? (configuredPrimary.provider==="groq"?"Groq":"Amazon Bedrock")+" was unavailable; "+(actual?actual.name:"an OpenRouter model")+" replied through the backup provider."
       : "Your selected model was unavailable; "+(actual?actual.name:usedModelId)+" answered instead.";
     bubbleElement.append(note);
   }
@@ -5572,11 +5573,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const LS_TUT="sa_tut_v1";          // bump to v2/v3 when you ship new features worth teaching
   const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
   const TUTORIAL=[
-    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. Amazon Bedrock is the primary provider; the OpenRouter models are available as automatic backups. You can choose the preferred backup for each conversation. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
+    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. Groq is the primary provider; the OpenRouter models are available as automatic backups. You can choose the preferred backup for each conversation. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
     {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
-    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images for vision-capable models. Files are prepared in your browser; the text or image needed for an answer is sent through Render to Amazon Bedrock first, with OpenRouter as the backup. Provider data policies apply, so avoid sensitive information."},
+    {t:"Attach files", h:"Click the <b>paperclip</b> to attach <b>PDF, TXT, MD</b> — or images for vision-capable models. Files are prepared in your browser; the text or image needed for an answer is sent through Render to Groq first, with OpenRouter as the backup. Provider data policies apply, so avoid sensitive information."},
     {t:"Edit, copy, retry", h:"After Augustine replies: <b>Retry</b> regenerates the answer, <b>Copy</b> copies it to your clipboard. And you can always <b>edit a question you already sent</b> with the little pencil — fix a typo and get an updated reply."},
   ];
   function startTut(){

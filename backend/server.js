@@ -1,10 +1,13 @@
 // SaintAugustineAI — backend
-// Zero-dependency Node HTTP server. Calls Amazon Bedrock first, with OpenRouter
-// as an automatic fallback. Provider credentials stay server-side.
+// Zero-dependency Node HTTP server. Calls Groq first when configured, with
+// OpenRouter as an automatic fallback. Provider credentials stay server-side.
 // Serves the app's model, chat, reading,
 // saint, health, and category-only feedback endpoints.
 //
 // Env:
+//   GROQ_API_KEY              — Groq API key (primary provider when configured)
+//   GROQ_MODEL_ID             (default openai/gpt-oss-120b)
+//   GROQ_BASE_URL             (default https://api.groq.com/openai/v1)
 //   AWS_BEARER_TOKEN_BEDROCK (recommended) — Amazon Bedrock API key
 //   BEDROCK_API_KEY          (alias)       — Amazon Bedrock API key
 //   BEDROCK_MODEL_ID         (default nvidia.nemotron-super-3-120b)
@@ -17,7 +20,7 @@
 //
 // Routes:
 //   GET  /api/healthz, /api/health -> minimal availability status
-//   GET  /api/models               -> Bedrock primary + OpenRouter fallback models
+//   GET  /api/models               -> configured primary + OpenRouter fallback models
 //   GET  /api/readings, /api/saint -> today's sourced content
 //   POST /api/chat                 -> streamed assistant text; reasoning is private
 //   POST /api/feedback              -> allowlisted category only; never conversation text
@@ -29,6 +32,12 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER = process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+const GROQ_KEY = process.env.GROQ_API_KEY || "";
+const GROQ_MODEL_ID = process.env.GROQ_MODEL_ID || "openai/gpt-oss-120b";
+const GROQ_OPTION_ID = "groq-primary";
+const GROQ_CHAT_URL = (process.env.GROQ_BASE_URL || "https://api.groq.com/openai/v1").replace(/\/$/, "") + "/chat/completions";
+const GROQ_TIMEOUT_MS = Math.max(5000, Math.min(Number(process.env.GROQ_TIMEOUT_MS) || 20000, 110000));
+const GROQ_STREAM_START_TIMEOUT_MS = Math.max(1000, Math.min(Number(process.env.GROQ_STREAM_START_TIMEOUT_MS) || 7000, 30000));
 const BEDROCK_KEY = process.env.AWS_BEARER_TOKEN_BEDROCK || process.env.BEDROCK_API_KEY || "";
 const BEDROCK_REGION = process.env.AWS_REGION || process.env.BEDROCK_REGION || "us-east-1";
 const BEDROCK_MODEL_ID = process.env.BEDROCK_MODEL_ID || "nvidia.nemotron-super-3-120b";
@@ -110,6 +119,36 @@ function bedrockModelOption() {
   };
 }
 
+function groqModelOption() {
+  const label = GROQ_MODEL_ID === "openai/gpt-oss-120b" ? "GPT-OSS 120B" : GROQ_MODEL_ID;
+  return {
+    id: GROQ_OPTION_ID,
+    name: `Groq · ${label}`,
+    desc: "Primary provider. OpenRouter is used automatically if Groq cannot answer.",
+    context: 131072,
+    featured: true,
+    primary: true,
+    provider: "groq",
+  };
+}
+
+async function requestGroq(payload, timeoutMs = GROQ_TIMEOUT_MS) {
+  if (!GROQ_KEY) return null;
+  const { max_tokens, ...compatiblePayload } = payload;
+  return fetchWithTimeout(GROQ_CHAT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${GROQ_KEY}` },
+    // Groq's current API prefers max_completion_tokens and supports hiding
+    // reasoning. The existing browser contract still receives answer text only.
+    body: JSON.stringify({
+      ...compatiblePayload,
+      model: GROQ_MODEL_ID,
+      max_completion_tokens: max_tokens,
+      include_reasoning: false,
+    }),
+  }, timeoutMs);
+}
+
 async function requestBedrock(payload, timeoutMs = BEDROCK_TIMEOUT_MS) {
   if (!BEDROCK_KEY) return null;
   return fetchWithTimeout(BEDROCK_CHAT_URL, {
@@ -144,7 +183,7 @@ async function waitForStreamStart(response, timeoutMs) {
   }
 }
 
-// ---- per-IP rate limiter (protects the free OpenRouter key) ----
+// ---- per-IP rate limiter (limits public use of both providers) ----
 // Token-bucket limiter: capacity 8, refills 8 per 60s. A burst of up to 8 is
 // allowed; after that requests are spaced to ~7.5s apart. This still bounds
 // free-tier key burn from a flood/scraped endpoint, but a legitimate user who
@@ -219,7 +258,7 @@ const CURATED_ORDER = new Map(CURATED.map((id, i) => [id, i]));
 
 async function getFreeModels() {
   if (modelsCache.data && Date.now() - modelsCache.at < MODELS_CACHE_MS) return modelsCache.data;
-  const list = BEDROCK_KEY ? [bedrockModelOption()] : [];
+  const list = GROQ_KEY ? [groqModelOption()] : BEDROCK_KEY ? [bedrockModelOption()] : [];
   if (KEY) {
     try {
       const res = await fetchWithTimeout(`${OPENROUTER}/models`, { headers: { Authorization: `Bearer ${KEY}` } }, 15000);
@@ -230,13 +269,13 @@ async function getFreeModels() {
         .map((m) => ({
           id: m.id,
           name: prettyName(m.id),
-          desc: BEDROCK_KEY
+          desc: GROQ_KEY || BEDROCK_KEY
             ? `OpenRouter backup preference. ${(m.description || "").replace(/\s+/g, " ").trim().slice(0, 88)}`.trim()
             : (m.description || "").replace(/\s+/g, " ").trim().slice(0, 120),
           context: m.context_length || null,
           featured: CURATED.includes(m.id) ? true : undefined,
           provider: "openrouter",
-          fallbackOnly: !!BEDROCK_KEY,
+          fallbackOnly: !!(GROQ_KEY || BEDROCK_KEY),
         }))
         .sort((a, b) => {
           const af = CURATED_ORDER.has(a.id), bf = CURATED_ORDER.has(b.id);
@@ -247,7 +286,7 @@ async function getFreeModels() {
       list.push(...backups);
     } catch (e) {
       if (!list.length) throw e;
-      console.warn("OpenRouter backup model list unavailable; keeping Bedrock primary model option.");
+      console.warn("OpenRouter backup model list unavailable; keeping the configured primary model option.");
     }
   }
   if (!list.length) throw new Error("No model provider is configured.");
@@ -271,18 +310,18 @@ function prettyName(id) {
 function friendlyError(status) {
   if (status === 401) return "The configured model provider rejected its key. Check the provider credentials in the backend environment.";
   if (status === 429) return "That model is temporarily rate-limited (free tier). Pick another or retry shortly.";
-  if (status === 402) return "The OpenRouter account has no credits (free-tiers exhausted or restricted).";
+  if (status === 402) return "The configured provider has no credits or its free quota is unavailable.";
   if (status >= 500) return `The model provider reported an error (${status}). Try a different free model.`;
   if (status === 404) return `That model isn't available (${status}). Try a different free model.`;
-  return `OpenRouter returned ${status}.`;
+  return `The model provider returned ${status}.`;
 }
 
 async function handleChat(req, res, body) {
   const { model, messages, reasoning, stream, pastedAiSignal } = body;
   if (!model) return sendJson(res, 400, { error: "Missing 'model'." });
-  // Requests may select the Bedrock primary or nominate a curated OpenRouter
+  // Requests may select the configured primary or nominate a curated OpenRouter
   // backup. Never accept a caller-supplied provider model ID.
-  if (model !== BEDROCK_OPTION_ID && !CURATED.includes(model)) {
+  if (model !== GROQ_OPTION_ID && model !== BEDROCK_OPTION_ID && !CURATED.includes(model)) {
     recordChat(model, "err");
     recordError(400);
     return sendJson(res, 400, { error: "That model is not on the available list. Choose one of the offered models." });
@@ -343,13 +382,78 @@ async function handleChat(req, res, body) {
     temperature,
   };
 
-  let lastErr = { status: 503, error: "Neither Amazon Bedrock nor OpenRouter is available right now. Please try again shortly.", detail: "" };
+  let lastErr = { status: 503, error: "Neither Groq, Amazon Bedrock, nor OpenRouter is available right now. Please try again shortly.", detail: "" };
 
-  // Amazon Bedrock is the primary provider whenever its server-side API key is
-  // configured. The OpenAI-compatible Chat Completions endpoint preserves this
-  // backend's request and streaming contract. OpenRouter is attempted only if
-  // Bedrock fails before a response stream has been sent to the browser.
-  if (BEDROCK_KEY) {
+  // Groq is primary when its server-side key is configured. If it fails
+  // before the browser stream starts, continue to the curated OpenRouter list.
+  if (GROQ_KEY) {
+    let upstream = null;
+    try {
+      upstream = await requestGroq(payloadBase, GROQ_TIMEOUT_MS);
+    } catch (e) {
+      lastErr = e.name === "AbortError"
+        ? { status: 504, error: "Groq took too long to respond. Trying the backup provider.", detail: "" }
+        : { status: 502, error: "Could not reach Groq. Trying the backup provider.", detail: "" };
+    }
+
+    if (upstream && upstream.ok && payloadBase.stream &&
+        (!upstream.body || !/text\/event-stream/i.test(upstream.headers.get("content-type") || ""))) {
+      try { await upstream.body?.cancel(); } catch (_) {}
+      upstream = null;
+      lastErr = { status: 502, error: "Groq returned an invalid stream. Trying the backup provider.", detail: "" };
+    }
+    if (upstream && upstream.ok && payloadBase.stream &&
+        !await waitForStreamStart(upstream, GROQ_STREAM_START_TIMEOUT_MS)) {
+      upstream = null;
+      lastErr = { status: 504, error: "Groq did not start streaming in time. Trying the backup provider.", detail: "" };
+    }
+
+    if (upstream && upstream.ok) {
+      const usedModel = `groq:${GROQ_MODEL_ID}`;
+      if (!payloadBase.stream) {
+        const json = await upstream.json();
+        recordChat(usedModel, "ok");
+        return sendJson(res, 200, {
+          content: json.choices?.[0]?.message?.content || "",
+          model: usedModel,
+          provider: "groq",
+        }, { "X-Model-Used": usedModel, "X-Provider-Used": "groq" });
+      }
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        Connection: "keep-alive",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Expose-Headers": "X-Model-Used, X-Provider-Used",
+        "X-Model-Used": usedModel,
+        "X-Provider-Used": "groq",
+        "X-Accel-Buffering": "no",
+      });
+      await proxyStream(upstream, res, reasoning);
+      recordChat(usedModel, "ok");
+      return;
+    }
+
+    if (upstream) {
+      let detail = "";
+      try {
+        const errorBody = await upstream.json();
+        detail = errorBody.error?.message || errorBody.message || "";
+      } catch (_) {}
+      lastErr = {
+        status: upstream.status,
+        error: `Groq returned ${upstream.status}; trying the backup provider.`,
+        detail,
+      };
+    }
+    const metricKey = `groq:${GROQ_MODEL_ID}`;
+    const groqMetrics = metrics.byModel[metricKey] || (metrics.byModel[metricKey] = { ok: 0, err: 0, fallback: 0 });
+    groqMetrics.fallback++;
+  }
+
+  // Amazon Bedrock remains available only when Groq is not configured. The
+  // OpenAI-compatible Chat Completions endpoint preserves the existing contract.
+  if (BEDROCK_KEY && !GROQ_KEY) {
     let upstream = null;
     try {
       upstream = await requestBedrock(payloadBase, BEDROCK_TIMEOUT_MS);
@@ -422,7 +526,7 @@ async function handleChat(req, res, body) {
     let upstream;
     try {
       if (!KEY) {
-        lastErr = { status: 503, error: "Amazon Bedrock could not answer and the OpenRouter backup key is not configured.", detail: "" };
+        lastErr = { status: 503, error: "The primary provider could not answer and the OpenRouter backup key is not configured.", detail: "" };
         break;
       }
       upstream = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
@@ -1064,7 +1168,13 @@ async function generateSaintText(sys, userText, maxTokens, maxChars, acceptOutpu
   };
 
   // Keep generated saint reflections on the same provider order as chat.
-  if (BEDROCK_KEY) {
+  if (GROQ_KEY) {
+    try {
+      const text = await readAcceptedText(await requestGroq(payload, 20000));
+      if (text) return text;
+    } catch (_) { /* fall through to the OpenRouter backup */ }
+  }
+  if (!GROQ_KEY && BEDROCK_KEY) {
     try {
       const text = await readAcceptedText(await requestBedrock(payload, 20000));
       if (text) return text;
@@ -1094,7 +1204,8 @@ async function getSaintConn(name, bio) {
     return JEROME_AUGUSTINE_LINK;
   }
   const sys = "Write a thoughtful, polished editorial reflection for the Saint of the Day panel, in third person (do not impersonate Augustine). Use exactly 2 sentences, about 35-55 words. Ground one sentence in a distinctive, verifiable fact from the supplied biography; connect it to a specific, accurate Augustinian theme or writing only when the connection is meaningful. Prefer an actual historical link when the source documents one. Otherwise present a careful affinity, never imply the saints met or shared a direct relationship. Avoid generic praise and reusable templates. Return only the reflection, with no heading or commentary.";
-  // Bedrock is attempted first in generateSaintText; these OpenRouter backups
+  // Groq (or legacy Bedrock when Groq is absent) is attempted first in
+  // generateSaintText; these OpenRouter backups
   // start with the faster curated models and remain bounded to three attempts.
   const line = await generateSaintText(sys,
     `Saint: ${name}\nComplete source story: ${bio}\n\nWrite the 2-sentence "Connected to St. Augustine" reflection for this saint.`,
@@ -1143,8 +1254,9 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "GET" && url === "/api/health") return sendJson(res, 200, { ok: true });
     if (req.method === "GET" && url === "/api/healthz") return sendJson(res, 200, {
       ok: true,
-      primaryProvider: BEDROCK_KEY ? "bedrock" : KEY ? "openrouter" : "unconfigured",
-      providers: { bedrock: !!BEDROCK_KEY, openrouter: !!KEY },
+      primaryProvider: GROQ_KEY ? "groq" : BEDROCK_KEY ? "bedrock" : KEY ? "openrouter" : "unconfigured",
+      providers: { groq: !!GROQ_KEY, bedrock: !!BEDROCK_KEY, openrouter: !!KEY },
+      groqModel: GROQ_KEY ? GROQ_MODEL_ID : null,
       bedrockModel: BEDROCK_KEY ? BEDROCK_MODEL_ID : null,
     });
     if (req.method === "GET" && url === "/api/models") {

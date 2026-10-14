@@ -28,6 +28,9 @@ async function healthz() {
 
 (async () => {
   process.env.PORT = String(BACKEND_PORT);
+  process.env.GROQ_API_KEY = "";
+  process.env.AWS_BEARER_TOKEN_BEDROCK = "";
+  process.env.BEDROCK_API_KEY = "";
   process.env.OPENROUTER_API_KEY = "dummy";
   process.env.OPENROUTER_BASE_URL = `http://127.0.0.1:${STUB_PORT}`;
   await new Promise((res) => stub.listen(STUB_PORT, res));
@@ -50,7 +53,10 @@ async function healthz() {
   console.log("healthz before:", JSON.stringify(before));
   console.log("healthz after:", JSON.stringify(after));
 
-  const ok = JSON.stringify(before) === '{"ok":true}' && JSON.stringify(after) === '{"ok":true}' &&
+  const hasExpectedProviderState = (health) => health.ok === true && health.primaryProvider === "openrouter" &&
+    health.providers?.groq === false && health.providers?.bedrock === false && health.providers?.openrouter === true &&
+    health.groqModel === null && health.bedrockModel === null;
+  const ok = hasExpectedProviderState(before) && hasExpectedProviderState(after) &&
     s1 === 200 && s2 === 200 && b1 === 400 && m1.status === 400;
   console.log(ok ? "PASS (metrics instrumented)" : "FAIL");
   process.exit(ok ? 0 : 1);
