@@ -2781,7 +2781,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   }
 }
 </style>
-<link rel="stylesheet" href="frontend-revamp.css?v=reading-room-40-production" />
+<link rel="stylesheet" href="frontend-revamp.css?v=reading-room-42-production" />
 <link rel="stylesheet" href="app-features.css?v=premium-pass-2" />
 <script src="frontend-revamp.js" defer></script>
 <script src="app-features.js?v=premium-pass-2" defer></script>
@@ -2865,9 +2865,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     <h2>Conversations</h2>
     <button class="icon-btn" id="revampHistoryClose" type="button" aria-label="Close conversations"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
   </div>
-  <button class="sb-new" id="newChat">
+  <button class="sb-new" id="newChat" type="button">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-    New conversation
+    <span class="sb-new-label">New conversation</span>
   </button>
   <button class="sb-select" id="sbSelect" aria-pressed="false" title="Select conversations to export or delete">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m8 12 3 3 5-6"/></svg>
