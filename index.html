@@ -2654,6 +2654,11 @@ html[data-motion="reduced"] *{ animation-duration:.001ms !important; transition-
     if(p.textScale) h.setAttribute("data-text-scale", p.textScale);
     if(p.motion) h.setAttribute("data-motion", p.motion);
     var bgId = p.background && p.background.id ? p.background.id : "original";
+    if(["mountains","olive","sea","forest","lavender","dune","alpine","tulip","glacier","vineyard"].indexOf(bgId)!==-1){
+      bgId="original";
+      p.background=Object.assign({},p.background,{id:bgId});
+      localStorage.setItem("sa_prefs_v1",JSON.stringify(p));
+    }
     h.setAttribute("data-bg","1");
     var bgUrl = bgId==="original" ? "assets/bg.jpg" : "assets/bg/bg_"+bgId+".jpg";
     h.style.setProperty("--bg-img", 'url("'+bgUrl+'")');
@@ -5626,13 +5631,13 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     {id:"aqua",      name:"Aqua",       c:["#e7f4f2","#3f9aa0","#fafdfc"]},
   ];
   const BGS=[
-    {id:"original", label:"Sanctuary"}, {id:"cathedral", label:"Cathedral"}, {id:"mountains", label:"Mountains"},
-    {id:"dawn", label:"Dawn"}, {id:"olive", label:"Olive grove"}, {id:"sea", label:"Sea at dusk"},
-    {id:"forest", label:"Misty forest"}, {id:"lavender", label:"Lavender field"}, {id:"dune", label:"Desert dunes"},
-    {id:"snow", label:"Snow peaks"}, {id:"alpine", label:"Alpine lake"}, {id:"lake", label:"Still lake"},
-    {id:"tulip", label:"Tulip field"}, {id:"blossom", label:"Cherry blossom"}, {id:"autumn", label:"Autumn woods"},
-    {id:"meadow", label:"Wildflower meadow"}, {id:"glacier", label:"Glacier"}, {id:"coast", label:"Sea cliffs"},
-    {id:"vineyard", label:"Vineyard"},
+    {id:"original", label:"Sanctuary"}, {id:"cathedral", label:"Cathedral"}, {id:"dawn", label:"Dawn"},
+    {id:"snow", label:"Snow peaks"}, {id:"lake", label:"Still lake"}, {id:"blossom", label:"Cherry blossom"},
+    {id:"autumn", label:"Autumn woods"}, {id:"meadow", label:"Wildflower meadow"}, {id:"coast", label:"Sea cliffs"},
+    {id:"valley-light", label:"Valley of light"}, {id:"lake-morning", label:"Morning stillness"},
+    {id:"snow-horizon", label:"Snowlit horizon"}, {id:"blossom-walk", label:"Blossom walk"},
+    {id:"autumn-light", label:"Autumn light"}, {id:"meadow-dawn", label:"Meadow at dawn"},
+    {id:"coastal-light", label:"Coastal light"}, {id:"cloister-morning", label:"Cloister morning"},
   ];
   const DEF_PREFS={ theme:"parchment", darkness:"dark", textScale:"m", motion:"auto",
     background:{id:"original", dim:12},
@@ -5643,6 +5648,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     catch(_){ return JSON.parse(JSON.stringify(DEF_PREFS)); }
   }
   let prefs=loadPrefs();
+  // Retired or unavailable scenery returns to Sanctuary; keep every other preference.
+  if(!BGS.some(g=>g.id===((prefs.background&&prefs.background.id)||"original"))){
+    prefs.background=Object.assign({},DEF_PREFS.background,prefs.background,{id:"original"});
+    savePrefs();
+  }
 
   function savePrefs(){ try{ localStorage.setItem(LS_PREFS, JSON.stringify(prefs)); }catch(_){} }
   function applyPrefs(){
@@ -5654,16 +5664,17 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     h.setAttribute("data-bg","1");
     let bgId = (prefs.background&&prefs.background.id)||"original";
     // E64: seasonal background auto-swap — only when the user hasn't picked a scene
-    // (id "original" = never explicitly chosen). Advent -> dawn, Lent -> misty forest,
+    // (id "original" = never explicitly chosen). Advent -> dawn, Lent -> valley light,
     // Easter octave -> meadow. Theme choice is always respected.
     if(bgId==="original"){
       const now=new Date(), m=now.getMonth()+1, d=now.getDate();
       if(m===12 && d>=1 && d<=24) bgId="dawn";              // Advent
-      else if((m===2&&d>=17)||(m===3)||((m===4)&&(d<=16))) bgId="forest";  // Lent (approx window)
+      else if((m===2&&d>=17)||(m===3)||((m===4)&&(d<=16))) bgId="valley-light";  // Lent (approx window)
       else if(m===4 && d>=17 && d<=30) bgId="meadow";       // Easter octave
     }
     const bgUrl = bgId==="original" ? "assets/bg.jpg" : "assets/bg/bg_"+bgId+".jpg";
     h.style.setProperty("--bg-img", 'url("'+bgUrl+'")');
+    document.querySelector('.bg .photo')?.style.removeProperty("background-image");
     h.style.setProperty("--bg-dim", (((prefs.background&&prefs.background.dim!=null)?prefs.background.dim:12)/100).toFixed(2));
   }
   function applyMotion(){
@@ -5744,30 +5755,15 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   document.addEventListener("keydown",e=>{ if(e.key==="Escape" && sheet.classList.contains("show")) closeSettings(); });
 
   /* ---------- Scenery & Themes pickers (ported from mockup) ---------- */
-  const SCENES=[
-    {id:'bg.jpg',label:'Sanctuary'},
-    {id:'bg/bg_cathedral.jpg',label:'Cathedral'},
-    {id:'bg/bg_mountains.jpg',label:'Mountains'},
-    {id:'bg/bg_dawn.jpg',label:'Dawn'},
-    {id:'bg/bg_olive.jpg',label:'Olive Grove'},
-    {id:'bg/bg_sea.jpg',label:'Sea'},
-    {id:'bg/bg_forest.jpg',label:'Misty Forest'},
-    {id:'bg/bg_lavender.jpg',label:'Lavender Field'},
-    {id:'bg/bg_dune.jpg',label:'Desert Dunes'},
-    {id:'bg/bg_snow.jpg',label:'Alpine Snow'},
-    {id:'bg/bg_alpine.jpg',label:'Mountain Lake'},
-    {id:'bg/bg_lake.jpg',label:'Still Lake'},
-    {id:'bg/bg_tulip.jpg',label:'Tulip Field'},
-    {id:'bg/bg_blossom.jpg',label:'Cherry Blossom'},
-    {id:'bg/bg_autumn.jpg',label:'Autumn Woods'},
-    {id:'bg/bg_meadow.jpg',label:'Wildflower Meadow'},
-    {id:'bg/bg_glacier.jpg',label:'Glacier'},
-    {id:'bg/bg_coast.jpg',label:'Sea Cliffs'},
-    {id:'bg/bg_vineyard.jpg',label:'Vineyard'},
-  ];
-  const photo=$('.bg .photo');
-  let activeScene='bg.jpg';
-  function setScenery(file){activeScene=file; if(photo) photo.style.backgroundImage=`url("assets/${file}")`; $$('.sc-thumb').forEach(x=>x.classList.toggle('on',x.dataset.f===file));}
+  // Both pickers use the same collection so retired scenery cannot reappear.
+  const SCENES=BGS.map(g=>({id:g.id==="original"?"bg.jpg":"bg/bg_"+g.id+".jpg",label:g.label}));
+  const activeScene=prefs.background?.id&&prefs.background.id!=="original"?"bg/bg_"+prefs.background.id+".jpg":"bg.jpg";
+  function setScenery(file){
+    const scene=BGS.find(g=>(g.id==="original"?"bg.jpg":"bg/bg_"+g.id+".jpg")===file);
+    if(!scene) return;
+    prefs.background=Object.assign({},prefs.background,{id:scene.id});
+    savePrefs(); applyPrefs(); syncSettingsUI();
+  }
   const sceneryPop=$('#sceneryPop'), sceneryScrim=$('#sceneryScrim'), sceneryGrid=$('#glassSceneryGrid');
   SCENES.forEach(s=>{const t=document.createElement('div');t.className='sc-thumb'+(s.id===activeScene?' on':'');t.dataset.f=s.id;t.style.backgroundImage=`url("assets/bg/thumbs/${s.id.split('/').pop()}")`;
     t.innerHTML=`<span class="sc-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="sc-tt">${s.label}</span>`;
@@ -5972,6 +5968,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   function syncSettingsUI(){
     themeGrid.querySelectorAll(".swatch").forEach(b=>b.setAttribute("aria-pressed", b.dataset.theme===prefs.theme));
     bgGrid.querySelectorAll(".bg-thumb").forEach(b=>b.setAttribute("aria-pressed", b.dataset.bg===((prefs.background&&prefs.background.id)||"original")));
+    const activeScene=prefs.background?.id&&prefs.background.id!=="original"?"bg/bg_"+prefs.background.id+".jpg":"bg.jpg";
+    $$('.sc-thumb').forEach(b=>b.classList.toggle('on',b.dataset.f===activeScene));
     $$('.seg-ctl[data-seg]').forEach(g=>g.querySelectorAll("button").forEach(b=>{
       const k=g.dataset.seg; let v=prefs[k];
       if(k==="darkness") v=prefs.darkness; else if(k==="textScale") v=prefs.textScale;
