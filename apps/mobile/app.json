@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Saint Augustine AI",
+    "slug": "saint-augustine-ai",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/brand/app-icon.png",
+    "scheme": "saintaugustine",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tylersimons.saintaugustineai",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.tylersimons.saintaugustineai",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/app-icon.png",
+        "backgroundColor": "#f6f2eb"
+      }
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/brand/app-icon.png",
+      "name": "Saint Augustine AI",
+      "description": "A Catholic companion for study, reflection, and prayer."
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f6f2eb",
+          "image": "./assets/brand/app-icon.png",
+          "imageWidth": 110
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
