@@ -709,16 +709,21 @@ function makeAnswerGate() {
   let decided = false;                    // have we locked onto the answer start?
   let buf = "";                           // pre-answer buffer (planning / self-narration)
   let emitBuf = "";                       // post-answer: current line being built
+  let emittedLinePrefix = "";             // already-sent part of that same line
   const MAX_PRE = 40000;                  // safety cap; real answers appear well before this
   const planLine = (line) => {
     const s = line.trim();
     if (!s) return false;
     return isOutlineLine(line) || isPlanLikely(line) || isSourceCitation(line) || isSelfNarration(line);
   };
+  const commitHead = (head) => {
+    emittedLinePrefix = head.slice(head.lastIndexOf("\n") + 1);
+    return [head];
+  };
   const gate = function (tok) {
     if (!decided) {
       buf += tok;
-      if (buf.length >= MAX_PRE) { decided = true; const h = buf; buf = ""; return [h]; }
+      if (buf.length >= MAX_PRE) { decided = true; const h = buf; buf = ""; return commitHead(h); }
       const lines = buf.split("\n");
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
@@ -727,13 +732,13 @@ function makeAnswerGate() {
         if (!trimmed) continue;
         // Commit ONLY when the line opens addressing the reader (you / peace / dear friend…).
         // Planning prose never does, so this is the reliable boundary.
-        if (addressesReader(line)) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return [head]; }
+        if (addressesReader(line)) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return commitHead(head); }
         if (planLine(line)) continue;
         // First substantial prose line that is NOT planning and NOT self-narration is the
         // real answer beginning (the model may open with a scripture quote or a reflection,
         // not necessarily "you"). Commit here and start streaming; post-answer planning is
         // still stripped by the filtering below.
-        if (s.length >= 30) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return [head]; }
+        if (s.length >= 30) { decided = true; const head = lines.slice(i).join("\n"); buf = ""; return commitHead(head); }
         continue;
       }
       return [];
@@ -745,15 +750,20 @@ function makeAnswerGate() {
     while ((nl = emitBuf.indexOf("\n")) >= 0) {
       const line = emitBuf.slice(0, nl);
       emitBuf = emitBuf.slice(nl + 1);
-      if (planLine(line)) continue;
+      const wholeLine = emittedLinePrefix + line;
+      emittedLinePrefix = "";
+      if (planLine(wholeLine)) continue;
       out.push(line + "\n");
     }
     return out;
   };
   gate.final = function () {
-    const t = emitBuf.trim();
+    // Preserve the boundary with the already-emitted prefix ("You" + " have").
+    const t = emitBuf;
+    const wholeLine = emittedLinePrefix + t;
     emitBuf = "";
-    if (!t || planLine(t)) return [];
+    emittedLinePrefix = "";
+    if (!t.trim() || planLine(wholeLine)) return [];
     return [t];
   };
   return gate;
