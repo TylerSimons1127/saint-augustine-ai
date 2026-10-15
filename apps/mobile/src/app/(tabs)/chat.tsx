@@ -262,7 +262,20 @@ export default function Chat() {
       }
       if (kind === "speak") {
         await Speech.stop();
-        Speech.speak(m.content, { language: "en-US", rate: 0.9 });
+        const limit = Math.min(Speech.maxSpeechInputLength, 3500);
+        let remaining = m.content;
+        while (remaining.length) {
+          let end = Math.min(remaining.length, limit);
+          if (end < remaining.length) {
+            const boundary = remaining.lastIndexOf(" ", end);
+            if (boundary > end / 2) end = boundary;
+          }
+          Speech.speak(remaining.slice(0, end), {
+            language: "en-US",
+            rate: 0.9,
+          });
+          remaining = remaining.slice(end);
+        }
       }
       if (kind === "stopVoice") await Speech.stop();
       if (kind === "report") {

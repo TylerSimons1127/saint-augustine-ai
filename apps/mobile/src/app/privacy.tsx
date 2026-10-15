@@ -1,4 +1,4 @@
-import { Card, Screen, SourceLink, T } from "../components/ui";
+import { Card, Screen, T } from "../components/ui";
 export default function Privacy() {
   return (
     <Screen title="Your words deserve care." eyebrow="Privacy and AI" back>
@@ -60,10 +60,6 @@ export default function Privacy() {
           local data in Settings. Resetting local data cannot erase copies
           already sent to service providers or exported elsewhere.
         </T>
-        <SourceLink
-          label="Read the website’s privacy policy"
-          url="https://staugustineai.vercel.app/privacy-policy.html"
-        />
       </Card>
     </Screen>
   );

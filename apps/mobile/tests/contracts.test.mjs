@@ -20,6 +20,22 @@ function load(file) {
 }
 const { initial, validateBackup } = load("schema.ts"),
   { parseEvent } = load("sse.ts");
+const { redirectSystemPath } = load("../app/+native-intent.tsx");
+test("native links reject malformed encoding before query decoding", () => {
+  const valid = "saintaugustine://lesson/3?title=The%20heart";
+  assert.equal(redirectSystemPath({ path: valid, initial: true }), valid);
+  assert.equal(
+    redirectSystemPath({
+      path: "saintaugustine://chat?q=%E0%A4%A",
+      initial: true,
+    }),
+    "/",
+  );
+  assert.equal(
+    redirectSystemPath({ path: "a".repeat(4097), initial: false }),
+    "/",
+  );
+});
 test("import validates before replacing data and resets sharing/reminders", () => {
   const backup = structuredClone(initial);
   backup.consent = true;

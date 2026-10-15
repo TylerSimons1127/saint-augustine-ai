@@ -404,13 +404,16 @@ export function Screen({
             <T style={{ flex: 1, fontFamily: fonts.title, fontSize: 23 }}>
               Saint Augustine <T kind="caption">AI</T>
             </T>
-            {action || (
-              <IconButton
-                name="sliders"
-                label="Open settings"
-                onPress={() => router.push("/settings")}
-              />
-            )}
+            {action ||
+              (back ? (
+                <View style={{ width: 44 }} />
+              ) : (
+                <IconButton
+                  name="sliders"
+                  label="Open settings"
+                  onPress={() => router.push("/settings")}
+                />
+              ))}
           </Row>
         </View>
         {scroll ? (

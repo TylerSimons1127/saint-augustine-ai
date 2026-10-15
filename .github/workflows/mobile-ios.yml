@@ -36,6 +36,7 @@ jobs:
           name: saint-augustine-mobile-web
           path: apps/mobile/dist
   ios-simulator:
+    if: github.event_name != 'push'
     runs-on: macos-26
     timeout-minutes: 60
     defaults:
@@ -64,6 +65,7 @@ jobs:
             -configuration Release -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath "$RUNNER_TEMP/sa-native" CODE_SIGNING_ALLOWED=NO \
+            ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
             build > "$RUNNER_TEMP/sa-native-build.log" 2>&1 || { tail -160 "$RUNNER_TEMP/sa-native-build.log"; exit 1; }
       - name: Launch on iPhone simulator
         shell: bash

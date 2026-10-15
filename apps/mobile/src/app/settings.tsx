@@ -352,9 +352,9 @@ export default function Settings() {
           label="Visit the website"
           url="https://staugustineai.vercel.app/"
         />
-        <SourceLink
-          label="Privacy policy"
-          url="https://staugustineai.vercel.app/privacy-policy.html"
+        <Button
+          label="Privacy and AI"
+          onPress={() => router.push("/privacy")}
         />
         <T kind="caption">Service endpoint: {API_BASE}</T>
       </Card>
