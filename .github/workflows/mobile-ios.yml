@@ -1,0 +1,89 @@
+name: Expo iOS app
+on:
+  push:
+    branches: [mobile/expo-ios]
+    paths: ["apps/mobile/**", ".github/workflows/mobile-ios.yml", "lessons.js", "lesson-sources.js"]
+  pull_request:
+    paths: ["apps/mobile/**", ".github/workflows/mobile-ios.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-ios-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run sync:content
+      - run: npx expo-doctor
+      - run: npm run export:web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saint-augustine-mobile-web
+          path: apps/mobile/dist
+  ios-simulator:
+    if: github.event_name != 'push'
+    runs-on: macos-26
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run sync:content
+      - name: Generate iOS project
+        run: npx expo prebuild --platform ios --no-install
+      - name: Install native dependencies
+        run: pod install --project-directory=ios
+      - name: Build a self-contained simulator app
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT="$(find ios -maxdepth 1 -name '*.xcodeproj' -print -quit)"
+          SCHEME="$(basename "$PROJECT" .xcodeproj)"
+          xcodebuild -workspace "ios/${SCHEME}.xcworkspace" -scheme "$SCHEME" \
+            -configuration Release -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/sa-native" CODE_SIGNING_ALLOWED=NO \
+            ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
+            build > "$RUNNER_TEMP/sa-native-build.log" 2>&1 || { tail -160 "$RUNNER_TEMP/sa-native-build.log"; exit 1; }
+      - name: Launch on iPhone simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          UDID="$(xcrun simctl list devices available --json | python3 -c 'import json,sys; d=json.load(sys.stdin)["devices"]; print(next(v["udid"] for group in d.values() for v in group if v.get("isAvailable") and "iPhone" in v.get("deviceTypeIdentifier","")))')"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          APP="$(find "$RUNNER_TEMP/sa-native/Build/Products/Release-iphonesimulator" -maxdepth 1 -name '*.app' -print -quit)"
+          xcrun simctl install "$UDID" "$APP"
+          xcrun simctl launch "$UDID" com.tylersimons.saintaugustineai
+          sleep 15
+          xcrun simctl io "$UDID" screenshot "$RUNNER_TEMP/sa-native-launch.png"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: saint-augustine-native-ios
+          path: |
+            ${{ runner.temp }}/sa-native/Build/Products/Release-iphonesimulator/*.app
+            ${{ runner.temp }}/sa-native-launch.png
+            ${{ runner.temp }}/sa-native-build.log
