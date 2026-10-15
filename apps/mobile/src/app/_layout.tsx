@@ -18,11 +18,13 @@ function Navigator() {
       <PageTitle />
       <StatusBar style={isDark ? "light" : "dark"} />
       <Stack
+        initialRouteName="index"
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: c.canvas },
         }}
       >
+        <Stack.Screen name="index" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="settings" options={{ presentation: "modal" }} />
         <Stack.Screen name="history" options={{ presentation: "modal" }} />

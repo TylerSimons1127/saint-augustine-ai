@@ -1,6 +1,6 @@
 # Saint Augustine AI for iOS
 
-A React Native app using Expo SDK 57, Expo Router, and the existing Saint Augustine backend. It renders native screens. The website is not loaded in a WebView. Based on web source `ad2e9d7` from 2026-10-14.
+An Expo shell that opens the canonical Saint Augustine AI reading room at `https://staugustineai.vercel.app/` in the iOS system web view. This uses the production website's actual HTML, CSS, images, onboarding, settings, and JavaScript, so the iPhone layout follows the live site instead of a second hand-built interface. The in-app experience needs an internet connection to load; the website's history and preferences stay in the app's private web-view storage and are separate from Safari.
 
 ## Develop on Windows
 
@@ -13,19 +13,17 @@ npm run lint
 npm run preview:lan
 ```
 
-Install the matching Expo Go client on your phone, connect to the same Wi-Fi as this PC and scan Metro's QR code. `npm run web` opens the same React Native screens in a browser. Check keyboard, sharing, notifications, speech and SQLite storage in the native client as well.
+Install the matching Expo Go client on your phone, connect to the same Wi-Fi as this PC and scan Metro's QR code. The native app loads the same live reading room. `npm run web` provides a link to the canonical website.
 
-`npm run sync:content` updates all 32 lessons and brand images from the repository root. Edit the original lesson/source files, then sync. Lessons and fonts are bundled for offline use. AI needs a connection.
+The mobile wrapper uses the website's own assets and data. Make web changes in the repository root so the site and app stay visually aligned. AI and daily content need a connection.
 
 ## Implemented
 
-- Today: daily source content, seven-day local cache, explicit curated/old-copy labels, study entry.
-- Chat: real SSE streaming, stop/retry, depth/model selection, history/drafts, share/save/read aloud, citation feedback and text attachments up to 24,000 characters.
-- Study: all 32 lessons, quotation/editorial labels, source links, notes, read progress, quizzes and glossary.
-- Pray: local intentions, silent quiet timer, five-movement Examen, traditional prayers, explicit draft handoff to Chat.
-- Settings: system/light/dark, larger text, four atmospheres, daily local reminder, validated backup/import, reset and privacy choices.
+Chat, Study, Pray, Today and their settings, local history, sharing, reading, and backup actions come directly from the website frontend. Provider keys remain on the backend.
 
-Provider keys stay on the backend. `EXPO_PUBLIC_API_BASE_URL` is a public HTTPS endpoint, never a secret. The backend controls routing. During setup the live service reported OpenRouter active; source also supports Groq primary.
+## App Store review note
+
+This implementation prioritizes exact parity by displaying the existing web app. Apple says apps should provide features, content, and UI beyond a repackaged website ([App Review guideline 4.2](https://developer.apple.com/app-store/review/guidelines/)). Treat this build as a parity preview, not an App Store submission candidate: add and verify useful iOS-specific capabilities and confirm the complete experience meets Apple's review guidelines before distribution. The live website is downloaded at runtime, so an App Store candidate should use a pinned, reviewable web release or a packaged frontend snapshot and be re-reviewed for each material feature change.
 
 ## Build iOS from Windows
 
