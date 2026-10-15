@@ -21,6 +21,11 @@ function load(file) {
 const { initial, validateBackup } = load("schema.ts"),
   { parseEvent } = load("sse.ts");
 const { redirectSystemPath } = load("../app/+native-intent.tsx");
+const { PageTitle } = load("../components/page-title.tsx");
+
+test("native page title does not mount Expo Head or require Handoff", () => {
+  assert.equal(PageTitle(), null);
+});
 test("native links reject malformed encoding before query decoding", () => {
   const valid = "saintaugustine://lesson/3?title=The%20heart";
   assert.equal(redirectSystemPath({ path: valid, initial: true }), valid);

@@ -48,7 +48,7 @@
     "doctor": "expo-doctor",
     "sync:content": "node scripts/sync-content.mjs",
     "export:web": "expo export --platform web",
-    "export:ios": "expo export --platform ios",
+    "export:ios": "expo export --platform ios --output-dir dist-ios",
     "preview:lan": "expo start --go --lan",
     "preview:tunnel": "expo start --go --tunnel",
     "build:ios": "npx eas-cli@latest build --platform ios --profile production",

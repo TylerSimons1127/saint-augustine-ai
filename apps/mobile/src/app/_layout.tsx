@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Stack } from "expo-router";
-import Head from "expo-router/head";
+import { PageTitle } from "../components/page-title";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
@@ -15,9 +15,7 @@ function Navigator() {
   if (!ready) return <Loading />;
   return (
     <>
-      <Head>
-        <title>Saint Augustine AI</title>
-      </Head>
+      <PageTitle />
       <StatusBar style={isDark ? "light" : "dark"} />
       <Stack
         screenOptions={{
