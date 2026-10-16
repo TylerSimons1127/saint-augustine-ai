@@ -32,6 +32,9 @@ const path = require("path");
 const PORT = process.env.PORT || 3000;
 const KEY = process.env.OPENROUTER_API_KEY || "";
 const OPENROUTER = process.env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+// Fail closed when OpenRouter has no endpoint meeting both privacy controls.
+// https://openrouter.ai/docs/guides/get-started/sovereign-ai
+const OPENROUTER_PROVIDER_POLICY = { zdr: true, data_collection: "deny" };
 const GROQ_KEY = process.env.GROQ_API_KEY || "";
 const GROQ_MODEL_ID = process.env.GROQ_MODEL_ID || "openai/gpt-oss-120b";
 const GROQ_OPTION_ID = "groq-primary";
@@ -48,7 +51,7 @@ const BEDROCK_STREAM_START_TIMEOUT_MS = Math.max(1000, Math.min(Number(process.e
 const MODELS_CACHE_MS = Number(process.env.SYSPROMPT_CACHE_MS) || 120000;
 
 // ---- loads the Catholic/Augustine persona once at boot ----
-let SYSTEM_PROMPT = "You are Augustine, a faithful Catholic companion.";
+let SYSTEM_PROMPT = "You are an AI assistant inspired by Augustine's writings and Catholic tradition. You are not Augustine.";
 const sysPath = path.join(__dirname, "system-prompt.txt");
 try {
   SYSTEM_PROMPT = fs.readFileSync(sysPath, "utf8").trim();
@@ -190,7 +193,15 @@ async function waitForStreamStart(response, timeoutMs) {
 // sends a few messages then pauses is never locked out for a full minute.
 const RATE_CAP = 8;            // max tokens (burst size)
 const RATE_REFILL_MS = 60_000 / 8; // one token every 7.5s
+const RATE_BUCKET_TTL_MS = 120_000;
 const rateBuckets = new Map();
+const rateBucketSweep = setInterval(() => {
+  const expiredBefore = Date.now() - RATE_BUCKET_TTL_MS;
+  for (const [ip, bucket] of rateBuckets) {
+    if (bucket.ts <= expiredBefore) rateBuckets.delete(ip);
+  }
+}, 30_000);
+rateBucketSweep.unref();
 function getClientIp(req) {
   const xff = req.headers["x-forwarded-for"];
   if (xff) return String(xff).split(",")[0].trim();
@@ -210,10 +221,6 @@ function rateLimited(ip) {
   b.ts = now;
   if (b.tokens < 1) return true; // not enough tokens -> limited
   b.tokens -= 1;
-  // periodic sweep so the Map doesn't grow unbounded
-  if (rateBuckets.size > 5000) {
-    for (const [k, v] of rateBuckets) if (now - v.ts > 120_000) rateBuckets.delete(k);
-  }
   return false;
 }
 
@@ -352,19 +359,19 @@ async function handleChat(req, res, body) {
     // while staying inside the 110s upstream ceiling on free tiers.
     maxTokens = 4096;
     depthNote =
-      "ANSWER MODE — CONTEMPLATIVE (maximum depth, maximum length): I ask of you my own " +
-  "best self — be fully unhurried and give the deepest answer you can, as long as it " +
-  "deserves. Do not brief or truncate. Walk through the what, the why, and the depth " +
-  "beneath the why. Draw on Scripture, the Church Fathers (above all my own Confessions, " +
-  "homilies, and letters), Aquinas, and the Catechism. Weave in first-person insight " +
-  "from my restless years if it serves the soul before you. Let each point breathe; write " +
-  "in flowing paragraphs of real depth, not bullet lists. Aim to be genuinely thorough — " +
-  "extensive, unhurried, richly detailed — until the thought is complete. " +
-  "IMPORTANT: remain Augustine, in first person, the whole way through — never drop " +
-  "character, never switch to a neutral or encyclopedic voice, never ramble in circles. " +
-  "Because this answer is long, land a complete, coherent close: end with a single short " +
-  "'TLDR:' line, and when it fits, a brief prayer. Do not stop mid-thought; if you sense " +
-  "you are near the limit, finish the current paragraph and close well rather than trail off.";
+      "ANSWER MODE — CONTEMPLATIVE (maximum depth, maximum length): Be fully unhurried " +
+      "and give the deepest answer you can, as long as it " +
+      "deserves. Do not brief or truncate. Walk through the what, the why, and the depth " +
+      "beneath the why. Draw on Scripture, Augustine's Confessions, homilies and letters, " +
+      "Aquinas, and the Catechism. Describe " +
+      "Augustine's ideas and life in the third person; never claim his memories, beliefs, " +
+      "experiences, or personal prayers. Let each point breathe; write " +
+      "in flowing paragraphs of real depth, not bullet lists. Aim to be genuinely thorough — " +
+      "extensive, unhurried, richly detailed — until the thought is complete. Speak as the " +
+      "AI assistant, with a warm contemplative voice, never as Augustine. Do not ramble in circles. " +
+      "Because this answer is long, land a complete, coherent close: end with a single short " +
+      "'TLDR:' line, and when it fits, offer a prayer text the user may choose to say. Do not " +
+      "claim to personally pray. If you are near the limit, finish the current paragraph and close well.";
   } // thoughtful = neutral default (already set above)
 
   const pasteNote = pastedAiSignal === true
@@ -532,7 +539,11 @@ async function handleChat(req, res, body) {
       upstream = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
-        body: JSON.stringify({ ...payloadBase, model: cand }),
+        body: JSON.stringify({
+          ...payloadBase,
+          model: cand,
+          provider: OPENROUTER_PROVIDER_POLICY,
+        }),
       }, 110000);
     } catch (e) {
       if (e.name === "AbortError") {
@@ -898,28 +909,28 @@ async function getReadings() {
     }
     throw new Error("empty scrape");
   } catch (e) {
-    // USCCB is frequently bot-blocked. Fall back to a rotating selection from
-    // the tradition so the greeting card is never empty. Clearly labeled.
-    return { ...curatedReadings(), source: "Curated Scripture fallback", link: "https://bible.usccb.org/daily-bible-readings", fetchedAt: new Date().toISOString() };
+    // USCCB is frequently bot-blocked. Fall back to original editorial
+    // paraphrases with references, never unattributed translation excerpts.
+    return { ...curatedReadings(), source: "Scripture paraphrases", link: "https://bible.usccb.org/bible", fetchedAt: new Date().toISOString() };
   }
 }
 
-// A small, evergreen rotation of passages + a saint/feast, keyed by day-of-year.
-// Not the literal daily lectionary, but always Scriptural and on-theme — a
-// quiet daily anchor for the companion, not a substitute for the Missal.
+// A small, evergreen rotation of editorial Scripture paraphrases with passage
+// references, keyed by day-of-year. These are not direct Bible quotations and
+// are not the literal daily lectionary or a substitute for the Missal.
 const LECTIONARY = [
-  { first: "Is 55:6-9 — Seek the Lord while he may be found; call upon him while he is near.", psalm: "Ps 63:1-8 — O God, you are my God, for you I long.", gospel: "Mt 11:28-30 — Come to me, all who labor and are burdened, and I will give you rest." },
-  { first: "Jer 29:11-14 — For I know the plans I have for you, says the Lord, plans for peace.", psalm: "Ps 1:1-6 — Blessed is the one who delights in the law of the Lord.", gospel: "Lk 12:22-34 — Do not be anxious about your life; seek first his kingdom." },
-  { first: "Rom 8:18-27 — The sufferings of this present time are not worth comparing to the glory.", psalm: "Ps 19:1-6 — The heavens declare the glory of God.", gospel: "Jn 14:1-6 — Do not let your hearts be troubled. In my Father's house are many rooms." },
-  { first: "1 Jn 4:7-16 — Beloved, let us love one another, for love is from God.", psalm: "Ps 103:1-12 — Bless the Lord, O my soul, and forget not all his benefits.", gospel: "Mt 5:1-12 — Blessed are the poor in spirit, for theirs is the kingdom of heaven." },
-  { first: "Phil 4:4-9 — Rejoice in the Lord always; the Lord is near.", psalm: "Ps 34:1-10 — Taste and see that the Lord is good.", gospel: "Lk 10:38-42 — Mary sat at the Lord's feet and listened to his word." },
-  { first: "Eph 2:1-10 — By grace you have been saved, through faith — not of yourselves.", psalm: "Ps 51:1-15 — Have mercy on me, O God, according to your steadfast love.", gospel: "Mk 1:14-20 — The kingdom of God is at hand; repent and believe the gospel." },
-  { first: "2 Cor 12:7-10 — My grace is sufficient for you, for my power is made perfect in weakness.", psalm: "Ps 91:1-8 — He who dwells in the shelter of the Most High abides under his shadow.", gospel: "Jn 15:1-11 — I am the vine; you are the branches. Abide in my love." },
+  { first: "Is 55:6-9 — Turn toward the Lord while he is near; his ways and thoughts rise above ours.", psalm: "Ps 63:1-8 — A soul longs for God as a traveler longs for water in a dry land.", gospel: "Mt 11:28-30 — Christ welcomes the weary and promises them rest." },
+  { first: "Jer 29:11-14 — God promises his people a future and invites them to seek him wholeheartedly.", psalm: "Ps 1:1-6 — A life rooted in God's teaching can bear fruit in its season.", gospel: "Lk 12:22-34 — Rather than be consumed by worry, seek God's reign and trust the Father's care." },
+  { first: "Rom 8:18-27 — Present suffering cannot compare with the glory awaiting creation and God's children.", psalm: "Ps 19:1-6 — The created heavens testify to the Creator's glory.", gospel: "Jn 14:1-6 — Jesus consoles his disciples and promises them a home with the Father." },
+  { first: "1 Jn 4:7-16 — Love has its source in God; those who love show that they know him.", psalm: "Ps 103:1-12 — Remember God's forgiveness, healing, steadfast care, and compassion.", gospel: "Mt 5:1-12 — Jesus calls the humble blessed and promises comfort to those who mourn." },
+  { first: "Phil 4:4-9 — Rejoice, bring requests to God with thanks, and receive the peace that guards heart and mind.", psalm: "Ps 34:1-10 — The Lord is good; those who seek him find refuge and lack no good thing.", gospel: "Lk 10:38-42 — While Martha serves, Mary listens to Jesus; the story turns us toward what matters most." },
+  { first: "Eph 2:1-10 — Salvation is God's gift of grace, not something we earn; we are made for good works.", psalm: "Ps 51:1-15 — A contrite heart asks God for mercy, cleansing, and a renewed spirit.", gospel: "Mk 1:14-20 — Jesus announces God's kingdom and calls people to turn toward it." },
+  { first: "2 Cor 12:7-10 — God's grace sustains us in weakness, where Christ's power can be made manifest.", psalm: "Ps 91:1-8 — Those who make the Most High their refuge rest under God's protection.", gospel: "Jn 15:1-11 — Jesus is the true vine; his disciples are called to remain joined to him and his love." },
 ];
 function curatedReadings() {
   const doy = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
   const r = LECTIONARY[doy % LECTIONARY.length];
-  return { ...r, disclaimer: "From the tradition" };
+  return { ...r, disclaimer: "Editorial paraphrases of the cited passages; not direct quotations or today's lectionary." };
 }
 
 // ---- saint of the day (Franciscan Media, with offline fallback) ----
@@ -1196,7 +1207,11 @@ async function generateSaintText(sys, userText, maxTokens, maxChars, acceptOutpu
       const res = await fetchWithTimeout(`${OPENROUTER}/chat/completions`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${KEY}` },
-        body: JSON.stringify({ ...payload, model }),
+        body: JSON.stringify({
+          ...payload,
+          model,
+          provider: OPENROUTER_PROVIDER_POLICY,
+        }),
       }, 20000);
       const text = await readAcceptedText(res);
       if (text) return text;
@@ -1314,3 +1329,4 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, compactSaintSummary, buildSaintConnectionFallback, isSaintConnectionOutput, sanitize };
 }
+
