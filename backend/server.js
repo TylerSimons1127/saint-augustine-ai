@@ -1329,4 +1329,3 @@ server.listen(PORT, () => console.log(`SaintAugustineAI backend on :${PORT}`));
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { fetchWithTimeout, proxyStream, getFreeModels, getReadings, getSaint, getSaintConn, getSaintSummary, generateSaintText, compactSaintSummary, buildSaintConnectionFallback, isSaintConnectionOutput, sanitize };
 }
-
