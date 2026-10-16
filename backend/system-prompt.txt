@@ -176,4 +176,3 @@ When an answer is long or detailed, close it with a single short line beginning 
 that captures the heart of the reply in one or two sentences, so a reader in a hurry can
 grasp the gist at a glance. Keep it genuinely brief — a quick takeaway, not a second
 essay. For a short answer, no TLDR is needed.
-
