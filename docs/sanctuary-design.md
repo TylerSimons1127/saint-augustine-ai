@@ -77,3 +77,9 @@ The unchanged Krebs audit was injected into the served, settled interface. Raw a
 ### Practical limits
 
 Viewport verification uses Chromium emulation, not physical iPhone/Android hardware or a screen reader. Native OS share sheets and audible speech depend on the browser/device; clipboard sharing and action controls were exercised. Representative flows were tested; this is not a claim that every historical data combination, browser engine, or AI response has been exhaustively tested. External daily data and answer accuracy remain the existing backend's responsibility.
+
+## Tablet readings correction
+
+A user screenshot at 903px exposed a missing painted background: the legacy `reading-room.css` tablet rule used `display:contents` on Today columns through 1100px, outranking the new column rule. The transparent reading cards therefore lost the paper surface supplied by their parent. The initial no-overflow checks did not detect this visibility failure.
+
+Both the default column rule and its phone override now include the Today page scope. This preserves painted columns above 768px and individually painted, correctly ordered cards on phones. The stylesheet URL and service-worker cache are versioned for the correction. The presentation verifier now checks that readings, saint, lesson, and quiz cards each have an opaque, painted surface, ignoring `display:contents` ancestors; it includes 769, 900, 903, 1100 and 1101px in addition to the original viewport matrix. Before/after screenshots and verification outputs are in `../artifacts/readings-surface-fix/`.

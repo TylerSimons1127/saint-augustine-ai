@@ -48,7 +48,7 @@ async function contrast(page,selector) {
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try {
-  for(const [width,height] of [[320,568],[375,812],[390,844],[430,932],[768,1024],[1024,900],[1440,1000],[844,390]]) {
+  for(const [width,height] of [[320,568],[375,812],[390,844],[430,932],[768,1024],[769,900],[900,900],[903,873],[1024,900],[1100,900],[1101,900],[1440,1000],[844,390]]) {
     const context=await browser.newContext({viewport:{width,height},hasTouch:width<1000,isMobile:width<600||height<500,serviceWorkers:'block'});
     await prepare(context);
     const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));
@@ -59,10 +59,26 @@ async function contrast(page,selector) {
       const data=await page.evaluate(slug=>{
         const intro=document.querySelector('.page.on .dp-head');
         const nav=document.querySelector('.nav-tab.on').getBoundingClientRect(),marker=document.querySelector('.sc-selection-nav').getBoundingClientRect();
-        return {slug,overflow:document.documentElement.scrollWidth-innerWidth,introParent:intro?.parentElement.className,navCenterError:Math.abs((nav.x+nav.width/2)-(marker.x+marker.width/2))};
+        const surfaces=[];
+        if(slug==='today') {
+          const canvas=document.createElement('canvas');canvas.width=canvas.height=1;
+          const ctx=canvas.getContext('2d',{willReadFrequently:true});
+          for(const id of ['sec-readings','saintCard','sec-lesson','sec-quiz']) {
+            let surface=null;
+            for(let node=document.getElementById(id);node&&node.id!=='page-today';node=node.parentElement) {
+              const style=getComputedStyle(node),rect=node.getBoundingClientRect();
+              if(style.display==='contents'||!rect.width||!rect.height)continue;
+              ctx.clearRect(0,0,1,1);ctx.fillStyle=style.backgroundColor;ctx.fillRect(0,0,1,1);
+              if(ctx.getImageData(0,0,1,1).data[3]>=250){surface=node.id||node.className;break;}
+            }
+            surfaces.push({id,surface});
+          }
+        }
+        return {slug,overflow:document.documentElement.scrollWidth-innerWidth,introParent:intro?.parentElement.className,navCenterError:Math.abs((nav.x+nav.width/2)-(marker.x+marker.width/2)),surfaces};
       },slug);
       assert.equal(data.overflow,0,`${width} ${slug} overflow`);
       assert.ok(data.navCenterError<2,`${width} ${slug} navigation marker is off center`);
+      if(slug==='today')assert.ok(data.surfaces.every(item=>item.surface),`${width} Today card has no painted reading surface: ${JSON.stringify(data.surfaces)}`);
       if(slug==='study')assert.equal(data.introParent,'daily-page');
       if(slug==='prayer')assert.equal(data.introParent,'pray-page');
       row.pages.push(data);

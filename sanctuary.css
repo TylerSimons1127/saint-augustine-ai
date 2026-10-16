@@ -105,7 +105,8 @@ html[data-sanctuary] #todayStrip .ts-l { font:400 12px/1.4 var(--body) !importan
 html[data-sanctuary] #page-today #todayStrip .ts-meta { display:flex; flex-direction:row; align-items:baseline; gap:10px; text-align:left !important; }
 html[data-sanctuary] #page-today #todayStrip .ts-cell { padding-block:0 !important; }
 html[data-sanctuary] #todayStrip .ts-cell > svg { width:19px; height:19px; }
-html[data-sanctuary] :is(.today-reading-column,.today-saint-column) { display:flex; flex-direction:column; gap:0; min-width:0; background:var(--panel); border-radius:12px; overflow:hidden; box-shadow:var(--sc-shadow); }
+/* Outrank the legacy tablet display:contents rule so the column paints its paper surface. */
+html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) { display:flex; flex-direction:column; gap:0; min-width:0; background:var(--panel); border-radius:12px; overflow:hidden; box-shadow:var(--sc-shadow); }
 html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card { background:transparent !important; border-radius:0 !important; padding:32px !important; }
 html[data-sanctuary][data-theme] #page-today :is(#sec-readings,#saintCard,#sec-lesson,#sec-quiz) { background-image:none !important; }
 html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card + .dp-card { border-top:1px solid var(--room-line) !important; }
@@ -326,7 +327,7 @@ html[data-sanctuary] :is(.sb-toggle,#page-today .dp-head button):focus-visible {
   html[data-sanctuary] #todayStrip .ts-cell { padding:0 8px; }
   html[data-sanctuary] #todayStrip .ts-n { font-size:28px; }
   html[data-sanctuary] #todayStrip .ts-cell > svg { display:none; }
-  html[data-sanctuary] :is(.today-reading-column,.today-saint-column) { display:contents; }
+  html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) { display:contents; }
   html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card { width:100%; border-radius:10px !important; background:var(--panel) !important; padding:26px !important; }
   html[data-sanctuary] #sec-readings { order:1; }
   html[data-sanctuary] #saintCard { order:2; }
