@@ -1,0 +1,421 @@
+/* Sanctuary preview. The preceding styles preserve legacy interaction contracts;
+   this file owns the complete visual system for the redesigned app. */
+html[data-sanctuary] {
+  --sc-chrome:#172d3a;
+  --sc-on-chrome:#faf8f3;
+  --sc-chrome-muted:#ced7db;
+  --sc-peach:#d9c4a9;
+  --sc-shadow:0 2px 4px rgba(14,31,40,.025),0 18px 48px rgba(14,31,40,.09);
+  --sc-floating:0 6px 16px rgba(14,31,40,.08),0 24px 64px rgba(14,31,40,.16);
+  --room-ease:cubic-bezier(.22,1,.36,1);
+  --header:76px;
+  --content-max:1200px;
+  --room-radius:12px;
+  --room-control:8px;
+  --reply-size:17px;
+  --reply-lh:1.75;
+}
+html[data-sanctuary][data-text-scale="s"] { --reply-size:16px; }
+html[data-sanctuary][data-text-scale="l"] { --reply-size:18px; }
+html[data-sanctuary][data-text-scale="xl"] { --reply-size:20px; }
+html[data-sanctuary][data-theme] { --gold-ink:color-mix(in srgb,var(--ink) 80%,var(--accent)); }
+html[data-sanctuary][data-theme="parchment"] {
+  --bg:#f0eee8; --bg-2:#e9e5dd; --panel:#fcfbf8; --card:#fcfbf8;
+  --paper-50:#fcfbf8; --paper-100:#f1eee7; --paper-200:#e5dfd3;
+  --ink:#183342; --ink-soft:#465963; --muted:#5c6670;
+  --primary:#183342; --border:#d8d6cf; --room-line:#d8d6cf;
+  --accent:#d9c4a9; --accent-soft:#eee4d7; --accent-deep:#735a3e; --gold-ink:#735a3e;
+}
+html[data-sanctuary] body { font-family:var(--body); color:var(--ink); }
+html[data-sanctuary] :is(button,input,textarea,select,a) { -webkit-tap-highlight-color:transparent; }
+html[data-sanctuary] :is(button,a,input,textarea,summary):focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+html[data-sanctuary] :is(h1,h2,h3,h4) { text-wrap:balance; }
+html[data-sanctuary] button { touch-action:manipulation; }
+html[data-sanctuary] .bg { filter:none !important; }
+html[data-sanctuary] .bg .veil { background:rgba(19,39,49,.2) !important; }
+html[data-sanctuary] .bg::before,html[data-sanctuary] .bg::after { animation:none !important; opacity:0 !important; }
+html[data-sanctuary] .topnav {
+  height:var(--header); min-height:var(--header); padding:0 28px 0 84px;
+  background:var(--sc-chrome) !important; color:var(--sc-on-chrome);
+  border:0; box-shadow:0 1px 0 rgba(255,255,255,.12); gap:24px;
+}
+html[data-sanctuary] .topnav .nav-brand { font:400 22px/1.1 var(--display); letter-spacing:-.25px; color:var(--sc-on-chrome); gap:10px; }
+html[data-sanctuary] .nav-brand :is(span,em) { color:inherit !important; }
+html[data-sanctuary] .topnav .nav-brand .mark { width:30px !important; height:30px !important; border-radius:7px; }
+html[data-sanctuary] .topnav .icon-btn,html[data-sanctuary] .sb-toggle {
+  color:var(--sc-on-chrome) !important; border-color:rgba(255,255,255,.22) !important;
+  background:transparent !important; border-radius:8px !important;
+}
+html[data-sanctuary] .sb-toggle { top:16px !important; left:24px; }
+html[data-sanctuary] .topnav #settingsBtn { background:transparent !important; color:var(--sc-on-chrome) !important; border:1px solid rgba(255,255,255,.22) !important; }
+html[data-sanctuary] .nav-tabs { position:relative; isolation:isolate; overflow:visible; }
+html[data-sanctuary] .topnav .nav-tabs { padding:0; gap:4px; }
+html[data-sanctuary] .topnav .nav-tab { min-height:52px; padding:0 18px; color:var(--sc-chrome-muted) !important; background:transparent !important; border-radius:0; }
+html[data-sanctuary] .topnav .nav-tab.on { color:var(--sc-on-chrome) !important; background:transparent !important; }
+html[data-sanctuary] .topnav .nav-tab.on :is(svg,.nav-ico) { color:var(--sc-peach) !important; }
+html[data-sanctuary] .sc-selection { display:block; position:absolute; left:0; pointer-events:none; transform-origin:left center; z-index:-1; }
+html[data-sanctuary] .sc-selection-nav { bottom:2px; height:2px; border-radius:1px; background:var(--sc-peach); }
+html[data-sanctuary] .sc-selection[hidden] { display:none; }
+html[data-sanctuary] .stage { top:var(--header); padding:32px 36px 150px !important; scroll-padding-top:24px; }
+html[data-sanctuary] .page { max-width:var(--content-max); }
+html[data-sanctuary] .page.on { animation:none !important; }
+html[data-sanctuary] .page.on :is(.a-in,.a-hid) { animation:none !important; opacity:1 !important; transform:none !important; }
+html[data-sanctuary] .dp-card { box-shadow:none !important; border:0 !important; border-radius:12px !important; background-image:none !important; }
+html[data-sanctuary] .dp-thread .phead { background-image:none !important; }
+html[data-sanctuary] .daily-page,html[data-sanctuary] .pray-page { gap:24px; }
+html[data-sanctuary] .dp-card h3,html[data-sanctuary] .dp-thread .phead h3 { font:500 23px/1.25 var(--body); letter-spacing:-.55px; }
+html[data-sanctuary] .dp-card h3 > svg { width:19px; height:19px; color:var(--gold-ink); stroke-width:1.6; }
+html[data-sanctuary] .dp-reading { font-size:var(--reply-size); line-height:var(--reply-lh); max-width:67ch; }
+html[data-sanctuary] .dp-reading .rl { font:500 11px/1.5 var(--mono); letter-spacing:.1em; margin-bottom:12px; color:var(--gold-ink); }
+html[data-sanctuary] :is(.dp-link-btn,.daily-shuf,.room-quiz-jump,.reader-ask-secondary,.quote-act) { border-radius:8px !important; min-height:44px; box-shadow:none !important; }
+html[data-sanctuary] :is(.dp-cta,.daily-cta,.reader-ask) { border-radius:8px !important; background:var(--primary) !important; color:var(--paper-50) !important; min-height:46px; box-shadow:none !important; font-weight:500; }
+html[data-sanctuary] :is(.dp-link,.lesson-source) { text-underline-offset:5px; }
+
+/* Covers: selected landscape carries atmosphere; text has its own opaque surface. */
+html[data-sanctuary] :is(#page-study,#page-today,#page-prayer) .dp-head {
+  display:grid !important; grid-template-columns:minmax(0,1fr) minmax(220px,.48fr);
+  padding:0 !important; margin:0 !important; gap:0; min-height:176px;
+  border:0 !important; border-radius:12px !important; background:var(--panel) !important;
+  text-align:left; overflow:hidden; box-shadow:none !important; align-items:stretch;
+}
+html[data-sanctuary] .sc-intro-copy { padding:28px 36px; min-width:0; align-self:center; }
+html[data-sanctuary] .sc-intro-scenery { position:relative; min-height:100%; background-image:var(--bg-img,url('assets/bg.jpg')); background-size:cover; background-position:center; }
+html[data-sanctuary] .sc-intro-scenery::after { content:""; position:absolute; inset:0; background:#101e25; opacity:var(--bg-dim,.12); pointer-events:none; }
+html[data-sanctuary] #page-study .sc-intro-scenery { background-position:72% center; }
+html[data-sanctuary] #page-prayer .sc-intro-scenery { background-position:center 40%; }
+html[data-sanctuary] :is(#page-study,#page-today,#page-prayer) .dp-head h2 { font:500 38px/1.08 var(--body) !important; letter-spacing:-1.6px; margin:0 !important; color:var(--ink); }
+html[data-sanctuary] .dp-head .sc-intro-copy > p:not(.dp-eyebrow) { font:400 15px/1.6 var(--body) !important; color:var(--ink-soft); margin:10px 0 0 !important; max-width:49ch; }
+html[data-sanctuary] :is(#page-study,#page-today) .dp-head .dp-head-actions { justify-content:flex-start; margin-top:16px; gap:8px; }
+html[data-sanctuary] .dp-head :is(h2,p) { text-shadow:none !important; }
+html[data-sanctuary] #page-study .lesson-heading { text-align:left; }
+
+/* Today is an issue of a daily journal, with an image cover and two reading columns. */
+html[data-sanctuary] #page-today .daily-page { display:grid; grid-template-columns:minmax(0,1.14fr) minmax(0,.86fr); align-items:start; }
+html[data-sanctuary] #page-today .room-day-brief { grid-column:1/-1; border:0; border-radius:12px; box-shadow:var(--sc-shadow); overflow:hidden; background:var(--panel); }
+html[data-sanctuary] #page-today .room-day-brief .dp-head { grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); min-height:258px; border-radius:0 !important; background:var(--sc-chrome) !important; }
+html[data-sanctuary] #page-today .sc-intro-copy { padding:30px 40px; }
+html[data-sanctuary] #page-today .dp-head h2 { font:400 76px/.95 var(--display) !important; letter-spacing:-2px; color:var(--sc-on-chrome); }
+html[data-sanctuary] #page-today .dp-head .dp-eyebrow { display:block; color:var(--sc-chrome-muted); font:500 11px/1.5 var(--mono); letter-spacing:.08em; margin:0 0 14px; }
+html[data-sanctuary] #page-today .dp-head .sc-intro-copy > p:not(.dp-eyebrow) { color:var(--sc-chrome-muted); font-size:14px !important; max-width:43ch; margin-top:14px !important; }
+html[data-sanctuary] #page-today .dp-head-actions button { color:var(--sc-on-chrome) !important; border-color:rgba(255,255,255,.32) !important; font-size:12px !important; }
+html[data-sanctuary] #page-today .room-day-brief #todayStrip { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); padding:14px 24px; margin:0; border-top:0 !important; min-height:76px; }
+html[data-sanctuary] #todayStrip .ts-cell { justify-content:center; padding:0 20px; min-height:48px; gap:12px; }
+html[data-sanctuary] #todayStrip .ts-n { font:400 30px/1 var(--display); font-variant-numeric:tabular-nums; }
+html[data-sanctuary] #todayStrip .ts-l { font:400 12px/1.4 var(--body) !important; text-transform:none; letter-spacing:0; color:var(--muted); }
+html[data-sanctuary] #page-today #todayStrip .ts-meta { display:flex; flex-direction:row; align-items:baseline; gap:10px; text-align:left !important; }
+html[data-sanctuary] #page-today #todayStrip .ts-cell { padding-block:0 !important; }
+html[data-sanctuary] #todayStrip .ts-cell > svg { width:19px; height:19px; }
+html[data-sanctuary] :is(.today-reading-column,.today-saint-column) { display:flex; flex-direction:column; gap:0; min-width:0; background:var(--panel); border-radius:12px; overflow:hidden; box-shadow:var(--sc-shadow); }
+html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card { background:transparent !important; border-radius:0 !important; padding:32px !important; }
+html[data-sanctuary][data-theme] #page-today :is(#sec-readings,#saintCard,#sec-lesson,#sec-quiz) { background-image:none !important; }
+html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card + .dp-card { border-top:1px solid var(--room-line) !important; }
+html[data-sanctuary] #dpReadings { display:flex; flex-direction:column; gap:26px; }
+html[data-sanctuary] #dpReadings > .dp-reading { margin:0; }
+html[data-sanctuary] #dpReadings .dp-reading:first-child { padding-top:0; }
+html[data-sanctuary] #page-today .sa-reading-actions { margin-top:24px; padding:0; border:0; gap:10px; justify-content:flex-start; }
+html[data-sanctuary] #page-today .sa-reading-actions button { min-height:44px; border:1px solid var(--room-line); background:var(--panel); padding:9px 12px; border-radius:8px; }
+html[data-sanctuary] #page-today .dp-cols { gap:10px; margin-top:24px; }
+html[data-sanctuary] #page-today .dp-act { min-height:64px; padding:12px !important; border:1px solid var(--room-line) !important; background:none !important; border-radius:8px !important; }
+html[data-sanctuary] .saint-card { display:block; }
+html[data-sanctuary] .saint-portrait { float:left; width:104px; height:140px; margin:2px 20px 12px 0; border-radius:5px; }
+html[data-sanctuary] #saintBio { margin-top:0; line-height:1.75; }
+html[data-sanctuary] #saintBio.saint-bio-collapsed { -webkit-line-clamp:6; }
+html[data-sanctuary] .saint-date { font:500 11px/1.5 var(--mono); letter-spacing:.07em; margin-top:0; }
+html[data-sanctuary] .saint-bio-toggle { font-size:13px; margin-block:8px 14px; }
+html[data-sanctuary] #saintConnWrap { clear:both; padding-top:24px; border-top:1px solid var(--room-line); }
+html[data-sanctuary] #saintCard .saint-acts { clear:both; margin-top:24px; }
+html[data-sanctuary] #page-today #sec-lesson .dp-card-head { margin-bottom:8px; }
+html[data-sanctuary] #page-today .lesson-link { min-height:64px; padding:0 !important; background:none !important; border:0 !important; border-radius:0; align-items:flex-start; text-align:left; }
+html[data-sanctuary] #page-today .lesson-link-name { font:400 27px/1.15 var(--display); text-align:left; }
+html[data-sanctuary] .lesson-link-hint { font:500 11px/1.5 var(--mono); letter-spacing:.04em; margin-top:10px; }
+html[data-sanctuary] .sa-source-stamp { margin-top:20px; padding-top:16px; font:400 11px/1.6 var(--body); color:var(--muted); }
+
+/* Study: a short cover followed by a real chapter and a compact practice companion. */
+html[data-sanctuary] #page-study .daily-page { display:grid; grid-template-columns:minmax(0,1fr) 320px; max-width:1200px; gap:24px; align-items:start; }
+html[data-sanctuary] #page-study .dp-head { grid-column:1/-1; grid-template-columns:minmax(0,1fr) 30%; min-height:156px; box-shadow:var(--sc-shadow) !important; }
+html[data-sanctuary] #page-study .dp-head .sc-intro-copy { padding:24px 36px; }
+html[data-sanctuary] #page-study .dp-head h2 { font-size:32px !important; letter-spacing:-1px; }
+html[data-sanctuary] #page-study .dp-head .sc-intro-copy > p:not(.dp-eyebrow) { margin:6px 0 0 !important; font-size:14px !important; }
+html[data-sanctuary] .room-study-main,html[data-sanctuary] .room-study-companion { gap:24px; }
+html[data-sanctuary] .room-study-companion { position:sticky; top:24px; }
+html[data-sanctuary] #page-study .lesson { padding:36px 40px !important; box-shadow:var(--sc-shadow) !important; }
+html[data-sanctuary] #page-study .lesson-top { display:flex; flex-direction:column; align-items:stretch; text-align:left; padding:0 0 28px; margin:0; gap:20px; border-bottom:1px solid var(--room-line); }
+html[data-sanctuary] #page-study .lesson-top .dp-eyebrow-mini { font:500 11px/1.5 var(--mono); color:var(--gold-ink); letter-spacing:.05em; }
+html[data-sanctuary] #page-study .lesson-top .topic-name { text-align:left; margin:12px 0; max-width:21ch; font:400 46px/1.05 var(--display); letter-spacing:-1.2px; }
+html[data-sanctuary] #page-study .lesson-top .lesson-read-status { font-size:12px; text-align:left; }
+html[data-sanctuary] .room-lesson-actions { justify-content:space-between; gap:12px; }
+html[data-sanctuary] .lesson-nav { border-radius:8px; overflow:hidden; }
+html[data-sanctuary] #page-study .ls { border-bottom-color:var(--room-line); }
+html[data-sanctuary] #page-study .ls summary { padding:20px 0 !important; min-height:64px; gap:14px; }
+html[data-sanctuary] #page-study .ls .ls-n { font:400 12px/1.5 var(--mono); color:var(--gold-ink); }
+html[data-sanctuary] #page-study .ls .ls-l { font:500 15px/1.5 var(--body); color:var(--ink); }
+html[data-sanctuary] #page-study .ls-b { padding:0 0 24px 40px !important; }
+html[data-sanctuary] #page-study .ls-b p,html[data-sanctuary] #page-study .topic-topic { font-size:var(--reply-size) !important; line-height:1.75 !important; }
+html[data-sanctuary] #page-study .quote-wrap .topic-quote { font:400 30px/1.35 var(--display) !important; letter-spacing:-.25px; color:var(--ink); }
+html[data-sanctuary] .lesson-citation { font-size:12px !important; line-height:1.6 !important; }
+html[data-sanctuary] #page-study #sec-quiz-study { padding:24px !important; }
+html[data-sanctuary] #sec-quiz-study h3 { font-size:20px; }
+html[data-sanctuary] #page-study .quiz-q { text-align:left; font:500 16px/1.55 var(--body); }
+html[data-sanctuary] .quiz-opt { border-radius:8px !important; background:var(--panel) !important; min-height:48px; text-align:left; border:1px solid var(--room-line) !important; }
+html[data-sanctuary] .quiz-opt.correct { border-color:#51816a !important; background:color-mix(in srgb,#51816a 12%,var(--panel)) !important; }
+html[data-sanctuary] .quiz-opt.wrong { border-color:#a65b53 !important; background:color-mix(in srgb,#a65b53 10%,var(--panel)) !important; }
+html[data-sanctuary] .quiz-meter { height:3px; border-radius:0; }
+html[data-sanctuary] .tomorrow-teaser { box-shadow:none; padding:22px; border-radius:10px; border:0; }
+html[data-sanctuary] .tomorrow-teaser .tt-k { font:400 11px/1.5 var(--mono); letter-spacing:.03em; }
+html[data-sanctuary] .tomorrow-teaser .tt-name { font:400 24px/1.2 var(--display); }
+
+/* Prayer: a landscape opening, personal intention, and a separate index of traditional prayers. */
+html[data-sanctuary] #page-prayer .pray-page { display:grid; grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr); align-items:start; }
+html[data-sanctuary] #page-prayer .dp-head { grid-column:1/-1; grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); min-height:190px; }
+html[data-sanctuary] #page-prayer .dp-head .dp-eyebrow { display:block; font:500 10px/1.5 var(--mono); letter-spacing:.08em; color:var(--gold-ink); margin:0 0 12px; }
+html[data-sanctuary] #page-prayer .dp-head h2 { font:400 56px/1.05 var(--display) !important; letter-spacing:-1.4px; }
+html[data-sanctuary] #page-prayer .room-prayer-intention { padding:32px !important; box-shadow:var(--sc-shadow) !important; }
+html[data-sanctuary] #page-prayer .room-prayer-intention h3 { margin-bottom:28px; }
+html[data-sanctuary] #page-prayer .pp-intent label { font:500 14px/1.5 var(--body); color:var(--ink); margin-bottom:12px; }
+html[data-sanctuary] #prayIntent2 { background:var(--panel) !important; border:1px solid var(--muted) !important; border-radius:8px !important; padding:16px; font:400 16px/1.6 var(--body); min-height:108px; }
+html[data-sanctuary] .sa-intention-disclosure { font-size:12px; color:var(--muted); line-height:1.6; }
+html[data-sanctuary] .sa-intention-tools { margin-top:18px; margin-bottom:26px; }
+html[data-sanctuary] .sa-intention-tools button { min-height:44px; font-size:12px; }
+html[data-sanctuary] #page-prayer .room-prayer-intention .dp-cols { gap:12px; margin-top:26px; }
+html[data-sanctuary] #page-prayer .dp-act { min-height:70px; padding:14px 16px !important; border:1px solid var(--room-line) !important; border-radius:8px !important; }
+html[data-sanctuary] #page-prayer .dp-act:first-child { background:var(--primary) !important; color:var(--paper-50) !important; }
+html[data-sanctuary] #page-prayer .dp-act:first-child :is(b,small,svg) { color:inherit !important; }
+html[data-sanctuary] #page-prayer .dp-act:first-child small { opacity:.85; }
+html[data-sanctuary] #page-prayer .dp-act:not(:first-child) small { color:var(--ink-soft); }
+html[data-sanctuary] #page-prayer .sc-prayer-index { padding:28px 32px !important; }
+html[data-sanctuary] #page-prayer .sc-prayer-index h3 { margin-bottom:12px; }
+html[data-sanctuary] #page-prayer .pray-chip { min-height:74px; padding:15px 0 !important; }
+html[data-sanctuary] #page-prayer .pray-chip.featured { padding:15px 12px !important; margin-top:0; border-radius:8px !important; background:var(--accent-soft) !important; }
+html[data-sanctuary] #page-prayer .pray-chip-title { font-size:15px; }
+html[data-sanctuary] #page-prayer .pray-chip-note { font-size:12px; line-height:1.5; }
+html[data-sanctuary] .dp-thread { grid-column:1/-1; }
+html[data-sanctuary] .dp-thread .phead { padding:26px 32px !important; text-align:left; display:flex; flex-wrap:wrap; align-items:center; gap:8px 24px; }
+html[data-sanctuary] .dp-thread .phead h3 { text-align:left; flex:1 1 100%; margin:0; }
+html[data-sanctuary] .dp-thread .phead p { text-align:left; margin:0; flex:1 1 250px; }
+html[data-sanctuary] .dp-thread .phead :is(.reader-ask,.reader-ask-secondary) { margin:8px 0 0; }
+
+/* Chat: the existing historical artwork and quotation form one deliberate composition. */
+html[data-sanctuary] #page-chat { max-width:1000px; }
+html[data-sanctuary] #greet {
+  display:grid; grid-template-columns:216px minmax(0,1fr); gap:26px 40px;
+  padding:36px !important; border:0 !important; border-radius:12px !important;
+  background:var(--panel) !important; box-shadow:var(--sc-shadow) !important; text-align:left;
+}
+html[data-sanctuary] #greet .room-art { display:block; grid-column:1; grid-row:1/span 2; width:auto; margin:0; align-self:stretch; }
+html[data-sanctuary] #greet .room-art img { display:block; width:100%; height:calc(100% - 30px); min-height:280px; max-height:375px; border-radius:4px; object-fit:cover; object-position:center 30%; outline:1px solid rgba(0,0,0,.1); outline-offset:-1px; }
+html[data-sanctuary] #greet .room-art figcaption { font:400 11px/1.5 var(--mono); letter-spacing:.02em; color:var(--muted); margin-top:10px; text-align:left; }
+html[data-sanctuary] #greet .room-greeting-copy { grid-column:2; min-width:0; text-align:left; }
+html[data-sanctuary] #greet .eyebrow { font:500 10px/1.5 var(--mono); letter-spacing:.1em; color:var(--gold-ink); justify-content:flex-start; margin:0 0 18px; }
+html[data-sanctuary] #greet h1 { font:400 43px/1.1 var(--display) !important; letter-spacing:-1.1px; text-align:left !important; max-width:24ch; margin:0 0 20px; }
+html[data-sanctuary] #greet #greetSub { text-align:left !important; margin:0; max-width:48ch; font:400 15px/1.65 var(--body); color:var(--ink-soft); }
+html[data-sanctuary] #greet .greet-sugg { grid-column:2; display:grid; grid-template-columns:1fr 1fr; gap:0 20px; padding:0; margin:0; }
+html[data-sanctuary] #greet .sugg { position:relative; min-height:65px; padding:14px 24px 14px 0 !important; color:var(--ink) !important; font:500 13px/1.5 var(--body); border:0 !important; border-top:1px solid var(--room-line) !important; border-radius:0 !important; background:transparent !important; text-align:left; }
+html[data-sanctuary] #greet .sugg::after { display:block; content:'↗'; position:absolute; right:2px; top:50%; transform:translateY(-50%); font-size:15px; color:var(--gold-ink); }
+html[data-sanctuary] #greet .greet-credit { grid-column:1/-1; margin:0; padding-top:18px; border-top:1px solid var(--room-line); text-align:left; color:var(--muted); font-size:12px; }
+html[data-sanctuary] #greet .greet-credit b { color:var(--ink); }
+html[data-sanctuary] .thread { gap:24px; }
+html[data-sanctuary] .msg.assistant { padding:28px !important; background:var(--panel) !important; border:0 !important; border-radius:12px !important; box-shadow:var(--sc-shadow); }
+html[data-sanctuary] .msg.assistant .bubble { padding:0 !important; background:transparent !important; font-size:var(--reply-size); line-height:var(--reply-lh); }
+html[data-sanctuary] .msg.assistant .tag { font:500 11px/1.5 var(--mono); color:var(--gold-ink); letter-spacing:.08em; margin-bottom:18px; }
+html[data-sanctuary] .msg.user .bubble { background:var(--accent-soft) !important; border:0; border-radius:12px 12px 3px 12px !important; color:var(--ink); }
+html[data-sanctuary] .msg .acts { margin-top:22px; padding-top:16px; border-top:1px solid var(--room-line); }
+html[data-sanctuary] .msg .follow-ups { gap:8px; margin-top:22px; }
+html[data-sanctuary] .msg :is(.follow-up,.reply-action-trigger) { border-radius:8px !important; min-height:44px; background:var(--paper-100) !important; border:1px solid var(--room-line) !important; font-size:12px; color:var(--ink) !important; }
+html[data-sanctuary] .thread-share-tools { box-shadow:var(--sc-shadow); }
+
+/* Composer and selection controls have a single shared inset and clear active state. */
+html[data-sanctuary] .dock { padding-inline:24px !important; }
+html[data-sanctuary] .composer { max-width:860px; padding:10px !important; border:1px solid var(--room-line) !important; border-radius:14px !important; box-shadow:var(--sc-floating) !important; }
+html[data-sanctuary] .composer .row { min-height:48px; }
+html[data-sanctuary] #prompt { padding:10px 4px; font-size:16px; line-height:1.5; }
+html[data-sanctuary] #send.ready { background:var(--primary) !important; color:var(--paper-50) !important; }
+html[data-sanctuary] #composer .reasoning { position:relative; isolation:isolate; padding:2px !important; gap:0 !important; border-radius:9px !important; min-height:46px !important; background:var(--paper-100) !important; }
+html[data-sanctuary] #composer .reasoning .seg { position:relative; z-index:1; min-height:42px !important; height:42px !important; padding:8px 6px; border-radius:7px !important; background:transparent !important; font-size:12px !important; }
+html[data-sanctuary] #composer .reasoning .seg[aria-pressed="true"] { background:transparent !important; color:var(--ink) !important; }
+html[data-sanctuary] .sc-selection-mode { inset-block:2px; border-radius:7px; background:var(--accent-soft); z-index:0; box-shadow:0 1px 3px rgba(17,32,39,.09); }
+html[data-sanctuary] .disclaimer { color:var(--sc-on-chrome); text-shadow:0 1px 3px rgba(0,0,0,.7); }
+
+/* History, settings, pickers, and dialogs use the same surfaces and control scale. */
+html[data-sanctuary] .sidebar { width:356px; padding:26px 22px 18px; border:0; box-shadow:var(--sc-floating); }
+html[data-sanctuary] .revamp-history-head h2 { font:500 24px/1.2 var(--body); letter-spacing:-.6px; }
+html[data-sanctuary] .sidebar .sb-new { min-height:48px; border-radius:8px; background:var(--primary) !important; }
+html[data-sanctuary] .sidebar .sb-new-label { color:var(--paper-50) !important; -webkit-text-fill-color:var(--paper-50) !important; }
+html[data-sanctuary] .sb-item { border-radius:7px; }
+html[data-sanctuary] .sb-item.active { background:var(--accent-soft) !important; }
+html[data-sanctuary] .settings-sheet { background:var(--panel) !important; border-radius:20px !important; box-shadow:var(--sc-floating) !important; }
+html[data-sanctuary] .settings-sheet .settings-head { padding:22px 28px 18px; }
+html[data-sanctuary] .settings-sheet .settings-head h2 { font:500 25px/1.2 var(--body); letter-spacing:-.7px; }
+html[data-sanctuary] .settings-categories { gap:0; background:var(--paper-100); padding:6px 16px; border-block:1px solid var(--room-line); }
+html[data-sanctuary] .settings-category { min-height:44px; border-radius:7px; color:var(--muted); font-size:13px; }
+html[data-sanctuary] .settings-category[aria-selected="true"] { background:var(--panel); color:var(--ink); box-shadow:0 1px 3px rgba(17,32,39,.09); }
+html[data-sanctuary] .settings-sheet .set-sec { padding:24px 28px; }
+html[data-sanctuary] .settings-sheet .set-lbl { color:var(--gold-ink); font:500 11px/1.5 var(--mono); letter-spacing:.09em; }
+html[data-sanctuary] .bg-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+html[data-sanctuary] .bg-thumb { display:flex; align-items:flex-end; width:100%; min-width:0; aspect-ratio:auto; height:102px; padding:0; overflow:hidden; border-radius:7px; background-size:cover; }
+html[data-sanctuary] .sc-scene-name { display:flex; align-items:center; width:100%; min-height:34px; padding:6px 7px; background:var(--sc-chrome); color:var(--sc-on-chrome); text-align:left; white-space:normal; font:400 11px/1.25 var(--body); }
+html[data-sanctuary] .bg-thumb[aria-pressed="true"] { outline:2px solid var(--gold-ink); outline-offset:3px; box-shadow:none; }
+html[data-sanctuary] :is(.sa-feature-dialog,.beta-modal,.confirm-box) { border-radius:16px !important; box-shadow:var(--sc-floating); }
+html[data-sanctuary] :is(.sa-feature-dialog,.beta-modal) h2 { font:500 25px/1.2 var(--body); letter-spacing:-.6px; }
+html[data-sanctuary] :is(.reader-composer-scrim,.sa-feature-scrim,.settings-scrim,.sb-scrim) { backdrop-filter:none !important; }
+html[data-sanctuary] .reader-composer-head { padding-bottom:14px; border-bottom:1px solid var(--room-line); margin-bottom:10px; }
+
+@media (hover:hover) and (pointer:fine) {
+  html[data-sanctuary] :is(.dp-link-btn,.room-quiz-jump,.quote-act,.reader-ask-secondary):hover { background:var(--accent-soft) !important; }
+  html[data-sanctuary] .topnav .nav-tab:hover { color:var(--sc-on-chrome) !important; background:rgba(255,255,255,.05) !important; }
+  html[data-sanctuary] .icon-btn:hover,html[data-sanctuary] .sb-toggle:hover { border-color:var(--sc-peach) !important; }
+  html[data-sanctuary] .pray-chip:hover .pray-chip-arrow { transform:translateX(3px); }
+  html[data-sanctuary] #greet .sugg:hover { color:var(--gold-ink) !important; }
+}
+html[data-sanctuary] .pray-chip-arrow { transition:transform 160ms var(--room-ease); }
+html[data-sanctuary] :is(.dp-link-btn,.quote-act,.nav-tab,.icon-btn) { transition:background-color 160ms var(--room-ease),color 160ms var(--room-ease),border-color 160ms var(--room-ease); }
+html[data-sanctuary] .topnav :focus-visible { outline-color:var(--sc-peach); }
+html[data-sanctuary] :is(.sb-toggle,#page-today .dp-head button):focus-visible { outline-color:var(--sc-peach); }
+
+@media (max-width:1100px) {
+  html[data-sanctuary] .stage { padding:26px 24px 140px !important; }
+  html[data-sanctuary] .topnav .nav-brand { font-size:20px; }
+  html[data-sanctuary] .topnav .nav-tab { padding-inline:12px; }
+  html[data-sanctuary] #page-study .daily-page { grid-template-columns:minmax(0,1fr) 285px; gap:20px; }
+  html[data-sanctuary] #page-study .lesson { padding:28px !important; }
+  html[data-sanctuary] #page-study .lesson-top .topic-name { font-size:40px; }
+  html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card { padding:26px !important; }
+  html[data-sanctuary] #greet { grid-template-columns:180px minmax(0,1fr); gap:24px 28px; padding:28px !important; }
+  html[data-sanctuary] #greet h1 { font-size:38px !important; }
+}
+@media (max-width:900px) {
+  html[data-sanctuary] #page-study .daily-page { display:flex; flex-direction:column; }
+  html[data-sanctuary] #page-study .daily-page > *,html[data-sanctuary] .room-study-main,html[data-sanctuary] .room-study-companion { width:100%; }
+  html[data-sanctuary] .room-study-companion { position:static; }
+  html[data-sanctuary] #page-prayer .pray-page { grid-template-columns:1fr; }
+  html[data-sanctuary] #page-prayer .dp-head { min-height:170px; }
+  html[data-sanctuary] #greet { grid-template-columns:145px minmax(0,1fr); }
+  html[data-sanctuary] #greet h1 { font-size:34px !important; }
+  html[data-sanctuary] #greet .greet-sugg { gap:0 14px; }
+  html[data-sanctuary] #page-today #todayStrip .ts-meta { flex-direction:column; align-items:flex-start; gap:3px; }
+}
+@media (max-width:768px) {
+  html[data-sanctuary] { --header:64px; }
+  html[data-sanctuary] .topnav { padding:0 64px; gap:0; height:64px; min-height:64px; }
+  html[data-sanctuary] .topnav .nav-brand { font-size:19px; gap:7px; }
+  html[data-sanctuary] .topnav .nav-brand .mark { width:26px !important; height:26px !important; }
+  html[data-sanctuary] .sb-toggle { top:10px !important; left:14px; }
+  html[data-sanctuary] .topnav .nav-actions { right:14px; }
+  html[data-sanctuary] .stage { padding:calc(var(--header) + 20px) 16px 112px !important; }
+  html[data-sanctuary] .daily-page,html[data-sanctuary] .pray-page,html[data-sanctuary] .room-study-main,html[data-sanctuary] .room-study-companion { gap:18px; }
+  html[data-sanctuary] .page { max-width:680px; }
+  html[data-sanctuary] :is(#page-study,#page-today,#page-prayer) .dp-head { grid-template-columns:minmax(0,1fr) 26%; min-height:148px; border-radius:10px !important; }
+  html[data-sanctuary] .sc-intro-copy { padding:24px; }
+  html[data-sanctuary] .dp-card { padding:24px !important; border-radius:10px !important; }
+  html[data-sanctuary] .dp-card h3 { font-size:21px; }
+  html[data-sanctuary] #page-study .dp-head .sc-intro-copy { padding:22px 24px; }
+  html[data-sanctuary] #page-study .dp-head h2 { font-size:30px !important; }
+  html[data-sanctuary] #page-study .dp-head .sc-intro-copy > p:not(.dp-eyebrow) { max-width:32ch; }
+  html[data-sanctuary] #page-study .lesson { padding:26px !important; }
+  html[data-sanctuary] #page-study .lesson-top .topic-name { font-size:37px; }
+  html[data-sanctuary] #page-study .lesson-top { padding-bottom:22px; gap:18px; }
+  html[data-sanctuary] #page-study .ls-b { padding-left:0 !important; }
+  html[data-sanctuary] #page-study .quote-wrap .topic-quote { font-size:27px !important; }
+  html[data-sanctuary] #page-today .daily-page { display:flex; flex-direction:column; }
+  html[data-sanctuary] #page-today .room-day-brief { width:100%; border-radius:10px; }
+  html[data-sanctuary] #page-today .room-day-brief .dp-head { grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); min-height:230px; }
+  html[data-sanctuary] #page-today .sc-intro-copy { padding:26px; }
+  html[data-sanctuary] #page-today .dp-head h2 { font-size:64px !important; }
+  html[data-sanctuary] #page-today .dp-head .dp-eyebrow { font-size:10px; margin-bottom:12px; }
+  html[data-sanctuary] #page-today .room-day-brief #todayStrip { padding:12px 10px; min-height:76px; }
+  html[data-sanctuary] #page-today #todayStrip .ts-meta { align-items:center; gap:5px; text-align:center !important; }
+  html[data-sanctuary] #todayStrip .ts-cell { padding:0 8px; }
+  html[data-sanctuary] #todayStrip .ts-n { font-size:28px; }
+  html[data-sanctuary] #todayStrip .ts-cell > svg { display:none; }
+  html[data-sanctuary] :is(.today-reading-column,.today-saint-column) { display:contents; }
+  html[data-sanctuary] #page-today :is(.today-reading-column,.today-saint-column) > .dp-card { width:100%; border-radius:10px !important; background:var(--panel) !important; padding:26px !important; }
+  html[data-sanctuary] #sec-readings { order:1; }
+  html[data-sanctuary] #saintCard { order:2; }
+  html[data-sanctuary] #sec-lesson { order:3; }
+  html[data-sanctuary] #sec-quiz { order:4; }
+  html[data-sanctuary] #page-today .dp-thread { order:5; }
+  html[data-sanctuary] #page-prayer .dp-head { grid-template-columns:minmax(0,1fr) 32%; }
+  html[data-sanctuary] #page-prayer .dp-head h2 { font-size:46px !important; }
+  html[data-sanctuary] #page-prayer .dp-head .dp-eyebrow { font-size:9px; line-height:1.7; }
+  html[data-sanctuary] #page-prayer .room-prayer-intention,html[data-sanctuary] #page-prayer .sc-prayer-index { padding:26px !important; }
+  html[data-sanctuary] #greet { grid-template-columns:64px minmax(0,1fr); gap:20px 16px; padding:26px !important; }
+  html[data-sanctuary] #greet .room-art { grid-column:1; grid-row:1; align-self:start; }
+  html[data-sanctuary] #greet .room-art img { width:64px; height:80px; min-height:0; object-position:center 30%; }
+  html[data-sanctuary] #greet .room-art figcaption { display:none; }
+  html[data-sanctuary] #greet .room-greeting-copy { display:contents; }
+  html[data-sanctuary] #greet .eyebrow { grid-column:2; grid-row:1; align-self:center; margin:0; line-height:1.8; max-width:22ch; }
+  html[data-sanctuary] #greet h1 { grid-column:1/-1; font-size:34px !important; margin:0; line-height:1.13 !important; }
+  html[data-sanctuary] #greet #greetSub { grid-column:1/-1; font-size:14px; margin:0; }
+  html[data-sanctuary] #greet .greet-sugg { grid-column:1/-1; gap:0 16px; }
+  html[data-sanctuary] #greet .sugg { font-size:13px; min-height:60px; padding-block:12px !important; }
+  html[data-sanctuary] #greet .greet-credit { font-size:11px; padding-top:16px; }
+  html[data-sanctuary] .msg.assistant { padding:22px !important; }
+  html[data-sanctuary] .dock { bottom:calc(78px + env(safe-area-inset-bottom)) !important; padding-inline:12px !important; }
+  html[data-sanctuary] .composer { border-radius:14px !important; }
+  html[data-sanctuary] body > .nav-tabs { height:calc(68px + env(safe-area-inset-bottom)); min-height:68px; padding:6px 12px calc(6px + env(safe-area-inset-bottom)); background:var(--panel) !important; gap:0; border-top:1px solid var(--room-line); }
+  html[data-sanctuary] body > .nav-tabs .nav-tab { color:var(--muted) !important; min-height:54px; background:transparent !important; border-radius:0; }
+  html[data-sanctuary] body > .nav-tabs .nav-tab.on { background:transparent !important; color:var(--ink) !important; }
+  html[data-sanctuary] body > .nav-tabs .sc-selection-nav { bottom:auto; top:0; height:2px; background:var(--gold-ink); }
+  html[data-sanctuary] .sidebar { width:min(356px,94vw); padding:24px 20px 16px; }
+  html[data-sanctuary] .settings-sheet .set-sec { padding:22px; }
+  html[data-sanctuary] .settings-categories { padding-inline:12px; }
+  html[data-sanctuary] .settings-category { font-size:12px; padding-inline:8px; }
+  html[data-sanctuary] .bg-thumb { height:96px; }
+  html[data-sanctuary] .dp-thread .phead { padding:24px !important; }
+}
+@media (max-width:430px) {
+  html[data-sanctuary] .bg-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  html[data-sanctuary] #page-study .dp-head { grid-template-columns:minmax(0,1fr) 84px; }
+  html[data-sanctuary] #page-study .dp-head .sc-intro-copy { padding:20px; }
+  html[data-sanctuary] #page-study .dp-head .dp-head-actions { gap:6px; }
+  html[data-sanctuary] #page-study .dp-head-actions :is(button,summary) { padding-inline:10px; font-size:12px !important; }
+  html[data-sanctuary] #page-study .lesson { padding:24px 22px !important; }
+  html[data-sanctuary] #page-study .lesson-top .topic-name { font-size:33px; }
+  html[data-sanctuary] #page-today .room-day-brief .dp-head { display:block !important; position:relative; min-height:0; }
+  html[data-sanctuary] #page-today .sc-intro-scenery { position:absolute; inset:0 0 0 63%; }
+  html[data-sanctuary] #page-today .sc-intro-copy { position:relative; z-index:1; max-width:75%; padding:24px; background:var(--sc-chrome); }
+  html[data-sanctuary] #page-today .dp-head h2 { font-size:58px !important; }
+  html[data-sanctuary] #page-today .dp-head .sc-intro-copy > p:not(.dp-eyebrow) { font-size:13px !important; line-height:1.55 !important; }
+  html[data-sanctuary] #page-today .dp-head-actions { gap:6px; }
+  html[data-sanctuary] #page-today .dp-head-actions button { padding-inline:10px; font-size:11px !important; }
+  html[data-sanctuary] #greet { padding:24px !important; gap:18px 14px; }
+  html[data-sanctuary] #greet h1 { font-size:31px !important; }
+}
+@media (max-width:360px) {
+  html[data-sanctuary] .stage { padding-inline:12px !important; }
+  html[data-sanctuary] .topnav .nav-brand { font-size:16px; gap:6px; }
+  html[data-sanctuary] #greet { padding:20px !important; }
+  html[data-sanctuary] #greet h1 { font-size:29px !important; }
+  html[data-sanctuary] #page-study .dp-head { grid-template-columns:minmax(0,1fr); }
+  html[data-sanctuary] #page-study .sc-intro-scenery { display:none; }
+  html[data-sanctuary] #page-study .lesson-top .topic-name { font-size:30px; }
+  html[data-sanctuary] #page-today .sc-intro-copy { max-width:82%; padding:22px; }
+  html[data-sanctuary] .bg-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-height:480px) and (max-width:900px) and (pointer:coarse) {
+  html[data-sanctuary] { --header:52px; }
+  html[data-sanctuary] .topnav { height:52px; min-height:52px; }
+  html[data-sanctuary] .sb-toggle { top:4px !important; }
+  html[data-sanctuary] .stage { padding:66px calc(20px + env(safe-area-inset-left)) 140px !important; }
+  html[data-sanctuary] body > .nav-tabs { height:56px; min-height:56px; padding:3px 12px; }
+  html[data-sanctuary] body > .nav-tabs .nav-tab { min-height:48px; }
+  html[data-sanctuary] .dock { bottom:62px !important; }
+  html[data-sanctuary] .composer .controls { display:none !important; }
+  html[data-sanctuary] .composer.expanded .controls { display:flex !important; }
+  html[data-sanctuary] #greet { grid-template-columns:90px minmax(0,1fr); gap:18px; }
+  html[data-sanctuary] #greet .room-art { grid-column:1; grid-row:1/span 2; }
+  html[data-sanctuary] #greet .room-art img { width:90px; height:130px; }
+  html[data-sanctuary] #greet .room-greeting-copy { display:block; grid-column:2; }
+  html[data-sanctuary] #greet h1 { font-size:30px !important; }
+  html[data-sanctuary] #greet .greet-sugg { grid-column:2; }
+  html[data-sanctuary] #page-today .room-day-brief .dp-head { min-height:180px; }
+  html[data-sanctuary] #page-today .sc-intro-copy { padding:22px 28px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-sanctuary] *,html[data-sanctuary] *::before,html[data-sanctuary] *::after { animation:none !important; scroll-behavior:auto !important; transition-duration:0s !important; }
+}
+html[data-sanctuary][data-motion="reduced"] *,html[data-sanctuary][data-motion="reduced"] *::before,html[data-sanctuary][data-motion="reduced"] *::after { animation:none !important; scroll-behavior:auto !important; transition-duration:0s !important; }
+@media (forced-colors:active) {
+  html[data-sanctuary] :is(button,input,textarea,summary) { border:1px solid ButtonText !important; }
+  html[data-sanctuary] :is(button,a,input,textarea,summary):focus-visible { outline:2px solid Highlight; }
+  html[data-sanctuary] .sc-selection { background:Highlight; }
+}

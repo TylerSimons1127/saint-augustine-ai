@@ -2,7 +2,7 @@
    Strategy: network-first for the app shell + API; cache fallback for shell
    so the UI opens offline (conversations live in localStorage anyway).
    No caching of cross-origin fonts/CDN beyond a simple pass-through. */
-const CACHE = "sa-atmospheres-v26";
+const CACHE = "sa-sanctuary-preview-v27";
 const SHELL = [
   "./",
   "./index.html",
@@ -13,6 +13,8 @@ const SHELL = [
   "./app-features.css?v=premium-pass-3",
   "./app-features.js?v=premium-pass-3",
   "./reading-room.css?v=reading-room-design-2",
+  "./sanctuary.css?v=sanctuary-1",
+  "./sanctuary-ui.js?v=sanctuary-1",
   "./frontend-revamp.js",
   "./lessons.js?v=study-content-3",
   "./lesson-sources.js?v=source-audit-1",
