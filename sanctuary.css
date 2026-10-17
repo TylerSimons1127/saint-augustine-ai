@@ -1,10 +1,11 @@
 /* Sanctuary preview. The preceding styles preserve legacy interaction contracts;
    this file owns the complete visual system for the redesigned app. */
 html[data-sanctuary] {
-  --sc-chrome:#172d3a;
-  --sc-on-chrome:#faf8f3;
-  --sc-chrome-muted:#ced7db;
-  --sc-peach:#d9c4a9;
+  /* Keep the redesigned chrome attached to Appearance's active palette. */
+  --sc-chrome:color-mix(in srgb,var(--accent-deep,#172d3a) 82%,var(--ink,#172d3a));
+  --sc-on-chrome:var(--paper-50,#faf8f3);
+  --sc-chrome-muted:color-mix(in srgb,var(--sc-on-chrome) 94%,var(--sc-chrome));
+  --sc-peach:color-mix(in srgb,var(--accent,#d9c4a9) 55%,var(--sc-on-chrome));
   --sc-shadow:0 2px 4px rgba(14,31,40,.025),0 18px 48px rgba(14,31,40,.09);
   --sc-floating:0 6px 16px rgba(14,31,40,.08),0 24px 64px rgba(14,31,40,.16);
   --room-ease:cubic-bezier(.22,1,.36,1);
