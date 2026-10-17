@@ -2,7 +2,7 @@
    Strategy: network-first for the app shell + API; cache fallback for shell
    so the UI opens offline (conversations live in localStorage anyway).
    No caching of cross-origin fonts/CDN beyond a simple pass-through. */
-const CACHE = "sa-sanctuary-preview-v28";
+const CACHE = "sa-sanctuary-preview-v29";
 const SHELL = [
   "./",
   "./index.html",
@@ -13,7 +13,7 @@ const SHELL = [
   "./app-features.css?v=premium-pass-3",
   "./app-features.js?v=premium-pass-3",
   "./reading-room.css?v=reading-room-design-2",
-  "./sanctuary.css?v=sanctuary-2",
+  "./sanctuary.css?v=sanctuary-3",
   "./sanctuary-ui.js?v=sanctuary-1",
   "./frontend-revamp.js",
   "./lessons.js?v=study-content-3",
@@ -24,6 +24,22 @@ const SHELL = [
   "./assets/saint-augustine-icon-64.png",
   "./assets/saint-augustine-icon-192.png",
   "./assets/saint-augustine-icon-512.png",
+  "./assets/bg/bg_riverbend.jpg",
+  "./assets/bg/bg_stonebridge.jpg",
+  "./assets/bg/bg_hillchapel.jpg",
+  "./assets/bg/bg_goldenfield.jpg",
+  "./assets/bg/bg_abbeygarden.jpg",
+  "./assets/bg/bg_orchardway.jpg",
+  "./assets/bg/bg_moorlight.jpg",
+  "./assets/bg/bg_frostmeadow.jpg",
+  "./assets/bg/thumbs/bg_riverbend.jpg",
+  "./assets/bg/thumbs/bg_stonebridge.jpg",
+  "./assets/bg/thumbs/bg_hillchapel.jpg",
+  "./assets/bg/thumbs/bg_goldenfield.jpg",
+  "./assets/bg/thumbs/bg_abbeygarden.jpg",
+  "./assets/bg/thumbs/bg_orchardway.jpg",
+  "./assets/bg/thumbs/bg_moorlight.jpg",
+  "./assets/bg/thumbs/bg_frostmeadow.jpg",
   "./assets/favicon.svg"
 ];
 

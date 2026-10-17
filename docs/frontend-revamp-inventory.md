@@ -1,6 +1,6 @@
 # Frontend revamp completeness inventory
 
-Current October 14 refinement and verification: [reading-room design pass](reading-room-design-pass.md). The records below describe earlier dated passes and their baselines.
+Current October 16 refinement and verification: [reading-room design pass](reading-room-design-pass.md). The records below describe earlier dated passes and their baselines.
 
 Baseline: production `825e6d0`. Inventory taken from the complete `index.html`, `lessons.js`, `config.js`, service worker, landing page, and backend route contracts before implementation. All 215 original DOM IDs are retained. Original handlers remain in use, with the repair notes below. “Checked” records exercised flows; it does not imply every provider, browser, or preference permutation was tested.
 
@@ -17,7 +17,7 @@ Baseline: production `825e6d0`. Inventory taken from the complete `index.html`, 
 | Progress | Lesson reading recognition, quiz counts/scores, daily streak and stored progress | Reading recognition, completed quiz counts and streak checked; reload and JSON restore preserve stored state. |
 | Today | Date, lesson entry, streak/lessons/quizzes strip, live readings + USCCB link, explain/pray readings, saint portrait/date/biography, Augustine connection state and source link, saint question, lesson/quiz pointers, reflection conversation | All cards rendered; live content loading completed. Explain/pray/saint actions routed to Today chat and Stop checked. Lesson and quiz pointers checked. The three mobile progress tiles now share one compact, divided paper surface to make the opening scan calmer. Existing backend date/content gaps listed below. |
 | Pray | Intention entry, lead me in prayer, teach me to pray, Morning Offering, Lectio Divina, Examen, guided 5-step Examen/back/close, prayer before rest, Holy Spirit prayer, prayer conversation | Intention → prayer generated; teaching and all five traditional prayer entries started correct requests. Guided Examen completed all five steps; close/back controls retained. Prayer tradition now uses concise, icon-led actions with an emphasized guided path. Existing IDs and handlers remain intact; rows checked at 320px and 390px, with responsive geometry checked at 768px and 1440px. |
-| Settings | 15 accent themes, reply sizes, motion modes, 19 scenery choices/dim level, default response depth/model, send shortcut, auto-citations, reply bell | All options represented. Theme choices now preview their surface, paper panel, and accent together; selected theme and label are easy to distinguish. Changed Parchment/Moss, scenery, dim, M/XL, motion, send shortcut, citation switch and model/depth. Settings persist after reload. XL reply font confirmed at 21px. Opening Settings now locks the mobile document and desktop content scroller so the sheet is the only active scroll area; Escape/close restores scrolling. Theme/scenery selectors have tactile hover and press feedback, clear keyboard focus, and honor reduced motion. Verified at 320×568, 390×844, and 1440×900. |
+| Settings | 15 accent themes, reply sizes, motion modes, 25 scenery choices/dim level, default response depth/model, send shortcut, auto-citations, reply bell | All options represented. Theme choices now preview their surface, paper panel, and accent together; selected theme and label are easy to distinguish. Changed Parchment/Moss, scenery, dim, M/XL, motion, send shortcut, citation switch and model/depth. Settings persist after reload. XL reply font confirmed at 21px. Opening Settings now locks the mobile document and desktop content scroller so the sheet is the only active scroll area; Escape/close restores scrolling. Theme/scenery selectors have tactile hover and press feedback, clear keyboard focus, and honor reduced motion. Verified at 320×568, 390×844, and 1440×900. |
 | Data | Local conversations/preferences/progress; export all Markdown, JSON backup, JSON restore, storage use, clear conversations | Original keys unchanged. JSON export downloaded; restore/import/confirmation/reload succeeded with synthetic data. Markdown export and storage count checked; Clear All first confirmation inspected, irreversible final clear not performed. Production storage untouched. |
 | Dialogs/tools | Welcome, six-step tutorial/replay, What's New, settings, lesson library, glossary, command palette, model chooser, confirmation, feedback report, toast, back to top, keyboard shortcuts | Welcome/tour skip and replay of six steps checked, Back/finish checked. Palette search + navigation, release notes, import confirmation, Undo toast and report cancel checked. Drawer/Examen focus handling improved. |
 | Landing | Hero, all marketing sections/cards, first-person builder story/Study Club credit, three response-depth demos, app CTAs, source/email/footer | Mobile layout, all five app links and all three demo tabs checked. Preview app CTAs remain on preview origin. No FAQ exists in the baseline. |
@@ -26,6 +26,13 @@ Baseline: production `825e6d0`. Inventory taken from the complete `index.html`, 
 ## Verification record
 
 Browser checks were performed in the Codex browser against the running local prototype, using synthetic conversations and attachments. Screenshots are saved in `outputs/frontend-revamp` in the parent workspace. The deployed static files are checked separately against this source.
+
+### Atmosphere and Today contrast pass — October 16, 2026
+
+- Added eight original, AI-generated landscape backgrounds (river at dawn, stone bridge, hill chapel, golden field, abbey garden, orchard path, moorland light, frosted meadow). The images are optimized as 1536px JPEGs with 420px picker thumbnails; source PNGs remain preserved outside the app bundle. The service worker precaches each full image and thumbnail.
+- The ten scenes selected for removal are no longer offered. The picker contains 17 retained options plus the eight additions (25 total); all labels render, and selecting River at dawn updates the selected state and the app-wide background URL.
+- Reworked the Today, Study, and Prayer mastheads to use distinct landscape imagery. Today’s daily readings now have a solid warm-paper surface; checked at 390px phone and 903px desktop widths, with no horizontal overflow and readable text over the shared scenery.
+- At 903px, Today’s readings and saint cards align as two separate paper columns beneath the image-led daily brief. On mobile, the readings card keeps its paper surface after the existing column wrapper collapses for linear page order.
 
 ### Current visual pass — October 2, 2026
 
@@ -119,7 +126,7 @@ The preview uses a distinct origin: browsers isolate localStorage by origin, so 
 
 - App: [frontend-revamp-deploy.vercel.app](https://frontend-revamp-deploy.vercel.app/#today)
 - Landing: [experimental landing](https://frontend-revamp-deploy.vercel.app/landing)
-- Source: GitHub branch `frontend-revamp-test`; never merged into `main`.
+- Source: GitHub branch `frontend-sanctuary-preview`; never merged into `main`.
 - Hosting: separate Vercel project `frontend-revamp-deploy`. The live project `staugustineai` and its public URL are unchanged. The experimental worktree is linked to the test project.
 - The final preview deployment completed successfully and was verified on the stable Vercel alias. The app and landing page return HTTP 200, `X-Robots-Tag: noindex, nofollow` is present, and the mobile artwork adjustment plus refreshed offline cache version are served.
-- The refreshed mobile landing page and the Study/Today app pages were inspected in-browser. The repeatable integrity check passes; live production HTML contains neither experimental asset. Remote `main` remains `825e6d018c5afac859015057df557d21b420be39`.
+- The refreshed mobile landing page and the Study/Today app pages were inspected in-browser. The repeatable integrity check passes; live production HTML contains neither experimental asset. Remote `main` remains `55a978a7b00444c2541f7552912618c409355d17`.

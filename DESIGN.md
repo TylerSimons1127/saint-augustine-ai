@@ -2,19 +2,20 @@
 
 ## Scope
 
-The experiment lives on `frontend-revamp-test` and the separate Vercel preview. Existing page IDs, backend connections, response streaming, storage keys, preferences, and religious content stay connected to their existing behavior. The landing page is outside this refinement.
+The experiment lives on `frontend-sanctuary-preview` and the separate Vercel preview. Existing page IDs, backend connections, response streaming, storage keys, preferences, and religious content stay connected to their existing behavior. The landing page is outside this refinement.
 
 ## Design direction
 
-A Catholic reading room in natural morning light: the mountain landscape is a single continuous backdrop. Reading and reflection use opaque paper; navigation may use restrained translucency. The retained peach accent `#d9c4a9` marks selected states, navy carries primary actions, and muted ink supports sources and labels. Newsreader belongs to major headings, quotations, and lesson titles; Hanken Grotesk belongs to controls, explanations, and sustained reading.
+A Catholic reading room in natural morning light: the selected landscape sets the shared atmosphere (mountains by default), with distinct river, abbey-garden, and hill-chapel photography in the Today, Study, and Pray mastheads. Long reading sections sit on opaque warm-paper surfaces so scenery never competes with text; navigation may use restrained translucency. The retained peach accent `#d9c4a9` marks selected states, navy carries primary actions, and muted ink supports sources and labels. Newsreader belongs to major headings, quotations, and lesson titles; Hanken Grotesk belongs to controls, explanations, and sustained reading.
 
-Short titles and quotations remain centered. Paragraphs, editable fields, and repeated action descriptions use a predictable left edge. Scenery is not repeated inside mastheads. Boxes inside boxes, icon medallions, decorative quote marks, redundant arrows, and ornamental badges are removed where they obscure hierarchy.
+Short titles and quotations remain centered. Paragraphs, editable fields, and repeated action descriptions use a predictable left edge. On desktop, each page masthead has a clear text-to-image split; on small screens, text sits over the same darkened landscape crop. Boxes inside boxes, icon medallions, decorative quote marks, redundant arrows, and ornamental badges are removed where they obscure hierarchy.
 
 ## Page compositions
 
 - **Chat:** a centered opening quotation with simple starter rows; existing conversations show only the conversation. Reply prose has paper behind it. More groups common response actions separately from feedback; system status sits outside Augustine’s answer. Normal sharing is a compact header action, with message selection retaining its dedicated mode.
 - **Study:** a compact masthead leads into one connected document with numbered disclosures. Sources have clear quotation/excerpt context and source footers. The lesson’s reflection action is consolidated into one primary entry. The quiz stays readable and communicates its result through wording and outcome symbols as well as color.
 - **Today:** a short daily briefing, legible 12px progress labels, and independent reading/saint columns at desktop. On smaller screens the reading, saint, lesson, and quiz retain their original order. The biography preview shows four lines on mobile and six on desktop, then expands in place; the saint has a consistent portrait crop and an intentional halo fallback.
+- **Atmosphere:** 17 existing scenes plus eight newly generated, optimized landscapes. Ten backgrounds selected for removal are absent from the picker; each remaining choice still updates the app-wide scenery and persists through the existing preference.
 - **Pray:** a compact invitation followed by a readable expanding intention field and differentiated guidance actions. Traditional prayers are simple icon-and-text rows. Guided Examen keeps its functional breathing cue and five movements.
 
 ## Shared components
