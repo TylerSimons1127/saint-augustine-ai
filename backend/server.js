@@ -1041,6 +1041,7 @@ async function getSaint() {
       summaryModel: profile?.model || null,
       summaryProvider: profile?.provider || null,
       summarySource: profile?.generated ? "ai-generated" : "source-grounded-fallback",
+      summaryAttempts: profile?.attempts || [],
       connectionSource: saintConnSource.get(name.toLowerCase().trim()) || (conn ? "source-grounded-fallback" : "unavailable"),
       source: "Franciscan Media",
       fetchedAt: new Date().toISOString(),
@@ -1098,8 +1099,9 @@ function isSaintSummaryOutput(text) {
 }
 function saintSentences(text) {
   return (cleanHtml(text || "").replace(/\b(St|Ss|Fr|Dr|Mr|Mrs|Ms)\.(?=\s)/g, "$1\u2024")
+    .replace(/\b(A|B)\.\s*(D|C)\./g, "$1\u2024$2\u2024")
     .replace(/(?<=\d)\.(?=\d)/g, "\u2024").replace(/\b([IVXLCDM]+)\.(?=\d)/g, "$1\u2024")
-    .match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [])
+    .match(/[^.!?]+[.!?]+(?:[”"’'](?=\s|$))?|[^.!?]+$/g) || [])
     .map((sentence) => sentence.replace(/\u2024/g, ".").trim()).filter(Boolean);
 }
 function isSaintConnectionOutput(text, name, bio) {
@@ -1163,17 +1165,18 @@ function buildSaintConnectionFallback(name, story) {
 }
 const saintProfileCache = new Map();
 const saintProfilePending = new Map();
-function parseSaintProfile(text, context, fullStory, name) {
+function parseSaintProfile(text, context, fullStory, name, diagnostics = {}) {
   try {
     const value = JSON.parse(text);
     const bio = typeof value.bio === "string" ? value.bio.trim() : "";
     const conn = typeof value.connection === "string" ? value.connection.trim() : "";
     const words = text => text.split(/\s+/).filter(Boolean).length;
     const minBio = words(fullStory) < 140 ? 80 : 220;
+    Object.assign(diagnostics, { bioWords: words(bio), connectionWords: words(conn), summaryValid: isSaintSummaryOutput(bio), connectionValid: isSaintConnectionOutput(conn, name, fullStory), referenceValid: value.referenceId === context.id });
     if (words(bio) < minBio || words(bio) > 340 || words(conn) < 80 || words(conn) > 150 ||
         !isSaintSummaryOutput(bio) || !isSaintConnectionOutput(conn, name, fullStory) || value.referenceId !== context.id) return null;
     return { bio, conn };
-  } catch (_) { return null; }
+  } catch (_) { diagnostics.invalidJson = true; return null; }
 }
 async function getSaintProfile(name, fullStory) {
   if (!name || !fullStory) return null;
@@ -1196,12 +1199,12 @@ async function getSaintProfile(name, fullStory) {
     const user = "Saint: " + name + "\nComplete source biography:\n" + fullStory +
       "\n\nReviewed Augustine context (id=" + context.id + "):\n" + context.title + "\n" + context.text;
     const generated = await generateSaintText(sys, user, 4096, 6500,
-      output => !!parseSaintProfile(output, context, fullStory, name), meta);
+      output => { meta.validation = {}; return !!parseSaintProfile(output, context, fullStory, name, meta.validation); }, meta);
     const accepted = generated ? parseSaintProfile(generated, context, fullStory, name) : null;
     const profile = { bio: accepted?.bio || compactSaintSummary(fullStory, 340),
       conn: accepted?.conn || buildSaintConnectionFallback(name, fullStory),
       references: [{ title: context.title, url: context.url }],
-      generated: !!accepted, model: accepted ? meta.model : null, provider: accepted ? meta.provider : null };
+      generated: !!accepted, model: accepted ? meta.model : null, provider: accepted ? meta.provider : null, attempts: meta.attempts || [] };
     const nameKey = name.toLowerCase().trim();
     saintSummaryCache.set(nameKey, profile.bio); saintConnCache.set(nameKey, profile.conn);
     saintConnSource.set(nameKey, profile.generated ? "ai-generated" : "source-grounded-fallback");
@@ -1221,16 +1224,19 @@ async function generateSaintText(sys, userText, maxTokens, maxChars, acceptOutpu
     ...(metadata.json ? { response_format: { type: "json_object" } } : {}),
   };
   const readAcceptedText = async (res, model, provider) => {
-    if (!res || !res.ok) return null;
+    const attempt = { model, provider, status: res?.status || null };
+    (metadata.attempts ||= []).push(attempt);
+    if (!res || !res.ok) { attempt.rejected = "provider-error"; return null; }
     const j = await res.json();
-    if (j.choices?.[0]?.finish_reason === "length") return null;
+    if (j.choices?.[0]?.finish_reason === "length") { attempt.rejected = "truncated"; return null; }
     const msg = j.choices?.[0]?.message || {};
     let text = (typeof msg.content === "string" ? msg.content : "")
       .replace(/<(think|analysis)\b[^>]*>[\s\S]*?<\/\1>/gi, "").trim();
     if (/<(?:think|analysis)\b/i.test(text)) return null;
     text = text.replace(/^["'\u201c\u201d]+|["'\u201c\u201d]+$/g, "")
       .replace(/^(here( is|'s)[^:]*:\s*)/i, "").replace(/\s+/g, " ").trim();
-    if (text.length < 80 || text.length > maxChars || (acceptOutput && !acceptOutput(text))) return null;
+    if (text.length < 80 || text.length > maxChars) { attempt.rejected = "output-size"; return null; }
+    if (acceptOutput && !acceptOutput(text)) { attempt.rejected = "validation"; attempt.validation = metadata.validation; return null; }
     metadata.model = model; metadata.provider = provider;
     return text;
   };

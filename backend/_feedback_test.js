@@ -36,7 +36,8 @@ stub.listen(STUB_PORT, async () => {
     get.status === 405 && !getText.includes("private text") && healthJson.ok === true &&
     healthJson.primaryProvider === "openrouter" && healthJson.providers?.groq === false &&
     healthJson.providers?.bedrock === false && healthJson.providers?.openrouter === true &&
-    healthJson.groqModel === null && healthJson.bedrockModel === null && Object.keys(healthJson).length === 5;
+    healthJson.groqModel === null && healthJson.bedrockModel === null && Object.keys(healthJson).every(key =>
+      ["ok", "primaryProvider", "providers", "groqModel", "bedrockModel", "primaryModel", "saintPrimaryModel", "reasoningEnabled", "reasoningExposed", "saintContentVersion", "revision"].includes(key));
   console.log(`bad:${bad.status} ok1:${ok1.status} ok2:${ok2.status} public-get:${get.status} health:${JSON.stringify(healthJson)}`);
   console.log(pass ? "PASS (category-only feedback and minimal health)" : "FAIL");
   process.exit(pass ? 0 : 1);
