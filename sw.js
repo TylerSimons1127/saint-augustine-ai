@@ -2,7 +2,7 @@
    Strategy: network-first for the app shell + API; cache fallback for shell
    so the UI opens offline (conversations live in localStorage anyway).
    No caching of cross-origin fonts/CDN beyond a simple pass-through. */
-const CACHE = "sa-reasoning-saints-v28";
+const CACHE = "sa-reasoning-saints-v29";
 const SHELL = [
   "./",
   "./index.html",

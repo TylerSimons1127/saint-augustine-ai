@@ -82,8 +82,9 @@ is temporarily unable to list models while Groq or Bedrock is configured,
 ## Data and credentials
 
 Conversation history is stored in the browser. A message sent for a reply is
-transmitted from the browser through this backend to Groq when configured, or to
-Bedrock if Groq is absent; if the primary cannot answer, it can be sent to
-OpenRouter as the backup. Each provider has its own data policies, so avoid
+transmitted from the browser through this backend to OpenRouter by default.
+Other free OpenRouter routes and the configured Groq or legacy Bedrock service
+can answer if the preferred route fails. Liquid's free provider may retain
+prompts and outputs and use them for training. Each provider has its own data policies, so avoid
 sending sensitive information. API keys remain in Render environment variables
 and are not returned from health routes.

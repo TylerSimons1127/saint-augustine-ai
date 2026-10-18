@@ -4726,14 +4726,12 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 
   /* ---- real chat: stream from backend ---- */
   function addFallbackModelNotice(bubbleElement, usedModelId){
-    if(!bubbleElement||!model||!usedModelId||(usedModelId.startsWith("bedrock:")||usedModelId.startsWith("groq:"))||bubbleElement.querySelector(".model-fallback-note")) return;
-    const configuredPrimary=models.find(item=>item.primary);
-    if(usedModelId===model.id&&!configuredPrimary) return;
+    if(!bubbleElement||!model||!usedModelId||bubbleElement.querySelector(".model-fallback-note")) return;
+    if(usedModelId===model.id || (model.id==="groq-primary"&&usedModelId.startsWith("groq:")) || (model.id==="bedrock-primary"&&usedModelId.startsWith("bedrock:"))) return;
     const actual=models.find(item=>item.id===usedModelId);
     const note=document.createElement("p"); note.className="model-fallback-note";
-    note.textContent=configuredPrimary
-      ? (configuredPrimary.provider==="groq"?"Groq":"Amazon Bedrock")+" was unavailable; "+(actual?actual.name:"an OpenRouter model")+" replied through the backup provider."
-      : "Your selected model was unavailable; "+(actual?actual.name:usedModelId)+" answered instead.";
+    const actualName=actual?actual.name:usedModelId.startsWith("groq:")?"the configured Groq fallback":usedModelId.startsWith("bedrock:")?"the configured Bedrock fallback":usedModelId;
+    note.textContent="Your selected model was unavailable; "+actualName+" answered instead.";
     bubbleElement.append(note);
   }
   async function waitForBackend(signal, onWait){
@@ -5577,7 +5575,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   const LS_TUT="sa_tut_v1";          // bump to v2/v3 when you ship new features worth teaching
   const tutSeen = (()=>{ try{ return localStorage.getItem(LS_TUT)==="1"; }catch(_){ return true; } })();
   const TUTORIAL=[
-    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. Groq is the primary provider; the OpenRouter models are available as automatic backups. You can choose the preferred backup for each conversation. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
+    {t:"Pick your model", h:"Tap <b>Model</b> under the composer to open the picker. Liquid is the default free reasoning model through OpenRouter. Other free models and the configured Groq service provide fallbacks. Review each model’s data notice before sending personal information. <span class=\"tut-kbd\">Tip</span> Your choice is remembered per conversation."},
     {t:"Reason with intention", h:"The three chips — <b>Quick</b>, <b>Thoughtful</b>, <b>Contemplative</b> — set how deeply Augustine reflects. <b>Quick</b> for fast answers, <b>Thoughtful</b> (default) for balanced reflection, <b>Contemplative</b> for longer, more meditative replies. Just tap the one you want."},
     {t:"New conversation", h:"Use <b>New conversation</b> at the top of the sidebar to start fresh. Each conversation stays separate, with its own model and history, so you can explore freely and keep threads tidy."},
     {t:"Manage your conversations", h:"In the sidebar you can <b>rename</b> (double-click the title), <b>search</b>, <b>delete</b> one (its × button), or <b>delete many</b> at once via the <b>Select</b> button. The <b>export</b> icon copies the whole conversation to Markdown so you can keep or share it."},
