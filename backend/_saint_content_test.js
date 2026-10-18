@@ -17,7 +17,7 @@ global.fetch = async (url, opts = {}) => {
   if (target.includes("/chat/completions")) {
     const body = JSON.parse(opts.body);
     requests.push(body);
-    const isSummary = body.messages[0].content.includes("COMPLETE source story");
+    const isSummary = body.messages[0].content.includes("240-320 words");
     const content = isSummary
       ? "The user wants a concise biography summary of Saint Testa based on the provided source story. I need to write 3-5 clear sentences, 160-210 words, in accessible language. Let me analyze the source story for key facts: she entered a religious community, taught children, and founded a school. I need to craft a polished summary now."
       : "Testa’s care for her neighbors reflects Augustine’s account of charity as love made practical. Her school for orphaned children gave that concern lasting form, extending education to children who might otherwise have been left without it.";
@@ -41,18 +41,18 @@ require("./server.js");
   assert.ok(!/the user wants|let me analyze|i need to write/i.test(saint.bio), "model planning text must never be returned as the saint summary");
   assert.ok(!saint.bio.includes("short teaser"), "AI summary must replace the card excerpt");
   assert.ok(saint.conn.includes("school for orphaned children"), "Augustine reflection should use a saint-specific fact");
-  assert.strictEqual(requests.length, 4, "summary planning output should be rejected across all models before Augustine connection generation");
-  const summaryRequests = requests.filter((req) => req.messages[0].content.includes("COMPLETE source story"));
+  assert.strictEqual(requests.length, 3, "joint biography/connection planning output should be rejected across all free candidates");
+  const summaryRequests = requests.filter((req) => req.messages[0].content.includes("240-320 words"));
   assert.strictEqual(summaryRequests.length, 3, "all summary models should reject the leaked planning and use the source fallback");
   for (const req of requests) {
     const prompt = req.messages.map((m) => m.content).join("\n");
     assert.ok(prompt.includes("FULL_STORY_END_MARKER"), "both generations must receive the complete story, including its final paragraph");
   }
-  assert.ok(requests[0].messages[0].content.includes("160-210 words"), "summary prompt should target about half of the current 409-word story");
+  assert.ok(requests[0].messages[0].content.includes("240-320 words"), "summary prompt should request a detailed source-grounded biography");
   const summaryWords = saint.bio.trim().split(/\s+/).filter(Boolean).length;
-  assert.ok(summaryWords >= 80 && summaryWords <= 210, `summary should be a substantive source-based biography of at most 210 words, got ${summaryWords}`);
+  assert.ok(summaryWords >= 80 && summaryWords <= 340, `source fallback should remain complete without padding, got ${summaryWords}`);
   assert.ok(requests[1].messages[0].content.includes("third person"), "connection prompt must use an editorial third-person voice");
-  assert.ok(requests[1].messages[0].content.includes("never imply the saints met"), "connection prompt must prohibit unsupported historical relationships");
+  assert.ok(requests[1].messages[0].content.includes("only when explicitly supported"), "connection prompt must prohibit unsupported historical relationships");
   console.log("PASS: full-story summary + saint-specific Augustine reflection");
   process.exit(0);
 })().catch((err) => { console.error(err); process.exit(1); });

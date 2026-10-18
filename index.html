@@ -3159,6 +3159,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
               <p class="saint-date" id="saintDate"></p>
               <p class="dp-reading" id="saintBio"><span class="skel" style="display:block;height:13px;width:92%;margin:6px 0"></span><span class="skel" style="display:block;height:13px;width:70%;margin:6px 0"></span></p>
               <p class="dp-reading" id="saintConnWrap" role="status" aria-live="polite" data-connection-state="loading"><span class="rl">Connected to St. Augustine</span><span id="saintConn">Preparing today’s saint-specific reflection…</span></p>
+              <p class="dp-reading" id="saintConnSources" hidden></p>
             </div>
           </div>
           <div class="saint-actions">
@@ -3341,6 +3342,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
           <div class="plist" id="modelList">
             <!-- populated from /api/models at load -->
           </div>
+          <p style="padding:0 14px 12px;margin:0;font-size:12px;line-height:1.5">Liquid’s free model may retain messages for training. Avoid sensitive information.</p>
         </div>
       </div>
       <div class="model-pop-scrim" id="modelPopScrim" aria-hidden="true"></div>
@@ -4207,7 +4209,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
         if(ms.length) selectModel(rec);
         const primary=ms.find(m=>m.primary);
         setStatus(primary
-          ? "Connected · "+(primary.provider==="groq"?"Groq":"Amazon Bedrock")+" primary, OpenRouter backup · conversations stay on this device."
+          ? "Connected · "+(primary.provider==="openrouter"?"OpenRouter free reasoning":primary.provider==="groq"?"Groq":"Amazon Bedrock")+" primary · conversations stay on this device."
           : "Connected · OpenRouter models · conversations stay on this device.",false,"idle");
         modelLoadController=null; return;
       }catch(e){
@@ -4250,7 +4252,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
     let html="";
     for(const m of shown){
       if(m==="__recent__"){ html+='<div class="pgroup">Recent</div>'; continue; }
-      if(m==="__backup__"){ html+='<div class="pgroup">OpenRouter backups</div>'; continue; }
+      if(m==="__backup__"){ html+='<div class="pgroup">Fallback models</div>'; continue; }
       if(m==="__divider__"){ html+=models.some(item=>item.primary)?'<div class="pgroup">More backups</div>':'<div class="pgroup">All free models</div>'; continue; }
       html+=`
       <div class="opt${m.featured?' rec':''}" role="option" aria-selected="${model&&m.id===model.id}" data-model="${esc(m.name)}" data-id="${esc(m.id)}" data-desc="${esc(m.desc||"")}">
@@ -6027,6 +6029,16 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             const source=d.connectionSource || (d.conn ? "ai-generated" : conn ? "curated-fallback" : "unavailable");
             saintConnWrap.dataset.connectionState=source === "source-grounded-fallback" || source === "curated-fallback" ? "fallback" : source === "ai-generated" ? "generated" : source;
             saintConnWrap.hidden=false;
+          }
+          const references=document.getElementById("saintConnSources");
+          if(references){
+            references.replaceChildren();
+            for(const ref of (Array.isArray(d.connectionReferences)?d.connectionReferences:[]).slice(0,2)){
+              if(!/^https:\/\/www\.newadvent\.org\/fathers\/[a-z0-9]+\.htm$/i.test(ref.url||"")) continue;
+              const link=document.createElement("a");link.className="dp-link";link.href=ref.url;link.target="_blank";link.rel="noopener noreferrer";link.textContent="Read Augustine: "+String(ref.title||"Source")+" ↗";
+              references.append(link);
+            }
+            references.hidden=!references.childElementCount;
           }
           // Portrait
           if(saintPortrait){

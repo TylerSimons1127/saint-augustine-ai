@@ -1,9 +1,21 @@
 # Saint Augustine AI backend
 
-Zero-dependency Node.js service that sends chat requests to Groq first when
-configured, then automatically falls back to curated OpenRouter free models.
-Bedrock remains an optional legacy primary if Groq is not configured. Provider
-credentials stay on the server; daily saint reflections use the same order.
+Zero-dependency Node.js service with OpenRouter free reasoning as the default.
+Chat and the daily saint feature both start with `liquid/lfm-2.5-2.6b:free`,
+then try stronger free reasoning backups and configured Groq. Legacy Bedrock
+remains available without Groq. Credentials and reasoning traces stay server-side.
+
+The biography targets 240–320 words; the Augustine connection targets 90–140.
+Both are generated together from the complete biography and a reviewed passage
+from Augustine, then validated and cached by date, saint, and source fingerprint.
+Concurrent requests share the same generation. Short sources are not padded.
+Responses expose `summaryModel`, `summaryProvider`, `summarySource`, and reviewed
+`connectionReferences`; source fallbacks never claim to be AI-generated.
+
+Liquid's free endpoint may retain prompts/outputs for training, as stated on its
+[OpenRouter model card](https://openrouter.ai/liquid/lfm-2.5-2.6b:free). Do not send
+sensitive information. It is a small model with limited knowledge-heavy ability;
+daily content is grounded in supplied sources, not unsupported recollection.
 
 ## Run
 
@@ -19,7 +31,8 @@ npm test
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `PORT` | `3000` | HTTP listen port. |
-| `GROQ_API_KEY` | — | Groq API key. Set it in Render's secret environment settings; when present, Groq becomes the primary provider. |
+| `PRIMARY_PROVIDER` | `openrouter` | Default provider when configured. `groq` and `bedrock` are explicit legacy overrides. |
+| `GROQ_API_KEY` | — | Server-side key for the configured Groq fallback. |
 | `GROQ_MODEL_ID` | `openai/gpt-oss-120b` | Groq model ID. |
 | `GROQ_BASE_URL` | `https://api.groq.com/openai/v1` | Optional Groq-compatible API base URL. The server appends `/chat/completions`. |
 | `GROQ_TIMEOUT_MS` | `20000` | Max time waiting for Groq response headers before trying OpenRouter. |
@@ -30,7 +43,7 @@ npm test
 | `BEDROCK_BASE_URL` | `https://bedrock-mantle.<region>.api.aws/v1` | Optional Bedrock API base URL override. Nemotron 3 Super serves Chat Completions on Bedrock Mantle. The server appends `/chat/completions`. |
 | `BEDROCK_TIMEOUT_MS` | `20000` | Max time waiting for Bedrock response headers before trying OpenRouter. |
 | `BEDROCK_STREAM_START_TIMEOUT_MS` | `7000` | Max time waiting for the first Bedrock stream bytes before trying OpenRouter. |
-| `OPENROUTER_API_KEY` | — | OpenRouter fallback key. Required for failover. |
+| `OPENROUTER_API_KEY` | — | Server-side key for the default free reasoning model and free model fallbacks. |
 | `OPENROUTER_BASE_URL` | `https://openrouter.ai/api/v1` | Optional OpenRouter URL override, used by the self-contained backend checks. |
 | `SYSPROMPT_CACHE_MS` | `120000` | Cache duration for the model picker list. |
 
@@ -54,14 +67,13 @@ plan has provider-set quotas; all app users share the backend key's quota.
 1. The browser can choose the configured primary or nominate a preferred
    OpenRouter backup. The server accepts only these known IDs; callers cannot
    use this public endpoint to proxy arbitrary paid models.
-2. When `GROQ_API_KEY` is configured, chat and generated saint reflections use
-   the configured Groq model first. Groq's OpenAI-compatible Chat Completions
-   endpoint preserves the existing stream format and hides reasoning tokens.
-3. If Groq errors, times out, or returns an invalid stream before the app
-   starts streaming to the browser, the server tries the chosen OpenRouter
-   backup, then the remaining curated OpenRouter models.
-4. If Groq is not configured but a Bedrock key is, Bedrock remains the primary.
-   If neither primary key is configured, the backend continues with OpenRouter.
+2. OpenRouter starts with Liquid, or the explicitly selected curated free model.
+   Reasoning is enabled internally and excluded from the response. Routes have
+   a zero input/output price ceiling and prefer higher throughput.
+3. If the free models cannot answer, the configured Groq service is a fallback.
+   Chat and the daily saint feature use the same provider order and primary model.
+4. Without OpenRouter, Groq is used when available, otherwise legacy Bedrock.
+   `PRIMARY_PROVIDER=groq` or `bedrock` explicitly opts into the earlier ordering.
 
 The OpenRouter model list is cached and used for backup choices. If OpenRouter
 is temporarily unable to list models while Groq or Bedrock is configured,

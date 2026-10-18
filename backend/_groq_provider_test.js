@@ -72,6 +72,7 @@ const openrouter = http.createServer(async (req, res) => {
     const openRouterPort = openrouter.address().port;
     const backendPort = await freePort();
     process.env.PORT = String(backendPort);
+    process.env.PRIMARY_PROVIDER = "groq"; // explicit legacy configuration; default is now OpenRouter
     process.env.GROQ_API_KEY = "test-only";
     process.env.GROQ_BASE_URL = "http://127.0.0.1:" + groqPort + "/v1";
     process.env.OPENROUTER_API_KEY = "test-only";
