@@ -22,7 +22,11 @@ it does not depend on the model inventing a historical connection from memory.
 
 The reasoning config is `{ enabled: true, exclude: true }`. A zero price ceiling
 and `:free` IDs prevent routing a free-model request to a paid variant. A 4,096
-token generation budget leaves room for private reasoning as well as the answer.
+token minimum leaves room for private reasoning as well as the answer. The joint
+saint feature uses 8,192 tokens: the live 4,096-token run exhausted its budget
+before finishing JSON. Supported fallback controls use low effort for Inkling
+and a 1,024-token private budget for Nemotron 3 Super. Inkling's free endpoint
+returned 403 during deployment checks, so it is not treated as confirmed usable.
 Quick/Thoughtful/Contemplative still control the visible answer through prompts.
 
 The saint biography (240–320 target words) and Augustine connection (90–140)

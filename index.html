@@ -4269,6 +4269,8 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
   /* Friendly short labels for the composer pill — hide the parameter/vendor noise
        that reads as backend jargon. Falls back to the full backend name. */
     const FRIENDLY = {
+      "liquid/lfm-2.5-2.6b:free": "Liquid LFM2.5 · Reasoning",
+      "thinkingmachines/inkling-small:free": "Inkling Small · Reasoning",
       "nvidia/nemotron-3-ultra-550b-a55b:free": "Nemotron 3 Ultra",
       "nvidia/nemotron-3-super-120b-a12b:free": "Nemotron 3 Super",
       "z-ai/glm-5.2:free": "GLM 5.2",
@@ -4276,7 +4278,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       "google/gemma-4-26b-a4b-it:free": "Gemma 4",
       "minimax/minimax-m3:free": "MiniMax M3",
     };
-    function shortName(m){ return m.primary ? (m.provider==="groq" ? "Groq · Primary" : "Bedrock · Primary") : (FRIENDLY[m.id] || (m.name || m.id || "Model")); }
+    function shortName(m){ return m.primary && m.provider!=="openrouter" ? (m.provider==="groq" ? "Groq · Primary" : "Bedrock · Primary") : (FRIENDLY[m.id] || (m.name || m.id || "Model")); }
     function selectModel(m){
       model=m;
       modelVal.textContent=shortName(m);
