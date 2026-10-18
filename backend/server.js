@@ -1099,7 +1099,7 @@ function isSaintSummaryOutput(text) {
     /\b(?:here(?:'s| is) (?:my|the) (?:analysis|reasoning|plan)|analysis:|reasoning:|summary plan:)\b/i,
     /^\s*(?:[-*•]|\d+[.)])\s/m,
   ];
-  return words >= 80 && sentences.length >= 3 && sentences.length <= 12 &&
+  return words >= 80 && sentences.length >= 3 &&
     !planningPatterns.some((pattern) => pattern.test(value));
 }
 function saintSentences(text) {
@@ -1173,11 +1173,11 @@ const saintProfilePending = new Map();
 function parseSaintProfile(text, context, fullStory, name, diagnostics = {}) {
   try {
     const value = JSON.parse(text);
-    const bio = typeof value.bio === "string" ? value.bio.trim() : "";
-    const conn = typeof value.connection === "string" ? value.connection.trim() : "";
+    const bio = typeof value.bio === "string" ? value.bio.replace(/\*\*([^*]+)\*\*/g, "$1").trim() : "";
+    const conn = typeof value.connection === "string" ? value.connection.replace(/\*\*([^*]+)\*\*/g, "$1").trim() : "";
     const words = text => text.split(/\s+/).filter(Boolean).length;
     const minBio = words(fullStory) < 140 ? 80 : 220;
-    Object.assign(diagnostics, { bioWords: words(bio), connectionWords: words(conn), summaryValid: isSaintSummaryOutput(bio), connectionValid: isSaintConnectionOutput(conn, name, fullStory), referenceValid: value.referenceId === context.id });
+    Object.assign(diagnostics, { bioWords: words(bio), biographySentences: saintSentences(bio).length, connectionWords: words(conn), summaryValid: isSaintSummaryOutput(bio), connectionValid: isSaintConnectionOutput(conn, name, fullStory), referenceValid: value.referenceId === context.id });
     if (words(bio) < minBio || words(bio) > 340 || words(conn) < 80 || words(conn) > 150 ||
         !isSaintSummaryOutput(bio) || !isSaintConnectionOutput(conn, name, fullStory) || value.referenceId !== context.id) return null;
     return { bio, conn };
