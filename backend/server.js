@@ -1128,7 +1128,7 @@ function isSaintConnectionOutput(text, name, bio) {
   ];
   const directLinkClaim = /\b(?:met|friendship|correspondence|letters?|wrote to|written to|exchanged letters|sought.{0,35}(?:counsel|help|advice))\b/i;
   const sourceDocumentsLink = saintSentences(bio).some((sentence) => /\bAugustine\b/i.test(sentence) && directLinkClaim.test(sentence));
-  return words >= 30 && words <= 160 && sentences.length >= 2 && sentences.length <= 6 &&
+  return words >= 30 && words <= 160 && sentences.length >= 2 &&
     !/\b(?:I'm|I've|my|we|our|you|your)\b/i.test(value) && !/\bI\s+(?:am|have|think|believe|will|would|want|see)\b/.test(value) &&
     namesSaint && sourceMatches.size >= 2 &&
     (sourceDocumentsLink || /\bjerome\b/i.test(name) || !directLinkClaim.test(value)) &&
@@ -1177,7 +1177,7 @@ function parseSaintProfile(text, context, fullStory, name, diagnostics = {}) {
     const conn = typeof value.connection === "string" ? value.connection.replace(/\*\*([^*]+)\*\*/g, "$1").trim() : "";
     const words = text => text.split(/\s+/).filter(Boolean).length;
     const minBio = words(fullStory) < 140 ? 80 : 220;
-    Object.assign(diagnostics, { bioWords: words(bio), biographySentences: saintSentences(bio).length, connectionWords: words(conn), summaryValid: isSaintSummaryOutput(bio), connectionValid: isSaintConnectionOutput(conn, name, fullStory), referenceValid: value.referenceId === context.id });
+    Object.assign(diagnostics, { bioWords: words(bio), biographySentences: saintSentences(bio).length, connectionWords: words(conn), connectionSentences: saintSentences(conn).length, summaryValid: isSaintSummaryOutput(bio), connectionValid: isSaintConnectionOutput(conn, name, fullStory), referenceValid: value.referenceId === context.id });
     if (words(bio) < minBio || words(bio) > 340 || words(conn) < 80 || words(conn) > 150 ||
         !isSaintSummaryOutput(bio) || !isSaintConnectionOutput(conn, name, fullStory) || value.referenceId !== context.id) return null;
     return { bio, conn };
