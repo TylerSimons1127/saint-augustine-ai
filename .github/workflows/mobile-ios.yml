@@ -1,0 +1,143 @@
+name: Expo iOS app
+on:
+  push:
+    branches: [mobile/expo-ios, mobile/expo-ios-launchfix]
+    paths: ["apps/mobile/**", ".github/workflows/mobile-ios.yml", ".github/scripts/verify-ios-screenshot.swift", "lessons.js", "lesson-sources.js"]
+  pull_request:
+    paths: ["apps/mobile/**", ".github/workflows/mobile-ios.yml", ".github/scripts/verify-ios-screenshot.swift", "lessons.js", "lesson-sources.js"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-ios-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run sync:content
+      - run: npx expo-doctor
+      - run: npm run export:web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saint-augustine-mobile-web
+          path: apps/mobile/dist
+  ios-simulator:
+    if: github.event_name != 'push'
+    runs-on: macos-26
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: apps/mobile
+    env:
+      APP_ENV: production
+      EXPO_PUBLIC_API_BASE_URL: https://saint-augustine-ai-backend.onrender.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run sync:content
+      - name: Generate iOS project
+        run: npx expo prebuild --platform ios --no-install
+      - name: Install native dependencies
+        run: pod install --project-directory=ios
+      - name: Build a self-contained simulator app
+        shell: bash
+        run: |
+          set -euo pipefail
+          PROJECT="$(find ios -maxdepth 1 -name '*.xcodeproj' -print -quit)"
+          SCHEME="$(basename "$PROJECT" .xcodeproj)"
+          xcodebuild -workspace "ios/${SCHEME}.xcworkspace" -scheme "$SCHEME" \
+            -configuration Release -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/sa-native" CODE_SIGNING_ALLOWED=NO \
+            ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES \
+            build > "$RUNNER_TEMP/sa-native-build.log" 2>&1 || { tail -160 "$RUNNER_TEMP/sa-native-build.log"; exit 1; }
+      - name: Launch and verify the default WebView on iPhone and iPad
+        shell: bash
+        run: |
+          set -euo pipefail
+          SIM_DEVICE_JSON="$(xcrun simctl list devices available --json)"
+          # The default route is the deployed website in a WebView. Capture its
+          # first-run screen as a smoke check, not as an App Store screenshot.
+          IPHONE_UDID="$(python3 -c 'import json,re,sys; ds=[d for group in json.load(sys.stdin)["devices"].values() for d in group if d.get("isAvailable")]; valid=[d for d in ds if re.search(r"iPhone-17-Pro-Max(?:-|$)",d.get("deviceTypeIdentifier",""))]; print(valid[0]["udid"] if valid else "")' <<< "$SIM_DEVICE_JSON")"
+          IPAD_UDID="$(python3 -c 'import json,sys; ds=[d for group in json.load(sys.stdin)["devices"].values() for d in group if d.get("isAvailable")]; valid=[d for d in ds if "iPad-Pro-13-inch" in d.get("deviceTypeIdentifier","")]; print(valid[0]["udid"] if valid else "")' <<< "$SIM_DEVICE_JSON")"
+          if [[ -z "$IPHONE_UDID" ]]; then
+            echo "No available iPhone 17 Pro Max simulator found."
+            exit 1
+          fi
+          if [[ -z "$IPAD_UDID" ]]; then
+            echo "No available 13-inch iPad Pro simulator found, but iPad support is enabled in app.json."
+            exit 1
+          fi
+          APP="$(find "$RUNNER_TEMP/sa-native/Build/Products/Release-iphonesimulator" -maxdepth 1 -name '*.app' -print -quit)"
+          SHOTS="$RUNNER_TEMP/sa-webview-smoke"
+          capture_on_device() {
+            local udid="$1"
+            local device="$2"
+            local screenshot="$SHOTS/$device.jpg"
+            xcrun simctl boot "$udid"
+            xcrun simctl bootstatus "$udid" -b
+            xcrun simctl ui "$udid" appearance light
+            if [[ "$device" == "iphone" ]]; then
+              xcrun simctl status_bar "$udid" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+            else
+              xcrun simctl status_bar "$udid" override --time "9:41" --wifiMode active --wifiBars 3 --batteryState charged --batteryLevel 100
+            fi
+            xcrun simctl install "$udid" "$APP"
+            xcrun simctl launch "$udid" com.tylersimons.saintaugustineai
+            sleep 15
+            mkdir -p "$SHOTS"
+            local png="$SHOTS/.$device.png"
+            local expected_dimensions="1320x2868"
+            if [[ "$device" != "iphone" ]]; then expected_dimensions="2064x2752"; fi
+            for attempt in {1..12}; do
+              xcrun simctl io "$udid" screenshot "$png"
+              sips -s format jpeg -s formatOptions 100 "$png" --out "$screenshot" >/dev/null
+              rm "$png"
+              local dimensions
+              dimensions="$(sips -g pixelWidth -g pixelHeight "$screenshot" | awk '/pixelWidth/{width=$2} /pixelHeight/{print width "x" $2}')"
+              if [[ "$dimensions" != "$expected_dimensions" ]]; then
+                echo "Unexpected $device screenshot size: $dimensions (expected $expected_dimensions)"
+                return 1
+              fi
+              if swift "$GITHUB_WORKSPACE/.github/scripts/verify-ios-screenshot.swift" "$screenshot" "Welcome to Saint Augustine AI"; then
+                break
+              fi
+              if [[ "$attempt" == 12 ]]; then
+                echo "The deployed website welcome screen did not appear on $device."
+                return 1
+              fi
+              sleep 2
+            done
+            xcrun simctl shutdown "$udid"
+          }
+          capture_on_device "$IPHONE_UDID" iphone
+          capture_on_device "$IPAD_UDID" ipad-13-inch
+          test "$(find "$SHOTS" -type f -name '*.jpg' | wc -l | tr -d ' ')" -eq 2
+          find "$SHOTS" -type f -name '*.jpg' -print
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: saint-augustine-ios-webview-smoke
+          path: |
+            ${{ runner.temp }}/sa-native/Build/Products/Release-iphonesimulator/*.app
+            ${{ runner.temp }}/sa-webview-smoke/*.jpg
+            ${{ runner.temp }}/sa-native-build.log
