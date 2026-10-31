@@ -41,12 +41,13 @@ export const fonts = {
   body: "Hanken",
   medium: "HankenMedium",
   bold: "HankenBold",
+  titleLight: "NewsreaderLight",
   title: "Newsreader",
 };
 export const atmospheres = {
   cloister: {
     name: "Cloister morning",
-    image: require("../assets/brand/bg_cloister-morning.jpg"),
+    image: require("../assets/brand/bg-default.jpg"),
   },
   coast: {
     name: "Coastal light",

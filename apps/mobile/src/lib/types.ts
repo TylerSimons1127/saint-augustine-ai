@@ -1,13 +1,14 @@
 export interface Lesson {
+  id: string;
   name: string;
   primaryQuote?: string;
   primaryQuoteSource?: string;
   primaryExcerpt?: string;
   primaryUrl: string;
+  additionalSources?: { label: string; url: string }[];
   topic: string;
   writing: string;
   writingNote: string;
-  quote?: string;
   excerpt: string[];
   vocab: string;
   summary: string;
@@ -34,6 +35,7 @@ export interface Conversation {
   created: string;
   updated: string;
   messages: Message[];
+  pinned?: boolean;
 }
 export interface Model {
   id: string;
@@ -53,6 +55,8 @@ export interface Readings {
 }
 export interface Saint {
   name: string;
+  date?: string;
+  excerpt?: string;
   summary?: string;
   bio?: string;
   description?: string;
@@ -61,6 +65,8 @@ export interface Saint {
   link?: string;
   url?: string;
   source?: string;
+  conn?: string;
+  connectionSource?: string;
   fetchedAt?: string;
 }
 export interface DailyCopy {
@@ -69,14 +75,15 @@ export interface DailyCopy {
   saint?: Saint;
 }
 export interface AppState {
-  version: 1;
+  version: 2;
   conversations: Conversation[];
   activeId: string | null;
   drafts: Record<string, string>;
   saved: Message[];
   notes: Record<string, string>;
-  completed: number[];
+  completed: string[];
   quiz: Record<string, { score: number; total: number; at: string }>;
+  streak: { count: number; last: string } | null;
   intentions: {
     id: string;
     text: string;
@@ -84,8 +91,10 @@ export interface AppState {
     answered: boolean;
   }[];
   prayerDraft: string;
+  prayerCarry: { title: string; text: string; source: string; citation: string } | null;
   daily: DailyCopy[];
   consent: boolean;
+  tourSeen: boolean;
   settings: {
     theme: "system" | "light" | "dark";
     size: "standard" | "large";
@@ -94,6 +103,8 @@ export interface AppState {
     model: string;
     reminder: boolean;
     reminderHour: number;
+    hideStreak: boolean;
+    pauseStreak: boolean;
   };
 }
 export const uid = () =>

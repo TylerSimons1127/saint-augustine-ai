@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { AccessibilityInfo, Platform, Pressable, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
   Button,
@@ -64,10 +64,14 @@ function LessonScreen({ id }: { id: string }) {
       ],
       drafts: { ...s.drafts, [cid]: text },
     }));
-    router.push("/chat");
+    router.push({ pathname: "/chat", params: { sendDraft: "1" } });
   }
   return (
-    <Screen title={lesson.name} eyebrow={`Lesson ${index + 1} of 32`} back>
+    <Screen
+      title={lesson.name}
+      eyebrow={`Lesson ${index + 1} of ${data.length}`}
+      back
+    >
       <T>{lesson.topic}</T>
       <Card>
         <T kind="label">
@@ -86,13 +90,24 @@ function LessonScreen({ id }: { id: string }) {
             : "Written for this study companion; not a direct quotation."}
         </T>
         <SourceLink
-          label={lesson.sourceCitation || lesson.writing}
+          label={
+            lesson.quoteKind === "editorial" && lesson.sourceLabel
+              ? `${lesson.sourceCitation || lesson.writing} · ${lesson.sourceLabel}`
+              : lesson.sourceCitation || lesson.writing
+          }
           url={lesson.primaryUrl}
         />
+        {lesson.additionalSources?.map((source) => (
+          <SourceLink
+            key={source.url}
+            label={source.label}
+            url={source.url}
+          />
+        ))}
       </Card>
       {!quiz ? (
         <>
-          {lesson.primaryExcerpt && lesson.quoteKind === "direct" && (
+          {Boolean(lesson.primaryExcerpt) && lesson.quoteKind === "direct" && (
             <Card>
               <T kind="label">READ THE PASSAGE</T>
               <T selectable>{lesson.primaryExcerpt}</T>
@@ -123,12 +138,20 @@ function LessonScreen({ id }: { id: string }) {
               accessibilityLabel="Your lesson notes"
               placeholder="What do you want to carry with you?"
               multiline
-              value={state.notes[id] || ""}
+              maxLength={30_000}
+              value={state.notes[lesson.id] || ""}
               onChangeText={(text) =>
-                update((s) => ({ ...s, notes: { ...s.notes, [id]: text } }))
+                update((s) => ({
+                  ...s,
+                  notes: { ...s.notes, [lesson.id]: text },
+                }))
               }
               style={{ minHeight: 120 }}
             />
+            <T kind="caption">
+              {(state.notes[lesson.id] || "").length.toLocaleString()} / 30,000
+              characters
+            </T>
             <Button
               label="Discuss this lesson"
               icon="message-circle"
@@ -142,17 +165,18 @@ function LessonScreen({ id }: { id: string }) {
           <Button
             primary
             label={
-              state.completed.includes(index)
+              state.completed.includes(lesson.id)
                 ? "Lesson marked as read"
                 : "Mark lesson as read"
             }
             icon="check"
+            disabled={state.completed.includes(lesson.id)}
             onPress={() =>
               update((s) => ({
                 ...s,
-                completed: s.completed.includes(index)
+                completed: s.completed.includes(lesson.id)
                   ? s.completed
-                  : [...s.completed, index],
+                  : [...s.completed, lesson.id],
               }))
             }
           />
@@ -178,26 +202,41 @@ function LessonScreen({ id }: { id: string }) {
                 return (
                   <Pressable
                     accessibilityRole="radio"
+                    aria-checked={chosen}
                     accessibilityState={{ checked: chosen, disabled: done }}
-                    accessibilityLabel={option}
+                    accessibilityLabel={`${q.q}. ${option}`}
+                    accessibilityHint="Select this answer. Feedback will follow."
                     disabled={done}
                     key={j}
                     onPress={() => {
                       const next = { ...answers, [i]: j };
                       setAnswers(next);
-                      if (
-                        Object.keys(next).length === lesson.questions.length
-                      ) {
-                        const score = lesson.questions.reduce(
-                          (n, item, k) => n + (next[k] === item.ans ? 1 : 0),
-                          0,
+                      const answerCount = Object.keys(next).length;
+                      const scoreAfter = lesson.questions.reduce(
+                        (n, item, k) => n + (next[k] === item.ans ? 1 : 0),
+                        0,
+                      );
+                      if (Platform.OS === "ios") {
+                        const feedback =
+                          j === q.ans ? "Correct." : "Review this answer.";
+                        const announcement =
+                          answerCount === lesson.questions.length
+                            ? `${feedback} Review complete: ${scoreAfter} of ${lesson.questions.length}. Your result has been saved.`
+                            : `${feedback} ${answerCount} of ${lesson.questions.length} questions answered.`;
+                        AccessibilityInfo.announceForAccessibilityWithOptions(
+                          announcement,
+                          { queue: true },
                         );
+                      }
+                      if (
+                        answerCount === lesson.questions.length
+                      ) {
                         update((s) => ({
                           ...s,
                           quiz: {
                             ...s.quiz,
-                            [id]: {
-                              score,
+                            [lesson.id]: {
+                              score: scoreAfter,
                               total: lesson.questions.length,
                               at: new Date().toISOString(),
                             },

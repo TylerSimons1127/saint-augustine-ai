@@ -1,33 +1,28 @@
-# Saint Augustine AI for iOS
+# Saint Augustine AI iOS app
 
-An Expo shell that opens the canonical Saint Augustine AI reading room at `https://staugustineai.vercel.app/` in the iOS system web view. This uses the production website's actual HTML, CSS, images, onboarding, settings, and JavaScript, so the iPhone layout follows the live site instead of a second hand-built interface. The in-app experience needs an internet connection to load; the website's history and preferences stay in the app's private web-view storage and are separate from Safari.
+The app opens the deployed Saint Augustine AI browser app inside `react-native-webview`. The deployed website is the source of truth for the screens, wording, content, routes, settings, and behavior. This keeps the iOS presentation aligned with `https://staugustineai.vercel.app/` instead of maintaining another implementation of the same interface.
 
-## Develop on Windows
+The app adds native iOS and Android sharing for the website's Share actions and for its Blob-based `.txt`, `.md`, and `.json` exports. WebView download messages are accepted only from the configured website origin and are size-checked before being written to the cache and presented in the system share sheet.
+
+## Develop and preview on Windows
 
 Node 22.13+ and npm 10 are required. From this folder:
 
 ```powershell
 npm ci
 npm run typecheck
-npm run lint
 npm run preview:lan
 ```
 
-Install the matching Expo Go client on your phone, connect to the same Wi-Fi as this PC and scan Metro's QR code. The native app loads the same live reading room. `npm run web` provides a link to the canonical website.
+Install the Expo Go client matching SDK 57, connect the phone and PC to the same Wi-Fi, then scan the Expo CLI QR code. The Expo Go bundle loads the deployed website, so website changes appear in the app when Vercel deploys them. The device needs internet access. If the app cannot load the website, it shows a retry screen.
 
-The mobile wrapper uses the website's own assets and data. Make web changes in the repository root so the site and app stay visually aligned. AI and daily content need a connection.
+## App Store preparation
 
-## Implemented
+The WebView approach makes the product screens and website-side behavior the same by loading the same deployed app. It also means the iOS app depends on that website being available and current. Do not describe local native offline content as part of this entry route.
 
-Chat, Study, Pray, Today and their settings, local history, sharing, reading, and backup actions come directly from the website frontend. Provider keys remain on the backend.
+Apple's Guideline 4.2 says App Store apps should offer value beyond a repackaged website. A WebView-only product carries review risk. The native share and export integrations preserve existing actions; they do not guarantee App Review approval. Review the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) and test the actual submitted binary on iPhone and iPad.
 
-## App Store review note
-
-This implementation prioritizes exact parity by displaying the existing web app. Apple says apps should provide features, content, and UI beyond a repackaged website ([App Review guideline 4.2](https://developer.apple.com/app-store/review/guidelines/)). Treat this build as a parity preview, not an App Store submission candidate: add and verify useful iOS-specific capabilities and confirm the complete experience meets Apple's review guidelines before distribution. The live website is downloaded at runtime, so an App Store candidate should use a pinned, reviewable web release or a packaged frontend snapshot and be re-reviewed for each material feature change.
-
-## Build iOS from Windows
-
-The `mobile-ios.yml` GitHub Actions workflow builds a self-contained release app for the iPhone Simulator on a hosted genuine Mac, launches it and saves an app artifact and screenshot. Simulator builds do not need Apple signing. That `.app` cannot run on a physical iPhone or Windows.
+The `mobile-ios.yml` workflow builds an iOS Simulator app on a hosted Mac. Its screenshot steps still deep-link into legacy React Native screens; those images do not verify the default WebView experience and must be updated before using them as App Store screenshots. Simulator builds do not need Apple signing and cannot run on a physical iPhone.
 
 For signed builds, sign in yourself:
 
@@ -38,20 +33,21 @@ npx eas-cli@latest build:configure
 npm run build:ios
 ```
 
-Bundle ID: `com.tylersimons.saintaugustineai`; Apple must confirm it is available to your team. `eas.json` contains development, simulator, preview and production profiles. EAS manages signing through its secure flow. Keep Apple passwords, certificates and private keys out of chat and Git.
+Bundle ID: `com.tylersimons.saintaugustineai`; Apple must confirm it is available to your team. EAS manages signing through its secure flow. Keep Apple passwords, certificates, and private keys out of chat and Git.
 
-`npm run submit:ios` uploads a signed build to App Store Connect. It does not submit for public App Review. Owner enrollment, agreements, identity verification, store record, privacy declarations and final approval need the owner.
+`npm run submit:ios` uploads a signed build to App Store Connect; it does not submit for public App Review. Enrollment, agreements, identity verification, store metadata, privacy declarations, and final approval remain owner actions.
 
 ## Verification
 
 ```powershell
 npm run typecheck
 npm run lint
+npm test
 npx expo-doctor
-npm run export:web
-npm run export:ios
 ```
 
-See [release gates](docs/RELEASE.md). Routes live in `src/app`, shared views in `src/components`, service/persistence boundaries in `src/lib`, content in `src/data` and tokens in `src/theme.ts`. Native state uses Expo SQLite key-value storage; web previews use localStorage. Backup schema version 1 validates imports and never enables AI sharing or reminders automatically.
+Test the production website in a 390 px and 430 px mobile viewport. On device, verify initial consent/onboarding, all four tabs, Chat streaming and keyboard behavior, Study lessons and quizzes, Prayer flows, Today readings, settings, local data, import, native sharing/export, back/forward navigation, external links, and VoiceOver. Inspect whether App Review screenshots and website content have loaded fully before capture.
 
-Official sources: [Expo Router](https://docs.expo.dev/router/introduction/), [SDK 57 streaming fetch](https://docs.expo.dev/versions/v57.0.0/sdk/expo/), [SQLite](https://docs.expo.dev/versions/v57.0.0/sdk/sqlite/), [notifications](https://docs.expo.dev/versions/v57.0.0/sdk/notifications/), [FileSystem](https://docs.expo.dev/versions/v57.0.0/sdk/filesystem/), [EAS builds](https://docs.expo.dev/build/introduction/).
+The previous React Native tab screens and bundled content under `src/app/(tabs)` and `src/data` remain as legacy project work. The default app route is the WebView in `src/app/index.tsx`; the legacy screens are not a parity substitute for the deployed website.
+
+Official sources: [Expo Router](https://docs.expo.dev/router/introduction/), [React Native WebView](https://github.com/react-native-webview/react-native-webview), [EAS Build](https://docs.expo.dev/build/introduction/).

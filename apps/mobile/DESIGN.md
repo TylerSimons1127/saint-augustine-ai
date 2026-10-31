@@ -1,18 +1,17 @@
-# Saint Augustine mobile reference lock
+# Saint Augustine AI iOS parity lock
 
-The existing Saint Augustine AI reading room is the build target. Preserve its mountain atmosphere, paper reading surfaces, Newsreader headings, Hanken Grotesk controls, navy primary actions and peach selected states. Its four established destinations remain Chat, Study, Pray and Today. Today is the mobile landing page; it offers a quiet daily anchor and a clear path back into study.
+The deployed browser app at `https://staugustineai.vercel.app/` is the canonical product. The default iOS route loads that same app in a full-screen WebView. Its mobile layout, color themes, typography, copy, content, routes, overlays, and interaction states come from the website itself. Keep the iOS host visually quiet so it does not introduce a second header, tab bar, theme, or navigation model.
 
-The existing repository DESIGN.md documents Readwise Reader for focused reading, Hallow for approachable prayer entry, and Linear for predictable controls. Refero live research returned NO_SUBSCRIPTION on 2026-10-14; its bundled craft guidance supplies touch targets, input labels, readable content, explicit loading/error states and a consistent token system.
-
-| Decision | Source and role | Implementation |
+| Surface | Source of truth | iOS behavior |
 |---|---|---|
-| Landscape is atmosphere, never behind long prose | Existing app/DESIGN.md | One full-screen photographic background, opaque paper for sustained reading |
-| Heading and reading typography | Existing brand | Newsreader for titles and quotations; Hanken Grotesk for controls and explanations |
-| Four persistent destinations | Existing app | Expo Router tabs; nested reading/settings views use a stack |
-| Native controls and 44px minimum touch targets | Refero craft-details; iOS constraint | Accessible labels, selected states, system share and file picker |
-| Source fidelity | lesson-sources.js | Direct quotation label only for the entries explicitly marked direct; editorial text stays labelled |
-| Quiet motion | Existing reduced-motion rules | No ambient animation; native navigation and immediate press feedback |
+| Chat, Study, Pray, Today, settings, and overlays | Deployed website | Rendered directly in the WebView |
+| Layout, typography, scenery, and responsive behavior | Website CSS and assets | Use website viewport and safe-area rules |
+| State, consent, content, and web routes | Website JavaScript and same-origin storage | Use the site's normal browser-app behavior |
+| Share actions and Blob exports | Website-generated share data and files | Passed to native Share and Save interfaces |
+| Loading and site connection failure | iOS host | Neutral loading surface, followed by a retry state only on failure |
 
-Token source: src/theme.ts. Light paper #fffdf9, canvas #f6f2eb, ink #263047, muted #657083, navy #26344c, peach #d9c4a9. Dark paper #192435, canvas #101925, ink #f6f2eb, muted #b4becc. Radius 8/14/22, spacing 4/8/12/16/24/32/48. All UI uses named token roles.
+The native wrapper must not duplicate or restyle a website screen. When the website changes, inspect the deployed mobile site and the WebView on a device before adjusting host code. Preserve the website origin when handling bridge messages; accept only the configured HTTPS origin and validate message type and payload before invoking native APIs.
 
-QA must inspect mobile Today, streaming Chat, all lesson reading and quiz states, Prayer and Settings at 390px and 430px, plus dark mode and large type. Browser evidence proves the shared React Native web rendering only; it cannot prove iPhone keyboard, VoiceOver, safe-area physics or native notification behavior.
+The earlier independently implemented React Native screens remain in the repository as legacy work. Their design tokens and layout are not the reference for the default iOS app.
+
+QA compares the production website and the app at the same iPhone viewport, theme, and onboarding state. Check scroll and safe areas, keyboard resizing, VoiceOver, file selection, import/export, native share, route history, external links, and network failure/retry. Browser-only checks do not prove iOS WebView behavior. Capture final App Store screenshots from the default WebView route on actual iPhone and iPad simulator builds after confirming the live content is ready.

@@ -46,7 +46,7 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
-    "doctor": "expo-doctor",
+    "doctor": "npx expo-doctor",
     "sync:content": "node scripts/sync-content.mjs",
     "export:web": "expo export --platform web",
     "export:ios": "expo export --platform ios --output-dir dist-ios",
@@ -59,6 +59,10 @@
   },
   "private": true,
   "packageManager": "npm@10.9.8",
+  "overrides": {
+    "decode-uri-component": "0.5.0",
+    "uuid": "11.1.1"
+  },
   "engines": {
     "node": ">=22.13.0 <25"
   }

@@ -12,6 +12,7 @@ export default function Glossary() {
   return (
     <Screen title="Words worth keeping." eyebrow="Glossary" back>
       <Input
+        accessibilityRole="search"
         accessibilityLabel="Search the glossary"
         placeholder="Search a word…"
         value={q}

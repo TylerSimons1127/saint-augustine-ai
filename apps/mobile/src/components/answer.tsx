@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Text, View } from "react-native";
 import { T, openLink, useTheme } from "./ui";
 import { fonts } from "../theme";
@@ -30,7 +31,7 @@ function Inline({ text }: { text: string }) {
     </>
   );
 }
-export function Answer({ text }: { text: string }) {
+export const Answer = memo(function Answer({ text }: { text: string }) {
   return (
     <View style={{ gap: 13 }}>
       {text.split(/\n{2,}/).map((part, i) => {
@@ -43,4 +44,4 @@ export function Answer({ text }: { text: string }) {
       })}
     </View>
   );
-}
+});

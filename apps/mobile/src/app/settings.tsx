@@ -1,5 +1,13 @@
-import { useEffect, useState } from "react";
-import { Image, Platform, Pressable, Switch, View } from "react-native";
+import { type ComponentProps, useEffect, useState } from "react";
+import {
+  AppState as NativeAppState,
+  Image,
+  Linking,
+  Platform,
+  Pressable,
+  Switch,
+  View,
+} from "react-native";
 import { router } from "expo-router";
 import {
   Button,
@@ -13,10 +21,19 @@ import {
 } from "../components/ui";
 import { initial, useApp, validateBackup } from "../lib/state";
 import { storage } from "../lib/storage";
-import { exportFile, importFile, setDailyReminder } from "../lib/native";
-import { getModels, health, API_BASE } from "../lib/api";
+import {
+  exportFile,
+  hasDailyReminderPermission,
+  importFile,
+  ReminderPermissionError,
+  setDailyReminder,
+} from "../lib/native";
+import { assertBackupSize } from "../lib/backup-size";
+import { getModels, health } from "../lib/api";
 import { AppState, Model, localDate } from "../lib/types";
+import { withAiConsent } from "../lib/with-ai-consent";
 import { atmospheres } from "../theme";
+import lessonsData from "../data/lessons.json";
 function Choices({
   values,
   current,
@@ -33,12 +50,66 @@ function Choices({
           key={v.value}
           label={v.label}
           primary={v.value === current}
+          selected={v.value === current}
           onPress={() => choose(v.value)}
         />
       ))}
     </Row>
   );
 }
+
+type RadioKeyEvent = {
+  nativeEvent: { key: string };
+  currentTarget: unknown;
+  preventDefault: () => void;
+};
+
+function radioKeyDownProps(
+  onKeyDown: (event: RadioKeyEvent) => void,
+): ComponentProps<typeof Pressable> {
+  return { onKeyDown } as unknown as ComponentProps<typeof Pressable>;
+}
+
+function handleRadioKeyDown(
+  event: RadioKeyEvent,
+  index: number,
+  count: number,
+  select: (index: number) => void,
+) {
+  const { key } = event.nativeEvent;
+  if (key === " " || key === "Spacebar") {
+    event.preventDefault();
+    select(index);
+    return;
+  }
+  if (count < 1) return;
+  if (key === "Home" || key === "End") {
+    event.preventDefault();
+    select(key === "Home" ? 0 : count - 1);
+    const current = event.currentTarget as unknown as HTMLElement;
+    current.parentElement
+      ?.querySelectorAll<HTMLElement>('[role="radio"]')
+      .item(key === "Home" ? 0 : count - 1)
+      ?.focus();
+    return;
+  }
+  const delta =
+    key === "ArrowRight" || key === "ArrowDown"
+      ? 1
+      : key === "ArrowLeft" || key === "ArrowUp"
+        ? -1
+        : 0;
+  if (!delta) return;
+  event.preventDefault();
+  const next = (index + delta + count) % count;
+  select(next);
+  const current = event.currentTarget as unknown as HTMLElement;
+  current.parentElement
+    ?.querySelectorAll<HTMLElement>('[role="radio"]')
+    .item(next)
+    ?.focus();
+}
+
 export default function Settings() {
   const { state, update, storageError, setStorageError } = useApp();
   const { c } = useTheme();
@@ -46,22 +117,70 @@ export default function Settings() {
     [provider, setProvider] = useState("Checking service…"),
     [notice, setNotice] = useState(""),
     [pending, setPending] = useState(false),
+    [reminderPermission, setReminderPermission] = useState<boolean | null>(null),
     [confirm, setConfirm] = useState(false),
     [imported, setImported] = useState<AppState | null>(null);
   const set = (value: Partial<AppState["settings"]>) =>
     update((s) => ({ ...s, settings: { ...s.settings, ...value } }));
   useEffect(() => {
     const controller = new AbortController();
-    Promise.all([getModels(controller.signal), health(controller.signal)])
-      .then(([m, h]) => {
-        setModels(m);
-        setProvider(h.provider);
+    withAiConsent(state.consent, controller.signal, async (signal) => {
+      const [models, service] = await Promise.all([
+        getModels(signal),
+        health(signal),
+      ]);
+      return { models, provider: service.provider };
+    })
+      .then((result) => {
+        if (!result) return;
+        if (!controller.signal.aborted) {
+          setModels(result.models);
+          setProvider(result.provider);
+        }
       })
-      .catch(() =>
-        setProvider("Service unavailable · your offline library still works"),
-      );
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setProvider("Service unavailable · your offline library still works");
+      });
     return () => controller.abort();
-  }, []);
+  }, [state.consent]);
+  useEffect(() => {
+    if (Platform.OS === "web") return;
+    let active = true;
+    const refresh = () => {
+      void hasDailyReminderPermission()
+        .then((allowed) => {
+          if (!active) return;
+          setReminderPermission(allowed);
+          // A reminder request can be saved while permission is off. If the
+          // user enables notifications in system Settings, finish scheduling
+          // it the next time the app becomes active.
+          if (allowed && state.settings.reminder) {
+            void setDailyReminder(true, state.settings.reminderHour).catch(
+              (error) => {
+                if (active)
+                  setNotice(
+                    error instanceof Error
+                      ? error.message
+                      : "The reminder could not be scheduled.",
+                  );
+              },
+            );
+          }
+        })
+        .catch(() => {
+          if (active) setReminderPermission(null);
+        });
+    };
+    refresh();
+    const subscription = NativeAppState.addEventListener("change", (status) => {
+      if (status === "active") refresh();
+    });
+    return () => {
+      active = false;
+      subscription.remove();
+    };
+  }, [state.settings.reminder, state.settings.reminderHour]);
   async function reminder(
     enabled: boolean,
     hour = state.settings.reminderHour,
@@ -70,26 +189,40 @@ export default function Settings() {
     try {
       await setDailyReminder(enabled, hour);
       set({ reminder: enabled, reminderHour: hour });
+      if (enabled) setReminderPermission(true);
       setNotice(
         enabled
           ? `Daily reflection reminder set for ${hour % 12 || 12}:00 ${hour < 12 ? "AM" : "PM"} on this device.`
           : "Daily reminder turned off.",
       );
     } catch (e) {
-      setNotice(
-        e instanceof Error ? e.message : "The reminder could not be changed.",
-      );
+      if (enabled && e instanceof ReminderPermissionError) {
+        // Keep the user's intent so Settings can recover and schedule it once
+        // notification access is restored.
+        set({ reminder: true, reminderHour: hour });
+        setReminderPermission(false);
+        setNotice("Your reminder is saved and waiting for notification access.");
+      } else {
+        setNotice(
+          e instanceof Error
+            ? e.message
+            : "The reminder could not be changed.",
+        );
+      }
     } finally {
       setPending(false);
     }
   }
   async function backup() {
     try {
-      await exportFile(
-        `saint-augustine-backup-${localDate()}.json`,
+      const content =
         storageError?.startsWith("Saved data could not be opened")
           ? (await storage.get()) || JSON.stringify(state, null, 2)
-          : JSON.stringify(state, null, 2),
+          : JSON.stringify(state, null, 2);
+      assertBackupSize(content);
+      await exportFile(
+        `saint-augustine-backup-${localDate()}.json`,
+        content,
       );
       setNotice("Backup prepared. Keep it somewhere private.");
     } catch (e) {
@@ -110,7 +243,7 @@ export default function Settings() {
   }
   return (
     <Screen title="Make room your way." eyebrow="Settings" back>
-      {notice && <Notice text={notice} />}
+      {notice ? <Notice text={notice} announce /> : null}
       <Card>
         <T kind="heading">Appearance</T>
         <T kind="label">COLOR</T>
@@ -135,35 +268,77 @@ export default function Settings() {
           choose={(size) => set({ size: size as AppState["settings"]["size"] })}
         />
         <T kind="label">ATMOSPHERE</T>
-        <Row style={{ flexWrap: "wrap" }}>
-          {Object.entries(atmospheres).map(([key, value]) => (
-            <Pressable
-              key={key}
-              accessibilityRole="radio"
-              accessibilityState={{
-                checked: state.settings.atmosphere === key,
-              }}
-              accessibilityLabel={value.name}
-              onPress={() =>
-                set({ atmosphere: key as AppState["settings"]["atmosphere"] })
-              }
-              style={{
-                width: "47%",
-                gap: 6,
-                padding: 5,
-                borderRadius: 10,
-                borderWidth: 2,
-                borderColor:
-                  state.settings.atmosphere === key ? c.primary : "transparent",
-              }}
-            >
-              <Image
-                source={value.image}
-                style={{ width: "100%", height: 78, borderRadius: 7 }}
-              />
-              <T kind="caption">{value.name}</T>
-            </Pressable>
-          ))}
+        <View
+          accessibilityLabel="Atmosphere"
+          accessibilityRole="radiogroup"
+        >
+          <Row style={{ flexWrap: "wrap" }}>
+            {Object.entries(atmospheres).map(([key, value], index, options) => {
+              const checked = state.settings.atmosphere === key;
+              return (
+                <Pressable
+                  key={key}
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked }}
+                  accessibilityLabel={value.name}
+                  aria-checked={checked}
+                  {...radioKeyDownProps((event) =>
+                    handleRadioKeyDown(event, index, options.length, (next) => {
+                      const [nextKey] = options[next];
+                      set({
+                        atmosphere:
+                          nextKey as AppState["settings"]["atmosphere"],
+                      });
+                    }),
+                  )}
+                  onPress={() =>
+                    set({ atmosphere: key as AppState["settings"]["atmosphere"] })
+                  }
+                  style={{
+                    width: "47%",
+                    gap: 6,
+                    padding: 5,
+                    borderRadius: 10,
+                    borderWidth: 2,
+                    borderColor: checked ? c.primary : "transparent",
+                  }}
+                >
+                  <Image
+                    source={value.image}
+                    style={{ width: "100%", height: 78, borderRadius: 7 }}
+                  />
+                  <T kind="caption">{value.name}</T>
+                </Pressable>
+              );
+            })}
+          </Row>
+        </View>
+      </Card>
+      <Card>
+        <T kind="heading">Streak &amp; progress</T>
+        <Row>
+          <View style={{ flex: 1 }}>
+            <T>Hide day streak</T>
+            <T kind="caption">Keep lesson and quiz totals visible.</T>
+          </View>
+          <Switch
+            accessibilityLabel="Hide day streak"
+            value={state.settings.hideStreak}
+            onValueChange={(hideStreak) => set({ hideStreak })}
+            trackColor={{ true: c.primary }}
+          />
+        </Row>
+        <Row>
+          <View style={{ flex: 1 }}>
+            <T>Pause streak counting</T>
+            <T kind="caption">Keep the current count without adding days.</T>
+          </View>
+          <Switch
+            accessibilityLabel="Pause streak counting"
+            value={state.settings.pauseStreak}
+            onValueChange={(pauseStreak) => set({ pauseStreak })}
+            trackColor={{ true: c.primary }}
+          />
         </Row>
       </Card>
       <Card>
@@ -198,6 +373,23 @@ export default function Settings() {
             }
           />
         )}
+        {state.settings.reminder && reminderPermission === false && (
+          <View style={{ gap: 8 }}>
+            <Notice
+              text="Notifications are turned off for this app in device Settings. Your reminder is saved, but it cannot appear until you re-enable notifications."
+              error
+            />
+            <Button
+              label="Open app settings"
+              icon="settings"
+              onPress={() =>
+                Linking.openSettings().catch(() =>
+                  setNotice("Device settings could not be opened."),
+                )
+              }
+            />
+          </View>
+        )}
       </Card>
       <Card>
         <T kind="heading">Conversation</T>
@@ -223,38 +415,48 @@ export default function Settings() {
         />
         <T kind="label">MODEL PREFERENCE</T>
         <T kind="caption">
-          Active service: {provider}. The backend controls primary and fallback
-          routing.
+          {state.consent
+            ? `Configured primary provider: ${provider}. The backend may use a fallback provider for a request.`
+            : "Enable AI chat to check the available models. No model check runs while AI chat is off."}
         </T>
-        {models.map((m) => (
-          <Pressable
-            accessibilityRole="radio"
-            accessibilityState={{
-              checked:
-                state.settings.model === m.id ||
-                (!state.settings.model && models[0] === m),
-            }}
-            accessibilityLabel={m.name}
-            key={m.id}
-            onPress={() => set({ model: m.id })}
-            style={{
-              padding: 12,
-              minHeight: 48,
-              borderWidth: 1,
-              borderRadius: 8,
-              borderColor:
-                state.settings.model === m.id ||
-                (!state.settings.model && models[0] === m)
-                  ? c.primary
-                  : c.line,
-              backgroundColor:
-                state.settings.model === m.id ? c.selected : c.paper,
-            }}
+        {state.consent && models.length > 0 && (
+          <View
+            accessibilityLabel="AI model preference"
+            accessibilityRole="radiogroup"
           >
-            <T>{m.name}</T>
-            {m.fallbackOnly && <T kind="caption">Backup preference</T>}
-          </Pressable>
-        ))}
+            {models.map((m, index) => {
+              const checked =
+                state.settings.model === m.id ||
+                (!state.settings.model && models[0] === m);
+              return (
+                <Pressable
+                  accessibilityRole="radio"
+                  accessibilityState={{ checked }}
+                  accessibilityLabel={m.name}
+                  aria-checked={checked}
+                  {...radioKeyDownProps((event) =>
+                    handleRadioKeyDown(event, index, models.length, (next) =>
+                      set({ model: models[next].id }),
+                    ),
+                  )}
+                  key={m.id}
+                  onPress={() => set({ model: m.id })}
+                  style={{
+                    padding: 12,
+                    minHeight: 48,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderColor: checked ? c.primary : c.line,
+                    backgroundColor: checked ? c.selected : c.paper,
+                  }}
+                >
+                  <T>{m.name}</T>
+                  {m.fallbackOnly && <T kind="caption">Backup preference</T>}
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
         <Button
           label="Conversation history"
           onPress={() => router.push("/history")}
@@ -284,7 +486,7 @@ export default function Settings() {
         {imported && (
           <View style={{ gap: 12 }}>
             <Notice
-              text={`This backup contains ${imported.conversations.length} conversations, ${imported.completed.length} completed lessons, and ${imported.intentions.length} intentions. Importing replaces this app’s local data. Export the current data first.`}
+              text={`This backup contains ${imported.conversations.length} conversations, ${lessonsData.filter((lesson) => imported.completed.includes(lesson.id)).length} completed lessons, and ${imported.intentions.length} intentions. Importing replaces this app’s local data. Export the current data first.`}
             />
             <Row>
               <Button label="Cancel import" onPress={() => setImported(null)} />
@@ -356,7 +558,6 @@ export default function Settings() {
           label="Privacy and AI"
           onPress={() => router.push("/privacy")}
         />
-        <T kind="caption">Service endpoint: {API_BASE}</T>
       </Card>
     </Screen>
   );

@@ -2,96 +2,101 @@
   {
     "name": "Angels",
     "primaryQuote": "In Him, therefore, they have, as it were, a noonday knowledge; in themselves, a twilight knowledge, according to our former explanations.",
-    "primaryQuoteSource": "St. Augustine, The City of God, XI.29",
+    "primaryQuoteSource": "St. Augustine, The City of God, XI.29 (NPNF1-02)",
     "primaryExcerpt": "Those holy angels come to the knowledge of God not by audible words, but by the presence to their souls of immutable truth, i.e., of the only-begotten Word of God; and they know this Word Himself, and the Father, and their Holy Spirit, and that this Trinity is indivisible, and that the three persons of it are one substance, and that there are not three Gods but one God; and this they so know that it is better understood by them than we are by ourselves.",
-    "primaryUrl": "https://www.newadvent.org/fathers/120111.htm",
+    "primaryUrl": "https://ccel.org/ccel/schaff/npnf102.iv.XI.29.html",
+    "additionalSources": [
+      {
+        "label": "St. Augustine, The City of God, XXII.29",
+        "url": "https://www.newadvent.org/fathers/120122.htm"
+      }
+    ],
     "relatedScripture": "Hebrews 1:14",
-    "relatedText": "Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?",
-    "topic": "Today we look upward into the unseen court of heaven — and learn the secret that sets the angels free to serve us.",
+    "relatedText": "The lesson connects angelic service with the salvation of God's people.",
+    "topic": "Today we follow Augustine's account of angelic knowledge: creatures are seen most clearly in the wisdom of their Creator.",
     "writing": "The City of God, XI.29",
     "writingNote": "Augustine describes holy angels’ knowledge of God and creation through divine wisdom",
-    "quote": "'Are they not all ministering spirits, sent forth to serve those who are to inherit salvation?' (Heb 1:14)",
     "excerpt": [
-      "Augustine taught that the angels are pure spirits — bodiless, intelligent beings created by God before the human race. They contemplate God face to face, and out of that contemplation they are sent to minister to us. Their greatness consists precisely in their nearness to God: the higher they stand before the throne, the more freely they descend to help the least of his children. They are not rivals to God but burning with love of him.",
-      "In The City of God, Augustine calls the unfallen angels the citizens of the heavenly city. They are that part of creation which never turned from God — the citizens who, being present to him, can never lose him. Forever praising him, they also rejoice in our redemption, watching the work of grace in souls below with a joy that surpasses the gladness of this world. Their ministry is one of perfect freedom born of perfect love.",
-      "Augustine is very plain that the angels are creatures. As beautiful as they are, they are not to be worshiped; honor and praise belong to God alone. Yet this in no way diminishes their closeness to us, for each believer, he says, has an angel who 'stands daily in the sight of the Father.' This is his Guardian Angel doctrine: one holy spirit is appointed to keep watch over each soul from baptism to the end of life.",
-      "What fuels this watchful ministry? The word Augustine uses is contemplation — the gaze of the mind and heart resting upon God, from which all true action flows. The angel does not run from task to task as we do, pulled by anxiety. Rather, each angel acts out of a single, uninterrupted beholding of God's face, and that beholding is the source and strength of everything it does for us.",
-      "This is why the angels teach us about prayer. If a purely spiritual being's whole power comes from contemplating God, how much more should we, who are flesh and blood, learn to rest our hearts upon him? To keep company with the angels is to keep company with hearts fixed on the Father. It is the school of contemplation — and the angels are our eldest brothers in it."
+      "Augustine describes the angels as created beings, distinct from their Creator. His focus in The City of God, XI.29, is how they know God and creation: not through audible words, but through immutable truth and divine wisdom.",
+      "Augustine places the holy angels among the citizens of the heavenly city: they remained faithful to God while other angels turned away. Their “noonday” knowledge is of God in immutable truth; their “twilight” knowledge is of themselves as creatures. They know creation more clearly in God's wisdom, the design in which it was made.",
+      "In The City of God, XXII.29, Augustine calls the holy angels “our angels” because we are being brought into Christ's kingdom and begin to share their city as fellow citizens. He also cites Jesus' words about the little ones' angels beholding the Father. Here he explains shared citizenship and the angels' vision of God; this passage does not say how an individual guardian angel is assigned or when that care begins.",
+      "This image offers a prayerful reflection rather than a description of each angel's tasks: the creature is known most truly in the wisdom of its Creator. We can ask for our own knowledge of the world and of ourselves to be turned toward God, the source of truth.",
+      "Augustine's account invites us to seek the truth of creation in God, rather than treating creatures as self-sufficient. Prayer can turn our attention toward the wisdom from which all created things receive their order."
     ],
     "vocab": "Contemplation — the gaze of the mind and heart resting upon God, from which all true action flows.",
     "summary": "In The City of God, XI.29, Augustine says the holy angels know God through immutable truth, not audible speech. They know created things in God’s wisdom and know themselves more truly in God than in themselves. Their understanding remains creaturely: they are made by God and distinct from their Creator.",
     "questions": [
       {
-        "q": "In The City of God, Augustine describes the angels as citizens of which city?",
+        "q": "In The City of God, XI.29, how do the angels know created things?",
         "opts": [
-          "The earthly city",
-          "The heavenly city",
-          "The city of man",
-          "The city of the saints"
+          "Only by observing each thing in itself",
+          "In God's wisdom, as in the art by which they were made",
+          "Through audible words",
+          "By their own unaided power"
         ],
         "ans": 1,
-        "note": "Augustine calls the unfallen angels citizens of the heavenly city, forever praising God."
+        "note": "Augustine says the angels know creation in God's wisdom, as in the art by which it was made."
       },
       {
-        "q": "Augustine insists the angels are creatures, and therefore they are to be:",
+        "q": "How does Augustine describe the angels' knowledge of God in XI.29?",
         "opts": [
-          "Worshiped as minor gods",
-          "Ignored in daily prayer",
-          "Honored as guardians but not worshiped",
-          "Feared as judges"
+          "As a presence of immutable truth",
+          "As an audible message",
+          "As knowledge learned from other creatures",
+          "As knowledge they possess by nature"
         ],
-        "ans": 2,
-        "note": "Angels are our constant guardians, yet creatures — never to be worshiped."
+        "ans": 0,
+        "note": "The angels know God through the presence of immutable truth, the Word of God."
       },
       {
-        "q": "What fuels the angels' ministry to the least of God's children?",
+        "q": "What does Augustine mean by the angels' “twilight” knowledge of themselves?",
         "opts": [
-          "God's direct command alone",
-          "Their contemplation of God",
-          "The prayers of saints",
-          "Their own power"
-        ],
-        "ans": 1,
-        "note": "The higher they stand before God in contemplation, the more freely they descend to help us."
-      },
-      {
-        "q": "Augustine says each believer has an angel who does what?",
-        "opts": [
-          "Records every sin",
-          "Stands daily in the sight of the Father",
-          "Carries prayers to heaven",
-          "Guards the body only"
+          "They know themselves more clearly in God than in themselves",
+          "They know themselves apart from God, less clearly than in God",
+          "They have no knowledge of themselves",
+          "They learn about themselves from human beings"
         ],
         "ans": 1,
-        "note": "Each believer has an angel who 'stands daily in the sight of the Father.'"
+        "note": "Augustine contrasts their clearer knowledge of themselves in God with their dimmer knowledge of themselves in themselves."
       },
       {
-        "q": "The word 'contemplation' in Augustine's thought means:",
+        "q": "Why does Augustine call the holy angels “our angels” in XXII.29?",
         "opts": [
-          "Reading scripture quickly",
-          "The gaze of the mind and heart resting upon God",
-          "Silent solitude only",
-          "Preaching to others"
+          "They are assigned one to each believer at baptism",
+          "We are beginning to belong with them to God's city",
+          "They receive prayers in place of God",
+          "They are created by the Church"
         ],
         "ans": 1,
-        "note": "Contemplation is the gaze of the mind and heart resting upon God, from which all true action flows."
+        "note": "Augustine explains that the angels are ours because we are their fellow citizens in the city of God."
+      },
+      {
+        "q": "What does Hebrews 1:14 call the angels?",
+        "opts": [
+          "Rulers of the heavenly city",
+          "Ministering spirits sent to serve",
+          "The source of immutable truth",
+          "Guardians assigned at baptism"
+        ],
+        "ans": 1,
+        "note": "Hebrews describes angels as ministering spirits sent to serve those who are to inherit salvation."
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, The City of God, XI.29",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, The City of God, XI.29 (NPNF1-02)",
+    "sourceLabel": "NPNF First Series, Vol. 2 · trans. Marcus Dods (1886 public-domain text)",
+    "translation": "NPNF First Series, Vol. 2 · trans. Marcus Dods (1886 public-domain text)",
+    "id": "angels"
   },
   {
     "name": "Original Sin",
     "primaryQuote": "But the flaw, which darkens and weakens all those natural goods, so that it has need of illumination and healing, it has not contracted from its blameless Creator — but from that original sin, which it committed by free will.",
-    "primaryQuoteSource": "St. Augustine, On Nature and Grace, ch. 3",
+    "primaryQuoteSource": "St. Augustine, On Nature and Grace, ch. 3 (NPNF1-05)",
     "primaryExcerpt": "Man's nature, indeed, was created at first faultless and without any sin; but that nature of man in which every one is born from Adam, now wants the Physician, because it is not sound. All good qualities, no doubt, which it still possesses in its make, life, senses, intellect, it has of the Most High God, its Creator and Maker. But the flaw, which darkens and weakens all those natural goods, so that it has need of illumination and healing, it has not contracted from its blameless Creator — but from that original sin, which it committed by free will.",
-    "primaryUrl": "https://www.newadvent.org/fathers/1503.htm",
+    "primaryUrl": "https://ccel.org/ccel/schaff/npnf105.xii.vii.html",
     "topic": "Today we name the wound we all inherit at birth — and the medicine that begins its healing in the font.",
     "writing": "On Nature and Grace",
     "writingNote": "Chapter 3 of Augustine’s reply to Pelagius: nature was created good, then wounded by sin",
-    "quote": "'For you are forgiven all your sins, and you are washed clean in the blood of the Lamb — yet even the infant is born with the contagion of old sin.'",
     "excerpt": [
       "Augustine came to see the human condition as the aftermath of a catastrophe. Through the first disobedience of our first parent, Adam, sin and death entered the human race, and the whole order of the inner life was thrown off balance. What had been easy — friendship with God — now cost an effort we do not naturally possess. We are born into a world where the wounds of that first fall are real, even before any personal sin of our own.",
       "Augustine insisted on a careful distinction: every person is born bearing the wound of original sin, but not the guilt of Adam's own act. We are not held responsible for what Adam did; rather, we inherit its consequence — a weakened will, darkened mind, and disordered desires. It is a condition, not a verdict. Because it is passed on by the natural order of human birth, nothing we do of ourselves can undo it. The very need for a Savior proves how real the wound is.",
@@ -104,7 +109,12 @@
     "questions": [
       {
         "q": "Against whom did Augustine defend the doctrine of original sin?",
-        "opts": ["Pelagius", "Arius", "Nestorius", "Marcion"],
+        "opts": [
+          "Pelagius",
+          "Arius",
+          "Nestorius",
+          "Marcion"
+        ],
         "ans": 0,
         "note": "Augustine defended original sin against Pelagius, who claimed man could avoid sin by his own power."
       },
@@ -132,7 +142,12 @@
       },
       {
         "q": "What remedy did Augustine insist upon even for infants?",
-        "opts": ["Waiting until adulthood", "Baptism", "Good works", "Penance"],
+        "opts": [
+          "Waiting until adulthood",
+          "Baptism",
+          "Good works",
+          "Penance"
+        ],
         "ans": 1,
         "note": "Baptism is the remedy, given even to infants, against the contagion of old sin."
       },
@@ -149,23 +164,29 @@
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, On Nature and Grace, ch. 3",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, On Nature and Grace, ch. 3 (NPNF1-05)",
+    "sourceLabel": "NPNF First Series, Vol. 5 · trans. Peter Holmes (public-domain text)",
+    "translation": "NPNF First Series, Vol. 5 · trans. Peter Holmes (public-domain text)",
+    "id": "original-sin"
   },
   {
     "name": "The Blessed Virgin Mary",
-    "primaryQuote": "It means more for Mary to have been a disciple of Christ than to have been the mother of Christ.",
-    "primaryQuoteSource": "St. Augustine, Sermon 72A, §7",
-    "primaryExcerpt": "Mary is holy, Mary is blessed, but the Church is something better than the Virgin Mary. Why? Because Mary is part of the Church, a holy member, a quite exceptional member, the supremely wonderful member, but still a member of the whole body. That being so, it follows that the body is something greater than the member. The Lord is the head, and the whole Christ is head and body.",
+    "primaryQuote": "Augustine presents Mary as blessed above all because she heard and kept Christ's word.",
+    "primaryQuoteSource": "Paraphrase of St. Augustine, Sermon 72A, §7",
+    "primaryExcerpt": "Augustine identifies Mary's blessedness with her discipleship: she heard Christ's word and did the Father's will. He places her within the Church as an exceptional member of Christ's body, while Christ is its head.",
     "primaryUrl": "https://www.vatican.va/spirit/documents/spirit_20001208_agostino_en.html",
-    "topic": "Today we come to her whom God prepared from the first moment of her existence to bear the Sinless One.",
+    "additionalSources": [
+      {
+        "label": "St. Augustine, On the Christian Combat, 22.24 (Eve and Mary)",
+        "url": "https://www.catholicculture.org/culture/library/most/getchap.cfm?ChapNum=21&WorkNum=9"
+      }
+    ],
+    "topic": "Today we see Mary as Augustine presents her in Sermon 72A: a faithful disciple and an exceptional member of Christ’s Church.",
     "writing": "Sermon 72A, §7",
     "writingNote": "Augustine calls Mary blessed as Christ’s disciple and a singular member of the Church, Christ’s Body",
-    "quote": "'Death through Eve, life through Mary' — for as the one by believing the serpent brought death, so the other by believing the angel brought life.",
     "excerpt": [
       "Augustine honored Mary above all women, but always as one of our race — not a goddess, but the creature God chose to be the gate through which redemption entered the world. He loved to contemplate her as the image of the whole Church: both virgin and mother, as she who conceived Christ in her heart before she conceived him in her body, and who heard and kept his words as no other ever has.",
-      "In her own person, Augustine saw the healing of the ancient wound. Where Eve had listened to the serpent and believed a lie, Mary listened to the angel and believed the truth. His famous line holds the whole contrast: 'Death through Eve, life through Mary' — for as the one, by believing the serpent, brought death upon the world, so the other, by believing the angel, brought the author of life. Where the mother of the human race undid us, the Mother of God began our mending.",
+      "Augustine contrasts Eve's disobedience with Mary's faithful response to the angel: Eve's choice brought death into human life, while Mary's acceptance became the occasion for Christ, the source of life. This is a comparison of responses, not a claim that Mary is divine.",
       "The title the Church gave her, sealed at the Council of Ephesus in 431, is Theotokos — a Greek word meaning God-bearer, the true Mother of God. It is not a title of flattery but of doctrine: because the Child she bore is God the Son incarnate, she who bore him truly is his Mother. In defending this title against Nestorius, the Church protected the truth that Jesus is one divine Person, and that Mary's fiat mattered utterly.",
       "Augustine found in her the pattern of every soul's path. It was not her power but her humility that made her great — the humility to say 'yes' to a plan she could not see, to hold the mystery in her heart without grasping at it. That humility, he teaches, is the path every soul must walk: the way of receptivity to God. What made Mary's fiat possible is open to each of us in every ordinary moment of obedience.",
       "Augustine found in Mary a model of hearing and keeping God's word. In Sermon 72A, §7, he praises her as Christ's disciple and an exceptional member of the Church; this passage does not address later Marian dogmas. Here the lesson stays with what Augustine actually says: Mary is blessed because she received the Word in faith and kept it."
@@ -174,15 +195,15 @@
     "summary": "In Sermon 72A, §7, Augustine reflects on Christ’s words about those who do the Father’s will. He calls Mary blessed not only because she bore Christ, but because she heard and kept God’s word as His disciple. He then places her within the Church as an exceptional member of Christ’s Body, whose head is Christ.",
     "questions": [
       {
-        "q": "Augustine's famous line about Mary and Eve reads:",
+        "q": "In On the Christian Combat, 22.24, what contrast does Augustine draw between Eve and Mary?",
         "opts": [
-          "'Grace through Mary, life through Christ'",
-          "'Death through Eve, life through Mary'",
-          "'Mary undoes what Eve destroyed'",
-          "'Blessed is the fruit of thy womb'"
+          "Both women reject God's word",
+          "Eve's disobedience brought death; Mary's faithful obedience prepared the way for Christ",
+          "Mary and Eve have identical roles",
+          "The passage concerns only later Marian titles"
         ],
         "ans": 1,
-        "note": "'Death through Eve, life through Mary' — Augustine saw Mary's obedience undoing Eve's disobedience."
+        "note": "Augustine contrasts Eve's disobedience with Mary's faithful response to the angel."
       },
       {
         "q": "Augustine honored Mary above all women as:",
@@ -229,23 +250,22 @@
         "note": "Her humility is the path every soul must walk — the way of receptivity to God."
       }
     ],
-    "quoteKind": "direct",
+    "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Sermon 72A, §7",
-    "sourceLabel": "Vatican.va · English rendering",
-    "translation": "Vatican.va · English rendering"
+    "sourceLabel": "Editorial paraphrase · source link",
+    "id": "the-blessed-virgin-mary"
   },
   {
     "name": "The Restless Heart",
-    "primaryQuote": "You have made us for Yourself, and our hearts are restless until they rest in You.",
-    "primaryQuoteSource": "St. Augustine, Confessions, I.1",
-    "primaryExcerpt": "Great are you, O Lord, and exceedingly worthy of praise; your power is immense, and your wisdom beyond reckoning. And so we men, who are a due part of your creation, long to praise you — we also carry our mortality about with us, carry the evidence of our sin and with it the proof that you thwart the proud. You arouse us so that praising you may bring us joy, because you have made us and drawn us to yourself, and our heart is restless until it rests in you.",
-    "primaryUrl": "https://www.newadvent.org/fathers/110101.htm",
+    "primaryQuote": "Thou hast formed us for Thyself, and our hearts are restless till they find rest in Thee.",
+    "primaryQuoteSource": "St. Augustine, Confessions, I.1 (NPNF1-01)",
+    "primaryExcerpt": "Great art Thou, O Lord, and greatly to be praised; great is Thy power, and of Thy wisdom there is no end. And man, being a part of Thy creation, desires to praise Thee, man, who bears about with him his mortality, the witness of his sin, even the witness that Thou “resistest the proud,”—yet man, this part of Thy creation, desires to praise Thee. Thou movest us to delight in praising Thee; for Thou hast formed us for Thyself, and our hearts are restless till they find rest in Thee. Lord, teach me to know and understand which of these should be first, to call on Thee, or to praise Thee; and likewise to know Thee, or to call upon Thee.",
+    "primaryUrl": "https://ccel.org/ccel/schaff/npnf101.vi.I_1.I.html",
     "topic": "Today we search our own hearts and find the hunger that no earthly plenty can satisfy.",
     "writing": "Confessions, Book I",
     "writingNote": "the opening prayer of his autobiography of the soul's long wandering and capture by grace",
-    "quote": "'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' (Confessions, I.1)",
     "excerpt": [
-      "Augustine opens the Confessions with the line that is the key to his whole life: 'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.' He is not speaking only of himself. He is describing the shape of every human heart — a thing made for a particular center, and out of its true orbit until it finds that center. Everything in him that had seemed chaotic suddenly made sense as the story of a heart looking for where it belonged.",
+      "Augustine opens the Confessions with a prayer that names God's greatness and the human heart's desire for praise. He says God formed humanity for himself and that hearts remain restless until they find rest in God. He is not speaking only of himself: he describes the shape of every human heart, made for a particular center and unsettled until it finds that center. Everything in him that had seemed chaotic suddenly made sense as the story of a heart looking for where it belonged.",
       "This is why the Confessions is so honest about his sins and wasted years. Augustine believed that every earthly desire — for wealth, for praise, for love, even for knowledge — is in truth a distorted hunger for God. We try to feed the soul's hunger for the infinite with finite things, and they cannot satisfy it; they only make it sharper. Even his famous rebellion was a misdirected search. The heart keeps asking, of everything finite, 'Is this You?' — and nothing finite could answer yes.",
       "The great sentence of the opening prayer — the heart will not be still until it finds the One for whom it was shaped — is both a diagnosis and a promise. It tells us our restlessness is not a flaw to be ashamed of but a sign of our origin: we were made for something this world cannot supply. The cure is not to silence the ache but to answer it with the truth. Restlessness, Augustine teaches, is the soul settled in lesser things, and it is healed only by return to God.",
       "The Confessions, written around the year 400, is Augustine's autobiography of the soul's long wandering and sudden capture by grace. It is not a memoir in the modern sense but a long prayer — he speaks to God throughout, telling God the story God already knows, so that his own heart may learn to see it. Book by book it moves from his infancy, through his wanderings among the Manichees and his restless intellectual searching, to the garden in Milan where he heard that child's voice, 'Take and read.'",
@@ -263,7 +283,7 @@
           "Confessions, Book I"
         ],
         "ans": 3,
-        "note": "The line 'You have made us for Yourself...' opens Confessions, Book I — the key to his whole life."
+        "note": "Augustine opens Confessions, Book I by praising God and naming the human heart's search for rest in God."
       },
       {
         "q": "In the Confessions, every earthly desire is:",
@@ -311,20 +331,20 @@
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, Confessions, I.1",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, Confessions, I.1 (NPNF1-01)",
+    "sourceLabel": "NPNF First Series, Vol. 1 · trans. J. G. Pilkington (1886 public-domain text)",
+    "translation": "NPNF First Series, Vol. 1 · trans. J. G. Pilkington (1886 public-domain text)",
+    "id": "the-restless-heart"
   },
   {
     "name": "The Two Cities",
     "primaryQuote": "The former, in a word, glories in itself, the latter in the Lord.",
-    "primaryQuoteSource": "St. Augustine, The City of God, XIV.28",
+    "primaryQuoteSource": "St. Augustine, The City of God, XIV.28 (NPNF1-02)",
     "primaryExcerpt": "Accordingly, two cities have been formed by two loves: the earthly by the love of self, even to the contempt of God; the heavenly by the love of God, even to the contempt of self. The former, in a word, glories in itself, the latter in the Lord.",
-    "primaryUrl": "https://www.newadvent.org/fathers/120114.htm",
+    "primaryUrl": "https://ccel.org/ccel/schaff/npnf102.iv.XIV.28.html",
     "topic": "Today we open the book Augustine wrote as the world's greatest empire was falling — and read how two loves build two cities.",
     "writing": "The City of God, XIV.28",
     "writingNote": "chapter 28 contrasts the two cities by their governing loves and the glory each seeks",
-    "quote": "'The former, in a word, glories in itself, the latter in the Lord.' (The City of God, XIV.28)",
     "excerpt": [
       "In Book XIV, chapter 28 of The City of God, Augustine describes the two cities through the loves that order them: 'Two cities have been formed by two loves...' He is not drawing a map of nations. He is distinguishing two allegiances shaped by what people love and where they seek glory.",
       "The City of Man is built on pride and the love of self to the contempt of God. Its citizens make themselves the center; their glory is the measure of everything. Such a city prizes power, honors the strong, and treats God as a rival or a means. Augustine was not naive about its attractions, but he insisted it is ultimately self-destroying: the more it grasps, the less it enjoys; the more it exalts itself, the more it falls. Rome, in his judgment, was a great example of this — glorious in its way, yet built on the sand of pride.",
@@ -337,7 +357,12 @@
     "questions": [
       {
         "q": "Augustine says the two cities were formed by:",
-        "opts": ["Two kings", "Two loves", "Two wars", "Two covenants"],
+        "opts": [
+          "Two kings",
+          "Two loves",
+          "Two wars",
+          "Two covenants"
+        ],
         "ans": 1,
         "note": "'Two cities have been formed by two loves: the earthly by the love of self, the heavenly by the love of God.'"
       },
@@ -387,22 +412,22 @@
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, The City of God, XIV.28",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, The City of God, XIV.28 (NPNF1-02)",
+    "sourceLabel": "NPNF First Series, Vol. 2 · trans. Marcus Dods (1886 public-domain text)",
+    "translation": "NPNF First Series, Vol. 2 · trans. Marcus Dods (1886 public-domain text)",
+    "id": "the-two-cities"
   },
   {
     "name": "Grace",
-    "primaryQuote": "Give what You command, and command what You will.",
-    "primaryQuoteSource": "St. Augustine, Confessions, X.29.40",
-    "primaryExcerpt": "And my whole hope is only in Your exceeding great mercy. Give what You command, and command what You will. Thou imposest continency upon us, nevertheless, when I perceived, says one, that I could not otherwise obtain her, except God gave her me; . . . that was a point of wisdom also to know whose gift she was. For by continency are we bound up and brought into one, whence we were scattered abroad into many. For he loves You too little who loves anything with You, which he loves not for You, O love, who ever burnest, and art never quenched! O charity, my God, kindle me! You command continency; give what You command, and command what You will.",
-    "primaryUrl": "https://www.newadvent.org/fathers/110110.htm",
+    "primaryQuote": "Give what Thou commandest, and command what Thou wilt.",
+    "primaryQuoteSource": "St. Augustine, Confessions, X.29.40 (NPNF1-01)",
+    "primaryExcerpt": "And my whole hope is only in Thy exceeding great mercy. Give what Thou commandest, and command what Thou wilt. Thou imposest continency upon us, nevertheless, when I perceived, saith one, that I could not otherwise obtain her, except God gave her me; . . . that was a point of wisdom also to know whose gift she was. For by continency are we bound up and brought into one, whence we were scattered abroad into many. For he loves Thee too little who loves aught with Thee, which he loves not for Thee, O love, who ever burnest, and art never quenched! O charity, my God, kindle me! Thou commandest continency; give what Thou commandest, and command what Thou wilt.",
+    "primaryUrl": "https://www.ccel.org/ccel/schaff/npnf101.vi.X.XXIX.html",
     "topic": "Today we see Augustine hold together God’s command and God’s gift: the good he asks of us is also something for which he asks God’s help.",
     "writing": "Confessions, X.29.40",
     "writingNote": "Augustine asks God for the continence He commands, placing his hope in divine mercy",
-    "quote": "'Give what You command, and command what You will.' (Confessions, X.29.40)",
     "excerpt": [
-      "In Confessions X.29.40, Augustine prays for continence—the self-restraint he understands God to command. He places the request between a confession of hope in God’s mercy and the plea, 'Give what You command, and command what You will.' The point here is his dependence on divine help, not a full account of every aspect of grace.",
+      "In Confessions X.29.40, Augustine prays for continence—the self-restraint he understands God to command. He places the request between a confession of hope in God's mercy and a plea for the help to obey. The passage shows his dependence on divine help, not a full account of every aspect of grace.",
       "This turns our usual understanding of goodness upside down. We imagine the order is: first we make a good start, and then God helps the promising effort along. Augustine insists it is the reverse: the good start itself is already God's work in us. 'It is God who works in you, both to will and to work,' he quotes from the apostle. Even the initial turning of the heart toward God — the faintest spark of wanting him — is a gift. Nothing in us, he says, prepares the ground for grace; grace prepares us.",
       "The grace that comes before any human response has a special name: prevenient grace — the grace that 'comes before,' stirring the will before any free response is possible. It is the Father's hand reaching into our darkness before we have asked, before we even know what to ask. Augustine delighted in this priority of God. We do not first find God and then receive his help; he first finds us, and our seeking is already his gift within us. The search itself is the beginning of the answer.",
       "Augustine’s later disputes with Pelagius and his followers explored how divine grace and the human will relate. He argues that human beings need God’s help to will and do the good, while also treating the will as genuinely active. The brief prayer in Confessions X.29.40 is a starting point for that larger discussion, not a complete account of it.",
@@ -453,7 +478,7 @@
           "'Grace is resistible'"
         ],
         "ans": 0,
-        "note": "'God crowns His own gifts in us' became the heart of Catholic and much Protestant teaching on salvation."
+        "note": "In that work, Augustine argues that God's grace is the source of the gifts for which God later rewards the faithful."
       },
       {
         "q": "In Confessions X.29.40, Augustine asks God to:",
@@ -464,24 +489,24 @@
           "Replace prayer with effort"
         ],
         "ans": 0,
-        "note": "He prays, 'You command continency; give what You command, and command what You will.'"
+        "note": "He asks God to grant the continence God commands, relying on divine help."
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, Confessions, X.29.40",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, Confessions, X.29.40 (NPNF1-01)",
+    "sourceLabel": "NPNF First Series, Vol. 1 · trans. J. G. Pilkington (1886 public-domain text)",
+    "translation": "NPNF First Series, Vol. 1 · trans. J. G. Pilkington (1886 public-domain text)",
+    "id": "grace"
   },
   {
     "name": "The Trinity",
     "primaryQuote": "There, then, also are three things: he that loves, and that which is loved, and love.",
-    "primaryQuoteSource": "St. Augustine, On the Trinity, VIII.14",
+    "primaryQuoteSource": "St. Augustine, On the Trinity, VIII.14 (NPNF1-03)",
     "primaryExcerpt": "But what is love or charity, which divine Scripture so greatly praises and proclaims, except the love of good? But love is of some one that loves, and with love something is loved. Behold, then, there are three things: he that loves, and that which is loved, and love. What, then, is love, except a certain life which couples or seeks to couple together some two things, namely, him that loves, and that which is loved? And this is so even in outward and carnal loves. But that we may drink in something more pure and clear, let us tread down the flesh and ascend to the mind. What does the mind love in a friend except the mind? There, then, also are three things: he that loves, and that which is loved, and love.",
-    "primaryUrl": "https://www.newadvent.org/fathers/130108.htm",
+    "primaryUrl": "https://ccel.org/ccel/schaff/npnf103.all.html",
     "topic": "Today we examine how Augustine uses human love as a limited signpost while seeking to understand the Trinity.",
     "writing": "On the Trinity, VIII.14",
     "writingNote": "Augustine explores the relations within human love as a starting point for reflection, while warning that the search for God exceeds the analogy",
-    "quote": "'There, then, also are three things: he that loves, and that which is loved, and love.' (On the Trinity, VIII.14)",
     "excerpt": [
       "Augustine spent decades probing the deepest mystery of the Christian faith: how the one God can be three Persons. It is a question that cannot be answered by standing outside it and taking inventory, the way one eyes a distant object. God is not an object we can see around; he is the light by which we see. Augustine approached the mystery the only way he thought faithful to it — through the scriptures, through worship, and through the likenesses God has scattered through the human soul.",
       "His great intuition was that we ourselves carry a faint image of the divine threeness. In the human mind he found a trinity-like structure: memory, understanding, and will — three distinct powers that are yet one mind. And deeper still, in the act of self-knowledge he found lover, beloved, and the love between them: I who know, the one I know, and the act of knowing that joins us. Augustine was careful to warn that no creature can fully contain the mystery, but the image points the way even where it cannot arrive.",
@@ -549,20 +574,20 @@
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, On the Trinity, VIII.14",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, On the Trinity, VIII.14 (NPNF1-03)",
+    "sourceLabel": "NPNF First Series, Vol. 3 · trans. Arthur West Haddan (public-domain text)",
+    "translation": "NPNF First Series, Vol. 3 · trans. Arthur West Haddan (public-domain text)",
+    "id": "the-trinity"
   },
   {
     "name": "Time and Eternity",
     "primaryQuote": "What, then, is time? If no one ask of me, I know; if I wish to explain to him who asks, I know not.",
-    "primaryQuoteSource": "St. Augustine, Confessions, XI.14.17",
+    "primaryQuoteSource": "St. Augustine, Confessions, XI.14.17 (NPNF1-01)",
     "primaryExcerpt": "Yet I say with confidence, that I know that if nothing passed away, there would not be past time; and if nothing were coming, there would not be future time; and if nothing were, there would not be present time. Those two times, therefore, past and future, how are they, when even the past now is not; and the future is not as yet? But should the present be always present, and should it not pass into time past, time truly it could not be, but eternity.",
-    "primaryUrl": "https://www.newadvent.org/fathers/110111.htm",
+    "primaryUrl": "https://ccel.org/ccel/schaff/npnf101.vi.XI.XIV.html",
     "topic": "Today we follow Augustine’s question about time from the fleeting present toward God’s eternity.",
     "writing": "Confessions, Book XI",
     "writingNote": "Book XI asks what time is, how we experience it, and how created time differs from God’s eternity",
-    "quote": "'What, then, is time? If no one ask of me, I know; if I wish to explain to him who asks, I know not.' (Confessions, XI.14.17)",
     "excerpt": [
       "In Book XI of the Confessions, Augustine turns from the narrative of his life to the mystery of time. He opens with the question that frames the meditation: 'What, then, is time? If no one ask of me, I know; if I wish to explain to him who asks, I know not.' The question is familiar in experience, yet difficult to define.",
       "Rather than identify time with the movement of the stars, Augustine asks how the soul experiences and measures it. Later in Book XI he describes the mind as stretched across memory, attention, and expectation. This is a way of examining our experience of time, not simply a claim that external events are unreal.",
@@ -575,7 +600,12 @@
     "questions": [
       {
         "q": "Augustine's 'What then is time?' is found in Confessions:",
-        "opts": ["Book I", "Book X", "Book XI", "Book XII"],
+        "opts": [
+          "Book I",
+          "Book X",
+          "Book XI",
+          "Book XII"
+        ],
         "ans": 2,
         "note": "Book XI of the Confessions wrestles with how God created time itself."
       },
@@ -625,16 +655,16 @@
       }
     ],
     "quoteKind": "direct",
-    "sourceCitation": "St. Augustine, Confessions, XI.14.17",
-    "sourceLabel": "New Advent · English translation",
-    "translation": "New Advent · English translation"
+    "sourceCitation": "St. Augustine, Confessions, XI.14.17 (NPNF1-01)",
+    "sourceLabel": "NPNF First Series, Vol. 1 · trans. J. G. Pilkington (1886 public-domain text)",
+    "translation": "NPNF First Series, Vol. 1 · trans. J. G. Pilkington (1886 public-domain text)",
+    "id": "time-and-eternity"
   },
   {
     "name": "Prayer",
     "topic": "Today we learn what it truly means to pray — not to inform God, but to be drawn up into God.",
     "writing": "Letter 130 (To Proba, On Prayer)",
     "writingNote": "his long counsel to a Roman widow anxious about how she ought to pray",
-    "quote": "Our knowledge is not of such a kind that He, whom we ask, does not know our needs; yes, but the purpose of prayer is to stretch our hearts in His direction, so that we may be capable of receiving what we shall receive.",
     "excerpt": [
       "Augustine says we pray not because God needs to be told our needs, but because our hearts need to be stretched toward God in order to be capable of receiving him. He writes to a Roman widow, Proba, who is anxious that she does not know how to pray rightly. She worries that she cannot find the right words, that her petition will be clumsy, that she will ask for the wrong thing. Augustine's answer is a relief: 'You will not be needing to speak long or in many words.'",
       "Prayer, he insists, is not a matter of eloquence but of longing. When the Scripture tells us always to pray and faint not, it does not command us to be always speaking. It commands us to be always desiring. The deep desire of the heart is itself a prayer that never ceases, even when the lips are closed and the mind is busy elsewhere. The fire of that longing is the true prayer; words are only its fuel and its occasion.",
@@ -704,14 +734,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Letter 130, to Proba",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/1102130.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/1102130.htm",
+    "id": "prayer"
   },
   {
     "name": "Faith and Reason",
     "topic": "Today we see why Augustine refused to pit belief against understanding — and how they take turns leading us to God.",
     "writing": "On the Profit of Believing / De libero arbitrio",
     "writingNote": "his early dialogues showing that belief is the necessary threshold of all true understanding",
-    "quote": "Believe that you may understand. I do not say, understand that you may believe.",
     "excerpt": [
       "Augustine asks a great question: to believe, or to understand first? Many suppose a thinker must understand everything before believing anything. Augustine turns this on its head. No one can understand everything at the start, he says, for even our learning of earthly things begins in trust. A child trusts its teacher before it grasps the letters. In the same way, the soul begins its ascent to God not by comprehending, but by believing — and the belief opens the way to the understanding that follows.",
       "It is true that believing is a beginning of understanding. Augustine does not scorn reason; he orders it. Reason is God's gift and he never despises it. But reason must begin somewhere, and it begins in humility — by assenting to what it has not yet proved, so that by assenting it may come at length to see. The one who refuses to believe until everything is understood shall remain perpetually unresolved, for there is nothing deep enough to be understood without first some seed of trust.",
@@ -757,13 +787,23 @@
       },
       {
         "q": "A faith that refuses to think degenerates into:",
-        "opts": ["Wisdom", "Superstition", "Understanding", "Grace"],
+        "opts": [
+          "Wisdom",
+          "Superstition",
+          "Understanding",
+          "Grace"
+        ],
         "ans": 1,
         "note": "A faith refusing to think degenerates into superstition."
       },
       {
         "q": "A reason that refuses to believe collapses into:",
-        "opts": ["Certainty", "Despair", "Worship", "Freedom"],
+        "opts": [
+          "Certainty",
+          "Despair",
+          "Worship",
+          "Freedom"
+        ],
         "ans": 1,
         "note": "A reason refusing to believe collapses into despair."
       }
@@ -771,91 +811,91 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On the Profit of Believing",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/1306.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/1306.htm",
+    "id": "faith-and-reason"
   },
   {
     "name": "The Blessed Sacrament",
     "topic": "Today we approach the altar where the eternal Son of God makes Himself our daily bread.",
-    "writing": "Sermon 272 / Sermon 229; Enchiridion",
-    "writingNote": "his preaching to the newly baptized on the mystery they have now received",
-    "quote": "He who receives not this bread will be hungry for all eternity. He who receives this bread shall not hunger at all.",
+    "writing": "Sermon 272",
+    "writingNote": "his preaching to people newly initiated into Christian life",
     "excerpt": [
-      "Augustine returns again and again to a wonder so familiar we can forget to be amazed: the Word of God becomes bread for our journey. The same Lord who made heaven and earth stoops to be not only our food but our drink. He makes himself small enough to be eaten, so that the very body that was born of Mary is now made the nourishment of His body the Church.",
-      "Receiving is not a mere symbol for Augustine. To receive is to be joined — bread is broken so that many become one loaf. 'Be what you have received,' he tells the neophytes after their first communion; you have eaten Christ, now live as Christ. To eat is to be incorporated; the Body we eat is the body we are to become: members of that one body whose head is Christ.",
-      "The Eucharist is the sacrament of this oneness. Where two or three are gathered, Christ stands among them. The altar is the table set for strangers and sinners, not the reward of those who have already arrived. Augustine saw the poor as the Lord's own members, and the bread we break as a pledge that the whole world — even the least — is invited to the same feast.",
-      "There is here also a warning. Augustine warns that the sacrament profits no one who approaches it with a proud and rebellious heart. We must examine ourselves and eat and drink in faith and charity. To eat worthily is not to arrive sinless but to arrive needy, asking God to feed upon us as we feed upon him. He would have us come not as judges of our own whiteness but as the sick who know we need the physician.",
-      "The sacrifice of the Mass is the memorial of Christ's own sacrifice — not a repetition of the deed, daily killing the Savior again, but the one, eternal offering made present, the offering of the body of Christ joined to its Head. By eating this bread we are fed with what we cannot contain, because this is not only bread now but the very flesh of God made our true abiding food."
+      "In Sermon 272, Augustine speaks to people newly welcomed into Christian life about the bread and cup at the altar. He asks them to consider how the sacrament points beyond what is visible toward Christ and the communion of the faithful.",
+      "The homily connects the Eucharist with Paul's image of the Church as one body. Augustine's focus is communal: those who gather at the same table share a calling to seek one another's good and live in charity.",
+      "He makes the bond of peace central to the meaning of the sacrament. A Christian's conduct should reflect the unity expressed in worship; division undermines the purpose of receiving together.",
+      "The sermon closes as a prayer for the community. Augustine asks God to strengthen faith, guide thought and action, and lead the faithful toward lasting joy.",
+      "Read in its setting, this homily is pastoral instruction for the newly initiated. Its movement is from the church's sacramental life to the shared way of life that should follow. These paragraphs are editorial summaries, not quotations or a translation of the sermon."
     ],
-    "vocab": "Incorporation — the eating of Christ's body by which we are made members of that same body.",
-    "summary": "In his neophyte sermons Augustine calls the Eucharist the sacrament of unity: to eat is to be joined to Christ and made with him one Body. Receiving this bread is being made Christ's flesh, and the sacrifice of the Mass is the everlasting offering of the body to its Head.",
+    "vocab": "Communion — the shared life of the faithful in Christ and with one another.",
+    "summary": "Augustine presents the Eucharist as a sign of the Church's unity. Addressing the newly initiated, he links worship with a life of peace and charity, then prays that God will form the community in faith.",
     "questions": [
       {
-        "q": "Augustine preaches that receiving the Eucharist means:",
+        "q": "In this homily, Augustine asks the newly initiated to consider the Eucharist as:",
         "opts": [
-          "A mere symbol of mercy",
-          "Being joined to Christ and made his Body",
-          "A reward for the already-perfect",
-          "Remembering only that He died"
+          "A private sign with no communal meaning",
+          "A sacrament that points toward Christ and the communion of the faithful",
+          "A lesson about public speaking",
+          "A reward for people who never sin"
         ],
         "ans": 1,
-        "note": "To receive is to be incorporated into Christ and made into his Body."
+        "note": "The homily connects the sacrament with the shared life of the Church."
       },
       {
-        "q": "What did Augustine tell the newly baptized, 'Be what you have received'?",
+        "q": "What practical responsibility follows from receiving together?",
         "opts": [
-          "A reminder of poverty",
-          "That after eating Christ's body they must live as his Body",
-          "An ascetic rule",
-          "A test of faith"
+          "To seek the good of the community and live in charity",
+          "To withdraw from other Christians",
+          "To judge who belongs at the altar",
+          "To avoid prayer outside the liturgy"
         ],
-        "ans": 1,
-        "note": "To eat Christ is to be joined to Christ; we should live as his Body because we are it."
+        "ans": 0,
+        "note": "Augustine emphasizes the bond of peace among the faithful."
       },
       {
-        "q": "The warning Augustine attaches to receiving is that to eat worthily means:",
+        "q": "Why does Augustine emphasize peace in this sermon?",
         "opts": [
-          "To be already clean",
-          "To come as a needy sick person seeking the physician",
-          "To never sin afterward",
-          "To receive often without thought"
+          "Because communal conduct should reflect the unity expressed in worship",
+          "Because disagreement is always sinful",
+          "Because worship replaces daily conduct",
+          "Because peace is only a private feeling"
         ],
-        "ans": 1,
-        "note": "We must come not as those not sinning, but as the sick who know we need the physician."
+        "ans": 0,
+        "note": "His teaching joins sacramental worship with the way the faithful live together."
       },
       {
-        "q": "For Augustine the sacrifice of the Mass is:",
+        "q": "How does the homily end?",
         "opts": [
-          "The daily re-kill of Christ",
-          "The remembrance of the one eternal offering",
-          "A new and separate offering each day",
-          "Merely a meal"
+          "With instructions for a new fast",
+          "With a prayer for God's help in forming the community",
+          "With a debate about the calendar",
+          "With a warning against all feasting"
         ],
         "ans": 1,
-        "note": "The Mass is the memoria of the one offering of Christ — the offering of his body with its Head."
+        "note": "Augustine asks God to strengthen faith and guide the community."
       },
       {
-        "q": "Augustine connects the altar to the poor because:",
+        "q": "What is the main movement of the lesson's editorial summary?",
         "opts": [
-          "The poor are always clean",
-          "The poor are Christ's own members invited to the feast",
-          "Only the poor should fast",
-          "Wealth is always sinful"
+          "From sacramental worship to a shared life of peace and charity",
+          "From church history to imperial law",
+          "From fasting rules to medical advice",
+          "From private devotion to political office"
         ],
-        "ans": 1,
-        "note": "The poor are the Lord's own members, invited to the same feast."
+        "ans": 0,
+        "note": "The lesson summarizes the connection Augustine makes between worship and communal life."
       }
     ],
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Sermon 272",
-    "sourceLabel": "Early Church Texts · English rendering",
-    "primaryUrl": "https://earlychurchtexts.com/public/augustine_sermon_272_eucharist.htm"
+    "sourceLabel": "Editorial summaries · linked page credits its English text to NPNF; translator and volume unverified",
+    "primaryUrl": "https://earlychurchtexts.com/public/augustine_sermon_272_eucharist.htm",
+    "id": "the-blessed-sacrament"
   },
   {
     "name": "Humility",
     "topic": "Today we discover that the way up to God is not by climbing higher but by bending lower.",
     "writing": "On the Sermon / Sermon 351",
     "writingNote": "his preaching on why pride curses everything and humility opens all",
-    "quote": "Humility is the foundation of all the virtues. He who does not possess it cannot possess the rest.",
     "excerpt": [
       "Augustine's highest praise is not for learning, or fasting, or even charity itself — it is for humility, the lowliness that stoops to be exactly what we are before God. Pride builds a tower that must fall because its foundation is itself; humility lays no such faulty ground plan, and so can carry as much as is poured into it. The way up is not climbing but bowing.",
       "In the Incarnation our Lord shows us Him who, being in the form of God, took the form of a servant. If the Lord of all, without ceasing to be what he was, did not count equality with God a thing to be grasped, but emptied himself, what could we possibly be too proud to do? Christ's humility is not only our model; it is our remedy — it casts down pride in us by revealing the beauty of its opposite.",
@@ -868,7 +908,12 @@
     "questions": [
       {
         "q": "Augustine says the foundation of all virtues is:",
-        "opts": ["Prudence", "Humility", "Courage", "Charity"],
+        "opts": [
+          "Prudence",
+          "Humility",
+          "Courage",
+          "Charity"
+        ],
         "ans": 1,
         "note": "Humility is the foundation; without it no virtue can be built."
       },
@@ -920,14 +965,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On the Sermon on the Mount, I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/16011.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/16011.htm",
+    "id": "humility"
   },
   {
     "name": "The Voice of the Psalms",
     "topic": "Today we learn to pray with the words Christ Himself used, heard through Augustine's voice.",
     "writing": "Enarrationes in Psalmos",
     "writingNote": "his great commentary preaching through all 150 Psalms",
-    "quote": "The whole Christ is the Head and the Body, the Shepherd and His flock — when we chant the Psalms, we hear Him and He hears us.",
     "excerpt": [
       "Augustine loved his Psalter so much that he would chant with the voices of those who led the choir at services, moved to tears by the psalms made sweet on their lips. He heard in them not dusty poems but the living voice of Christ praying through every believer. When he says Christ speaks there, he means the whole Christ — Head and members together — one international voice of praise.",
       "Every page of the Psalter became for him a prophecy in fulfillment. David wrote amidst war and flight; we hear his words rise from sorrow and suddenly the strain widens into the glory of Christ's resurrection. The same psalm that opened in complaint comes to rest in confidence. Augustine sees this as the path of every praying heart — from lament to the quiet seeing of God's goodness.",
@@ -997,14 +1042,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Exposition on Psalm 124",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/1801124.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/1801124.htm",
+    "id": "the-voice-of-the-psalms"
   },
   {
     "name": "Suffering and Providence",
     "topic": "Today we learn that no pain is wasted when it is offered to the God who preserves all things.",
     "writing": "Commentary on the Psalms; The City of God, Book I",
     "writingNote": "his counsel when the church faces the hard mercy that does not spare the faithful",
-    "quote": "God does not do good things only, but gives good things to some; and He suffers evil things to be done to others. This is the perfection of the almighty omnipotence.",
     "excerpt": [
       "When Rome fell, Augustine faced his fiercest question: if God is good and all-powerful, why did so much evil befall the righteous among the invasions? His answer was not glib. He told his flock that suffering without any explanation would be unbearable, but Christian suffering is never meaningless. It is medicine, not victimhood — the surgeon who cuts to heal, not the assailant who strikes to kill.",
       "The mystery is this: that God who permits evil permits it only to preserve goodness through it. The Romans burned Rome; Christians who trusted in their own civility were shamed. Augustine observed that God allowed the saints to be humbled in the world precisely to teach them not to rest in the world. Earthly happiness was always precarious; the only kingdom that does not fail is the everlasting one.",
@@ -1074,14 +1119,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, The City of God, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/120101.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/120101.htm",
+    "id": "suffering-and-providence"
   },
   {
     "name": "The Incarnation: Christ the Mediator",
     "topic": "Today we marvel that the eternal Word became flesh, to make us sons of God.",
     "writing": "Enchiridion; Sermon 191",
     "writingNote": "his hemming of the eternal Word's mission to those who will believe",
-    "quote": "The Word was made flesh, and dwelt among us. What He became for us, He became for you.",
     "excerpt": [
       "Augustine tries to lift our minds to the most wonderful thought the human soul can entertain: that the eternal Word through whom all things were made, the very life and light of God, did not remain in the glory that was His but came down to us in time. This is the Incarnation — and it is not a conclusion reached by reason but a revelation we adore. God did not cease to be God in becoming man, yet He was truly man.",
       "What then is the effect for us? Augustine says the Word became flesh so that flesh might become spirit — not dissolving the human into the divine, but by joining our nature to Himself, making us members of His body, children who can cry 'Father' with the Son. The distance between heaven and earth is bridged not by our longings but by God's choice to descend into our nature.",
@@ -1151,14 +1196,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Handbook on Faith, Hope and Love",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/1302.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/1302.htm",
+    "id": "the-incarnation-christ-the-mediator"
   },
   {
     "name": "The Church as the Body of Christ",
     "topic": "Today we see why Augustine loved the Church not as an institution, but as Christ's body alive in the world.",
     "writing": "On Christian Doctrine; City of God, Book XIX",
     "writingNote": "his longest argument that one holy Communion is the Lord's own body",
-    "quote": "He is the head of the body, the Church. Because we have the head, and the body follows Him: He is with us if we cleave to Him.",
     "excerpt": [
       "Augustine tells us not to fear that Christ has departed from the earth. We see Him no longer with eyes of flesh as the disciples did, but He remains — not by hiding, but by giving his own body to the Church, so that in its life we see His life and in its words His words. The Church is His body because she is animated by the same Spirit and comparable to a body where one nar alive the whole.",
       "The bond of the body is love, and where love is absent, there is no true Church. Augustine draws on Scripture: the body held together by every joint and ligament, each member supplying the others. Charity is the circulatory system of this body. If a member refuses love to another member, the effect is the weakening of the whole; if charity flows, the body is built up.",
@@ -1228,14 +1273,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, The City of God, Book XIX",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/120119.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/120119.htm",
+    "id": "the-church-as-the-body-of-christ"
   },
   {
     "name": "Baptism and New Birth",
     "topic": "Today we step to the waters where a soul dies to the old self and rises with Christ.",
     "writing": "On Baptism, Against the Donatists",
     "writingNote": "his defense that the saving water has power not from the minister but from Christ",
-    "quote": "Unless you are born again of water and the Spirit, you shall not enter the kingdom of God.",
     "excerpt": [
       "Augustine taught that in baptism God does what He alone can do: He renews the heart from the inside. The water is not magic in itself, but it is the outward sign of an invisible grace which Christ has tied to this washing since the day He rose from the tomb. Into the font a person goes down old, corrupted, bound; from it he comes up reconciled, made a new creature. The rite is small for the eye; for the soul it is the rebirth of a human being.",
       "Very early the Church was torn by a question: what becomes of a baptism performed by an unworthy minister? The Donatists of Africa insisted that a holy priest was needed for a valid sacrament. Augustine answered that the gift in baptism never belongs to the man who pours the water. It is Christ who baptizes, even as it is Christ who forgives. Therefore the sacrament does not lose its power just because the one who ministered it is a sinner.",
@@ -1305,14 +1350,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On Baptism, Against the Donatists, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/14081.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/14081.htm",
+    "id": "baptism-and-new-birth"
   },
   {
     "name": "The Holy Spirit: the Gift of Love",
     "topic": "Today we meet the third Person of the Trinity — the bond of love who pours God into our hearts.",
     "writing": "On the Trinity, Book XV",
     "writingNote": "his loftiest teaching that the Spirit is the love shared by Father and Son",
-    "quote": "He is called God's gift because no one can enjoy good unless he has a share of that love which is the Holy Spirit.",
     "excerpt": [
       "Augustine has a beautiful difficulty: how shall he speak of the Holy Spirit, who is a Person yet often forgotten? He begins with the gift. Scripture calls the Spirit a Gift, and a gift must belong between giver and receiver. He calls him Love, for the Father loves the Son and the Son the Father, and the Holy Spirit is that love poured forth as a living Person, complete in Himself though wholly given.",
       "Here is the everyday difference it makes. Because the Holy Spirit is love, to receive him is to have God himself living in us as our capacity to love. Where there is envy, bitterness, coldness in a community, the Spirit has not found an open home; but where people forgive, serve the weak, sacrifice for one another, there the Spirit who is love is at work. Augustine says that this is why sin is forgiven only in the Spirit: pride must be melted before it can be washed.",
@@ -1382,14 +1427,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On the Trinity, Book XV",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/130115.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/130115.htm",
+    "id": "the-holy-spirit-the-gift-of-love"
   },
   {
     "name": "The Soul as the Image of God",
     "topic": "Today we look inward and learn that you carry a likeness of God in the very structure of your soul.",
     "writing": "On the Trinity, Books IX-XIV",
     "writingNote": "his careful study of the mind finding the trinity of memory, understanding, and will imprinted on itself",
-    "quote": "The image of God is not to be sought in a body, but in the soul that God made in his own image.",
     "excerpt": [
       "Augustine bids us turn our gaze from the outer world to the inner. In the depths of the soul there is something that can be called an image of God — not a picture, but a living resemblance. Just as the Father, Son, and Holy Spirit are three and yet one God, so the soul carries a certain trinity of its own: memory, understanding, and will, three powers in one mind. This inner trinity is not God, but it is the trace of God in us.",
       "He tells us to knock on our memory and see how vast and deep it is. Whatever we have learned, whatever we have loved, whatever we have done is stored there. By memory the mind holds itself and all it knows; it is a great palace prepared for wonders. Then understanding opens the treasure chest, and the will has chosen what shall be loved. These three acts are one in us, at one moment, as one stays in the soul: so we are an image of the One in Three.",
@@ -1459,14 +1504,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On the Trinity, Book IX",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/130109.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/130109.htm",
+    "id": "the-soul-as-the-image-of-god"
   },
   {
     "name": "The Goodness of Creation",
     "topic": "Today we learn that nothing God made is trash — the whole world hums with a beauty that calls us to its Maker.",
     "writing": "The City of God, Book XI",
     "writingNote": "contemplating how all that is, being made by God, is good in itself though in different degrees",
-    "quote": "All things are not equally good — but all created things, because they are made, are good; and the goodness of the highest is order.",
     "excerpt": [
       "Augustine had a keen habit of looking at the world and asking why it is so full of beauty. He saw order — the rounds of stars, the seasons keeping their promises, the tiny leaf and the vast ocean both obeying a law of their Maker. From that he reasoned that since God is supremely good, whatever God makes shares in goodness. Evil is not a thing with its own substance, but a wound, a lack, a turning away from that original goodness.",
       "This is a very freeing doctrine. It says that the world we live in is not a trap or a punishment, but a gift. Matter is not wicked; the body is not a prison for a pure spirit. Augustine repeatedly warns his people against those who mocked the Creation as the work of an evil god. Rather, he said, God saw all that he had made and it was very good — and that includes bread, light, the rain, the human body, and even appetites, when they are kept in their proper place.",
@@ -1536,14 +1581,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, The City of God, Book XI",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/120111.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/120111.htm",
+    "id": "the-goodness-of-creation"
   },
   {
     "name": "Memory and the Search for God",
     "topic": "Today we wander the fields of memory — because finding God begins inside.",
     "writing": "Confessions, Book X",
     "writingNote": "his searching of the vast palace of memory as an image of how the soul holds and seeks God",
-    "quote": "Late have I loved you, beauty ever ancient and ever new — but you were within, and I was outside.",
     "excerpt": [
       "Augustine was fascinated by memory, which he says is a great field, a boundless palace, impossible to measure. Everything we have ever seen, heard, learned, or loved is stored there; the soul can range through it like a traveler through rooms. Yet the strangest wonder is that we also hold ourselves in memory. When he searches for his own self, he finds a mystery in his own mind — indeed, the mind seeking itself is one of the greatest puzzles he knows.",
       "He asks a hard question: how can we seek God who comes first to our memory, if we do not yet know him? For we cannot search for what we have never known. Augustine answers that somehow the soul, made in God's image, already holds a troubled longing for the blessed life. Deep in memory there is a homesickness for happiness, for truth, for a home — and that faint knowledge is what makes the search for God possible at all.",
@@ -1613,14 +1658,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Confessions, Book X",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/110110.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/110110.htm",
+    "id": "memory-and-the-search-for-god"
   },
   {
     "name": "Death, Hope, and the Resurrection",
     "topic": "Today we learn to look death in the face without despair, because Christ has already torn its bars.",
     "writing": "On the City of God, Book I; Sermon 361",
     "writingNote": "preaching comfort at graves, insisting that what dies is not undone but planted",
-    "quote": "We are not to be so grieved over those who are at rest, as though they were lost, but rather to hope, and to rejoice with the holy.",
     "excerpt": [
       "Augustine was called again and again to preach at the graves of believers, and he never asked mourners to pretend that death is nothing. Grief for the loss of a beloved face is right and human. But he fixed the Christian gaze beyond the grave: for the faithful, death is not the end of the story but the doorway to it. What is taken from our eyes has not been destroyed; it has been, as it were, planted and kept safe, and will be returned in a form beyond our longing.",
       "He draws this hope straight from the resurrection of Christ. Because Christ rose, death is no longer the enemy he was; he has become a gate. Augustine reminds the fearful that the Lord himself slept in the tomb and woke, and in his waking every believer is booked for waking too. This is why the martyr died singing rather than cursing, and why the Church has never yet despaired of her dead. The resurrection is the hinge on which all of our hope turns.",
@@ -1690,14 +1735,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, The City of God, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/120101.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/120101.htm",
+    "id": "death-hope-and-the-resurrection"
   },
   {
     "name": "Love That Orders Our Desires",
     "topic": "Today we learn the difference between enjoying God and merely using the world — the secret of a well-ordered heart.",
     "writing": "On Christian Doctrine, Book I",
     "writingNote": "his great rule for reading Scripture and living love: use things, enjoy God, love God and neighbor",
-    "quote": "The rule is: you should never use a thing except for the sake of that which is to be enjoyed — and the only thing to be enjoyed is God.",
     "excerpt": [
       "Augustine sets down a distinction that he calls the hinge of the moral life: the difference between enjoying and using. To enjoy something is to cling to it for its own sake, to rest in it as our final joy. To use something is to hold it as a means, to take it up for the sake of a further end. He asks a sharp question: what may a human being finally enjoy? And his answer is severe and liberating at once — only God is to be enjoyed. Everything else is to be used, loved for God's sake.",
       "Reading this, one might think Augustine wants us cold toward the world. The opposite is true. Because only God satisfies, love of neighbor is commanded, not forbidden — and it is pure love when we love a person in God. To love a friend in God is to want his true good, to serve him, to hold him in a way that cannot be lost, for God does not fail. Augustine calls this ordered love: charity that loves the right things in the right order and gives every lesser love its true place.",
@@ -1721,7 +1766,12 @@
       },
       {
         "q": "What alone may be finally enjoyed, for Augustine?",
-        "opts": ["Health", "God", "Beauty", "Honor"],
+        "opts": [
+          "Health",
+          "God",
+          "Beauty",
+          "Honor"
+        ],
         "ans": 1,
         "note": "Only God is to be enjoyed; everything else is to be used for his sake."
       },
@@ -1762,14 +1812,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On Christian Doctrine, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/12021.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/12021.htm",
+    "id": "love-that-orders-our-desires"
   },
   {
     "name": "Beauty Ever Ancient, Ever New",
     "topic": "Today we hear the most famous cry of Augustine's heart — love for a Beauty he found too late, yet never too late.",
     "writing": "Confessions, Book X",
     "writingNote": "his direct address to God in the language of aching, joyful love",
-    "quote": "Late have I loved you, beauty so ancient and so new: late have I loved you!",
     "excerpt": [
       "Augustine speaks in Confessions as though he were standing before God and confessing not his sins only but his slowness. He had chased one beauty after another — the applause of rhetoricians, the sweetness of a friendship, the light of philosophy — and each one slipped through his hands, unsatisfying, because he was loving creatures for their own sake as though they were the final good. And all the while the true Beauty was there, patient, waiting.",
       "His language soars as he recalls the moment he finally turned. He cries: 'You were within, and I was outside — and there I sought you, and ran in all its loveliness toward the things you had made.' It is a magnificent picture: the heart outside in the field of creatures, knocking at creatures, while the Creator who made them lived within the soul. The whole search had been aimed in the wrong direction, outward, when the treasure was inward.",
@@ -1839,14 +1889,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Confessions, Book X",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/110110.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/110110.htm",
+    "id": "beauty-ever-ancient-ever-new"
   },
   {
     "name": "Christ Our Wisdom",
     "topic": "Today we meet Christ not only as Lord but as Wisdom — the very mind of God made touchable.",
     "writing": "On the Trinity, Book IV; Confessions, Book VII",
     "writingNote": "his account of how he came to see Christ as the power and wisdom of God, not a mere teacher",
-    "quote": "Christ is the power of God and the wisdom of God — no gift of ours, but the gift of God's own self.",
     "excerpt": [
       "Augustine tells us how, long after he had tossed among the philosophies, a great light broke on him when he read in Scripture that Christ Jesus 'became wisdom from God for us' — not a wise man among wise men, but Wisdom itself come down. His old masters had taught him to reason toward God; they had never told him that the Word through whom all things were made had taken flesh and had descended to meet our weakness. That descent was the turning point of all his thought.",
       "What makes Christ our Wisdom? Augustine says that in Christ the very truth we long for is not only taught but lived and met. We cannot climb up to pure ideas; our minds are weak, broken, distracted, sinful. So God in the Son came down to the level of the fallen road: he took a body, spoke a human language, suffered, died, and rose — becoming, as it were, the medicine suited to our condition, the path down from our pride to the heavenly Jerusalem.",
@@ -1916,14 +1966,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On the Trinity, Book IV",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/130104.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/130104.htm",
+    "id": "christ-our-wisdom"
   },
   {
     "name": "Friendship",
     "topic": "Today we take friendship in hand — one of the deepest gifts of God — and how it rises into charity.",
     "writing": "Confessions, Book IV",
     "writingNote": "his grief at the death of an unnamed young friend, which taught him the anchor of true friendship",
-    "quote": "Blessed is the one who loves you, O God, and loves his friend in you — for he shall never lose the friend who is loved in God.",
     "excerpt": [
       "Augustine writes with startling honesty about the night he lost a dear friend to sudden fever. He was young, and he had placed his whole joy in that one friendship, almost as if the friend were an idol of the heart. When the friend died, Augustine's grief was so great that he found the world around him unbearable, and even in the places he once loved he could not stay, because every place asked him the same question: however shall we live without him?",
       "He names the root of his agony: he had loved the friend as an end, not in God. This is not to say the love was insincere — it was real, and its loss was real pain. But because the friend was the whole of his treasure, when the friend left, his world caved in. Augustine draws the lesson that every grief like this teaches: to rest our hearts on any human being as if that person were our final good is to court devastation, not because friendship is wrong, but because it is not God.",
@@ -1993,14 +2043,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Confessions, Book IV",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/110104.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/110104.htm",
+    "id": "friendship"
   },
   {
     "name": "St. Monica: The Praying Mother",
     "topic": "Today we meet the woman whose tears Augustine obeyed — his mother Monica, the model of faithful, unwearied prayer.",
     "writing": "Confessions, Book IX",
     "writingNote": "his moving tribute to his mother, whose prayers and tears followed him across years of wandering",
-    "quote": "She used to say she saw her soul in him — but it was the prayer with tears that she sowed, and in him she reaped.",
     "excerpt": [
       "Augustine was given to the Church in great part by a mother. Monica married young, bore her brilliant and wayward son, and watched him slip into heresy and a life far from the faith she herself held to God. Yet she did not rage against the road he was taking; she prayed. And Augustine, writing after her death, says there was never any doubt in his mind: the God who had shown her a vision long years before had promised her son's conversion, and Monica believed that a child of so many tears could not perish.",
       "Her method was stubborn and tender at once. When the young Augustine traveled to Italy to escape her influence — as he thought — she boarded a ship and followed him, unwilling to lose him. When a bishop snubbed her pleas, she was not bitter; she kept at the feet of God. Augustine remembers her saying, as her one unshakable hope, very simply: 'I believe my son will be converted before I die.' She did not die before she saw it happen.",
@@ -2035,7 +2085,12 @@
       },
       {
         "q": "When Augustine turned to Christ in the garden at Milan, the first he hurried to tell was:",
-        "opts": ["His bishop", "His own mother", "A stranger", "No one"],
+        "opts": [
+          "His bishop",
+          "His own mother",
+          "A stranger",
+          "No one"
+        ],
         "ans": 1,
         "note": "He hurried to tell his mother, who stood in the joy of the answer."
       },
@@ -2065,14 +2120,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Confessions, Book IX",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/110109.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/110109.htm",
+    "id": "st-monica-the-praying-mother"
   },
   {
     "name": "Confession and the Mercy of God",
     "topic": "Today we return, never tiring, to the mercy — that sins told to God become the very place where he mends us.",
     "writing": "Confessions, Book I; Sermon 352",
     "writingNote": "his doctrine that avowed guilt opens the door through which forgiveness enters",
-    "quote": "The power of the mercy of God is great; the prayer of confession is the door of it, so that the sinner may be reconciled to God.",
     "excerpt": [
       "Augustine wrote his whole Confessions as a single act of avowing himself before God — not to shame the reader by the litany of his sins, but to praise the mercy that forgave them. He had no interest in wallowing; he wanted to tell how great a physician had met how deep a wound. The very title of his book teaches the lesson: confession made to God is the first step of a new life, not a monument to the old one.",
       "He is sure that God needs no information — he already knows every sin before it is spoken. And this is the gentle hope in it: since God's sight is certain, our confession is not report to an ignorant judge but a surrender to a waiting physician. When we name our fault, we lay down our defense of it; and in laying it down, we make room for grace. The one who excuses himself shrinks, while the one who owns his sin rises by humility.",
@@ -2142,14 +2197,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Confessions, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/110101.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/110101.htm",
+    "id": "confession-and-the-mercy-of-god"
   },
   {
     "name": "The Beatitudes: The Blessings That Seem Upside Down",
     "topic": "Today we learn why Christ's blessings sound backwards to the world and are yet the only road to true happiness.",
     "writing": "On the Sermon on the Mount, Book I",
     "writingNote": "his unfolding of the Beatitudes as the ladder of true blessedness given by Christ",
-    "quote": "Who does not wish to be happy? Yet Christ turned the way of it upside down in our eyes — the poor, the meek, the mourners are blessed.",
     "excerpt": [
       "Augustine opens his great study of the Sermon on the Mount by pressing on a universal desire: everyone wants to be blessed, to be happy. Yet the world has its own list of what happiness requires — riches, honor, ease, power, praise. Christ stands up and delivers a list that mocks the world's: blessed are the poor in spirit, the meek, those who mourn, the hungry for justice. Augustine says this reversal is not a secret doctrine but the plain grammar of the kingdom.",
       "He unpacks each beatitude as a step, joining one to the next like a ladder. The poor in spirit — those who see they have nothing to cling to — begin the climb. From lowliness comes meekness, the strength that is not proud; from meekness, mourning over sin and the world's pain; from that sorrow, hungering for the justice of God. It is a gradual schooling of the heart, each blessing preparing the soul for the next, and all of them ending in peace and the vision of God.",
@@ -2219,14 +2274,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On the Sermon on the Mount, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/16011.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/16011.htm",
+    "id": "the-beatitudes-the-blessings-that-seem-upside-down"
   },
   {
     "name": "The Word of God in Scripture",
     "topic": "Today we learn how Augustine read the Bible — as the very voice of God, layered in meaning, and endlessly faithful.",
     "writing": "On Christian Doctrine, Books II-III",
     "writingNote": "his rules for reading Scripture with humility, love, and faith",
-    "quote": "The same sacred word is so composed that when one meaning is found, it is found in the midst of that which has another meaning.",
     "excerpt": [
       "Augustine lived with the Bible in his hands, and he loved it as the letter of a friend. He teaches that Scripture is not a human book that God conveniently blesses; it is God's own word, spoken through human voices, and therefore it is faithful, without error in what it intends, and worthy of our full trust. Whatever seems hard or obscure in it, Augustine says, wait upon it: the Spirit who breathes through the text will, in his time, make plain what we cannot yet reach.",
       "He gives a rule for reading that still guides the Church: first find the plain, literal sense, then rise from it to the spiritual meanings, but never build a teaching on an interpretation that struggles against charity. Love of God and love of neighbor is the whole aim of Scripture, Augustine insists. If a reading serves hatred, confusion, or pride, it is wrong, however learned it sounds; if it builds love, it has touched the heart of the text.",
@@ -2296,14 +2351,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On Christian Doctrine, Book II",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/12022.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/12022.htm",
+    "id": "the-word-of-god-in-scripture"
   },
   {
     "name": "Charity Toward Neighbor",
     "topic": "Today we learn that loving our neighbor is not an extra duty but the very grammar of loving God.",
     "writing": "On Christian Doctrine, Book I; Comments on Galatians",
     "writingNote": "his teaching that the love of neighbor is the shortest road and the proof of the love of God",
-    "quote": "No one loves God who does not love his neighbor; and no one truly loves his neighbor who does not first love God.",
     "excerpt": [
       "Augustine pulls the two great commandments so close together that they become almost one: love God above all, and love your neighbor as yourself. He says the second is not a rival of the first but its school and its proof. Since we cannot see God face to face, God has set before us a visible neighbor — perhaps easy to love, perhaps hard — and the way we treat that neighbor is the way we show our love of God, who is invisible.",
       "He expands the meaning of neighbor with deliberate wideness. Neighbor is not only the friend next door, not only the family, not only those of our own race or faith. Augustine reminds us that the Lord, when asked who our neighbor is, told the story of the Samaritan — the hated foreigner who stopped to help the wounded man. So every human being, Augustine concludes, is our neighbor, because every human being is made in the same image of God and claimed by the same love.",
@@ -2360,7 +2415,12 @@
       },
       {
         "q": "Of faith, hope, and charity, the one that outlasts eternity is:",
-        "opts": ["Faith", "Hope", "Charity, which does not end", "Knowledge"],
+        "opts": [
+          "Faith",
+          "Hope",
+          "Charity, which does not end",
+          "Knowledge"
+        ],
         "ans": 1,
         "note": "Faith gives way to sight and hope to possession, but love remains forever."
       }
@@ -2368,14 +2428,14 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, On Christian Doctrine, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/12021.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/12021.htm",
+    "id": "charity-toward-neighbor"
   },
   {
     "name": "True Rest: The Heart's Long Home",
     "topic": "Today we learn the famous secret of the restless heart — that we were made for God, and only he can still us.",
     "writing": "Confessions, Book I",
     "writingNote": "the opening words of his Confessions, from which flows the whole story of his long road home",
-    "quote": "You have made us for Yourself, O Lord, and our heart is restless until it rests in You.",
     "excerpt": [
       "Augustine opens his Confessions with a sentence that has echoed across sixteen centuries: we were made for God, and our heart will not be still until it rests in him. He is not describing a mood but a structure. Just as the eye was made for light and the ear for sound, the human heart was designed for one satisfaction, and nothing less than God can fill it. Every other joy is a signpost pointing past itself — a drink that slakes for an hour, not the spring that never runs dry.",
       "He knows this from his own long wandering. Augustine chased the praise of the schools, the pleasures of the world, the pride of a brilliant mind, and each pursuit ended the same way — a little shining and then a return of the ache. He describes himself as a man standing far off from God, bringing home the gifts of a world that could not carry his soul, planting a garden that time could strip. The glory of his discovery was not that he had been looking wrongly but that he had been looking in the wrong place.",
@@ -2395,7 +2455,7 @@
           "To be perfect"
         ],
         "ans": 1,
-        "note": "'You have made us for Yourself, O Lord, and our heart is restless until it rests in You.'"
+        "note": "Augustine says God formed the human heart for himself and that it finds rest in God."
       },
       {
         "q": "Augustine compares the heart's need to the use of:",
@@ -2445,6 +2505,7 @@
     "quoteKind": "editorial",
     "sourceCitation": "St. Augustine, Confessions, Book I",
     "sourceLabel": "New Advent · English translation",
-    "primaryUrl": "https://www.newadvent.org/fathers/110101.htm"
+    "primaryUrl": "https://www.newadvent.org/fathers/110101.htm",
+    "id": "true-rest-the-hearts-long-home"
   }
 ]

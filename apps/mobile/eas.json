@@ -4,14 +4,20 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "22.22.3"
+      "node": "22.22.3",
+      "env": { "APP_ENV": "development" }
     },
     "simulator": { "extends": "development", "ios": { "simulator": true } },
-    "preview": { "distribution": "internal", "node": "22.22.3" },
+    "preview": {
+      "distribution": "internal",
+      "node": "22.22.3",
+      "env": { "APP_ENV": "preview" }
+    },
     "production": {
       "autoIncrement": true,
       "node": "22.22.3",
       "env": {
+        "APP_ENV": "production",
         "EXPO_PUBLIC_API_BASE_URL": "https://saint-augustine-ai-backend.onrender.com"
       }
     }

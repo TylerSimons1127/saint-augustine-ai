@@ -1,4 +1,6 @@
 import { parseEvent } from "./sse";
+import { buildChatPayloadMessages } from "./chat-payload";
+import { linkAbortSignal } from "./request-signal";
 import { fetch as nativeFetch } from "expo/fetch";
 import { Platform } from "react-native";
 import { Depth, Message, Model, Readings, Saint } from "./types";
@@ -10,17 +12,19 @@ const transport = Platform.OS === "web" ? globalThis.fetch : nativeFetch;
 const obj = (v: unknown): v is Record<string, unknown> =>
   !!v && typeof v === "object" && !Array.isArray(v);
 async function json(path: string, signal?: AbortSignal) {
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  signal?.addEventListener("abort", abort);
-  const timer = setTimeout(abort, 55000);
+  const linked = linkAbortSignal(signal);
+  const timer = setTimeout(() => linked.controller.abort(), 55000);
   try {
-    const res = await transport(API_BASE + path, { signal: controller.signal });
+    if (linked.controller.signal.aborted)
+      throw Error("The request was cancelled.");
+    const res = await transport(API_BASE + path, {
+      signal: linked.controller.signal,
+    });
     if (!res.ok) throw Error("The service is unavailable. Try again shortly.");
     return await res.json();
   } finally {
     clearTimeout(timer);
-    signal?.removeEventListener("abort", abort);
+    linked.cleanup();
   }
 }
 export async function health(signal?: AbortSignal) {
@@ -73,13 +77,14 @@ export async function streamChat({
   signal: AbortSignal;
   onText: (text: string) => void;
 }): Promise<{ text: string; partial: boolean }> {
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  signal.addEventListener("abort", abort);
-  let timeout = setTimeout(abort, 145000);
+  const linked = linkAbortSignal(signal);
+  const { controller } = linked;
+  let timeout = setTimeout(() => controller.abort(), 145000);
   let text = "",
     partial = false;
   try {
+    if (controller.signal.aborted)
+      throw Error("The request was cancelled.");
     const res = await transport(API_BASE + "/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -87,10 +92,7 @@ export async function streamChat({
         model,
         reasoning: depth,
         stream: true,
-        messages: messages
-          .filter((m) => m.content && m.status !== "error")
-          .slice(-24)
-          .map((m) => ({ role: m.role, content: m.content })),
+        messages: buildChatPayloadMessages(messages),
       }),
       signal: controller.signal,
     });
@@ -122,7 +124,7 @@ export async function streamChat({
       while (true) {
         const { value, done } = await reader.read();
         clearTimeout(timeout);
-        timeout = setTimeout(abort, 90000);
+        timeout = setTimeout(() => controller.abort(), 90000);
         buffer += decoder.decode(value, { stream: !done });
         let end;
         while ((end = buffer.indexOf("\n")) >= 0) {
@@ -150,7 +152,7 @@ export async function streamChat({
     throw error;
   } finally {
     clearTimeout(timeout);
-    signal.removeEventListener("abort", abort);
+    linked.cleanup();
   }
 }
 export async function feedback(

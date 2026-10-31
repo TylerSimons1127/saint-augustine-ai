@@ -1,13 +1,16 @@
 import React, {
+  useCallback,
   createContext,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
+import { AppState as NativeAppState } from "react-native";
 import { storage } from "./storage";
 import { AppState } from "./types";
-import { initial, validateBackup } from "./schema";
+import { initial, restoreDailyCache, validateBackup } from "./schema";
 export { initial, validateBackup } from "./schema";
 type Value = {
   state: AppState;
@@ -17,11 +20,34 @@ type Value = {
   setStorageError: (s: string | null) => void;
 };
 const Context = createContext<Value | null>(null);
+const SAVE_DEBOUNCE_MS = 400;
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [state, update] = useState<AppState>(initial),
+  const [state, setState] = useState<AppState>(initial),
     [ready, setReady] = useState(false),
     [storageError, setStorageError] = useState<string | null>(null);
   const queue = useRef(Promise.resolve());
+  const latestState = useRef(state);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const update: Value["update"] = useCallback((fn) => {
+    setState((current) => {
+      const next = fn(current);
+      latestState.current = next;
+      return next;
+    });
+  }, []);
+  const persist = useCallback(
+    (snapshot: AppState) => {
+      const value = JSON.stringify(snapshot);
+      queue.current = queue.current
+        .then(() => storage.set(value))
+        .catch(() =>
+          setStorageError(
+            "Your latest changes could not be saved. Please export a backup from Settings.",
+          ),
+        );
+    },
+    [setStorageError],
+  );
   useEffect(() => {
     let active = true;
     storage
@@ -30,15 +56,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (raw && active) {
           const parsed = JSON.parse(raw);
           const checked = validateBackup(parsed);
-          update({
+          update(() => ({
             ...checked,
-            daily: Array.isArray(parsed.daily) ? parsed.daily.slice(0, 7) : [],
+            daily: restoreDailyCache(parsed.daily),
             consent: parsed.consent === true,
             settings: {
               ...checked.settings,
               reminder: parsed.settings.reminder === true,
             },
-          });
+          }));
         }
       })
       .catch(() => {
@@ -53,21 +79,35 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [update]);
+  useLayoutEffect(() => {
+    latestState.current = state;
+  }, [state]);
   useEffect(() => {
     if (!ready || storageError) return;
-    const timer = setTimeout(() => {
-      const value = JSON.stringify(state);
-      queue.current = queue.current
-        .then(() => storage.set(value))
-        .catch(() =>
-          setStorageError(
-            "Your latest changes could not be saved. Please export a backup from Settings.",
-          ),
-        );
-    }, 200);
-    return () => clearTimeout(timer);
-  }, [state, ready, storageError]);
+    saveTimer.current = setTimeout(() => {
+      saveTimer.current = null;
+      persist(latestState.current);
+    }, SAVE_DEBOUNCE_MS);
+    return () => {
+      if (saveTimer.current !== null) {
+        clearTimeout(saveTimer.current);
+        saveTimer.current = null;
+      }
+    };
+  }, [state, ready, storageError, persist]);
+  useEffect(() => {
+    if (!ready || storageError) return;
+    const subscription = NativeAppState.addEventListener("change", (status) => {
+      if (status === "active") return;
+      if (saveTimer.current !== null) {
+        clearTimeout(saveTimer.current);
+        saveTimer.current = null;
+      }
+      persist(latestState.current);
+    });
+    return () => subscription.remove();
+  }, [ready, storageError, persist]);
   return (
     <Context.Provider
       value={{ state, update, ready, storageError, setStorageError }}

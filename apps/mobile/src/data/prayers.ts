@@ -1,23 +1,23 @@
 export const prayers = [
   {
     name: "Our Father",
-    source: "Traditional Catholic prayer · Matthew 6:9–13",
-    text: "Our Father, who art in heaven, hallowed be thy name; thy kingdom come; thy will be done on earth as it is in heaven. Give us this day our daily bread; and forgive us our trespasses as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.",
+    source: "The Daily Prayer-Book (Burns & Oates, 1882), ‘Prayers’",
+    text: "Our Father, who art in heaven, hallowed be Thy name: Thy kingdom come; Thy will be done on earth as it is in heaven. Give us this day our daily bread: and forgive us our trespasses, as we forgive them that trespass against us: and lead us not into temptation; but deliver us from evil. Amen.",
   },
   {
     name: "Hail Mary",
-    source: "Traditional Catholic prayer · Luke 1:28, 42",
-    text: "Hail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",
+    source: "The Daily Prayer-Book (Burns & Oates, 1882), ‘Prayers’",
+    text: "Hail Mary, full of grace; the Lord is with thee: blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.",
   },
   {
     name: "Glory Be",
-    source: "Traditional Catholic doxology",
-    text: "Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.",
+    source: "The Daily Prayer-Book (Burns & Oates, 1882), ‘Prayers’",
+    text: "Glory be to the Father, and to the Son, and to the Holy Ghost. As it was in the beginning, is now, and ever shall be, world without end. Amen.",
   },
   {
     name: "The Memorare",
-    source: "Traditional Catholic Marian prayer",
-    text: "Remember, O most gracious Virgin Mary, that never was it known that anyone who fled to thy protection, implored thy help, or sought thy intercession was left unaided. Inspired by this confidence, I fly unto thee, O Virgin of virgins, my Mother. To thee do I come, before thee I stand, sinful and sorrowful. O Mother of the Word Incarnate, despise not my petitions, but in thy mercy hear and answer me. Amen.",
+    source: "The Daily Prayer-Book (Burns & Oates, 1882), ‘Prayers’",
+    text: "Remember, O most gracious Virgin Mary, that never was it known that any one who fled to thy protection, implored thy help, and sought thy intercession, was left unaided. Inspired with this confidence, I fly unto thee, O Virgin of virgins, my Mother. To thee I come; before thee I stand, sinful and sorrowful. O Mother of the Word Incarnate, despise not my petitions, but in thy mercy hear and answer me. Amen.",
   },
 ];
 export const examen = [
