@@ -347,8 +347,7 @@ html[data-theme] .sa-feature-content { font-size:15px; line-height:1.7; }
 html[data-theme] .sa-feature-item { border:0; border-bottom:1px solid var(--room-line); border-radius:0; padding:16px 0; background:none; }
 html[data-theme] .sa-feature-search, html[data-theme] .sa-share-dialog textarea { background:var(--bg); font-size:16px; border-color:var(--room-line); border-radius:var(--room-control); }
 html[data-theme] .sa-feature-actions button, html[data-theme] .sa-feature-row button, html[data-theme] .sa-feature-item > button { min-height:44px; border-radius:var(--room-control); font-size:13px; }
-html[data-theme] .page.on { animation:room-page-arrive 180ms var(--room-ease) both; }
-@keyframes room-page-arrive { from {opacity:0;transform:translateY(3px)} to {opacity:1;transform:translateY(0)} }
+html[data-theme] .page.on { animation:none; }
 @media (hover:hover) {
   html[data-theme] button:hover:not(:disabled) { filter:none; }
   html[data-theme] .nav-tab:hover:not(.on), html[data-theme] .icon-btn:hover, html[data-theme] .sugg:hover, html[data-theme] .sa-followups button:hover, html[data-theme] .dp-link-btn:hover { background:var(--accent-soft) !important; color:var(--ink) !important; transform:none !important; }
@@ -486,3 +485,208 @@ html[data-theme] :is(button,a,input,textarea,summary,select):focus-visible { out
   html[data-theme] .page.on, html[data-theme] .bg, html[data-theme] .bg::before, html[data-theme] .bg::after { animation:none !important; }
 }
 html[data-motion="reduced"] .page.on, html[data-motion="reduced"] .bg, html[data-motion="reduced"] .bg::before, html[data-motion="reduced"] .bg::after { animation:none !important; }
+
+/* The folio. A brass margin rule links the opening quotation to the reading
+   surfaces. The photograph stays outside the areas people read and write in. */
+:root {
+  --folio-brass: #b88c51;
+  --folio-night: #202e38;
+  --folio-night-end: #293e48;
+  --folio-light: #fff7e9;
+  --folio-muted-light: #dfd3c2;
+}
+
+html[data-theme] #greet {
+  position:relative;
+  overflow:hidden;
+  border-radius:20px !important;
+}
+html[data-theme] #greet .room-greeting-copy {
+  border-inline-start:2px solid var(--folio-brass);
+  padding-inline-start:clamp(14px,3vw,30px);
+  text-align:start;
+}
+html[data-theme] #page-chat #greet .eyebrow {
+  margin:0 0 10px !important;
+  letter-spacing:.075em !important;
+}
+html[data-theme] #page-chat #greet :is(h1,#greetSub) {
+  margin-inline:0 !important;
+  text-align:start !important;
+}
+html[data-theme] #greet h1 {
+  font-size:clamp(28px,4.2vw,48px) !important;
+  letter-spacing:-.025em;
+}
+html[data-theme] #page-chat #greet #greetSub { margin-block-start:12px !important; }
+html[data-theme] #greet .greet-credit { text-align:start; }
+html[data-theme] #greet .sugg { gap:10px; }
+html[data-theme] #greet .sugg::after { color:var(--gold-ink); opacity:1; }
+html[data-theme] #greet .room-art img {
+  outline:1px solid var(--room-line);
+  outline-offset:4px;
+}
+
+/* Chapter openings align with the text below. */
+html[data-theme] :is(#page-study,#page-prayer) .dp-head {
+  align-items:flex-start;
+  text-align:start;
+}
+html[data-theme] :is(#page-study,#page-prayer) .dp-head > p:not(.dp-eyebrow) {
+  margin-inline:0;
+  text-align:start;
+}
+html[data-theme] :is(#page-study,#page-prayer) .dp-head h2 {
+  border-inline-start:2px solid var(--folio-brass);
+  padding-inline-start:12px;
+}
+html[data-theme] :is(#page-study,#page-prayer) .dp-head-actions { justify-content:flex-start; }
+html[data-theme] #page-study .lesson-top { align-items:flex-start; text-align:start; }
+html[data-theme] #page-study .lesson-heading { text-align:start; }
+html[data-theme] #page-study .lesson-top :is(.topic-name,.lesson-read-status) {
+  margin-inline:0;
+  text-align:start;
+}
+html[data-theme] #page-study .room-lesson-actions { justify-content:flex-start; }
+html[data-theme] #page-study .ls[open] summary { color:var(--ink); }
+html[data-theme] #page-study .quote-wrap {
+  border-inline-start:2px solid var(--folio-brass);
+}
+html[data-theme] #page-prayer #prayIntent2 {
+  border-color:var(--border);
+  box-shadow:inset 0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent);
+}
+html[data-theme] #page-prayer #ppLead {
+  background:var(--folio-night) !important;
+  color:var(--folio-light) !important;
+}
+html[data-theme] #page-prayer #ppLead :is(b,svg) { color:var(--folio-light); }
+html[data-theme] #page-prayer #ppLead small { color:var(--folio-muted-light); }
+
+/* A distinct daily cover separates the date from the reading and progress. */
+html[data-theme] #page-today .room-day-brief {
+  border-radius:20px;
+  overflow:hidden;
+}
+html[data-theme] #page-today .room-day-brief .dp-head {
+  align-items:flex-start;
+  text-align:start;
+  padding:24px !important;
+  background:linear-gradient(115deg,var(--folio-night),var(--folio-night-end)) !important;
+  color:var(--folio-light);
+}
+html[data-theme] #page-today .room-day-brief .dp-head h2 {
+  color:var(--folio-light);
+  border-inline-start:2px solid var(--folio-brass);
+  padding-inline-start:12px;
+}
+html[data-theme] #page-today .room-day-brief .dp-head > p {
+  color:var(--folio-muted-light);
+  margin-inline:0;
+  text-align:start;
+  text-shadow:none;
+}
+html[data-theme] #page-today .room-day-brief .dp-head-actions { justify-content:flex-start; }
+html[data-theme] #page-today .room-day-brief .dp-head-actions button {
+  color:var(--folio-light) !important;
+  border-color:#869294 !important;
+}
+html[data-theme] #page-today .room-day-brief .dp-head-actions button:first-child {
+  color:var(--folio-night) !important;
+  border-color:var(--folio-light) !important;
+  background:var(--folio-light) !important;
+}
+html[data-theme] #page-today .room-day-brief button:focus-visible,
+html[data-theme] #page-prayer #ppLead:focus-visible { outline-color:var(--folio-brass) !important; }
+html[data-theme] #page-today .room-day-brief #todayStrip { margin:0; }
+
+html[data-theme] .msg.assistant .bubble a {
+  text-decoration:underline;
+  text-underline-offset:.18em;
+  overflow-wrap:anywhere;
+}
+html[data-theme] .msg.assistant .bubble :is(p,li,blockquote) { overflow-wrap:anywhere; }
+html[data-theme] .composer:focus-within {
+  border-color:var(--gold-ink) !important;
+}
+html[data-theme] #send.stop { animation:none; }
+html[data-theme] :is(#betaModal,#tutModal) .beta-modal {
+  border-block-start:3px solid var(--folio-brass);
+  background:var(--panel);
+}
+html[data-theme] #betaModal .beta-rows {
+  text-align:start;
+}
+html[data-theme] #betaModal .beta-row :is(b,span) { color:var(--ink); }
+html[data-theme] .sa-prayer-duration {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  margin-block-end:16px;
+}
+html[data-theme] .sa-prayer-duration button {
+  min-height:44px;
+  padding:6px;
+  border:1px solid var(--room-line);
+  border-radius:var(--room-control);
+  background:var(--bg);
+  color:var(--ink);
+  font:600 13px/1.3 var(--body);
+}
+html[data-theme] .sa-prayer-duration button[aria-pressed="true"] {
+  border-color:var(--gold-ink);
+  background:var(--accent-soft);
+}
+html[data-theme] #saTimerFace {
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+}
+html[data-theme] .sa-timer-reading {
+  border-inline-start:2px solid var(--folio-brass);
+  background:var(--bg);
+}
+html[data-theme] .sa-feature-scrim { backdrop-filter:none; }
+html[data-theme] :is(.sa-feature-dialog,#composer.reader-composer) {
+  animation:folio-sheet-in var(--mt-base,220ms) var(--room-ease) both;
+}
+@keyframes folio-sheet-in {
+  from { opacity:0; translate:0 6px; }
+  to { opacity:1; translate:0 0; }
+}
+@media (prefers-reduced-motion:reduce) {
+  html[data-theme] :is(.sa-feature-dialog,#composer.reader-composer) { animation:none !important; }
+}
+html[data-motion="reduced"] :is(.sa-feature-dialog,#composer.reader-composer) { animation:none !important; }
+
+@media (max-width:768px) and (min-height:481px) {
+  html[data-theme] #greet {
+    display:grid;
+    grid-template-columns:clamp(52px,17vw,100px) minmax(0,1fr);
+    align-items:start;
+    gap:16px;
+    padding:22px 18px !important;
+  }
+  html[data-theme] #greet .room-art { width:100%; margin:4px 0 0; }
+  html[data-theme] #greet .room-art img { height:auto; aspect-ratio: 3 / 4; }
+  html[data-theme] #greet h1 { font-size:clamp(21px,6.3vw,32px) !important; }
+  html[data-theme] #page-chat #greet .eyebrow { font-size:11px !important; }
+  html[data-theme] #greet .greet-sugg { margin-top:0 !important; }
+  html[data-theme] #greet .greet-credit { margin-top:0 !important; padding-top:10px; }
+  html[data-theme] body > .nav-tabs .nav-tab.on { font-weight:700; }
+  html[data-theme] body > .nav-tabs .nav-tab.on::before {
+    content:"";
+    display:block !important;
+    width:14px;
+    height:2px;
+    position:absolute;
+    inset:3px auto auto 50%;
+    translate:-50% 0;
+    background:var(--gold-ink);
+    border-radius:1px;
+  }
+  html[data-theme] body > .nav-tabs .nav-tab { position:relative; }
+}
+@media (max-width:360px) {
+  html[data-theme] #greet { column-gap:12px; }
+  html[data-theme] #greet .room-greeting-copy { padding-inline-start:11px; }
+}

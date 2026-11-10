@@ -2,7 +2,7 @@
    Strategy: network-first for the app shell + API; cache fallback for shell
    so the UI opens offline (conversations live in localStorage anyway).
    No caching of cross-origin fonts/CDN beyond a simple pass-through. */
-const CACHE = "sa-reasoning-saints-v29";
+const CACHE = "sa-reading-room-folio-v30";
 const SHELL = [
   "./",
   "./index.html",
@@ -11,8 +11,8 @@ const SHELL = [
   // Keep this token in sync with the stylesheet link in index.html.
   "./frontend-revamp.css?v=reading-room-42-production",
   "./app-features.css?v=premium-pass-3",
-  "./app-features.js?v=premium-pass-3",
-  "./reading-room.css?v=reading-room-design-2",
+  "./app-features.js?v=premium-pass-4",
+  "./reading-room.css?v=reading-room-folio-1",
   "./frontend-revamp.js",
   "./lessons.js?v=study-content-3",
   "./lesson-sources.js?v=source-audit-1",

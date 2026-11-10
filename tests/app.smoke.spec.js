@@ -130,6 +130,35 @@ test("Study source trail, local archive, and prayer intention/timer controls wor
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("sa_prayer_favorites_v1") || "[]").length)).toBe(0);
 });
 
+test("guided prayer advances through its stages and resets when duration changes", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.clock.install();
+  await mockServices(page);
+  await page.goto("/#prayer");
+  await page.locator("#timedPrayerOpen").click();
+  const timer = page.getByRole("dialog", { name: "A quiet guided prayer" });
+  const stage = timer.locator("#saTimerStage");
+  const face = timer.locator("#saTimerFace");
+  await timer.getByRole("button", { name: "3 minutes" }).click();
+  await expect(stage).toHaveText("Read slowly");
+  await timer.getByRole("button", { name: "Begin", exact: true }).click();
+  await page.clock.runFor(37_000);
+  await expect(stage).toHaveText("Keep silence");
+  await page.clock.runFor(90_000);
+  await expect(stage).toHaveText("Reflect");
+  await page.clock.runFor(36_000);
+  await expect(stage).toHaveText("Close in peace");
+  await page.clock.runFor(17_000);
+  await expect(face).toHaveText("00:00");
+  await timer.getByRole("button", { name: "Begin again" }).click();
+  await expect(face).toHaveText("03:00");
+  await timer.getByRole("button", { name: "5 minutes" }).click();
+  await expect(timer.getByRole("button", { name: "5 minutes" })).toHaveAttribute("aria-pressed", "true");
+  await page.clock.runFor(2_000);
+  await expect(face).toHaveText("05:00");
+  await expect(timer.getByRole("button", { name: "Begin", exact: true })).toBeVisible();
+});
+
 test("pausing streak counting preserves the saved count when resumed", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem("sa_feature_prefs_v1", JSON.stringify({ pauseStreak: true }));

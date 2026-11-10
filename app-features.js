@@ -18,9 +18,9 @@
   const uid = () => (globalThis.crypto && crypto.randomUUID ? crypto.randomUUID() : "sa-" + Date.now() + "-" + Math.random().toString(36).slice(2));
 
   let activeFeatureDialogClose = null;
-  function openDialog(title, description, content, actions = [], onClose = null) {
+  function openDialog(title, description, content, actions = [], { trigger, onClose } = {}) {
     if (activeFeatureDialogClose) activeFeatureDialogClose(false);
-    const previousFocus = document.activeElement;
+    const previousFocus = trigger?.isConnected ? trigger : document.activeElement;
     const backgroundState = [...document.body.children].filter(element => element instanceof HTMLElement).map(element => [element,element.inert]);
     const scrim = document.createElement("div");
     scrim.className = "sa-feature-scrim";
@@ -191,14 +191,14 @@
     store.set("prayers", prayers.slice(0, 100));
     toast("Prayer saved to your favorites on this device ✓");
   }
-  function savedView() {
+  function savedView(event) {
     const saved = store.get("saved", []), notes = store.get("notes", []), prayers = store.get("prayers", []);
     const rows = [
       ...saved.map((item) => ({ ...item, group: item.type === "prayer" ? "Prayer" : item.type === "highlight" ? "Highlight" : "Saved" })),
       ...notes.map((item) => ({ ...item, group: "Study note", type: "note" })),
       ...prayers.map((item) => ({ ...item, group: "Favorite prayer", type: "prayer" })),
     ].sort((a, b) => new Date(b.created || 0) - new Date(a.created || 0));
-    const view = openDialog("Saved on this device", "Private to this browser. Included in your JSON backup only when you choose to export it.", '<input class="sa-feature-search" type="search" placeholder="Search saved items…" aria-label="Search saved items"><div class="sa-feature-list" id="saSavedList"></div>');
+    const view = openDialog("Saved on this device", "Private to this browser. Included in your JSON backup only when you choose to export it.", '<input class="sa-feature-search" type="search" placeholder="Search saved items…" aria-label="Search saved items"><div class="sa-feature-list" id="saSavedList"></div>', [], { trigger: event.currentTarget });
     const input = $(".sa-feature-search", view.body), list = $("#saSavedList", view.body);
     const render = () => {
       const q = input.value.trim().toLocaleLowerCase();
@@ -255,7 +255,7 @@
     });
   });
   document.documentElement.classList.toggle("sa-hide-streak", !!prefs().hideStreak);
-  $("#pasteWhy")?.addEventListener("click", () => openDialog("A cautious writing clue", "This local formatting check cannot identify who wrote pasted text.", '<p>Some formatting patterns can resemble text often produced by AI. They can also appear in human writing. The app does not treat this as proof, does not block your question, and does not send the pasted text to a separate detector.</p><p>You can turn this note off in Settings at any time.</p>', [{ label: "Settings", onClick: (close) => { close(); $("#settingsBtn")?.click(); } }, { label: "Close", primary: true, onClick: (close) => close() }]));
+  $("#pasteWhy")?.addEventListener("click", (event) => openDialog("A cautious writing clue", "This local formatting check cannot identify who wrote pasted text.", '<p>Some formatting patterns can resemble text often produced by AI. They can also appear in human writing. The app does not treat this as proof, does not block your question, and does not send the pasted text to a separate detector.</p><p>You can turn this note off in Settings at any time.</p>', [{ label: "Settings", onClick: (close) => { close(); $("#settingsBtn")?.click(); } }, { label: "Close", primary: true, onClick: (close) => close() }], { trigger: event.currentTarget }));
 
   // Message tools attach to the existing rendered messages, including restored threads.
   function messageText(message) { return $(".bubble", message)?.innerText.replace(/^St\. Augustine\s*/i, "").trim() || ""; }
@@ -444,7 +444,7 @@
     store.set("prayerCarry", { title: currentLesson.name, text: quote, source: $("#lessonPrimarySource")?.href || "", citation: source, created: Date.now() });
     $("[data-page=prayer]")?.click(); toast("Topic carried into Prayer. It will only be sent if you choose a prayer action.");
   });
-  $("#saTwoMinute")?.addEventListener("click", () => {
+  $("#saTwoMinute")?.addEventListener("click", (event) => {
     const lesson = (window.LESSON || [])[currentLesson.index] || {};
     const quote = lesson.primaryQuote || lesson.quote || "";
     const passage = String(lesson.topic || lesson.name || "");
@@ -454,7 +454,7 @@
     openDialog("A two-minute reading", "A small, complete way into today’s topic.", '<div class="sa-timer-reading"><span class="sa-feature-kicker">' + esc(lesson.name || "Today’s topic") + '</span><p>' + esc(passage) + '</p></div>' + quoteBlock + '<p><b>One question for reflection</b><br>What does this invite you to notice, love, or ask of God today?</p>', [
       { label: "Carry into prayer", onClick: (close) => { close(); $("#saTopicPrayer")?.click(); } },
       { label: "Keep reading", primary: true, onClick: (close) => { close(); $("#page-study .dp-card.lesson")?.scrollIntoView({ behavior: "smooth", block: "start" }); } },
-    ]);
+    ], { trigger: event.currentTarget });
   });
   function openGlossaryForCurrentLesson() {
     const term = String((window.LESSON || [])[currentLesson.index]?.vocab || "").split(" — ")[0] || currentLesson.name;
@@ -499,9 +499,9 @@
   const glossary = $("#glossaryList");
   if (glossary) { glossaryObserver = new MutationObserver(enhanceGlossary); glossaryObserver.observe(glossary, { childList: true, subtree: true }); }
   $("#glossaryBtn")?.addEventListener("click", () => setTimeout(enhanceGlossary, 60));
-  $("#saReviewTerms")?.addEventListener("click", () => {
+  $("#saReviewTerms")?.addEventListener("click", (event) => {
     const due = store.get("review", []).filter((item) => item.due <= Date.now());
-    const view = openDialog("Glossary review", due.length ? "Terms saved for a short return visit." : "Nothing is due right now. You can review a term from the glossary whenever you like.", '<div class="sa-feature-list" id="saDueTerms"></div>');
+    const view = openDialog("Glossary review", due.length ? "Terms saved for a short return visit." : "Nothing is due right now. You can review a term from the glossary whenever you like.", '<div class="sa-feature-list" id="saDueTerms"></div>', [], { trigger: event.currentTarget });
     const target = $("#saDueTerms", view.body);
     target.innerHTML = due.map((item) => '<article class="sa-feature-item"><div><span class="sa-feature-kicker">Due to review</span><h3>' + esc(item.term) + '</h3></div><button type="button" data-term-known="' + esc(item.term) + '">I know this</button></article>').join("") || '<p class="sa-feature-empty">No terms due today.</p>';
     target.addEventListener("click", (event) => {
@@ -569,11 +569,11 @@
   }
 
   // Today archive contains only days the user actually opened while online.
-  function openArchive() {
+  function openArchive(event) {
     const archive = store.get("archive", []).slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
     const view = openDialog("Past days", "Only locally saved readings and saint entries appear here; earlier days are never generated as if they were historical data.", '<div id="saArchiveList"></div>', [
       { label: "Back to today", primary: true, onClick: (close) => { close(); returnToToday(); } },
-    ]);
+    ], { trigger: event.currentTarget });
     const list = $("#saArchiveList", view.body);
     list.innerHTML = archive.map((entry) => {
       const date = new Date(entry.date + "T12:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
@@ -656,9 +656,9 @@
   });
 
   // Optional, silent, local guided prayer timer. Speech is never started automatically.
-  $("#timedPrayerOpen")?.addEventListener("click", () => {
+  $("#timedPrayerOpen")?.addEventListener("click", (event) => {
     let interval = null;
-    const view = openDialog("A quiet guided prayer", "Choose the time you have. The timer stays in this browser; no audio or model service is used.", '<div class="sa-prayer-duration"><button type="button" data-minutes="3">3 minutes</button><button type="button" data-minutes="5">5 minutes</button><button type="button" data-minutes="10">10 minutes</button></div><div id="saPrayerTimer" hidden><p class="sa-timer-reading">“Be still, and know that I am God.”<br><a href="https://bible.usccb.org/bible/psalms/46" target="_blank" rel="noopener noreferrer">Psalm 46:10 ↗</a></p><p class="sa-timer-stage" id="saTimerStage">Read slowly</p><p id="saTimerPrompt">Read the verse once, without hurry. Notice the words that stay with you.</p><div class="sa-timer-face" id="saTimerFace">03:00</div><div class="sa-study-note-actions"><button type="button" id="saTimerToggle">Begin</button><button type="button" id="saTimerReset">Reset</button></div></div>', [], () => clearInterval(interval));
+    const view = openDialog("A quiet guided prayer", "Choose the time you have. The timer stays in this browser; no audio or model service is used.", '<div class="sa-prayer-duration"><button type="button" data-minutes="3">3 minutes</button><button type="button" data-minutes="5">5 minutes</button><button type="button" data-minutes="10">10 minutes</button></div><div id="saPrayerTimer" hidden><p class="sa-timer-reading">“Be still, and know that I am God.”<br><a href="https://bible.usccb.org/bible/psalms/46" target="_blank" rel="noopener noreferrer">Psalm 46:10 ↗</a></p><p class="sa-timer-stage" id="saTimerStage">Read slowly</p><p id="saTimerPrompt">Read the verse once, without hurry. Notice the words that stay with you.</p><div class="sa-timer-face" id="saTimerFace">03:00</div><div class="sa-study-note-actions"><button type="button" id="saTimerToggle">Begin</button><button type="button" id="saTimerReset">Reset</button></div></div>', [], { trigger: event.currentTarget, onClose: () => clearInterval(interval) });
     let total = 180, remaining = 180, running = false;
     const panel = $("#saPrayerTimer", view.body), face = $("#saTimerFace", view.body), stage = $("#saTimerStage", view.body), promptText = $("#saTimerPrompt", view.body), toggle = $("#saTimerToggle", view.body);
     const stages = [
@@ -670,19 +670,38 @@
     const render = () => {
       const minutes = Math.floor(remaining / 60), seconds = remaining % 60;
       face.textContent = String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
-      const fraction = remaining / total, active = stages.find((item) => fraction <= item.at) || stages[0];
+      const fraction = remaining / total;
+      const active = stages.find((item) => fraction > item.at) || stages[stages.length - 1];
       stage.textContent = active.title; promptText.textContent = active.text;
       if (remaining === 0) { running = false; clearInterval(interval); toggle.textContent = "Begin again"; toast("Your quiet prayer time is complete."); }
     };
+    const reset = () => {
+      clearInterval(interval);
+      running = false;
+      remaining = total;
+      toggle.textContent = "Begin";
+      render();
+    };
+    const durations = $$("[data-minutes]", view.body);
+    durations.forEach((button) => button.setAttribute("aria-pressed", "false"));
     view.body.addEventListener("click", (event) => {
       const duration = event.target.closest("[data-minutes]");
-      if (duration) { total = Number(duration.dataset.minutes) * 60; remaining = total; panel.hidden = false; render(); return; }
+      if (duration) {
+        total = Number(duration.dataset.minutes) * 60;
+        durations.forEach((button) => button.setAttribute("aria-pressed", String(button === duration)));
+        panel.hidden = false;
+        reset();
+        return;
+      }
       if (event.target.closest("#saTimerToggle")) {
-        if (remaining === 0) remaining = total;
+        if (remaining === 0) {
+          remaining = total;
+          render();
+        }
         running = !running; toggle.textContent = running ? "Pause" : "Resume";
         if (running) interval = setInterval(() => { remaining = Math.max(0, remaining - 1); render(); }, 1000); else clearInterval(interval);
       }
-      if (event.target.closest("#saTimerReset")) { clearInterval(interval); running = false; remaining = total; toggle.textContent = "Begin"; render(); }
+      if (event.target.closest("#saTimerReset")) reset();
     });
   });
 
@@ -690,9 +709,9 @@
   const quizActions = $("#quizDone .quiz-done-actions");
   if (quizActions) {
     const reviewButton = document.createElement("button"); reviewButton.type = "button"; reviewButton.className = "dp-cta dp-cta-ghost"; reviewButton.id = "saReviewMissed"; reviewButton.textContent = "Review missed questions"; quizActions.append(reviewButton);
-    reviewButton.addEventListener("click", () => {
+    reviewButton.addEventListener("click", (event) => {
       const missed = store.get("missed", []);
-      const view = openDialog("Review missed questions", "Each item points back to the lesson that explains it.", '<div id="saMissedList"></div>');
+      const view = openDialog("Review missed questions", "Each item points back to the lesson that explains it.", '<div id="saMissedList"></div>', [], { trigger: event.currentTarget });
       const list = $("#saMissedList", view.body);
       list.innerHTML = missed.map((item) => '<article class="sa-feature-item"><div><span class="sa-feature-kicker">' + esc(item.topic) + '</span><h3>' + esc(item.question) + '</h3><p><b>Answer:</b> ' + esc(item.answer) + '</p><p>' + esc(item.note) + '</p></div><button type="button" data-review-lesson="' + esc(item.topicIndex) + '">Open lesson</button></article>').join("") || '<p class="sa-feature-empty">No missed answers saved. They’ll appear here when you choose an incorrect answer.</p>';
       list.addEventListener("click", (event) => {

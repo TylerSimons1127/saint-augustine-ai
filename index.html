@@ -2788,9 +2788,9 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
 </style>
 <link rel="stylesheet" href="frontend-revamp.css?v=reading-room-42-production" />
 <link rel="stylesheet" href="app-features.css?v=premium-pass-3" />
-<link rel="stylesheet" href="reading-room.css?v=reading-room-design-2" />
+<link rel="stylesheet" href="reading-room.css?v=reading-room-folio-1" />
 <script src="frontend-revamp.js" defer></script>
-<script src="app-features.js?v=premium-pass-3" defer></script>
+<script src="app-features.js?v=premium-pass-4" defer></script>
 </head>
 <body>
 <!-- SVG symbol defs (F80): one source of truth for repeated icons -->
@@ -2937,11 +2937,11 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
             <p class="sub" id="greetSub">Bring a question, a passage, or something on your mind.</p>
     </div>
             <p class="greet-credit">Created by <b>Tyler Simons</b> · Seton Hall Prep</p>
-        <div class="greet-sugg" id="greetSugg" role="list" aria-label="Starter questions">
-          <button class="sugg" role="listitem" data-q="Explain the Confessions in a way a teenager can understand.">Explain the Confessions simply</button>
-          <button class="sugg" role="listitem" data-q="I keep failing at the same sin. Does God grow tired of forgiving me?">I keep failing at the same sin</button>
-          <button class="sugg" role="listitem" data-q="Teach me how to pray like you did, from the heart.">Teach me to pray</button>
-          <button class="sugg" role="listitem" data-q="What is God calling me to do with my life right now?">What is God calling me to?</button>
+        <div class="greet-sugg" id="greetSugg" role="group" aria-label="Starter questions">
+          <button class="sugg" data-q="Explain the Confessions in a way a teenager can understand.">Explain the Confessions simply</button>
+          <button class="sugg" data-q="I keep failing at the same sin. Does God grow tired of forgiving me?">I keep failing at the same sin</button>
+          <button class="sugg" data-q="Teach me how to pray like you did, from the heart.">Teach me to pray</button>
+          <button class="sugg" data-q="What is God calling me to do with my life right now?">What is God calling me to?</button>
         </div>
   </section>
 
@@ -5566,7 +5566,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>{ navigator
       const first=focusables[0], last=focusables[focusables.length-1];
       if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
     });
-    setTimeout(()=>betaAgree.focus(), 120);
+    setTimeout(()=>betaAgree.focus({ preventScroll:true }), 120);
   }
 
   /* ---- Tutorial: first use, or each time a new update ships ---- */
