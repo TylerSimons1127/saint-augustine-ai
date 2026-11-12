@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Saint Augustine AI",
+    "slug": "saint-augustine-ai",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/brand/app-icon.png",
+    "scheme": "saintaugustine",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./assets/brand/app-icon-ios.png",
+      "bundleIdentifier": "com.tylersimons.saintaugustineai",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "WKAppBoundDomains": [
+          "staugustineai.vercel.app"
+        ],
+        "NSCameraUsageDescription": "Use the camera to capture an image to attach to a Saint Augustine AI conversation.",
+        "NSPhotoLibraryUsageDescription": "Select photos from your library to attach to a Saint Augustine AI conversation."
+      }
+    },
+    "android": {
+      "package": "com.tylersimons.saintaugustineai",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/app-icon.png",
+        "backgroundColor": "#f6f2eb"
+      }
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/brand/app-icon.png",
+      "name": "Saint Augustine AI",
+      "description": "A Catholic companion for study, reflection, and prayer."
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite",
+      "expo-sharing",
+      "expo-notifications",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#f6f2eb",
+          "image": "./assets/brand/app-icon.png",
+          "imageWidth": 110
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9db36876-740b-45d5-87be-324b917d7bc5"
+      }
+    },
+    "owner": "tylersimons"
+  }
+}
